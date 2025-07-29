@@ -76,10 +76,10 @@ export function PeriodCard({ period }: PeriodCardProps) {
   ];
 
   return (
-    <div className={`bg-gray-900/50 border rounded-xl p-6 ${
+    <div className={`bg-gray-900/60 border-2 rounded-xl p-6 backdrop-blur-sm transition-all duration-300 ${
       period.isActive 
-        ? 'border-cyan-500/20' 
-        : 'border-gray-600/20'
+        ? 'border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)]' 
+        : 'border-gray-600/30 shadow-[0_0_20px_rgba(107,114,128,0.4)]'
     }`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -90,12 +90,12 @@ export function PeriodCard({ period }: PeriodCardProps) {
             Started {new Date(period.startDate).toLocaleDateString()}
           </div>
         </div>
-        <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+        <div className={`px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm ${
           period.isActive
             ? isCompleted
-              ? 'bg-green-500/20 border border-green-500/30 text-green-400'
-              : 'bg-cyan-500/20 border border-cyan-500/30 text-cyan-400'
-            : 'bg-gray-500/20 border border-gray-500/30 text-gray-400'
+              ? 'bg-green-500/20 border-green-500/30 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]'
+              : 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
+            : 'bg-gray-500/20 border-gray-500/30 text-gray-400'
         }`}>
           {period.isActive 
             ? isCompleted ? 'Goal Reached!' : 'Active'
@@ -115,10 +115,10 @@ export function PeriodCard({ period }: PeriodCardProps) {
             {daysSinceStart} / {period.targetDays} days
           </span>
         </div>
-        <div className="w-full bg-gray-700/50 rounded-full h-2 mb-2">
+        <div className="w-full bg-gray-700/50 rounded-full h-2 mb-2 border border-gray-600/30">
           <div 
             className={`h-2 rounded-full transition-all duration-300 ${
-              isCompleted ? 'bg-green-500' : 'bg-cyan-500'
+              isCompleted ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.6)]' : 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.6)]'
             }`}
             style={{ width: `${progress}%` }}
           />
@@ -158,7 +158,7 @@ export function PeriodCard({ period }: PeriodCardProps) {
               )}
             </div>
           ) : (
-            <form action={handleRecordBreach} className="space-y-3 p-4 bg-gray-800/50 rounded-lg border border-orange-500/20">
+            <form action={handleRecordBreach} className="space-y-3 p-4 bg-gray-800/60 rounded-lg border-2 border-orange-500/30 backdrop-blur-sm shadow-[0_0_15px_rgba(249,115,22,0.4)]">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-orange-400">Record Breach</h4>
                 <Button
@@ -176,7 +176,7 @@ export function PeriodCard({ period }: PeriodCardProps) {
                 <Label className="text-sm text-gray-300 mb-2 block">Breach Type</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {breachTypes.map((type) => (
-                    <label key={type.value} className="flex items-center gap-2 p-2 border border-gray-600/30 rounded-lg hover:bg-gray-700/30 cursor-pointer">
+                    <label key={type.value} className="flex items-center gap-2 p-2 border-2 border-gray-600/30 rounded-lg hover:bg-gray-700/30 cursor-pointer transition-all duration-200 hover:border-cyan-500/30 hover:shadow-[0_0_10px_rgba(6,182,212,0.3)]">
                       <input
                         type="radio"
                         name="breachType"

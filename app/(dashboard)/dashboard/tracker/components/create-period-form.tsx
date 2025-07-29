@@ -34,7 +34,7 @@ export function CreatePeriodForm() {
             name="contactName"
             placeholder="Ex, Sarah, John, etc."
             required
-            className="bg-gray-900/50 border-cyan-500/30 text-white placeholder:text-gray-400 focus:border-cyan-400"
+            className="bg-gray-900/60 border-2 border-cyan-500/30 text-white placeholder:text-gray-400 focus:border-cyan-400 focus:shadow-[0_0_10px_rgba(6,182,212,0.3)] transition-all duration-200 backdrop-blur-sm"
           />
         </div>
 
@@ -51,7 +51,7 @@ export function CreatePeriodForm() {
             max="365"
             placeholder="30"
             required
-            className="bg-gray-900/50 border-cyan-500/30 text-white placeholder:text-gray-400 focus:border-cyan-400"
+            className="bg-gray-900/60 border-2 border-cyan-500/30 text-white placeholder:text-gray-400 focus:border-cyan-400 focus:shadow-[0_0_10px_rgba(6,182,212,0.3)] transition-all duration-200 backdrop-blur-sm"
           />
         </div>
       </div>
@@ -59,7 +59,7 @@ export function CreatePeriodForm() {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="bg-cyan-600 hover:bg-cyan-700 text-white border-cyan-500/30"
+        className="bg-cyan-600 hover:bg-cyan-700 text-white border-2 border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300 backdrop-blur-sm"
       >
         {isSubmitting ? (
           <div className="flex items-center gap-2">

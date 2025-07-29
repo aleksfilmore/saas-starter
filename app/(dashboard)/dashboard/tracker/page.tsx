@@ -10,7 +10,7 @@ export default async function TrackerPage() {
       {/* Header */}
       <div className="border-b border-cyan-500/20 pb-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
+          <div className="p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/20 backdrop-blur-sm">
             <Shield className="h-6 w-6 text-cyan-400" />
           </div>
           <h1 className="text-3xl font-bold text-white">No Contact Tracker</h1>
@@ -26,7 +26,7 @@ export default async function TrackerPage() {
       </Suspense>
 
       {/* Create New Period */}
-      <div className="bg-gray-900/50 border border-cyan-500/20 rounded-xl p-6">
+      <div className="bg-gray-900/60 border-2 border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300">
         <div className="flex items-center gap-3 mb-4">
           <Target className="h-5 w-5 text-cyan-400" />
           <h2 className="text-xl font-semibold text-white">Start New No Contact Period</h2>
@@ -56,7 +56,7 @@ async function StatsOverview() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="bg-gray-900/50 border border-cyan-500/20 rounded-xl p-6">
+      <div className="bg-gray-900/60 border-2 border-green-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all duration-300">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-green-500/10 rounded-lg border border-green-500/20">
             <Shield className="h-5 w-5 text-green-400" />
@@ -68,7 +68,7 @@ async function StatsOverview() {
         </div>
       </div>
 
-      <div className="bg-gray-900/50 border border-cyan-500/20 rounded-xl p-6">
+      <div className="bg-gray-900/60 border-2 border-blue-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] transition-all duration-300">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
             <Target className="h-5 w-5 text-blue-400" />
@@ -80,7 +80,7 @@ async function StatsOverview() {
         </div>
       </div>
 
-      <div className="bg-gray-900/50 border border-cyan-500/20 rounded-xl p-6">
+      <div className="bg-gray-900/60 border-2 border-purple-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
             <Clock className="h-5 w-5 text-purple-400" />
@@ -97,9 +97,9 @@ async function StatsOverview() {
 
 function StatsLoading() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="space-y-6">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-gray-900/50 border border-cyan-500/20 rounded-xl p-6">
+        <div key={i} className="bg-gray-900/60 border-2 border-gray-500/30 rounded-xl p-6 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gray-500/10 rounded-lg border border-gray-500/20">
               <div className="h-5 w-5 bg-gray-600 rounded animate-pulse" />
@@ -118,7 +118,7 @@ function StatsLoading() {
 function TrackerLoading() {
   return (
     <div className="space-y-6">
-      <div className="bg-gray-900/50 border border-cyan-500/20 rounded-xl p-6">
+      <div className="bg-gray-900/60 border-2 border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
         <div className="h-6 w-32 bg-gray-600 rounded animate-pulse mb-4" />
         <div className="space-y-3">
           <div className="h-4 w-full bg-gray-600 rounded animate-pulse" />
