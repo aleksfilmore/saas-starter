@@ -48,7 +48,7 @@ export default function SignUpPage() {
   }, [state, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-cyber-gradient text-foreground relative overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background via-card to-background text-foreground relative overflow-hidden">
       {/* Animated background elements */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-20 left-20 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-float"></div>

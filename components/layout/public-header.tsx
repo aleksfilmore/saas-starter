@@ -16,42 +16,42 @@ export function PublicHeader() {
           <Link
             href="/"
             aria-label="CTRL+ALT+BLOCK Home"
-            className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-foreground select-none hover:no-underline focus:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary outline-none mr-4 group"
+            className="flex items-center gap-1 text-2xl font-extrabold tracking-tight select-none hover:no-underline focus:no-underline focus-visible:outline-2 focus-visible:outline-primary outline-none mr-4 group"
           >
-            <span className="bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">CTRL</span>
-            <span className="text-base font-normal text-muted-foreground group-hover:text-primary transition-colors">+</span>
-            <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">ALT</span>
-            <span className="text-base font-normal text-muted-foreground group-hover:text-primary transition-colors">+</span>
-            <span className="bg-gradient-to-r from-primary to-glitch-pink bg-clip-text text-transparent group-hover:animate-pulse">BLOCK</span>
+            <span className="text-white">CTRL</span>
+            <span className="text-base font-normal text-white/60 group-hover:text-white transition-colors">+</span>
+            <span className="text-white">ALT</span>
+            <span className="text-base font-normal text-white/60 group-hover:text-white transition-colors">+</span>
+            <span className="text-glitch-pink group-hover:animate-pulse drop-shadow-[0_0_8px_rgba(255,20,147,0.8)]">BLOCK</span>
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-x-6">
             <Link
+              href="#how-it-works"
+              className="text-base font-medium text-white hover:text-glitch-pink transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-glitch-pink/10"
+            >
+              How it Works
+            </Link>
+            <Link
               href="/pricing"
-              className="text-base font-medium text-foreground hover:text-primary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-primary/10"
+              className="text-base font-medium text-white hover:text-accent transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-accent/10"
             >
               Pricing
             </Link>
             <Link
-              href="/dashboard"
-              className="text-base font-medium text-foreground hover:text-accent transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-accent/10"
-            >
-              Dashboard
-            </Link>
-            <Link
               href="/sign-in"
-              className="text-base font-medium text-foreground hover:text-secondary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-secondary/10 focus-visible:ring-2 focus-visible:ring-primary"
+              className="text-base font-medium text-white hover:text-secondary transition-colors duration-300 px-3 py-2 rounded-lg hover:bg-secondary/10 focus-visible:ring-2 focus-visible:ring-primary"
             >
-              Log In
+              Login
             </Link>
             <Link href="/sign-up">
               <Button
                 type="button"
-                className="text-base font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white rounded-xl px-6 py-3 shadow-neon-pink hover:shadow-neon-pink/80 transition-all duration-300 group"
+                className="text-base font-semibold bg-gradient-to-r from-glitch-pink to-secondary hover:from-glitch-pink/80 hover:to-secondary/80 text-white rounded-xl px-6 py-3 shadow-neon-pink hover:shadow-neon-pink/80 transition-all duration-300 group animate-pulse-slow"
               >
                 <span className="flex items-center">
-                  Sign Up
+                  Sign-up Free
                   <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -82,14 +82,14 @@ export function PublicHeader() {
                 <Link
                   href="/"
                   aria-label="CTRL+ALT+BLOCK Home"
-                  className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-foreground select-none hover:no-underline focus:no-underline focus-visible:outline-2 focus-visible:outline-primary outline-none group"
+                  className="flex items-center gap-1 text-xl font-extrabold tracking-tight select-none hover:no-underline focus:no-underline focus-visible:outline-2 focus-visible:outline-primary outline-none group"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className="bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">CTRL</span>
-                  <span className="text-base font-normal text-muted-foreground">+</span>
-                  <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">ALT</span>
-                  <span className="text-base font-normal text-muted-foreground">+</span>
-                  <span className="bg-gradient-to-r from-primary to-glitch-pink bg-clip-text text-transparent">BLOCK</span>
+                  <span className="text-white">CTRL</span>
+                  <span className="text-base font-normal text-white/60">+</span>
+                  <span className="text-white">ALT</span>
+                  <span className="text-base font-normal text-white/60">+</span>
+                  <span className="text-glitch-pink drop-shadow-[0_0_8px_rgba(255,20,147,0.8)]">BLOCK</span>
                 </Link>
                 <Button
                   variant="ghost"
@@ -102,32 +102,32 @@ export function PublicHeader() {
                 </Button>
               </div>
               <Link
+                href="#how-it-works"
+                className="text-base font-medium text-white hover:text-glitch-pink transition-colors py-3 px-4 rounded-lg hover:bg-glitch-pink/10"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                How it Works
+              </Link>
+              <Link
                 href="/pricing"
-                className="text-base font-medium text-foreground hover:text-primary transition-colors py-3 px-4 rounded-lg hover:bg-primary/10"
+                className="text-base font-medium text-white hover:text-accent transition-colors py-3 px-4 rounded-lg hover:bg-accent/10"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Pricing
               </Link>
               <Link
-                href="/dashboard"
-                className="text-base font-medium text-foreground hover:text-accent transition-colors py-3 px-4 rounded-lg hover:bg-accent/10"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-              <Link
                 href="/sign-in"
-                className="text-base font-medium text-foreground hover:text-secondary transition-colors py-3 px-4 rounded-lg hover:bg-secondary/10 focus-visible:ring-2 focus-visible:ring-primary"
+                className="text-base font-medium text-white hover:text-secondary transition-colors py-3 px-4 rounded-lg hover:bg-secondary/10 focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Log In
+                Login
               </Link>
               <Link href="/sign-up" onClick={() => setMobileMenuOpen(false)}>
                 <Button
                   type="button"
-                  className="w-full text-base font-semibold bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white rounded-xl px-6 py-3 shadow-neon-pink hover:shadow-neon-pink/80 transition-all duration-300 mt-2"
+                  className="w-full text-base font-semibold bg-gradient-to-r from-glitch-pink to-secondary hover:from-glitch-pink/80 hover:to-secondary/80 text-white rounded-xl px-6 py-3 shadow-neon-pink hover:shadow-neon-pink/80 transition-all duration-300 mt-2 animate-pulse-slow"
                 >
-                  Sign Up
+                  Sign-up Free
                 </Button>
               </Link>
             </div>

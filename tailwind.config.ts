@@ -48,13 +48,11 @@ const config: Config = {
           foreground: "rgb(248 250 252)",
         },
         // Glitch-core palette
-        glitch: {
-          pink: "rgb(255 20 147)", // Deep pink
-          cyan: "rgb(0 255 255)", // Neon cyan
-          purple: "rgb(138 43 226)", // Blue violet
-          lime: "rgb(50 255 50)", // Electric lime
-          orange: "rgb(255 165 0)", // Vibrant orange
-        },
+        'glitch-pink': "rgb(255 20 147)", // Deep pink
+        'glitch-cyan': "rgb(0 255 255)", // Neon cyan
+        'glitch-purple': "rgb(138 43 226)", // Blue violet
+        'glitch-lime': "rgb(50 255 50)", // Electric lime
+        'glitch-orange': "rgb(255 165 0)", // Vibrant orange
       },
       borderRadius: {
         lg: "0.75rem",

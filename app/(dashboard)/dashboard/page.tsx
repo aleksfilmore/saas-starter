@@ -8,7 +8,7 @@ export default function DashboardPage() {
   const [noContactDays, setNoContactDays] = useState(17);
 
   return (
-    <div className="bg-cyber-gradient min-h-screen py-10 px-2 sm:px-6 relative overflow-hidden">
+    <div className="bg-gradient-to-br from-background via-card to-background min-h-screen py-10 px-2 sm:px-6 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute top-20 left-10 w-32 h-32 bg-glitch-pink/10 rounded-full blur-xl animate-float"></div>
