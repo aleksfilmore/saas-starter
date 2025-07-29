@@ -29,8 +29,7 @@ export default function DashboardPage() {
       </div>
       
       <div className="relative z-10 py-10 px-2 sm:px-6">
-
-      <header className="mb-12 relative">
+        <header className="mb-12 relative">
         <h1 className="text-4xl md:text-5xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '2px #ec4899'}}>
           Welcome Back, <span className="text-glitch-pink" style={{textShadow: '0 0 20px rgba(255,20,147,0.8)'}}>Warrior</span>
         </h1>
@@ -174,6 +173,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
       
       {/* CSS for animations */}
