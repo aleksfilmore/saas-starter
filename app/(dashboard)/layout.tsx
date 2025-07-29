@@ -18,7 +18,7 @@ export default function DashboardLayout({
   const navItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/dashboard/tracker', icon: Shield, label: 'No Contact Tracker' },
-    { href: '/dashboard/rituals', icon: Zap, label: 'Rituals' },
+    { href: '/dashboard/rituals', icon: Zap, label: 'Daily Rituals' },
     { href: '/dashboard/confessional', icon: ShieldQuestion, label: 'Confessional' },
     { href: '/dashboard/settings', icon: Settings, label: 'Settings' }
   ];

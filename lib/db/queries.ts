@@ -2,7 +2,7 @@
 
 import { eq, and, desc } from 'drizzle-orm';
 import { db } from './drizzle';
-import { users, noContactPeriods, noContactBreaches } from './schema';
+import { users, noContactPeriods, noContactBreaches, dailyRituals, ritualCompletions } from './schema';
 import { validateRequest } from '@/lib/auth';
 
 export async function getUser() {
@@ -106,4 +106,100 @@ export async function getNoContactBreaches(periodId: string) {
     notes: breach.notes,
     createdAt: breach.createdAt,
   }));
+}
+
+// Daily Rituals Queries
+export async function getUserRituals() {
+  const { user } = await validateRequest();
+  if (!user) {
+    return [];
+  }
+
+  const rituals = await db.query.dailyRituals.findMany({
+    where: and(
+      eq(dailyRituals.userId, parseInt(user.id)),
+      eq(dailyRituals.isActive, true)
+    ),
+    orderBy: [desc(dailyRituals.createdAt)],
+  });
+
+  return rituals.map(ritual => ({
+    id: ritual.id,
+    title: ritual.title,
+    description: ritual.description,
+    category: ritual.category,
+    targetFrequency: ritual.targetFrequency,
+    isActive: ritual.isActive,
+    createdAt: ritual.createdAt,
+  }));
+}
+
+export async function getRitualCompletions(ritualId: string, days: number = 7) {
+  const { user } = await validateRequest();
+  if (!user) {
+    return [];
+  }
+
+  // Verify the ritual belongs to the user
+  const ritual = await db.query.dailyRituals.findFirst({
+    where: and(
+      eq(dailyRituals.id, ritualId),
+      eq(dailyRituals.userId, parseInt(user.id))
+    ),
+  });
+
+  if (!ritual) {
+    return [];
+  }
+
+  const completions = await db.query.ritualCompletions.findMany({
+    where: eq(ritualCompletions.ritualId, ritualId),
+    orderBy: [desc(ritualCompletions.completedAt)],
+  });
+
+  return completions.map(completion => ({
+    id: completion.id,
+    completedAt: completion.completedAt,
+    notes: completion.notes,
+    mood: completion.mood,
+    createdAt: completion.createdAt,
+  }));
+}
+
+export async function getTodaysRitualCompletions() {
+  const { user } = await validateRequest();
+  if (!user) {
+    return [];
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  // Get all user's rituals with today's completions
+  const userRituals = await getUserRituals();
+  
+  const completionsPromises = userRituals.map(async (ritual) => {
+    const completions = await db.query.ritualCompletions.findMany({
+      where: and(
+        eq(ritualCompletions.ritualId, ritual.id),
+        // Note: This would need proper date filtering in a real implementation
+      ),
+    });
+    
+    const todaysCompletion = completions.find(c => {
+      const completionDate = new Date(c.completedAt);
+      return completionDate >= today && completionDate < tomorrow;
+    });
+
+    return {
+      ritual,
+      completed: !!todaysCompletion,
+      completion: todaysCompletion || null,
+    };
+  });
+
+  return Promise.all(completionsPromises);
 }

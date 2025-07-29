@@ -62,7 +62,43 @@ export const noContactBreaches = pgTable('no_contact_breaches', {
   }).notNull().defaultNow(),
 });
 
+// Daily Rituals tables
+export const dailyRituals = pgTable('daily_rituals', {
+  id: text('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  category: text('category').notNull(), // 'morning', 'evening', 'self_care', 'fitness', 'mindfulness', 'creativity', 'productivity'
+  targetFrequency: text('target_frequency').notNull().default('daily'), // 'daily', 'weekly', 'custom'
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+export const ritualCompletions = pgTable('ritual_completions', {
+  id: text('id').primaryKey(),
+  ritualId: text('ritual_id')
+    .notNull()
+    .references(() => dailyRituals.id),
+  completedAt: timestamp('completed_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
+  notes: text('notes'),
+  mood: integer('mood'), // 1-5 scale
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
 // This defines the type for a user object, which is used elsewhere.
 export type User = typeof users.$inferSelect;
 export type NoContactPeriod = typeof noContactPeriods.$inferSelect;
 export type NoContactBreach = typeof noContactBreaches.$inferSelect;
+export type DailyRitual = typeof dailyRituals.$inferSelect;
+export type RitualCompletion = typeof ritualCompletions.$inferSelect;
