@@ -34,30 +34,44 @@ export default function HomePage() {
       <div className="absolute top-[60%] left-[20%] w-[15vw] h-[15vw] bg-gradient-to-r from-glitch-lime/10 to-glitch-orange/5 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
 
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center text-center pt-20 pb-16">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <section className="relative min-h-[80vh] flex items-center justify-center text-center pt-20 pb-16 overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/bg.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        />
+        
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/40"></div>
+        
+        {/* Content overlay */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
-            <div className="text-left lg:text-left relative">
+            <div className="text-left lg:text-left relative z-20">
               <div className="mb-6">
-                <p className="text-glitch-pink text-lg font-medium mb-2 tracking-wide">The interactive breakup reprogramming ritual</p>
+                <p className="text-glitch-pink text-lg font-medium mb-2 tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">The interactive breakup reprogramming ritual</p>
               </div>
               <h1 className="text-6xl font-black tracking-tight lg:text-7xl leading-tight mb-6 relative">
-                <span className="text-white font-black tracking-wider drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">CTRL+ALT</span><br />
-                <span className="text-glitch-pink font-black tracking-wider drop-shadow-[0_0_30px_rgba(236,72,153,0.5)] relative">
+                <span className="text-white font-black tracking-wider" style={{textShadow: '0 4px 8px rgba(0,0,0,0.8), 0 0 20px rgba(6,182,212,0.3)'}}>CTRL+ALT</span><br />
+                <span className="text-glitch-pink font-black tracking-wider relative" style={{textShadow: '0 4px 8px rgba(0,0,0,0.8), 0 0 30px rgba(236,72,153,0.5)'}}>
                   BLOCK
                   {/* Glitch effect lines */}
-                  <div className="absolute -top-1 -left-1 text-glitch-cyan opacity-70 -z-10">BLOCK</div>
-                  <div className="absolute top-1 left-1 text-glitch-lime opacity-50 -z-10">BLOCK</div>
+                  <div className="absolute -top-1 -left-1 text-glitch-cyan opacity-70 -z-10" style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
+                  <div className="absolute top-1 left-1 text-glitch-lime opacity-50 -z-10" style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
                 </span>
               </h1>
-              <p className="text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg drop-shadow-lg">
-                Reclaim your <span className="text-white font-bold">sanity</span> (and your <span className="text-glitch-pink font-bold">savage</span>) with our AI-powered emotional recovery protocol.
+              <p className="text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                Reclaim your <span className="text-white font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">sanity</span> (and your <span className="text-glitch-pink font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">savage</span>) with our AI-powered emotional recovery protocol.
               </p>
               <div className="mb-12">
                 <a href="/sign-up">
-                  <Button size="lg" className="text-lg rounded-none border-2 border-glitch-pink bg-transparent hover:bg-glitch-pink/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] text-glitch-pink font-bold transition-all duration-300 px-12 py-4 uppercase tracking-wider relative overflow-hidden group">
-                    <span className="relative z-10">BEGIN THE RITUAL</span>
+                  <Button size="lg" className="text-lg rounded-none border-2 border-glitch-pink bg-black/50 backdrop-blur-sm hover:bg-glitch-pink/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] text-glitch-pink font-bold transition-all duration-300 px-12 py-4 uppercase tracking-wider relative overflow-hidden group">
+                    <span className="relative z-10 drop-shadow-lg">BEGIN THE RITUAL</span>
                     {/* Button glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-glitch-pink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   </Button>
@@ -66,27 +80,27 @@ export default function HomePage() {
             </div>
             
             {/* Right side - Visual element */}
-            <div className="relative flex justify-center lg:justify-end">
+            <div className="relative flex justify-center lg:justify-end z-20">
               <div className="relative">
                 {/* Multiple glowing rings */}
                 <div className="absolute inset-0 rounded-full border-4 border-glitch-cyan opacity-80 animate-pulse scale-105"></div>
                 <div className="absolute inset-0 rounded-full border-2 border-glitch-pink opacity-60 animate-pulse scale-110" style={{animationDelay: '1s'}}></div>
                 <div className="absolute inset-0 rounded-full border border-glitch-lime opacity-40 animate-pulse scale-115" style={{animationDelay: '2s'}}></div>
                 
-                {/* Main figure container with enhanced glow */}
-                <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-900 via-blue-900/50 to-purple-900/30 flex items-center justify-center relative overflow-hidden border-2 border-glitch-cyan/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
+                {/* Main figure container with enhanced glow and backdrop */}
+                <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-900/80 via-blue-900/60 to-purple-900/40 backdrop-blur-sm flex items-center justify-center relative overflow-hidden border-2 border-glitch-cyan/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
                   
                   {/* Background tech grid */}
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
                   
                   {/* Hood silhouette with better shading */}
-                  <div className="w-48 h-48 bg-gradient-to-b from-gray-700 via-gray-900 to-black rounded-t-full relative shadow-2xl">
+                  <div className="w-48 h-48 bg-gradient-to-b from-gray-700/90 via-gray-900/95 to-black rounded-t-full relative shadow-2xl">
                     {/* Face shadow with subtle glow */}
                     <div className="absolute inset-x-8 top-12 bottom-8 bg-black rounded-full opacity-95 shadow-[inset_0_0_20px_rgba(6,182,212,0.2)]"></div>
                     
                     {/* Eyes glow effect */}
-                    <div className="absolute top-16 left-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse"></div>
-                    <div className="absolute top-16 right-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                    <div className="absolute top-16 left-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
+                    <div className="absolute top-16 right-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" style={{animationDelay: '0.5s'}}></div>
                     
                     {/* Enhanced broken heart with glow */}
                     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
@@ -108,10 +122,10 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-br from-transparent via-glitch-pink/10 to-glitch-purple/10 rounded-full"></div>
                   
                   {/* Floating particles around the figure */}
-                  <div className="absolute top-8 left-8 w-1 h-1 bg-glitch-cyan rounded-full animate-ping opacity-60"></div>
-                  <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-glitch-pink rounded-full animate-ping opacity-50" style={{animationDelay: '1s'}}></div>
-                  <div className="absolute bottom-16 left-16 w-1 h-1 bg-glitch-lime rounded-full animate-ping opacity-70" style={{animationDelay: '2s'}}></div>
-                  <div className="absolute bottom-12 right-8 w-2 h-2 bg-glitch-orange rounded-full animate-ping opacity-40" style={{animationDelay: '1.5s'}}></div>
+                  <div className="absolute top-8 left-8 w-1 h-1 bg-glitch-cyan rounded-full animate-ping opacity-60 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
+                  <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-glitch-pink rounded-full animate-ping opacity-50 shadow-[0_0_5px_rgba(236,72,153,0.8)]" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute bottom-16 left-16 w-1 h-1 bg-glitch-lime rounded-full animate-ping opacity-70 shadow-[0_0_5px_rgba(132,204,22,0.8)]" style={{animationDelay: '2s'}}></div>
+                  <div className="absolute bottom-12 right-8 w-2 h-2 bg-glitch-orange rounded-full animate-ping opacity-40 shadow-[0_0_5px_rgba(249,115,22,0.8)]" style={{animationDelay: '1.5s'}}></div>
                 </div>
               </div>
             </div>
