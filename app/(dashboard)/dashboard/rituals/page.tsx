@@ -1,10 +1,11 @@
 import { Suspense } from 'react';
-import { getUserRituals, getTodaysRitualCompletions } from '@/lib/db/queries';
+import { getUserRituals, getTodaysRitualCompletions, getTodaysPrescribedRitual } from '@/lib/db/queries';
 import { RitualsOverview } from './components/rituals-overview';
 import { CreateRitualForm } from './components/create-ritual-form';
 import { TodaysRituals } from './components/todays-rituals';
 import { RitualsList } from './components/rituals-list';
-import { Zap, Plus, Calendar, Target } from 'lucide-react';
+import { PrescribedRitualCard } from './components/prescribed-ritual-card';
+import { Zap, Plus, Calendar, Target, Sparkles } from 'lucide-react';
 
 export default async function RitualsPage() {
   return (
@@ -27,11 +28,22 @@ export default async function RitualsPage() {
         <RitualsOverview />
       </Suspense>
 
+      {/* Prescribed Ritual */}
+      <div className="bg-gray-900/60 border-2 border-purple-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300">
+        <div className="flex items-center gap-3 mb-4">
+          <Sparkles className="h-5 w-5 text-purple-400" />
+          <h2 className="text-xl font-semibold text-white">Daily Prescribed Ritual</h2>
+        </div>
+        <Suspense fallback={<PrescribedLoading />}>
+          <PrescribedRitualWrapper />
+        </Suspense>
+      </div>
+
       {/* Today's Focus */}
       <div className="bg-gray-900/60 border-2 border-blue-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.4)]">
         <div className="flex items-center gap-3 mb-4">
           <Calendar className="h-5 w-5 text-blue-400" />
-          <h2 className="text-xl font-semibold text-white">Today's Rituals</h2>
+          <h2 className="text-xl font-semibold text-white">Your Personal Rituals</h2>
         </div>
         <Suspense fallback={<TodaysLoading />}>
           <TodaysRituals />
@@ -39,10 +51,10 @@ export default async function RitualsPage() {
       </div>
 
       {/* Create New Ritual */}
-      <div className="bg-gray-900/60 border-2 border-purple-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300">
+      <div className="bg-gray-900/60 border-2 border-green-500/30 rounded-xl p-6 backdrop-blur-sm shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all duration-300">
         <div className="flex items-center gap-3 mb-4">
-          <Plus className="h-5 w-5 text-purple-400" />
-          <h2 className="text-xl font-semibold text-white">Create New Ritual</h2>
+          <Plus className="h-5 w-5 text-green-400" />
+          <h2 className="text-xl font-semibold text-white">Create Personal Ritual</h2>
         </div>
         <CreateRitualForm />
       </div>
@@ -61,6 +73,11 @@ export default async function RitualsPage() {
   );
 }
 
+async function PrescribedRitualWrapper() {
+  const prescription = await getTodaysPrescribedRitual();
+  return <PrescribedRitualCard initialPrescription={prescription} />;
+}
+
 function StatsLoading() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -77,6 +94,21 @@ function StatsLoading() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function PrescribedLoading() {
+  return (
+    <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-6 backdrop-blur-sm">
+      <div className="text-center">
+        <div className="mb-4">
+          <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto animate-pulse" />
+        </div>
+        <div className="h-6 w-48 bg-gray-600 rounded animate-pulse mb-2 mx-auto" />
+        <div className="h-4 w-64 bg-gray-600 rounded animate-pulse mb-6 mx-auto" />
+        <div className="h-10 w-40 bg-gray-600 rounded animate-pulse mx-auto" />
+      </div>
     </div>
   );
 }

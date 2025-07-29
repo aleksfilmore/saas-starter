@@ -96,9 +96,35 @@ export const ritualCompletions = pgTable('ritual_completions', {
   }).notNull().defaultNow(),
 });
 
+// Daily Prescribed Rituals
+export const userDailyPrescriptions = pgTable('user_daily_prescriptions', {
+  id: text('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  prescribedDate: timestamp('prescribed_date', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
+  ritualKey: text('ritual_key').notNull(), // Key to identify the prescribed ritual
+  shufflesUsed: integer('shuffles_used').notNull().default(0),
+  isCompleted: boolean('is_completed').notNull().default(false),
+  completedAt: timestamp('completed_at', {
+    withTimezone: true,
+    mode: 'date',
+  }),
+  completionNotes: text('completion_notes'),
+  completionMood: integer('completion_mood'), // 1-5 scale
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
 // This defines the type for a user object, which is used elsewhere.
 export type User = typeof users.$inferSelect;
 export type NoContactPeriod = typeof noContactPeriods.$inferSelect;
 export type NoContactBreach = typeof noContactBreaches.$inferSelect;
 export type DailyRitual = typeof dailyRituals.$inferSelect;
 export type RitualCompletion = typeof ritualCompletions.$inferSelect;
+export type UserDailyPrescription = typeof userDailyPrescriptions.$inferSelect;

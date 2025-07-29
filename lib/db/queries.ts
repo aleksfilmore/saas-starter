@@ -1,8 +1,8 @@
 // File: lib/db/queries.ts
 
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, gte, lt } from 'drizzle-orm';
 import { db } from './drizzle';
-import { users, noContactPeriods, noContactBreaches, dailyRituals, ritualCompletions } from './schema';
+import { users, noContactPeriods, noContactBreaches, dailyRituals, ritualCompletions, userDailyPrescriptions } from './schema';
 import { validateRequest } from '@/lib/auth';
 
 export async function getUser() {
@@ -202,4 +202,66 @@ export async function getTodaysRitualCompletions() {
   });
 
   return Promise.all(completionsPromises);
+}
+
+// Prescribed Rituals Queries
+export async function getTodaysPrescribedRitual() {
+  const { user } = await validateRequest();
+  if (!user) {
+    return null;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const todaysPrescription = await db.query.userDailyPrescriptions.findFirst({
+    where: and(
+      eq(userDailyPrescriptions.userId, parseInt(user.id)),
+      gte(userDailyPrescriptions.prescribedDate, today),
+      lt(userDailyPrescriptions.prescribedDate, tomorrow)
+    ),
+  });
+
+  return todaysPrescription ? {
+    id: todaysPrescription.id,
+    ritualKey: todaysPrescription.ritualKey,
+    shufflesUsed: todaysPrescription.shufflesUsed,
+    isCompleted: todaysPrescription.isCompleted,
+    completedAt: todaysPrescription.completedAt,
+    mood: todaysPrescription.completionMood,
+    notes: todaysPrescription.completionNotes,
+    prescribedDate: todaysPrescription.prescribedDate,
+  } : null;
+}
+
+export async function getUserPrescriptionHistory(days: number = 30) {
+  const { user } = await validateRequest();
+  if (!user) {
+    return [];
+  }
+
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+
+  const prescriptions = await db.query.userDailyPrescriptions.findMany({
+    where: and(
+      eq(userDailyPrescriptions.userId, parseInt(user.id)),
+      gte(userDailyPrescriptions.prescribedDate, cutoffDate)
+    ),
+    orderBy: [desc(userDailyPrescriptions.prescribedDate)],
+  });
+
+  return prescriptions.map(prescription => ({
+    id: prescription.id,
+    ritualKey: prescription.ritualKey,
+    shufflesUsed: prescription.shufflesUsed,
+    isCompleted: prescription.isCompleted,
+    completedAt: prescription.completedAt,
+    mood: prescription.completionMood,
+    notes: prescription.completionNotes,
+    prescribedDate: prescription.prescribedDate,
+  }));
 }

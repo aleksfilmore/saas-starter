@@ -22,6 +22,13 @@
       "when": 1753830183965,
       "tag": "0002_rich_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753830862707,
+      "tag": "0003_last_tarantula",
+      "breakpoints": true
     }
   ]
 }
