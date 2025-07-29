@@ -3,7 +3,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Brain, Trophy, MessageCircle, Check, Zap, Target, Flame, TrendingUp, ChevronRight, AlertTriangle, Sparkles, Rocket } from 'lucide-react';
+import { ArrowRight, Brain, Trophy, MessageCircle, Check, Zap, Target, Flame, TrendingUp, ChevronRight, AlertTriangle, Sparkles, Rocket, ShieldCheck, Lock, Heart, RefreshCw, Download, Users, Star, Mail, Send, Shield, HelpCircle, Bot, Database, Globe, Eye, Settings, Trash2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import React from 'react';
 
@@ -475,17 +475,20 @@ export default function HomePage() {
                 </div>
                 <div className="text-center bg-blue-900/20 rounded-2xl p-4 border border-blue-400/30">
                   <div className="text-2xl font-black text-blue-400 mb-1" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-                    💀 FREE
+                    FREE
                   </div>
                   <div className="text-blue-400 text-sm font-medium">Dip your toe in</div>
                 </div>
                 <div className="text-center bg-gradient-to-br from-orange-900/30 to-pink-900/30 rounded-2xl p-4 border-2 border-glitch-pink relative overflow-hidden">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-xs font-black">
-                      🔥 POPULAR
-                    </span>
+                  <div className="absolute -top-2 -left-2 -right-2">
+                    <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-1 rounded-t-xl">
+                      <span className="text-xs font-black flex items-center justify-center">
+                        <Flame className="w-3 h-3 mr-1" />
+                        POPULAR
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-2xl font-black text-glitch-pink mb-1 mt-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <div className="text-2xl font-black text-glitch-pink mb-1 mt-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
                     RITUAL MASTER
                   </div>
                   <div className="text-glitch-pink text-sm font-medium">$9/month</div>
@@ -505,10 +508,10 @@ export default function HomePage() {
                   { feature: "AI Ritual Tools", free: "1 Tool", ritual: "All Tools + Closure Sim", cult: "All Tools + Beta Access" },
                   { feature: "Daily Rituals", free: "1/week", ritual: "Unlimited", cult: "Unlimited + Downloads" },
                   { feature: "Anonymous Wall", free: "Read + 1 post/week", ritual: "Post + Comment + React", cult: "Priority + Secret Threads" },
-                  { feature: "Progress Saving", free: "❌", ritual: "✅ Full", cult: "✅ + Glow-up Level" },
+                  { feature: "Progress Saving", free: "✗", ritual: "✓ Full", cult: "✓ + Glow-up Level" },
                   { feature: "Email Updates", free: "Basic", ritual: "Full + Chaos", cult: "Elite + Perks" },
-                  { feature: "Merch Discounts", free: "❌", ritual: "10% off", cult: "10% off + Free Ship" },
-                  { feature: "Mini Cult Group", free: "❌", ritual: "❌", cult: "✅ 3 Warriors" }
+                  { feature: "Merch Discounts", free: "✗", ritual: "10% off", cult: "10% off + Free Ship" },
+                  { feature: "Mini Cult Group", free: "✗", ritual: "✗", cult: "✓ 3 Warriors" }
                 ].map((row, index) => (
                   <div key={index} className="grid grid-cols-4 gap-4 py-3 border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors rounded-lg px-2">
                     <div className="text-white font-semibold text-left" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
@@ -600,7 +603,10 @@ export default function HomePage() {
           <div className="bg-gradient-to-br from-gray-900/80 via-purple-900/40 to-pink-900/20 backdrop-blur-sm rounded-2xl border-2 border-purple-500/50 p-8 shadow-2xl shadow-purple-500/30">
             <Accordion type="single" collapsible className="w-full space-y-4">
               <AccordionItem value="item-1" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>❓ Is this therapy?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <HelpCircle className="w-5 h-5 mr-3 text-blue-400" />
+                  Is this therapy?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-white font-bold">No.</p>
                   <p>This is emotional reprogramming — not licensed therapy.</p>
@@ -609,7 +615,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-2" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>🔐 Is my data private?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Lock className="w-5 h-5 mr-3 text-blue-400" />
+                  Is my data private?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-blue-400 font-bold">Yes. To the bone.</p>
                   <p>We don't sell trauma. Everything you enter is yours.</p>
@@ -619,7 +628,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-3" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>💔 What if I break my No Contact streak?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Heart className="w-5 h-5 mr-3 text-blue-400" />
+                  What if I break my No Contact streak?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-fuchsia-400 font-bold">You're not cursed. You're human.</p>
                   <p>Use a Streak Shield if you slipped but got back up.</p>
@@ -629,7 +641,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-4" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>🤖 What AI model are you using?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Bot className="w-5 h-5 mr-3 text-blue-400" />
+                  What AI model are you using?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p>We use OpenAI's GPT-4o to power ritual guidance, letter generation, and emotional simulations. It's been trained on chaos and coded in heartbreak (not literally, but close enough).</p>
                   <p className="text-blue-400">P.S. It won't judge you for that text you almost sent. Promise.</p>
@@ -637,7 +652,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-5" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>I submitted something to the Anonymous Wall. Where did it go?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Send className="w-5 h-5 mr-3 text-blue-400" />
+                  I submitted something to the Anonymous Wall. Where did it go?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p>Your post is processed by our moderation algorithm (aka the emotional firewall) before it hits the Wall.</p>
                   <p>If it meets community guidelines, it appears shortly.</p>
@@ -646,7 +664,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-6" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>Can I use this while still living with my ex?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Users className="w-5 h-5 mr-3 text-blue-400" />
+                  Can I use this while still living with my ex?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-blue-400">Technically, yes.</p>
                   <p className="text-fuchsia-400">Emotionally? That's a high-difficulty boss level.</p>
@@ -655,7 +676,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-7" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>🔁 Can I restart the 30-day ritual program?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <RefreshCw className="w-5 h-5 mr-3 text-blue-400" />
+                  Can I restart the 30-day ritual program?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-glitch-pink font-bold">Yes. Over and over and over again.</p>
                   <p>Each cycle hits differently, depending on the stage of your heartbreak (denial, rage, accidental DM, etc.).</p>
@@ -664,7 +688,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-8" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>🧾 Can I export my ritual notes or letters?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Download className="w-5 h-5 mr-3 text-blue-400" />
+                  Can I export my ritual notes or letters?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-fuchsia-400 font-bold">Yes. You can download, print, burn, or bury them.</p>
                   <p>Your healing, your format. Export options are available under your ritual log.</p>
@@ -672,7 +699,10 @@ export default function HomePage() {
               </AccordionItem>
               
               <AccordionItem value="item-9" className="border-b-0">
-                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>Can I really join for free?</AccordionTrigger>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight flex items-center" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <Star className="w-5 h-5 mr-3 text-blue-400" />
+                  Can I really join for free?
+                </AccordionTrigger>
                 <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   <p className="text-blue-400 font-bold">Yes. No tricks. No hidden heartbreak fees.</p>
                   <p>The Freemium Plan gives you access to basic rituals, the Wall, and tools to start crawling back to yourself.</p>

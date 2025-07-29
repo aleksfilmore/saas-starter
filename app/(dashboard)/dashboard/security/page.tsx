@@ -6,24 +6,6 @@ import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lock, Trash2, Loader2 } from 'lucide-react';
-// This is the fix: Import both the functions and the type from the actions file.
-import { updatePassword, deleteAccount, type ActionResult } from './actions';
-
-// This is the fix: We explicitly type 'initialState' with the imported 'ActionResult' type.
-const initialState: ActionResult = {
-  error: null,
-  success: null,
-};
-
-// File: app/(dashboard)/security/page.tsx
-
-'use client';
-
-import { useActionState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Lock, Trash2, Loader2, Shield, AlertTriangle, Key } from 'lucide-react';
 // This is the fix: Import both the functions and the type from the actions file.
 import { updatePassword, deleteAccount, type ActionResult } from './actions';
@@ -169,8 +151,9 @@ export default function SecurityPage() {
                 <p className="text-white font-medium mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   This action cannot be undone. All your data will be permanently deleted.
                 </p>
-                <p className="text-red-400 text-sm font-bold">
-                  ⚠️ This includes your streaks, rituals, badges, and all progress data.
+                <p className="text-red-400 text-sm font-bold flex items-center">
+                  <AlertTriangle className="w-4 h-4 mr-2" />
+                  This includes your streaks, rituals, badges, and all progress data.
                 </p>
               </div>
               

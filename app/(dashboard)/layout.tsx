@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, Zap, ShieldQuestion, Settings, Menu } from 'lucide-react';
+import Footer from '@/components/layout/footer';
 
 export default function DashboardLayout({
   children,
@@ -61,7 +62,7 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 w-full">
+      <div className="flex flex-col flex-1 w-full min-h-screen">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-gray-950/95 px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
           <div className="lg:hidden flex items-center gap-2">
             <Button
@@ -79,6 +80,7 @@ export default function DashboardLayout({
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
+        <Footer />
       </div>
     </div>
   );
