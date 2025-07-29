@@ -61,8 +61,7 @@ export default function HomePage() {
                 </div>
                 <div className="text-6xl lg:text-8xl font-black tracking-tighter leading-none" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
                   <span className="text-glitch-pink" style={{
-                    textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.6), 0 4px 8px rgba(0,0,0,0.8)',
-                    filter: 'drop-shadow(2px 2px 0px white) drop-shadow(-2px -2px 0px white) drop-shadow(0 0 10px rgba(255,255,255,0.8))'
+                    textShadow: '0 0 20px rgba(255,20,147,0.8), 0 0 40px rgba(255,20,147,0.6), 0 4px 8px rgba(0,0,0,0.8)'
                   }}>
                     BLOCK
                   </span>
@@ -91,28 +90,28 @@ export default function HomePage() {
             <div className="flex justify-center lg:justify-end">
               <div className="relative">
                 {/* Figure container */}
-                <div className="w-80 h-80 lg:w-96 lg:h-96 rounded-full flex items-center justify-center relative">
+                <div className="w-96 h-96 lg:w-[28rem] lg:h-[28rem] rounded-full flex items-center justify-center relative">
                   {/* The cloaked figure */}
                   <img
                     src="/figure.png"
                     alt="Cloaked figure"
-                    className="w-64 h-64 lg:w-80 lg:h-80 object-contain relative z-10"
+                    className="w-80 h-80 lg:w-96 lg:h-96 object-contain relative z-10"
                     style={{
                       filter: 'brightness(0.7) contrast(1.1) saturate(1.2)'
                     }}
                   />
                   
                   {/* Broken heart positioned on chest area */}
-                  <div className="absolute bottom-28 lg:bottom-32 left-1/2 transform -translate-x-1/2 z-20">
+                  <div className="absolute bottom-32 lg:bottom-40 left-1/2 transform -translate-x-1/2 z-20">
                     <div className="relative">
                       {/* Heart pieces */}
                       <div className="flex items-center gap-1">
-                        <div className="w-6 h-6 lg:w-8 lg:h-8 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
-                        <div className="w-6 h-6 lg:w-8 lg:h-8 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
+                        <div className="w-8 h-8 lg:w-10 lg:h-10 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
+                        <div className="w-8 h-8 lg:w-10 lg:h-10 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
                       </div>
                       {/* Crack line */}
-                      <div className="absolute top-1/2 left-1/2 w-8 lg:w-10 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
-                      <div className="absolute top-1/2 left-1/2 w-8 lg:w-10 h-px bg-white/50 transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+                      <div className="absolute top-1/2 left-1/2 w-10 lg:w-12 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+                      <div className="absolute top-1/2 left-1/2 w-10 lg:w-12 h-px bg-white/50 transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
                     </div>
                   </div>
                 </div>
@@ -182,42 +181,206 @@ export default function HomePage() {
         {/* Section divider */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-glitch-pink to-transparent opacity-50"></div>
         
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-5xl lg:text-6xl font-black text-white mb-6 relative tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '2px #ec4899'}}>
-              Pick your <span className="text-blue-400" style={{textShadow: '0 0 20px rgba(59,130,246,0.8)'}}>protocol</span>.
+            <h2 className="text-5xl lg:text-6xl font-black text-white mb-4 relative tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '2px #ec4899'}}>
+              CTRL+ALT+BLOCK™ <span className="text-blue-400" style={{textShadow: '0 0 20px rgba(59,130,246,0.8)'}}>Pricing Plans</span>
               {/* Subtle underline effect */}
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-glitch-pink to-transparent"></div>
             </h2>
-            <p className="text-xl lg:text-2xl text-fuchsia-400 max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>Start <span className="text-glitch-lime font-black">free</span>, stay petty, upgrade when you want the full <span className="text-glitch-pink font-black">spectrum</span>.</p>
+            <p className="text-2xl lg:text-3xl text-fuchsia-400 font-bold tracking-wide" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>
+              Terminate. Format. Glow-up.
+            </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-12">
-             <PricingCard
-              plan="Freemium"
-              price="$0"
-              description="Take the chaos for a test drive. No credit card."
-              features={[
-                '7-Day Healing Program Preview',
-                'No Contact Day Counter',
-                'Limited AI Tool Previews',
-                'Read-Only Confessional Wall',
-              ]}
-              cta="Start for Free"
-            />
-            <PricingCard
-              plan="Basic"
-              price="$9"
-              priceDetail="/ month"
-              description="Full ritual toolkit - value vs. an hour of therapy."
-              features={[
-                'Everything in Freemium, plus:',
-                'Full AI Tool Access',
-                '30-Day Basic Reset Program',
-                'Post & React on Confessional Wall',
-              ]}
-              cta="Start the Trial"
-              isFeatured
-            />
+          
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Freemium Plan */}
+            <div className="bg-gray-900/60 border-2 border-blue-400 rounded-2xl p-8 backdrop-blur-sm shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] transition-all duration-300 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-20 rounded-bl-full bg-gradient-to-bl from-blue-400 to-blue-600"></div>
+              
+              <div className="relative z-10">
+                <div className="text-center mb-6">
+                  <h3 className="text-3xl font-black text-blue-400 mb-2 tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                    💀 Freemium
+                  </h3>
+                  <p className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                    Dip your toe in the emotional void
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-5xl font-black text-blue-400" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>FREE</span>
+                    <span className="text-lg text-white ml-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>forever</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="text-white">
+                    <strong className="text-blue-400">No Contact Tracker:</strong> ✅ Basic countdown + milestone alerts
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">AI Ritual Tools:</strong> 🔓 1 fun tool: "Text You'll Never Send"
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">Daily Rituals:</strong> 🧿 1 ritual/week (rotates)
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">Wall of Anonymous Wounds:</strong> 🕸️ Read + 1 post/week
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">Red Flag Confessional:</strong> ✍️ Submit + view top flags
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">Save Your Progress:</strong> ❌ Nope. Raw chaos.
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">Weekly Email Drop:</strong> 📨 Basic edition
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-blue-400">Merch Perks:</strong> ❌ Window shopping only
+                  </div>
+                </div>
+                
+                <div className="text-center mb-6">
+                  <p className="text-lg text-fuchsia-400 italic font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                    "I just need to scream into the void"
+                  </p>
+                </div>
+                
+                <a href="/sign-up" className="w-full block">
+                  <Button size="lg" className="w-full text-lg rounded-2xl font-black border-2 border-blue-400 bg-transparent text-white hover:bg-blue-400/10 transition-all duration-500 py-4 px-8 transform hover:scale-105" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                    Join Free
+                  </Button>
+                </a>
+              </div>
+            </div>
+
+            {/* Premium Plan */}
+            <div className="bg-gray-900/60 border-2 border-glitch-pink rounded-2xl p-8 backdrop-blur-sm shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] transition-all duration-300 relative overflow-hidden group transform scale-105">
+              {/* Featured badge */}
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <div className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-black shadow-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                  🔥 MOST POPULAR
+                </div>
+              </div>
+              
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-20 rounded-bl-full bg-gradient-to-bl from-glitch-pink to-purple-500"></div>
+              
+              <div className="relative z-10">
+                <div className="text-center mb-6">
+                  <h3 className="text-3xl font-black text-glitch-pink mb-2 tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                    🔥 Premium
+                  </h3>
+                  <p className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                    Full access to the ritual core
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-5xl font-black text-glitch-pink" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>$9</span>
+                    <span className="text-lg text-white ml-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>/ month</span>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">No Contact Tracker:</strong> ✅ Full streak log + emotional check-ins
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">AI Ritual Tools:</strong> 🔓 All tools: Closure Sim, Letter Gen, Emotional Firewall
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">Daily Rituals:</strong> 🔥 Unlimited rituals
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">Wall of Anonymous Wounds:</strong> 🗣️ Post, comment, react
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">Red Flag Confessional:</strong> ✍️ Submit, vote, featured in Cult Drop
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">Save Your Progress:</strong> ✅ Save rituals, mood logs, no-contact streak
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">Weekly Email Drop:</strong> 📨 Full edition with bonus prompts & chaos
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-glitch-pink">Merch Perks:</strong> 🛍️ 10% off shop + unlock secret items
+                  </div>
+                </div>
+                
+                <div className="text-center mb-6">
+                  <p className="text-lg text-fuchsia-400 italic font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                    "I'm here to reprogram my entire soul"
+                  </p>
+                </div>
+                
+                <a href="/sign-up" className="w-full block">
+                  <Button size="lg" className="w-full text-lg rounded-2xl font-black bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-pink-500 hover:via-orange-500 hover:to-red-500 text-white shadow-xl shadow-pink-500/50 hover:shadow-orange-500/60 transition-all duration-500 py-4 px-8 transform hover:scale-105 animate-pulse" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                    Upgrade for Full Access
+                  </Button>
+                </a>
+              </div>
+            </div>
+
+            {/* Cult Leader Bundle */}
+            <div className="bg-gray-900/60 border-2 border-purple-400 rounded-2xl p-8 backdrop-blur-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-24 h-24 opacity-20 rounded-bl-full bg-gradient-to-bl from-purple-400 to-purple-600"></div>
+              
+              <div className="relative z-10">
+                <div className="text-center mb-6">
+                  <h3 className="text-3xl font-black text-purple-400 mb-2 tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                    👑 Cult Leader Bundle
+                  </h3>
+                  <p className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                    Lead your own glow-up sect
+                  </p>
+                  <div className="mt-6">
+                    <span className="text-4xl font-black text-purple-400" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>$19.90</span>
+                    <span className="text-lg text-white ml-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>/ 3 months</span>
+                    <div className="text-sm text-glitch-lime font-bold">(save 26%)</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="text-white">
+                    <strong className="text-purple-400">No Contact Tracker:</strong> ✅ Full access + bonus "Relapse Recovery" toolkit
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">AI Ritual Tools:</strong> 🔓 All tools + Early Beta Access to new rituals
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Daily Rituals:</strong> 🔥 Unlimited + bonus downloadable "Hard Reset Ritual Pack"
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Wall of Anonymous Wounds:</strong> 🗣️ Priority reactions + secret wall thread invites
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Red Flag Confessional:</strong> ✍️ + Option to host polls in The Group Chat
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Save Your Progress:</strong> ✅ Save + track glow-up level & karma points
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Weekly Email Drop:</strong> 📨 Elite edition + exclusive affiliate perks
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Merch Perks:</strong> 🛍️ 10% off + free shipping on first drop
+                  </div>
+                  <div className="text-white">
+                    <strong className="text-purple-400">Mini Cult Bubble:</strong> ✅ You + 3 ghosted warriors. Private ritual sync.
+                  </div>
+                </div>
+                
+                <div className="text-center mb-6">
+                  <p className="text-lg text-fuchsia-400 italic font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                    "I'm starting a movement. Join or perish."
+                  </p>
+                </div>
+                
+                <a href="/sign-up" className="w-full block">
+                  <Button size="lg" className="w-full text-lg rounded-2xl font-black border-2 border-purple-400 bg-transparent text-white hover:bg-purple-400/10 transition-all duration-500 py-4 px-8 transform hover:scale-105" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                    Become a Cult Leader
+                  </Button>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
