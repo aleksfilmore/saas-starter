@@ -45,7 +45,7 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
       hashedPassword: hashedPassword,
     }).returning({ id: users.id });
 
-    const session = await lucia.createSession(newUser.id.toString(), {});
+        const session = await lucia.createSession(newUser.id.toString(), {});
     const sessionCookie = lucia.createSessionCookie(session.id);
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
