@@ -39,15 +39,13 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     }
 
     const hashedPassword = await new Argon2id().hash(password);
-    const userId = crypto.randomUUID();
 
-    await db.insert(users).values({
-      id: userId,
+    const [newUser] = await db.insert(users).values({
       email: email.toLowerCase(),
       hashedPassword: hashedPassword,
-    });
+    }).returning({ id: users.id });
 
-    const session = await lucia.createSession(userId, {});
+    const session = await lucia.createSession(newUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
@@ -56,6 +54,6 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     return { error: 'An unknown error occurred.', success: false };
   }
   
-  // On success, we now return a success flag.
-  return { error: null, success: true };
+  // On success, we redirect from the server.
+  redirect('/dashboard');
 }
