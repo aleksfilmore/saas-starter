@@ -13,9 +13,21 @@ function SignUpButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full bg-primary text-primary-foreground hover:bg-primary/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary"
+      className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white font-semibold rounded-xl text-base px-6 py-4 text-center disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary shadow-neon-pink hover:shadow-neon-pink/80 transition-all duration-300 group"
     >
-      {pending ? 'Creating Account...' : 'Create Account'}
+      {pending ? (
+        <span className="flex items-center justify-center">
+          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+          Creating Account...
+        </span>
+      ) : (
+        <span className="flex items-center justify-center">
+          Begin the Ritual
+          <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </span>
+      )}
     </button>
   );
 }
@@ -36,68 +48,84 @@ export default function SignUpPage() {
   }, [state, router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-      <div className="mx-auto grid w-[350px] gap-6 p-8 border border-border rounded-lg bg-card shadow-lg">
-        <div className="grid gap-2 text-center">
-          <h1 className="text-3xl font-bold text-primary">Create an Account</h1>
-          <p className="text-balance text-muted-foreground">
-            Start your emotional reformat today.
-          </p>
-        </div>
-        <form action={formAction} className="grid gap-4">
-          <div className="grid gap-2">
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-foreground">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              placeholder="m@example.com"
-              required
-              autoComplete="email"
-              className="bg-muted border border-border text-foreground text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary block w-full p-2.5"
-              aria-invalid={!!state?.error}
-              aria-describedby={state?.error ? 'signup-error' : undefined}
-            />
+    <div className="flex items-center justify-center min-h-screen bg-cyber-gradient text-foreground relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-20 left-20 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-float"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-accent/10 rounded-full blur-2xl animate-pulse-slow"></div>
+        <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-secondary/10 rounded-full blur-2xl animate-float" style={{animationDelay: '2s'}}></div>
+      </div>
+
+      <div className="mx-auto grid w-[400px] gap-8 p-10 border border-primary/30 rounded-2xl bg-card/80 backdrop-blur-sm shadow-neon-pink/30 relative">
+        {/* Glowing border effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-2xl"></div>
+        
+        <div className="relative z-10">
+          <div className="grid gap-4 text-center">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Create an Account
+            </h1>
+            <p className="text-balance text-muted-foreground text-lg">
+              Start your <span className="text-glitch-cyan font-semibold">emotional reformat</span> today.
+            </p>
           </div>
-          <div className="grid gap-2">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block mb-2 text-sm font-medium text-foreground">
-                Password
+          <form action={formAction} className="grid gap-6 mt-8">
+            <div className="grid gap-3">
+              <label htmlFor="email" className="block text-sm font-medium text-foreground">
+                Email
               </label>
-              <span className="text-xs text-muted-foreground">Min. 6 characters</span>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="m@example.com"
+                required
+                autoComplete="email"
+                className="bg-input/50 backdrop-blur-sm border border-border/50 text-foreground text-sm rounded-xl focus:ring-2 focus:ring-primary focus:border-primary block w-full p-4 transition-all duration-300 hover:border-primary/50"
+                aria-invalid={!!state?.error}
+                aria-describedby={state?.error ? 'signup-error' : undefined}
+              />
             </div>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={6}
-              autoComplete="new-password"
-              className="bg-muted border border-border text-foreground text-sm rounded-lg focus:ring-2 focus:ring-primary focus:border-primary block w-full p-2.5"
-              aria-invalid={!!state?.error}
-              aria-describedby={state?.error ? 'signup-error' : undefined}
-            />
+            <div className="grid gap-3">
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium text-foreground">
+                  Password
+                </label>
+                <span className="text-xs text-muted-foreground bg-muted/30 px-2 py-1 rounded-full">
+                  Min. 6 characters
+                </span>
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                minLength={6}
+                autoComplete="new-password"
+                className="bg-input/50 backdrop-blur-sm border border-border/50 text-foreground text-sm rounded-xl focus:ring-2 focus:ring-primary focus:border-primary block w-full p-4 transition-all duration-300 hover:border-primary/50"
+                aria-invalid={!!state?.error}
+                aria-describedby={state?.error ? 'signup-error' : undefined}
+              />
+            </div>
+            {state?.error && (
+              <div
+                id="signup-error"
+                className="text-sm font-medium text-destructive text-center bg-destructive/10 border border-destructive/30 rounded-xl p-3"
+                role="alert"
+              >
+                {state.error}
+              </div>
+            )}
+            <SignUpButton />
+          </form>
+          <div className="mt-6 text-center text-sm">
+            Already have an account?{' '}
+            <Link href="/sign-in" className="underline text-accent hover:text-accent/80 font-medium transition-colors">
+              Log in
+            </Link>
           </div>
-          {state?.error && (
-            <div
-              id="signup-error"
-              className="text-sm font-medium text-destructive text-center"
-              role="alert"
-            >
-              {state.error}
-            </div>
-          )}
-          <SignUpButton />
-        </form>
-        <div className="mt-4 text-center text-sm">
-          Already have an account?{' '}
-          <Link href="/sign-in" className="underline text-accent hover:text-accent-foreground">
-            Log in
-          </Link>
         </div>
       </div>
-      </div>
-    );
+    </div>
+  );
   }

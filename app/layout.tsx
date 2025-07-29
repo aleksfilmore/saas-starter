@@ -3,8 +3,6 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
-import { getUser } from '@/lib/db/queries';
-import { SWRConfig } from 'swr';
 
 export const metadata: Metadata = {
   title: 'CTRL+ALT+BLOCK | The Emotional Reformat',
@@ -25,15 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark bg-background text-foreground ${manrope.className}`}>
       <body className="min-h-screen bg-background text-foreground">
-        <SWRConfig
-          value={{
-            fallback: {
-              '/api/user': getUser(),
-            }
-          }}
-        >
-          {children}
-        </SWRConfig>
+        {children}
       </body>
     </html>
   );

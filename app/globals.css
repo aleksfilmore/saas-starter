@@ -1,81 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer utilities {
-  .bg-background { background-color: hsl(var(--background) / var(--tw-bg-opacity, 1)); }
-  .text-foreground { color: hsl(var(--foreground) / var(--tw-text-opacity, 1)); }
-  .bg-card { background-color: hsl(var(--card) / var(--tw-bg-opacity, 1)); }
-  .text-card-foreground { color: hsl(var(--card-foreground) / var(--tw-text-opacity, 1)); }
-  .bg-popover { background-color: hsl(var(--popover) / var(--tw-bg-opacity, 1)); }
-  .text-popover-foreground { color: hsl(var(--popover-foreground) / var(--tw-text-opacity, 1)); }
-  .bg-primary { background-color: hsl(var(--primary) / var(--tw-bg-opacity, 1)); }
-  .text-primary { color: hsl(var(--primary) / var(--tw-text-opacity, 1)); }
-  .text-primary-foreground { color: hsl(var(--primary-foreground) / var(--tw-text-opacity, 1)); }
-  .bg-secondary { background-color: hsl(var(--secondary) / var(--tw-bg-opacity, 1)); }
-  .text-secondary-foreground { color: hsl(var(--secondary-foreground) / var(--tw-text-opacity, 1)); }
-  .bg-muted { background-color: hsl(var(--muted) / var(--tw-bg-opacity, 1)); }
-  .text-muted-foreground { color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1)); }
-  .bg-accent { background-color: hsl(var(--accent) / var(--tw-bg-opacity, 1)); }
-  .text-accent { color: hsl(var(--accent) / var(--tw-text-opacity, 1)); }
-  .text-accent-foreground { color: hsl(var(--accent-foreground) / var(--tw-text-opacity, 1)); }
-  .bg-destructive { background-color: hsl(var(--destructive) / var(--tw-bg-opacity, 1)); }
-  .text-destructive { color: hsl(var(--destructive) / var(--tw-text-opacity, 1)); }
-  .text-destructive-foreground { color: hsl(var(--destructive-foreground) / var(--tw-text-opacity, 1)); }
-  .border-border { border-color: hsl(var(--border) / var(--tw-border-opacity, 1)); }
-  .ring-ring { --tw-ring-color: hsl(var(--ring) / var(--tw-ring-opacity, 1)); }
-  .bg-input { background-color: hsl(var(--input) / var(--tw-bg-opacity, 1)); }
-  .border-input { border-color: hsl(var(--input) / var(--tw-border-opacity, 1)); }
-}
+@import "tailwindcss";
 
 @layer base {
-  :root {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 224 71% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 333 91% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 25%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 136 82% 55%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 224 71% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 333 91% 55%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 25%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 136 82% 55%;
-    --radius: 0.5rem;
+  html {
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   body {
+    background-color: rgb(15 23 42);
+    color: rgb(241 245 249);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

@@ -1,63 +1,98 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "class", // Enables dark mode via .dark class
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        // Brand palette
+        background: "rgb(8 15 32)", // Deeper dark blue
+        foreground: "rgb(248 250 252)",
         primary: {
-          DEFAULT: "#ec4899", // Pink-500
-          dark: "#be185d",    // Pink-800
-          light: "#f472b6",   // Pink-400
+          DEFAULT: "rgb(236 72 153)", // Hot pink
+          foreground: "rgb(248 250 252)",
         },
         secondary: {
-          DEFAULT: "#6366f1", // Indigo-500
-          dark: "#3730a3",    // Indigo-800
-          light: "#a5b4fc",   // Indigo-300
+          DEFAULT: "rgb(139 69 255)", // Vibrant purple
+          foreground: "rgb(248 250 252)",
         },
-        card: "#0a0d14",
-        "card-foreground": "#f3f4f6",
-        border: "#23272f",
-        background: "#09090b",
-        muted: "#6b7280",
-        accent: "#22d3ee", // Cyan-400
-        error: "#ef4444",  // Red-500
-        success: "#22c55e", // Green-500
-      },
-      fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui"],
-        heading: ["Poppins", "Inter", "ui-sans-serif", "system-ui"],
+        accent: {
+          DEFAULT: "rgb(14 165 233)", // Electric blue
+          foreground: "rgb(248 250 252)",
+        },
+        success: {
+          DEFAULT: "rgb(34 197 94)", // Neon green
+          foreground: "rgb(248 250 252)",
+        },
+        warning: {
+          DEFAULT: "rgb(251 191 36)", // Bright yellow
+          foreground: "rgb(15 23 42)",
+        },
+        muted: {
+          DEFAULT: "rgb(55 65 81)",
+          foreground: "rgb(156 163 175)",
+        },
+        card: {
+          DEFAULT: "rgb(15 25 45)", // Slightly lighter than background
+          foreground: "rgb(241 245 249)",
+        },
+        border: "rgb(51 65 85)",
+        input: "rgb(30 41 59)",
+        ring: "rgb(236 72 153)",
+        destructive: {
+          DEFAULT: "rgb(239 68 68)",
+          foreground: "rgb(248 250 252)",
+        },
+        // Glitch-core palette
+        glitch: {
+          pink: "rgb(255 20 147)", // Deep pink
+          cyan: "rgb(0 255 255)", // Neon cyan
+          purple: "rgb(138 43 226)", // Blue violet
+          lime: "rgb(50 255 50)", // Electric lime
+          orange: "rgb(255 165 0)", // Vibrant orange
+        },
       },
       borderRadius: {
-        xl: "1rem",
-        "2xl": "1.5rem",
-      },
-      screens: {
-        xs: "400px",
-        sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1280px",
-        "2xl": "1536px",
-        "3xl": "1800px", // Custom extra large
+        lg: "0.75rem",
+        md: "0.5rem",
+        sm: "0.25rem",
       },
       boxShadow: {
-        card: "0 4px 32px 0 rgba(0,0,0,0.12)",
+        'neon-pink': '0 0 20px rgb(236 72 153 / 0.5)',
+        'neon-blue': '0 0 20px rgb(14 165 233 / 0.5)',
+        'neon-purple': '0 0 20px rgb(139 69 255 / 0.5)',
+        'glitch': '0 0 10px rgb(255 20 147 / 0.3), 0 0 20px rgb(0 255 255 / 0.2)',
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'glitch': 'glitch 2s infinite',
+        'float': 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        glitch: {
+          '0%, 100%': { transform: 'translate(0)' },
+          '20%': { transform: 'translate(-2px, 2px)' },
+          '40%': { transform: 'translate(-2px, -2px)' },
+          '60%': { transform: 'translate(2px, 2px)' },
+          '80%': { transform: 'translate(2px, -2px)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        }
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'glitch-gradient': 'linear-gradient(45deg, rgb(236 72 153), rgb(139 69 255), rgb(14 165 233))',
+        'cyber-gradient': 'linear-gradient(135deg, rgb(8 15 32) 0%, rgb(15 25 45) 50%, rgb(30 41 59) 100%)',
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/aspect-ratio"),
-    require("@tailwindcss/line-clamp"),
-  ],
+  plugins: [],
 };
+
 export default config;
