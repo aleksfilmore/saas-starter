@@ -88,31 +88,33 @@ export default function HomePage() {
                 <div className="absolute inset-0 rounded-full border border-glitch-lime opacity-40 animate-pulse scale-115" style={{animationDelay: '2s'}}></div>
                 
                 {/* Main figure container with enhanced glow and backdrop */}
-                <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-900/80 via-blue-900/60 to-purple-900/40 backdrop-blur-sm flex items-center justify-center relative overflow-hidden border-2 border-glitch-cyan/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
+                <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-purple-900/20 backdrop-blur-sm flex items-center justify-center relative overflow-hidden border-2 border-glitch-cyan/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
                   
                   {/* Background tech grid */}
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
                   
-                  {/* Hood silhouette with better shading */}
-                  <div className="w-48 h-48 bg-gradient-to-b from-gray-700/90 via-gray-900/95 to-black rounded-t-full relative shadow-2xl">
-                    {/* Face shadow with subtle glow */}
-                    <div className="absolute inset-x-8 top-12 bottom-8 bg-black rounded-full opacity-95 shadow-[inset_0_0_20px_rgba(6,182,212,0.2)]"></div>
+                  {/* Cloaked Figure Image */}
+                  <div className="relative w-64 h-64 flex items-center justify-center">
+                    <img
+                      src="/figure.png"
+                      alt="Cloaked figure representing emotional transformation"
+                      className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+                      style={{
+                        filter: 'drop-shadow(0 0 30px rgba(236,72,153,0.3)) drop-shadow(0 0 15px rgba(6,182,212,0.5))'
+                      }}
+                    />
                     
-                    {/* Eyes glow effect */}
-                    <div className="absolute top-16 left-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]"></div>
-                    <div className="absolute top-16 right-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" style={{animationDelay: '0.5s'}}></div>
-                    
-                    {/* Enhanced broken heart with glow */}
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                    {/* Enhanced broken heart overlay positioned on the figure */}
+                    <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-20">
                       <div className="relative">
-                        {/* Heart pieces with glow */}
+                        {/* Heart pieces with enhanced glow */}
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_15px_rgba(236,72,153,0.6)] animate-pulse"></div>
-                          <div className="w-7 h-7 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_15px_rgba(236,72,153,0.6)] animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                          <div className="w-8 h-8 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)] animate-pulse"></div>
+                          <div className="w-8 h-8 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)] animate-pulse" style={{animationDelay: '0.3s'}}></div>
                         </div>
                         {/* Enhanced crack effect */}
-                        <div className="absolute top-1/2 left-1/2 w-10 h-1 bg-gradient-to-r from-transparent via-white to-transparent transform -translate-x-1/2 -translate-y-1/2 rotate-12 opacity-80"></div>
-                        <div className="absolute top-1/2 left-1/2 w-8 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+                        <div className="absolute top-1/2 left-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-white to-transparent transform -translate-x-1/2 -translate-y-1/2 rotate-12 opacity-90 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
+                        <div className="absolute top-1/2 left-1/2 w-10 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
                       </div>
                     </div>
                   </div>
