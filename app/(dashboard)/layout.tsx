@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Zap, ShieldQuestion, Settings, Menu } from 'lucide-react';
+import { LayoutDashboard, Zap, ShieldQuestion, Settings, Menu, Shield } from 'lucide-react';
 import Footer from '@/components/layout/footer';
 
 export default function DashboardLayout({
@@ -17,6 +17,7 @@ export default function DashboardLayout({
 
   const navItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { href: '/dashboard/tracker', icon: Shield, label: 'No Contact Tracker' },
     { href: '/dashboard/rituals', icon: Zap, label: 'Rituals' },
     { href: '/dashboard/confessional', icon: ShieldQuestion, label: 'Confessional' },
     { href: '/dashboard/settings', icon: Settings, label: 'Settings' }
