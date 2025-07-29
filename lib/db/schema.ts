@@ -39,6 +39,8 @@ export const noContactPeriods = pgTable('no_contact_periods', {
   }).notNull(),
   targetDays: integer('target_days').notNull(),
   isActive: boolean('is_active').notNull().default(true),
+  streakShieldsUsed: integer('streak_shields_used').notNull().default(0),
+  maxStreakShieldsPerWeek: integer('max_streak_shields_per_week').notNull().default(1),
   createdAt: timestamp('created_at', {
     withTimezone: true,
     mode: 'date',
@@ -121,6 +123,78 @@ export const userDailyPrescriptions = pgTable('user_daily_prescriptions', {
   }).notNull().defaultNow(),
 });
 
+// Daily Check-ins for No Contact Tracker
+export const dailyCheckIns = pgTable('daily_check_ins', {
+  id: text('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  periodId: text('period_id')
+    .notNull()
+    .references(() => noContactPeriods.id),
+  checkInDate: timestamp('check_in_date', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull(),
+  didTextTrash: boolean('did_text_trash').notNull().default(false),
+  mood: integer('mood').notNull(), // 1-5 scale
+  hadIntrusiveThoughts: boolean('had_intrusive_thoughts').notNull().default(false),
+  notes: text('notes'),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Anonymous Wall Posts
+export const anonymousPosts = pgTable('anonymous_posts', {
+  id: text('id').primaryKey(),
+  userId: integer('user_id')
+    .references(() => users.id), // Nullable for true anonymity
+  content: text('content').notNull(),
+  category: text('category').notNull().default('general'), // 'vent', 'victory', 'advice', 'general'
+  hearts: integer('hearts').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Anonymous Wall Hearts (reactions)
+export const anonymousPostHearts = pgTable('anonymous_post_hearts', {
+  id: text('id').primaryKey(),
+  postId: text('post_id')
+    .notNull()
+    .references(() => anonymousPosts.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// AI Generated Letters
+export const aiLetters = pgTable('ai_letters', {
+  id: text('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  letterType: text('letter_type').notNull(), // 'breakup', 'closure', 'forgiveness', 'angry', 'sad'
+  recipient: text('recipient').notNull(), // Who the letter is for
+  emotion: text('emotion').notNull(), // User's current emotion
+  scenario: text('scenario').notNull(), // Brief scenario context
+  generatedContent: text('generated_content').notNull(),
+  isPrivate: boolean('is_private').notNull().default(true),
+  wasSent: boolean('was_sent').notNull().default(false),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
 // This defines the type for a user object, which is used elsewhere.
 export type User = typeof users.$inferSelect;
 export type NoContactPeriod = typeof noContactPeriods.$inferSelect;
@@ -128,3 +202,7 @@ export type NoContactBreach = typeof noContactBreaches.$inferSelect;
 export type DailyRitual = typeof dailyRituals.$inferSelect;
 export type RitualCompletion = typeof ritualCompletions.$inferSelect;
 export type UserDailyPrescription = typeof userDailyPrescriptions.$inferSelect;
+export type DailyCheckIn = typeof dailyCheckIns.$inferSelect;
+export type AnonymousPost = typeof anonymousPosts.$inferSelect;
+export type AnonymousPostHeart = typeof anonymousPostHearts.$inferSelect;
+export type AILetter = typeof aiLetters.$inferSelect;

@@ -21,12 +21,42 @@ interface ActionResult {
 export async function signup(prevState: ActionResult, formData: FormData): Promise<ActionResult> {
   const email = formData.get('email');
   const password = formData.get('password');
+  const acceptTerms = formData.get('acceptTerms');
+  const acceptPrivacy = formData.get('acceptPrivacy');
 
+  // Email validation
   if (typeof email !== 'string' || !email.includes('@')) {
-    return { error: 'Please enter a valid email.', success: false };
+    return { error: 'Please enter a valid email address.', success: false };
   }
-  if (typeof password !== 'string' || password.length < 6) {
-    return { error: 'Password must be at least 6 characters long.', success: false };
+
+  // Password validation
+  if (typeof password !== 'string') {
+    return { error: 'Password is required.', success: false };
+  }
+  
+  if (password.length < 8) {
+    return { error: 'Password must be at least 8 characters long.', success: false };
+  }
+  
+  if (password.length > 50) {
+    return { error: 'Password must be no more than 50 characters long.', success: false };
+  }
+  
+  // Check for at least one uppercase letter and one number (recommended)
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  
+  if (!hasUppercase || !hasNumber) {
+    return { error: 'Password should contain at least 1 uppercase letter and 1 number for better security.', success: false };
+  }
+
+  // Terms and Privacy validation
+  if (!acceptTerms) {
+    return { error: 'You must agree to the Terms of Service to continue.', success: false };
+  }
+  
+  if (!acceptPrivacy) {
+    return { error: 'You must agree to the Privacy Policy to continue.', success: false };
   }
 
   try {
@@ -35,7 +65,7 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     });
 
     if (existingUser) {
-      return { error: 'A user with that email already exists.', success: false };
+      return { error: 'An account with this email already exists. Try signing in instead.', success: false };
     }
 
     const hashedPassword = await new Argon2id().hash(password);

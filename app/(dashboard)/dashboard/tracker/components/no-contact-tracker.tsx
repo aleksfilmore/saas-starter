@@ -1,5 +1,5 @@
 import { getUserNoContactPeriods } from '@/lib/db/queries';
-import { PeriodCard } from './period-card';
+import { EnhancedPeriodCard } from './enhanced-period-card';
 import { Calendar, Clock, User } from 'lucide-react';
 
 export async function NoContactTracker() {
@@ -38,7 +38,7 @@ export async function NoContactTracker() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {activePeriods.map((period) => (
-              <PeriodCard key={period.id} period={period} />
+              <EnhancedPeriodCard key={period.id} period={period} />
             ))}
           </div>
         </div>
@@ -58,7 +58,7 @@ export async function NoContactTracker() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {pastPeriods.map((period) => (
-              <PeriodCard key={period.id} period={period} />
+              <EnhancedPeriodCard key={period.id} period={period} />
             ))}
           </div>
         </div>

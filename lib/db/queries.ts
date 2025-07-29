@@ -51,6 +51,8 @@ export async function getUserNoContactPeriods() {
     startDate: period.startDate,
     targetDays: period.targetDays,
     isActive: period.isActive,
+    streakShieldsUsed: period.streakShieldsUsed,
+    maxStreakShieldsPerWeek: period.maxStreakShieldsPerWeek,
     createdAt: period.createdAt,
   }));
 }

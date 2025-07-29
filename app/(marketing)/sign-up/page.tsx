@@ -106,7 +106,7 @@ export default function SignUpPage() {
                   Password
                 </label>
                 <span className="text-sm text-blue-400 bg-blue-900/30 px-3 py-1 rounded-full font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                  Min. 6 characters
+                  8-50 chars
                 </span>
               </div>
               <input
@@ -114,13 +114,71 @@ export default function SignUpPage() {
                 name="password"
                 type="password"
                 required
-                minLength={6}
+                minLength={8}
+                maxLength={50}
                 autoComplete="new-password"
+                placeholder="Create a strong password"
                 className="bg-gray-800/80 border-2 border-purple-400/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-glitch-pink focus-visible:border-glitch-pink rounded-xl px-4 py-3 text-lg font-medium transition-all duration-300 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.3)]"
                 style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
                 aria-invalid={!!state?.error}
-                aria-describedby={state?.error ? 'signup-error' : undefined}
+                aria-describedby={state?.error ? 'signup-error password-requirements' : 'password-requirements'}
               />
+              <div id="password-requirements" className="text-xs text-gray-400 space-y-1">
+                <p className="flex items-center gap-2">
+                  <span className="text-blue-400">•</span>
+                  8-50 characters (letters, numbers, symbols allowed)
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="text-blue-400">•</span>
+                  At least 1 uppercase letter and 1 number recommended
+                </p>
+              </div>
+            </div>
+            
+            {/* Terms of Service and Privacy Policy */}
+            <div className="grid gap-3">
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    name="acceptTerms"
+                    required
+                    className="mt-1 w-4 h-4 bg-gray-800 border-2 border-purple-400/50 rounded text-glitch-pink focus:ring-2 focus:ring-glitch-pink focus:border-glitch-pink transition-all duration-300"
+                  />
+                  <span className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
+                    I have read and agree to the{' '}
+                    <Link href="/terms" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-medium">
+                      Terms of Service
+                    </Link>
+                  </span>
+                </label>
+                
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    name="acceptPrivacy"
+                    required
+                    className="mt-1 w-4 h-4 bg-gray-800 border-2 border-purple-400/50 rounded text-glitch-pink focus:ring-2 focus:ring-glitch-pink focus:border-glitch-pink transition-all duration-300"
+                  />
+                  <span className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
+                    I have read and agree to the{' '}
+                    <Link href="/privacy" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-medium">
+                      Privacy Policy
+                    </Link>
+                  </span>
+                </label>
+                
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    name="emailUpdates"
+                    className="mt-1 w-4 h-4 bg-gray-800 border-2 border-purple-400/50 rounded text-purple-400 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300"
+                  />
+                  <span className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
+                    <span className="text-gray-400">(Optional)</span> Send me ritual updates and emotional intelligence tips
+                  </span>
+                </label>
+              </div>
             </div>
             {state?.error && (
               <div
