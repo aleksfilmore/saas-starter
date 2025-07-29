@@ -54,15 +54,15 @@ export default function HomePage() {
             {/* Left side - Text content */}
             <div className="text-left lg:text-left relative z-20">
               <div className="mb-6">
-                <p className="text-glitch-pink text-lg font-medium mb-2 tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">The interactive breakup reprogramming ritual</p>
+                <p className="text-lg font-medium mb-2 tracking-wide text-glitch-pink" style={{textShadow: '0 0 10px rgba(236,72,153,0.8), 0 0 20px rgba(236,72,153,0.6), 0 0 30px rgba(236,72,153,0.4), 0 2px 4px rgba(0,0,0,0.8)'}}>The interactive breakup reprogramming ritual</p>
               </div>
               <h1 className="text-6xl font-black tracking-tight lg:text-7xl leading-tight mb-6 relative">
                 <span className="text-white font-black tracking-wider" style={{textShadow: '0 4px 8px rgba(0,0,0,0.8), 0 0 20px rgba(6,182,212,0.3)'}}>CTRL+ALT</span><br />
-                <span className="text-glitch-pink font-black tracking-wider relative" style={{textShadow: '0 4px 8px rgba(0,0,0,0.8), 0 0 30px rgba(236,72,153,0.5)'}}>
+                <span className="text-glitch-pink font-black tracking-wider relative" style={{textShadow: '0 0 10px rgba(236,72,153,1), 0 0 20px rgba(236,72,153,0.8), 0 0 40px rgba(236,72,153,0.6), 0 0 60px rgba(236,72,153,0.4), 0 4px 8px rgba(0,0,0,0.8)'}}>
                   BLOCK
-                  {/* Glitch effect lines */}
-                  <div className="absolute -top-1 -left-1 text-glitch-cyan opacity-70 -z-10" style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
-                  <div className="absolute top-1 left-1 text-glitch-lime opacity-50 -z-10" style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
+                  {/* Enhanced glitch effect lines with neon glow */}
+                  <div className="absolute -top-1 -left-1 text-glitch-pink opacity-70 -z-10" style={{textShadow: '0 0 8px rgba(236,72,153,0.6), 0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
+                  <div className="absolute top-1 left-1 text-glitch-pink opacity-50 -z-10" style={{textShadow: '0 0 8px rgba(236,72,153,0.6), 0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
                 </span>
               </h1>
               <p className="text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
