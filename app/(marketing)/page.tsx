@@ -176,12 +176,12 @@ export default function HomePage() {
         
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-white mb-6 relative">
+            <h2 className="text-5xl lg:text-6xl font-black text-white mb-6 relative tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
               Pick your <span className="text-glitch-cyan drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]">protocol</span>.
               {/* Subtle underline effect */}
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-glitch-pink to-transparent"></div>
             </h2>
-            <p className="text-xl text-glitch-cyan max-w-2xl mx-auto leading-relaxed">Start <span className="text-glitch-lime font-bold">free</span>, stay petty, upgrade when you want the full <span className="text-glitch-pink font-bold">spectrum</span>.</p>
+            <p className="text-xl lg:text-2xl text-white max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Start <span className="text-glitch-lime font-black">free</span>, stay petty, upgrade when you want the full <span className="text-glitch-pink font-black">spectrum</span>.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-12">
              <PricingCard
@@ -222,22 +222,22 @@ export default function HomePage() {
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-transparent bg-gradient-to-r from-glitch-cyan via-glitch-pink to-glitch-lime bg-clip-text mb-6">System <span className="text-white">Queries</span></h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">Debugging the most common user <span className="text-glitch-cyan font-bold">exceptions</span></p>
+            <h2 className="text-6xl lg:text-7xl font-black text-transparent bg-gradient-to-r from-glitch-cyan via-glitch-pink to-glitch-lime bg-clip-text mb-6 tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>System <span className="text-white">Queries</span></h2>
+            <p className="text-xl lg:text-2xl text-white max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Debugging the most common user <span className="text-glitch-cyan font-black">exceptions</span></p>
           </div>
-          <div className="bg-gradient-to-br from-gray-900/60 via-purple-900/20 to-pink-900/10 backdrop-blur-sm rounded-2xl border border-purple-500/30 p-8 shadow-2xl shadow-purple-500/20">
+          <div className="bg-gradient-to-br from-gray-900/80 via-purple-900/40 to-pink-900/20 backdrop-blur-sm rounded-2xl border-2 border-purple-500/50 p-8 shadow-2xl shadow-purple-500/30">
             <Accordion type="single" collapsible className="w-full space-y-4">
               <AccordionItem value="item-1" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-lg font-semibold text-glitch-cyan hover:text-glitch-pink transition-colors">Is this therapy?</AccordionTrigger>
-                <AccordionContent className="text-gray-300 text-base leading-relaxed pt-4">No. This is a tool for self-guided emotional processing, not a replacement for professional mental health care. If you are in crisis, please contact a professional.</AccordionContent>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>Is this therapy?</AccordionTrigger>
+                <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>No. This is a tool for self-guided emotional processing, not a replacement for professional mental health care. If you are in crisis, please contact a professional.</AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-lg font-semibold text-glitch-cyan hover:text-glitch-pink transition-colors">Is my data private?</AccordionTrigger>
-                <AccordionContent className="text-gray-300 text-base leading-relaxed pt-4">Yes. Privacy is a core value. Your personal data is yours. Confessional posts are anonymized by default. Read our full privacy policy for details.</AccordionContent>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>Is my data private?</AccordionTrigger>
+                <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Yes. Privacy is a core value. Your personal data is yours. Confessional posts are anonymized by default. Read our full privacy policy for details.</AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3" className="border-b border-purple-500/30">
-                <AccordionTrigger className="text-lg font-semibold text-glitch-cyan hover:text-glitch-pink transition-colors">What if I break my No Contact streak?</AccordionTrigger>
-                <AccordionContent className="text-gray-300 text-base leading-relaxed pt-4">It happens. The app is designed to help you get back on track without judgment. You can use a "Streak Shield" or simply restart your counter. This is about progress, not perfection.</AccordionContent>
+                <AccordionTrigger className="text-xl font-black text-white hover:text-glitch-pink transition-colors tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>What if I break my No Contact streak?</AccordionTrigger>
+                <AccordionContent className="text-white text-lg leading-relaxed pt-4 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>It happens. The app is designed to help you get back on track without judgment. You can use a "Streak Shield" or simply restart your counter. This is about progress, not perfection.</AccordionContent>
               </AccordionItem>
             </Accordion>
           </div>
@@ -267,38 +267,38 @@ export default function HomePage() {
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mb-12">
-            <h2 className="text-6xl font-black text-transparent bg-gradient-to-r from-glitch-orange via-glitch-pink to-glitch-cyan bg-clip-text mb-8 leading-tight">
+            <h2 className="text-7xl lg:text-8xl font-black text-transparent bg-gradient-to-r from-glitch-orange via-glitch-pink to-glitch-cyan bg-clip-text mb-8 leading-tight tracking-tighter" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
               Ready for your <span className="text-white">emotional reformat</span>?
             </h2>
-            <p className="text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-4">
+            <p className="text-3xl lg:text-4xl text-white max-w-3xl mx-auto leading-relaxed mb-4 font-bold" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
               Stop doomscrolling and start reprogramming.
             </p>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Your <span className="text-glitch-cyan font-bold">future self</span> will thank you.
+            <p className="text-xl lg:text-2xl text-glitch-cyan max-w-2xl mx-auto font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+              Your <span className="text-glitch-cyan font-black">future self</span> will thank you.
             </p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <a href="/sign-up" className="group">
-              <Button size="lg" className="text-xl rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-pink-500 hover:via-orange-500 hover:to-red-500 text-white font-black shadow-2xl shadow-pink-500/60 hover:shadow-orange-500/80 transition-all duration-500 px-12 py-6 animate-pulse group-hover:animate-none transform hover:scale-110">
+              <Button size="lg" className="text-2xl rounded-2xl bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-pink-500 hover:via-orange-500 hover:to-red-500 text-white font-black shadow-2xl shadow-pink-500/60 hover:shadow-orange-500/80 transition-all duration-500 px-16 py-8 animate-pulse group-hover:animate-none transform hover:scale-110" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
                 🚀 Begin the Ritual FREE
-                <ArrowRight className="ml-4 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                <ArrowRight className="ml-4 h-8 w-8 group-hover:translate-x-2 transition-transform" />
               </Button>
             </a>
             
             <div className="text-center">
-              <p className="text-sm text-gray-400 mb-2">No credit card required</p>
-              <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <p className="text-lg text-white mb-2 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>No credit card required</p>
+              <div className="flex items-center justify-center gap-2 text-base text-glitch-cyan font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                 <span>Join 10,000+ warriors</span>
               </div>
             </div>
           </div>
           
           {/* Final encouragement */}
-          <div className="mt-16 p-6 rounded-xl bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30 backdrop-blur-sm">
-            <p className="text-lg text-gray-300 italic">
-              "The best time to plant a tree was 20 years ago. The second best time is <span className="text-glitch-pink font-bold">now</span>."
+          <div className="mt-16 p-8 rounded-xl bg-gradient-to-r from-purple-900/50 to-pink-900/50 border-2 border-purple-500/50 backdrop-blur-sm shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+            <p className="text-2xl text-white italic font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+              "The best time to plant a tree was 20 years ago. The second best time is <span className="text-glitch-pink font-black">now</span>."
             </p>
           </div>
         </div>
@@ -380,7 +380,7 @@ const PricingCard = ({ plan, price, priceDetail, description, features, cta, isF
     {/* Featured badge */}
     {isFeatured && (
       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-        <div className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+        <div className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-black shadow-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
           ⭐ MOST POPULAR
         </div>
       </div>
@@ -390,12 +390,12 @@ const PricingCard = ({ plan, price, priceDetail, description, features, cta, isF
     <div className={`absolute top-0 right-0 w-24 h-24 opacity-20 rounded-bl-full ${isFeatured ? 'bg-gradient-to-bl from-pink-500 to-purple-500' : 'bg-gradient-to-bl from-cyan-500 to-blue-500'}`}></div>
     
     <div className="relative z-10">
-      <h3 className={`text-3xl font-black text-center mb-3 ${isFeatured ? 'text-transparent bg-gradient-to-r from-pink-400 to-orange-400 bg-clip-text' : 'text-cyan-400'}`}>{plan}</h3>
-      <p className="text-center text-gray-300 h-12 flex items-center justify-center text-lg">{description}</p>
+      <h3 className={`text-4xl font-black text-center mb-3 tracking-tight ${isFeatured ? 'text-transparent bg-gradient-to-r from-pink-400 to-orange-400 bg-clip-text' : 'text-cyan-400'}`} style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>{plan}</h3>
+      <p className="text-center text-white h-12 flex items-center justify-center text-lg font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>{description}</p>
       
       <div className="mt-8 text-center">
-        <span className={`text-6xl font-black ${isFeatured ? 'text-transparent bg-gradient-to-r from-orange-400 via-pink-400 to-red-400 bg-clip-text' : 'text-cyan-400'}`}>{price}</span>
-        {priceDetail && <span className="text-lg font-medium text-gray-400 ml-2">{priceDetail}</span>}
+        <span className={`text-7xl font-black ${isFeatured ? 'text-transparent bg-gradient-to-r from-orange-400 via-pink-400 to-red-400 bg-clip-text' : 'text-cyan-400'}`} style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>{price}</span>
+        {priceDetail && <span className="text-xl font-bold text-white ml-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>{priceDetail}</span>}
       </div>
       
       <ul className="mt-10 space-y-5 flex-grow">
@@ -404,7 +404,7 @@ const PricingCard = ({ plan, price, priceDetail, description, features, cta, isF
             <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center mr-4 mt-0.5 transition-transform group-hover/item:scale-110 ${isFeatured ? 'bg-gradient-to-r from-pink-500 to-orange-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'}`}>
               <Check className="h-4 w-4 text-white" />
             </div>
-            <span className="text-gray-300 text-lg leading-relaxed">{feature}</span>
+            <span className="text-white text-lg leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>{feature}</span>
           </li>
         ))}
       </ul>
@@ -413,7 +413,8 @@ const PricingCard = ({ plan, price, priceDetail, description, features, cta, isF
         <a href="/sign-up" className="w-full block">
           <Button
             size="lg"
-            className={`w-full text-lg rounded-2xl font-bold transition-all duration-500 py-4 px-8 transform hover:scale-105 ${isFeatured ? 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-pink-500 hover:via-orange-500 hover:to-red-500 text-white shadow-xl shadow-pink-500/50 hover:shadow-orange-500/60 animate-pulse' : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-blue-500 hover:to-purple-500 shadow-lg shadow-cyan-500/40 hover:shadow-blue-500/50'}`}
+            className={`w-full text-lg rounded-2xl font-black transition-all duration-500 py-4 px-8 transform hover:scale-105 ${isFeatured ? 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-pink-500 hover:via-orange-500 hover:to-red-500 text-white shadow-xl shadow-pink-500/50 hover:shadow-orange-500/60 animate-pulse' : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-blue-500 hover:to-purple-500 shadow-lg shadow-cyan-500/40 hover:shadow-blue-500/50'}`}
+            style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}
           >
             {cta}
             <ArrowRight className="ml-3 h-5 w-5" />
