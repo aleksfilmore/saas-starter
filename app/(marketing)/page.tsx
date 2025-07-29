@@ -44,34 +44,41 @@ export default function HomePage() {
             {/* Left side - Text content */}
             <div className="text-left">
               <div className="mb-6">
-                <p className="text-glitch-pink text-lg font-semibold tracking-wide" style={{textShadow: '0 0 10px rgba(236,72,153,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                <p className="text-fuchsia-400 text-lg font-semibold tracking-wide" style={{textShadow: '0 0 10px rgba(217,70,239,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   The interactive breakup reprogramming ritual
                 </p>
               </div>
               
               <h1 className="mb-6">
                 <div className="text-6xl lg:text-8xl font-black tracking-tighter leading-none mb-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-                  <span className="text-white" style={{textShadow: '0 0 20px rgba(255,255,255,0.3), 0 4px 8px rgba(0,0,0,0.8)'}}>
+                  <span className="text-white" style={{
+                    textShadow: '0 0 20px rgba(255,255,255,0.3), 0 4px 8px rgba(0,0,0,0.8)', 
+                    WebkitTextStroke: '2px #ec4899',
+                    filter: 'drop-shadow(0 0 10px rgba(236,72,153,0.5))'
+                  }}>
                     CTRL+ALT
                   </span>
                 </div>
                 <div className="text-6xl lg:text-8xl font-black tracking-tighter leading-none" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-                  <span className="text-glitch-pink" style={{textShadow: '0 0 20px rgba(236,72,153,0.8), 0 0 40px rgba(236,72,153,0.6), 0 4px 8px rgba(0,0,0,0.8)'}}>
+                  <span className="text-glitch-pink" style={{
+                    textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,255,255,0.6), 0 4px 8px rgba(0,0,0,0.8)',
+                    filter: 'drop-shadow(2px 2px 0px white) drop-shadow(-2px -2px 0px white) drop-shadow(0 0 10px rgba(255,255,255,0.8))'
+                  }}>
                     BLOCK
                   </span>
                 </div>
               </h1>
               
-              <p className="text-lg lg:text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg font-medium" style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+              <p className="text-lg lg:text-xl text-blue-400 leading-relaxed mb-12 max-w-lg font-medium" style={{textShadow: '0 0 10px rgba(59,130,246,0.6)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                 Reclaim your sanity (and your savage) with<br />
                 our AI-powered emotional recovery protocol.
               </p>
               
-              <div>
+              <div className="mb-16">
                 <a href="/sign-up">
                   <Button 
                     size="lg" 
-                    className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-none border-2 border-glitch-pink bg-transparent text-glitch-pink hover:bg-glitch-pink/10 transition-all duration-300"
+                    className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-lg border-2 border-glitch-pink bg-transparent text-white hover:bg-glitch-pink/10 transition-all duration-300 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)]"
                     style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}
                   >
                     BEGIN THE RITUAL
@@ -83,9 +90,6 @@ export default function HomePage() {
             {/* Right side - Figure with glow */}
             <div className="flex justify-center lg:justify-end">
               <div className="relative">
-                {/* Cyan glow ring - exactly like the mockup */}
-                <div className="absolute inset-0 w-80 h-80 lg:w-96 lg:h-96 rounded-full border-4 border-glitch-cyan opacity-90 animate-pulse"></div>
-                
                 {/* Figure container */}
                 <div className="w-80 h-80 lg:w-96 lg:h-96 rounded-full flex items-center justify-center relative">
                   {/* The cloaked figure */}
@@ -122,45 +126,51 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             
             {/* AI TOOLS Card */}
-            <div className="bg-gray-900/40 border-2 border-glitch-cyan rounded-lg p-6 text-left shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300 backdrop-blur-sm">
+            <div className="bg-gray-900/40 border-2 border-blue-400 rounded-lg p-6 text-left shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] transition-all duration-300 backdrop-blur-sm">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-glitch-cyan rounded-lg flex items-center justify-center mr-4 shadow-lg">
-                  <Bot className="h-6 w-6 text-gray-900 font-bold" />
+                <div className="w-16 h-16 bg-blue-400 rounded-lg flex items-center justify-center mr-6 shadow-lg">
+                  <Bot className="h-10 w-10 text-gray-900 font-bold" />
                 </div>
-                <h3 className="text-xl font-black text-white tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>AI TOOLS</h3>
+                <div>
+                  <h3 className="text-2xl font-black text-white tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>AI TOOLS</h3>
+                  <p className="text-white text-base font-medium leading-relaxed">
+                    Choke your breakup<br />
+                    to death, virtually.
+                  </p>
+                </div>
               </div>
-              <p className="text-white text-base font-medium leading-relaxed">
-                Choke your breakup<br />
-                to death, virtually.
-              </p>
             </div>
             
             {/* GAMIFIED HEALING Card */}
-            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] transition-all duration-300 backdrop-blur-sm">
+            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] transition-all duration-300 backdrop-blur-sm">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-glitch-pink rounded-lg flex items-center justify-center mr-4 shadow-lg">
-                  <Award className="h-6 w-6 text-white font-bold" />
+                <div className="w-16 h-16 bg-glitch-pink rounded-lg flex items-center justify-center mr-6 shadow-lg">
+                  <Award className="h-10 w-10 text-white font-bold" />
                 </div>
-                <h3 className="text-xl font-black text-white tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>GAMIFIED HEALING</h3>
+                <div>
+                  <h3 className="text-2xl font-black text-white tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>GAMIFIED HEALING</h3>
+                  <p className="text-white text-base font-medium leading-relaxed">
+                    Level up your<br />
+                    No Contact streak.
+                  </p>
+                </div>
               </div>
-              <p className="text-white text-base font-medium leading-relaxed">
-                Level up your<br />
-                No Contact streak.
-              </p>
             </div>
             
             {/* CONFESSIONAL Card */}
-            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] transition-all duration-300 backdrop-blur-sm">
+            <div className="bg-gray-900/40 border-2 border-purple-400 rounded-lg p-6 text-left shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300 backdrop-blur-sm">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-glitch-pink rounded-lg flex items-center justify-center mr-4 shadow-lg">
-                  <ShieldQuestion className="h-6 w-6 text-white font-bold" />
+                <div className="w-16 h-16 bg-purple-400 rounded-lg flex items-center justify-center mr-6 shadow-lg">
+                  <ShieldQuestion className="h-10 w-10 text-white font-bold" />
                 </div>
-                <h3 className="text-xl font-black text-white tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>CONFESSIONAL</h3>
+                <div>
+                  <h3 className="text-2xl font-black text-white tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>CONFESSIONAL</h3>
+                  <p className="text-white text-base font-medium leading-relaxed">
+                    Vent on our private<br />
+                    wall of doom.
+                  </p>
+                </div>
               </div>
-              <p className="text-white text-base font-medium leading-relaxed">
-                Vent on our private<br />
-                wall of doom.
-              </p>
             </div>
             
           </div>
@@ -174,12 +184,12 @@ export default function HomePage() {
         
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-5xl lg:text-6xl font-black text-white mb-6 relative tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-              Pick your <span className="text-glitch-cyan drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]">protocol</span>.
+            <h2 className="text-5xl lg:text-6xl font-black text-white mb-6 relative tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '2px #ec4899'}}>
+              Pick your <span className="text-blue-400" style={{textShadow: '0 0 20px rgba(59,130,246,0.8)'}}>protocol</span>.
               {/* Subtle underline effect */}
               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-glitch-pink to-transparent"></div>
             </h2>
-            <p className="text-xl lg:text-2xl text-white max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Start <span className="text-glitch-lime font-black">free</span>, stay petty, upgrade when you want the full <span className="text-glitch-pink font-black">spectrum</span>.</p>
+            <p className="text-xl lg:text-2xl text-fuchsia-400 max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>Start <span className="text-glitch-lime font-black">free</span>, stay petty, upgrade when you want the full <span className="text-glitch-pink font-black">spectrum</span>.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-12">
              <PricingCard
@@ -220,8 +230,10 @@ export default function HomePage() {
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-6xl lg:text-7xl font-black text-transparent bg-gradient-to-r from-glitch-cyan via-glitch-pink to-glitch-lime bg-clip-text mb-6 tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>System <span className="text-white">Queries</span></h2>
-            <p className="text-xl lg:text-2xl text-white max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Debugging the most common user <span className="text-glitch-cyan font-black">exceptions</span></p>
+            <h2 className="text-6xl lg:text-7xl font-black mb-6 tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '2px #ec4899'}}>
+              <span className="text-white">System</span> <span className="text-blue-400" style={{textShadow: '0 0 20px rgba(59,130,246,0.8)'}}>Queries</span>
+            </h2>
+            <p className="text-xl lg:text-2xl text-fuchsia-400 max-w-2xl mx-auto leading-relaxed font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>Debugging the most common user <span className="text-blue-400 font-black">exceptions</span></p>
           </div>
           <div className="bg-gradient-to-br from-gray-900/80 via-purple-900/40 to-pink-900/20 backdrop-blur-sm rounded-2xl border-2 border-purple-500/50 p-8 shadow-2xl shadow-purple-500/30">
             <Accordion type="single" collapsible className="w-full space-y-4">
@@ -265,14 +277,14 @@ export default function HomePage() {
         
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="mb-12">
-            <h2 className="text-7xl lg:text-8xl font-black text-transparent bg-gradient-to-r from-glitch-orange via-glitch-pink to-glitch-cyan bg-clip-text mb-8 leading-tight tracking-tighter" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-              Ready for your <span className="text-white">emotional reformat</span>?
+            <h2 className="text-7xl lg:text-8xl font-black mb-8 leading-tight tracking-tighter" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '2px #ec4899'}}>
+              <span className="text-white">Ready for your</span> <span className="text-blue-400" style={{textShadow: '0 0 20px rgba(59,130,246,0.8)'}}>emotional reformat</span>?
             </h2>
-            <p className="text-3xl lg:text-4xl text-white max-w-3xl mx-auto leading-relaxed mb-4 font-bold" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+            <p className="text-3xl lg:text-4xl text-fuchsia-400 max-w-3xl mx-auto leading-relaxed mb-4 font-bold" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>
               Stop doomscrolling and start reprogramming.
             </p>
-            <p className="text-xl lg:text-2xl text-glitch-cyan max-w-2xl mx-auto font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              Your <span className="text-glitch-cyan font-black">future self</span> will thank you.
+            <p className="text-xl lg:text-2xl text-blue-400 max-w-2xl mx-auto font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(59,130,246,0.6)'}}>
+              Your <span className="text-blue-400 font-black">future self</span> will thank you.
             </p>
           </div>
           

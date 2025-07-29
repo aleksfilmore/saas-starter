@@ -53,6 +53,8 @@ const config: Config = {
         'glitch-purple': "rgb(138 43 226)", // Blue violet
         'glitch-lime': "rgb(50 255 50)", // Electric lime
         'glitch-orange': "rgb(255 165 0)", // Vibrant orange
+        'glitch-fuchsia': "rgb(217 70 239)", // Bright fuchsia
+        'glitch-blue': "rgb(59 130 246)", // Electric blue
       },
       borderRadius: {
         lg: "0.75rem",
