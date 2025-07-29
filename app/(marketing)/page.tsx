@@ -24,41 +24,42 @@ const Glow = ({ className }: { className?: string }) => (
 
 export default function HomePage() {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-foreground">
-      {/* Background Orbs */}
-      <Orb className="top-[-20%] left-[-10%] size-[40vw]" style={{ animationDuration: '8s' }} />
-      <Orb className="top-[30%] right-[-15%] size-[50vw]" style={{ animationDuration: '12s' }} />
-      <Orb className="bottom-[-20%] left-[20%] size-[30vw]" style={{ animationDuration: '10s' }} />
+    <div className="relative overflow-hidden bg-gray-950 text-foreground">
+      {/* Enhanced background effects with grid pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       
-      {/* Additional colorful orbs */}
-      <div className="absolute top-[60%] left-[-5%] w-[20vw] h-[20vw] bg-gradient-to-r from-secondary/20 to-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-      <div className="absolute top-[10%] right-[10%] w-[15vw] h-[15vw] bg-gradient-to-r from-glitch-pink/25 to-glitch-cyan/15 rounded-full blur-2xl animate-float" style={{ animationDuration: '7s' }}></div>
-      <div className="absolute bottom-[40%] right-[-8%] w-[25vw] h-[25vw] bg-gradient-to-r from-accent/20 to-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }}></div>
+      {/* Glowing background orbs */}
+      <div className="absolute top-[20%] left-[5%] w-[25vw] h-[25vw] bg-gradient-to-r from-glitch-cyan/15 to-glitch-pink/8 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-[30%] right-[10%] w-[20vw] h-[20vw] bg-gradient-to-r from-glitch-pink/15 to-glitch-cyan/8 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+      <div className="absolute top-[60%] left-[20%] w-[15vw] h-[15vw] bg-gradient-to-r from-glitch-lime/10 to-glitch-orange/5 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
 
       {/* Hero Section */}
       <section className="relative min-h-[80vh] flex items-center justify-center text-center pt-20 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
-            <div className="text-left lg:text-left">
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl leading-tight">
-                <span className="text-glitch-cyan">Terminate.</span>{" "}
-                <span className="text-glitch-pink">Format.</span>{" "}
-                <span className="text-glitch-lime">Glow-up.</span>
+            <div className="text-left lg:text-left relative">
+              <div className="mb-6">
+                <p className="text-glitch-pink text-lg font-medium mb-2 tracking-wide">The interactive breakup reprogramming ritual</p>
+              </div>
+              <h1 className="text-6xl font-black tracking-tight lg:text-7xl leading-tight mb-6 relative">
+                <span className="text-white font-black tracking-wider drop-shadow-[0_0_20px_rgba(6,182,212,0.3)]">CTRL+ALT</span><br />
+                <span className="text-glitch-pink font-black tracking-wider drop-shadow-[0_0_30px_rgba(236,72,153,0.5)] relative">
+                  BLOCK
+                  {/* Glitch effect lines */}
+                  <div className="absolute -top-1 -left-1 text-glitch-cyan opacity-70 -z-10">BLOCK</div>
+                  <div className="absolute top-1 left-1 text-glitch-lime opacity-50 -z-10">BLOCK</div>
+                </span>
               </h1>
-              <p className="mt-4 text-lg text-gray-200 max-w-xl">
-                <span className="text-glitch-pink font-bold">CTRL+ALT+BLOCK</span> is the savage, AI-powered ritual for resetting your attachments. It's not therapy - it's a <span className="text-glitch-cyan font-bold">digital exorcism</span>.
+              <p className="text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg drop-shadow-lg">
+                Reclaim your <span className="text-white font-bold">sanity</span> (and your <span className="text-glitch-pink font-bold">savage</span>) with our AI-powered emotional recovery protocol.
               </p>
-              <div className="mt-6 flex flex-col sm:flex-row gap-4">
+              <div className="mb-12">
                 <a href="/sign-up">
-                  <Button size="lg" className="text-base rounded-full bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-400 hover:via-red-400 hover:to-pink-400 text-white font-bold shadow-lg shadow-orange-500/50 hover:shadow-red-500/50 transition-all duration-300 px-8 py-3 animate-pulse">
-                    🔥 Begin the Ritual FREE
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </a>
-                <a href="#how-it-works">
-                  <Button variant="outline" size="lg" className="text-base rounded-full border-glitch-cyan text-glitch-cyan hover:bg-glitch-cyan hover:text-black transition-all duration-300 px-8 py-3">
-                    How it Works
+                  <Button size="lg" className="text-lg rounded-none border-2 border-glitch-pink bg-transparent hover:bg-glitch-pink/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] text-glitch-pink font-bold transition-all duration-300 px-12 py-4 uppercase tracking-wider relative overflow-hidden group">
+                    <span className="relative z-10">BEGIN THE RITUAL</span>
+                    {/* Button glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-glitch-pink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   </Button>
                 </a>
               </div>
@@ -67,14 +68,51 @@ export default function HomePage() {
             {/* Right side - Visual element */}
             <div className="relative flex justify-center lg:justify-end">
               <div className="relative">
-                <Glow className="size-80" />
-                <img
-                  src="/hero-illustration.png"
-                  alt="A hooded figure meditating with a broken heart, representing emotional reformatting."
-                  width={320}
-                  height={320}
-                  className="rounded-lg relative shadow-2xl shadow-glitch-pink/30 transition-all duration-500 hover:scale-105"
-                />
+                {/* Multiple glowing rings */}
+                <div className="absolute inset-0 rounded-full border-4 border-glitch-cyan opacity-80 animate-pulse scale-105"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-glitch-pink opacity-60 animate-pulse scale-110" style={{animationDelay: '1s'}}></div>
+                <div className="absolute inset-0 rounded-full border border-glitch-lime opacity-40 animate-pulse scale-115" style={{animationDelay: '2s'}}></div>
+                
+                {/* Main figure container with enhanced glow */}
+                <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-900 via-blue-900/50 to-purple-900/30 flex items-center justify-center relative overflow-hidden border-2 border-glitch-cyan/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
+                  
+                  {/* Background tech grid */}
+                  <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
+                  
+                  {/* Hood silhouette with better shading */}
+                  <div className="w-48 h-48 bg-gradient-to-b from-gray-700 via-gray-900 to-black rounded-t-full relative shadow-2xl">
+                    {/* Face shadow with subtle glow */}
+                    <div className="absolute inset-x-8 top-12 bottom-8 bg-black rounded-full opacity-95 shadow-[inset_0_0_20px_rgba(6,182,212,0.2)]"></div>
+                    
+                    {/* Eyes glow effect */}
+                    <div className="absolute top-16 left-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse"></div>
+                    <div className="absolute top-16 right-12 w-2 h-1 bg-glitch-cyan rounded-full opacity-80 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                    
+                    {/* Enhanced broken heart with glow */}
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                      <div className="relative">
+                        {/* Heart pieces with glow */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_15px_rgba(236,72,153,0.6)] animate-pulse"></div>
+                          <div className="w-7 h-7 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_15px_rgba(236,72,153,0.6)] animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                        </div>
+                        {/* Enhanced crack effect */}
+                        <div className="absolute top-1/2 left-1/2 w-10 h-1 bg-gradient-to-r from-transparent via-white to-transparent transform -translate-x-1/2 -translate-y-1/2 rotate-12 opacity-80"></div>
+                        <div className="absolute top-1/2 left-1/2 w-8 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Enhanced glow effects */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-glitch-cyan/15 to-transparent rounded-full"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-glitch-pink/10 to-glitch-purple/10 rounded-full"></div>
+                  
+                  {/* Floating particles around the figure */}
+                  <div className="absolute top-8 left-8 w-1 h-1 bg-glitch-cyan rounded-full animate-ping opacity-60"></div>
+                  <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-glitch-pink rounded-full animate-ping opacity-50" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute bottom-16 left-16 w-1 h-1 bg-glitch-lime rounded-full animate-ping opacity-70" style={{animationDelay: '2s'}}></div>
+                  <div className="absolute bottom-12 right-8 w-2 h-2 bg-glitch-orange rounded-full animate-ping opacity-40" style={{animationDelay: '1.5s'}}></div>
+                </div>
               </div>
             </div>
           </div>
@@ -82,52 +120,69 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="how-it-works" className="py-20 bg-gradient-to-r from-purple-900/30 via-pink-900/20 to-purple-900/30 backdrop-blur-sm w-full relative">
-        <Orb 
-          className="top-1/4 right-1/4 opacity-30" 
-        />
+      <section id="how-it-works" className="py-20 bg-transparent w-full relative">
+        {/* Section divider */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-glitch-cyan to-transparent opacity-50"></div>
+        
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-             <h2 className="text-5xl font-black text-transparent bg-gradient-to-r from-glitch-cyan via-glitch-lime to-glitch-pink bg-clip-text mb-6">Your Arsenal for <span className="text-white">Emotional Recovery</span></h2>
-             <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">Tools engineered for <span className="text-glitch-lime font-bold">structured chaos</span> healing.</p>
+             <h2 className="text-4xl font-black text-white mb-6 relative">
+               Your Arsenal for <span className="text-glitch-pink drop-shadow-[0_0_20px_rgba(236,72,153,0.5)]">Emotional Recovery</span>
+               {/* Subtle underline effect */}
+               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-glitch-cyan to-transparent"></div>
+             </h2>
+             <p className="text-xl text-glitch-cyan max-w-2xl mx-auto leading-relaxed">Tools engineered for <span className="text-glitch-lime font-bold drop-shadow-lg">structured chaos</span> healing.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={<Bot className="h-8 w-8" />}
-              title="AI-Powered Tools"
-              description="Dispute chats, savage breakup letters, tarot-style diagnostics — all generated by our resident cyber-witch."
-              color="primary"
-            />
-            <FeatureCard
-              icon={<Award className="h-8 w-8" />}
-              title="Gamified Healing"
-              description="Rack up No Contact streaks, earn grit badges a future ritual partner will never see."
-              color="secondary"
-            />
-            <FeatureCard
-              icon={<ShieldQuestion className="h-8 w-8" />}
-              title="Anonymous Confessional"
-              description="Scream into the void or lurk in the shadows. A privacy-first wall for chaotic catharsis."
-              color="accent"
-            />
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-2 border-glitch-cyan rounded-lg p-8 text-center group hover:bg-glitch-cyan/5 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all duration-500 relative overflow-hidden">
+              {/* Card background glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-glitch-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="w-16 h-16 mx-auto mb-6 rounded-lg bg-gradient-to-br from-glitch-cyan/20 to-glitch-cyan/10 flex items-center justify-center border border-glitch-cyan shadow-[0_0_20px_rgba(6,182,212,0.3)] relative z-10">
+                <Bot className="h-8 w-8 text-glitch-cyan drop-shadow-lg" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4 relative z-10 drop-shadow-lg">AI TOOLS</h3>
+              <p className="text-glitch-cyan relative z-10">Choke your breakup to death, <span className="text-white font-semibold">virtually</span>.</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-2 border-glitch-pink rounded-lg p-8 text-center group hover:bg-glitch-pink/5 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] transition-all duration-500 relative overflow-hidden">
+              {/* Card background glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-glitch-pink/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="w-16 h-16 mx-auto mb-6 rounded-lg bg-gradient-to-br from-glitch-pink/20 to-glitch-pink/10 flex items-center justify-center border border-glitch-pink shadow-[0_0_20px_rgba(236,72,153,0.3)] relative z-10">
+                <Award className="h-8 w-8 text-glitch-pink drop-shadow-lg" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4 relative z-10 drop-shadow-lg">GAMIFIED HEALING</h3>
+              <p className="text-glitch-cyan relative z-10">Level up your <span className="text-glitch-pink font-semibold">No Contact</span> streak.</p>
+            </div>
+            
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-2 border-glitch-pink rounded-lg p-8 text-center group hover:bg-glitch-pink/5 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] transition-all duration-500 relative overflow-hidden">
+              {/* Card background glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-glitch-pink/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="w-16 h-16 mx-auto mb-6 rounded-lg bg-gradient-to-br from-glitch-pink/20 to-glitch-pink/10 flex items-center justify-center border border-glitch-pink shadow-[0_0_20px_rgba(236,72,153,0.3)] relative z-10">
+                <ShieldQuestion className="h-8 w-8 text-glitch-pink drop-shadow-lg" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-4 relative z-10 drop-shadow-lg">CONFESSIONAL</h3>
+              <p className="text-glitch-cyan relative z-10">Vent on our private <span className="text-white font-semibold">wall of doom</span>.</p>
+            </div>
           </div>
         </div>
       </section>
       
       {/* Pricing Section */}
-      <section className="py-24 relative bg-gradient-to-br from-gray-900/80 via-purple-800/40 to-pink-900/30 backdrop-blur-sm overflow-hidden">
-        {/* Floating orbs for visual depth */}
-        <Orb className="top-10 left-10 opacity-20" />
-        <Orb className="bottom-20 right-20 opacity-25" />
-        
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-glitch-cyan to-transparent opacity-60"></div>
+      <section className="py-24 relative bg-transparent">
+        {/* Section divider */}
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-glitch-pink to-transparent opacity-50"></div>
         
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-black text-transparent bg-gradient-to-r from-glitch-lime via-glitch-pink to-glitch-cyan bg-clip-text mb-6">Pick your <span className="text-white">protocol</span>.</h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">Start free, stay petty, upgrade when you want the full <span className="text-glitch-cyan font-bold">spectrum</span>.</p>
+            <h2 className="text-4xl font-black text-white mb-6 relative">
+              Pick your <span className="text-glitch-cyan drop-shadow-[0_0_20px_rgba(6,182,212,0.5)]">protocol</span>.
+              {/* Subtle underline effect */}
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-glitch-pink to-transparent"></div>
+            </h2>
+            <p className="text-xl text-glitch-cyan max-w-2xl mx-auto leading-relaxed">Start <span className="text-glitch-lime font-bold">free</span>, stay petty, upgrade when you want the full <span className="text-glitch-pink font-bold">spectrum</span>.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-12">
              <PricingCard
