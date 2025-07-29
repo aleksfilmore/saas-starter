@@ -25,8 +25,6 @@ const Glow = ({ className }: { className?: string }) => (
 export default function HomePage() {
   return (
     <div className="relative overflow-hidden bg-gray-950 text-foreground">
-      {/* Minimal background - clean like the mockup */}
-
       {/* Hero Section with Integrated Features */}
       <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gray-950">
         {/* Background Image */}
