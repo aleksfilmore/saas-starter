@@ -13,21 +13,16 @@ function SignUpButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full text-lg font-black bg-glitch-pink hover:bg-glitch-pink/90 text-white rounded-xl py-4 px-8 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
-      style={{
-        textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
-        fontFamily: 'system-ui, -apple-system, sans-serif', 
-        fontWeight: '900'
-      }}
+      className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white font-semibold rounded-xl text-base px-6 py-4 text-center disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary shadow-neon-pink hover:shadow-neon-pink/80 transition-all duration-300 group"
     >
       {pending ? (
         <span className="flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-          INITIALIZING RITUAL...
+          Creating Account...
         </span>
       ) : (
         <span className="flex items-center justify-center">
-          BEGIN THE RITUAL FREE
+          Begin the Ritual
           <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
@@ -99,13 +94,20 @@ export default function SignUpPage() {
                 aria-invalid={!!state?.error}
                 aria-describedby={state?.error ? 'signup-error' : undefined}
               />
+                placeholder="m@example.com"
+                required
+                autoComplete="email"
+                className="bg-input/50 backdrop-blur-sm border border-border/50 text-foreground text-sm rounded-xl focus:ring-2 focus:ring-primary focus:border-primary block w-full p-4 transition-all duration-300 hover:border-primary/50"
+                aria-invalid={!!state?.error}
+                aria-describedby={state?.error ? 'signup-error' : undefined}
+              />
             </div>
             <div className="grid gap-3">
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                <label htmlFor="password" className="block text-sm font-medium text-foreground">
                   Password
                 </label>
-                <span className="text-sm text-blue-400 bg-blue-900/30 px-3 py-1 rounded-full font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                <span className="text-xs text-muted-foreground bg-muted/30 px-2 py-1 rounded-full">
                   Min. 6 characters
                 </span>
               </div>
@@ -116,8 +118,7 @@ export default function SignUpPage() {
                 required
                 minLength={6}
                 autoComplete="new-password"
-                className="bg-gray-800/80 border-2 border-purple-400/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-glitch-pink focus-visible:border-glitch-pink rounded-xl px-4 py-3 text-lg font-medium transition-all duration-300 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.3)]"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
+                className="bg-input/50 backdrop-blur-sm border border-border/50 text-foreground text-sm rounded-xl focus:ring-2 focus:ring-primary focus:border-primary block w-full p-4 transition-all duration-300 hover:border-primary/50"
                 aria-invalid={!!state?.error}
                 aria-describedby={state?.error ? 'signup-error' : undefined}
               />
@@ -125,8 +126,7 @@ export default function SignUpPage() {
             {state?.error && (
               <div
                 id="signup-error"
-                className="text-lg font-bold text-red-400 text-center bg-red-900/20 border border-red-400/50 rounded-xl py-3 px-4"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
+                className="text-sm font-medium text-destructive text-center bg-destructive/10 border border-destructive/30 rounded-xl p-3"
                 role="alert"
               >
                 {state.error}
@@ -134,23 +134,14 @@ export default function SignUpPage() {
             )}
             <SignUpButton />
           </form>
-          <div className="mt-6 text-center text-lg">
-            <span className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Already in the system?</span>{' '}
-            <Link href="/sign-in" className="underline text-glitch-pink hover:text-fuchsia-400 font-bold transition-colors duration-300" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+          <div className="mt-6 text-center text-sm">
+            Already have an account?{' '}
+            <Link href="/sign-in" className="underline text-accent hover:text-accent/80 font-medium transition-colors">
               Log in
             </Link>
           </div>
         </div>
       </div>
-      
-      {/* CSS for animations */}
-      <style jsx global>{`
-        @keyframes float {
-          0% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
-          100% { transform: translateY(0px) rotate(360deg); opacity: 0.4; }
-        }
-      `}</style>
     </div>
   );
-}
+  }
