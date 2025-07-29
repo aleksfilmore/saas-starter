@@ -13,7 +13,11 @@ import { useEffect } from 'react';
 function LoginButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full bg-primary text-primary-foreground hover:bg-primary/80">
+    <Button
+      type="submit"
+      disabled={pending}
+      className="w-full bg-primary text-primary-foreground hover:bg-primary/80 focus-visible:ring-2 focus-visible:ring-primary"
+    >
       {pending ? 'Logging in...' : 'Login'}
     </Button>
   );
@@ -36,14 +40,14 @@ export default function SignInPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-      <div className="mx-auto grid w-[350px] gap-6 p-8 border border-border rounded-lg bg-card">
+      <div className="mx-auto grid w-[350px] gap-8 p-8 border border-border rounded-lg bg-card shadow-lg">
         <div className="grid gap-2 text-center">
           <h1 className="text-3xl font-bold text-primary">Welcome Back</h1>
           <p className="text-balance text-muted-foreground">
             Enter your credentials to access your dashboard.
           </p>
         </div>
-        <form action={formAction} className="grid gap-4">
+        <form action={formAction} className="grid gap-5">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -52,21 +56,39 @@ export default function SignInPage() {
               name="email"
               placeholder="m@example.com"
               required
-              className="bg-muted border-border text-foreground"
+              autoComplete="email"
+              className="bg-muted border-border text-foreground focus-visible:ring-2 focus-visible:ring-primary"
+              aria-invalid={!!state?.error}
+              aria-describedby={state?.error ? 'login-error' : undefined}
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input 
-              id="password" 
+            <Input
+              id="password"
               name="password"
-              type="password" 
-              required 
-              className="bg-muted border-border text-foreground"
+              type="password"
+              required
+              autoComplete="current-password"
+              className="bg-muted border-border text-foreground focus-visible:ring-2 focus-visible:ring-primary"
+              aria-invalid={!!state?.error}
+              aria-describedby={state?.error ? 'login-error' : undefined}
             />
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-accent hover:text-accent-foreground underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
           {state?.error && (
-            <div className="text-sm font-medium text-destructive text-center" role="alert">
+            <div
+              id="login-error"
+              className="text-sm font-medium text-destructive text-center"
+              role="alert"
+            >
               {state.error}
             </div>
           )}

@@ -3,29 +3,29 @@
 @tailwind utilities;
 
 @layer utilities {
-  .bg-background { background-color: hsl(var(--background) / <alpha-value>); }
-  .text-foreground { color: hsl(var(--foreground) / <alpha-value>); }
-  .bg-card { background-color: hsl(var(--card) / <alpha-value>); }
-  .text-card-foreground { color: hsl(var(--card-foreground) / <alpha-value>); }
-  .bg-popover { background-color: hsl(var(--popover) / <alpha-value>); }
-  .text-popover-foreground { color: hsl(var(--popover-foreground) / <alpha-value>); }
-  .bg-primary { background-color: hsl(var(--primary) / <alpha-value>); }
-  .text-primary { color: hsl(var(--primary) / <alpha-value>); }
-  .text-primary-foreground { color: hsl(var(--primary-foreground) / <alpha-value>); }
-  .bg-secondary { background-color: hsl(var(--secondary) / <alpha-value>); }
-  .text-secondary-foreground { color: hsl(var(--secondary-foreground) / <alpha-value>); }
-  .bg-muted { background-color: hsl(var(--muted) / <alpha-value>); }
-  .text-muted-foreground { color: hsl(var(--muted-foreground) / <alpha-value>); }
-  .bg-accent { background-color: hsl(var(--accent) / <alpha-value>); }
-  .text-accent { color: hsl(var(--accent) / <alpha-value>); }
-  .text-accent-foreground { color: hsl(var(--accent-foreground) / <alpha-value>); }
-  .bg-destructive { background-color: hsl(var(--destructive) / <alpha-value>); }
-  .text-destructive { color: hsl(var(--destructive) / <alpha-value>); }
-  .text-destructive-foreground { color: hsl(var(--destructive-foreground) / <alpha-value>); }
-  .border-border { border-color: hsl(var(--border) / <alpha-value>); }
-  .ring-ring { --tw-ring-color: hsl(var(--ring) / <alpha-value>); }
-  .bg-input { background-color: hsl(var(--input) / <alpha-value>); }
-  .border-input { border-color: hsl(var(--input) / <alpha-value>); }
+  .bg-background { background-color: hsl(var(--background) / var(--tw-bg-opacity, 1)); }
+  .text-foreground { color: hsl(var(--foreground) / var(--tw-text-opacity, 1)); }
+  .bg-card { background-color: hsl(var(--card) / var(--tw-bg-opacity, 1)); }
+  .text-card-foreground { color: hsl(var(--card-foreground) / var(--tw-text-opacity, 1)); }
+  .bg-popover { background-color: hsl(var(--popover) / var(--tw-bg-opacity, 1)); }
+  .text-popover-foreground { color: hsl(var(--popover-foreground) / var(--tw-text-opacity, 1)); }
+  .bg-primary { background-color: hsl(var(--primary) / var(--tw-bg-opacity, 1)); }
+  .text-primary { color: hsl(var(--primary) / var(--tw-text-opacity, 1)); }
+  .text-primary-foreground { color: hsl(var(--primary-foreground) / var(--tw-text-opacity, 1)); }
+  .bg-secondary { background-color: hsl(var(--secondary) / var(--tw-bg-opacity, 1)); }
+  .text-secondary-foreground { color: hsl(var(--secondary-foreground) / var(--tw-text-opacity, 1)); }
+  .bg-muted { background-color: hsl(var(--muted) / var(--tw-bg-opacity, 1)); }
+  .text-muted-foreground { color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1)); }
+  .bg-accent { background-color: hsl(var(--accent) / var(--tw-bg-opacity, 1)); }
+  .text-accent { color: hsl(var(--accent) / var(--tw-text-opacity, 1)); }
+  .text-accent-foreground { color: hsl(var(--accent-foreground) / var(--tw-text-opacity, 1)); }
+  .bg-destructive { background-color: hsl(var(--destructive) / var(--tw-bg-opacity, 1)); }
+  .text-destructive { color: hsl(var(--destructive) / var(--tw-text-opacity, 1)); }
+  .text-destructive-foreground { color: hsl(var(--destructive-foreground) / var(--tw-text-opacity, 1)); }
+  .border-border { border-color: hsl(var(--border) / var(--tw-border-opacity, 1)); }
+  .ring-ring { --tw-ring-color: hsl(var(--ring) / var(--tw-ring-opacity, 1)); }
+  .bg-input { background-color: hsl(var(--input) / var(--tw-bg-opacity, 1)); }
+  .border-input { border-color: hsl(var(--input) / var(--tw-border-opacity, 1)); }
 }
 
 @layer base {
@@ -76,7 +76,6 @@
   }
 
   body {
-    @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
