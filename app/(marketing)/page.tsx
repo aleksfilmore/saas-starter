@@ -25,16 +25,10 @@ const Glow = ({ className }: { className?: string }) => (
 export default function HomePage() {
   return (
     <div className="relative overflow-hidden bg-gray-950 text-foreground">
-      {/* Enhanced background effects with grid pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      
-      {/* Glowing background orbs */}
-      <div className="absolute top-[20%] left-[5%] w-[25vw] h-[25vw] bg-gradient-to-r from-glitch-cyan/15 to-glitch-pink/8 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-[30%] right-[10%] w-[20vw] h-[20vw] bg-gradient-to-r from-glitch-pink/15 to-glitch-cyan/8 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
-      <div className="absolute top-[60%] left-[20%] w-[15vw] h-[15vw] bg-gradient-to-r from-glitch-lime/10 to-glitch-orange/5 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+      {/* Minimal background - clean like the mockup */}
 
-      {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center text-center pt-20 pb-16 overflow-hidden">
+      {/* Hero Section with Integrated Features */}
+      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gray-950">
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -45,143 +39,132 @@ export default function HomePage() {
           }}
         />
         
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/40"></div>
-        
-        {/* Content overlay */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Main Hero Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex-1 flex items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
             {/* Left side - Text content */}
-            <div className="text-left lg:text-left relative z-20">
+            <div className="text-left">
               <div className="mb-6">
-                <p className="text-lg font-medium mb-2 tracking-wide text-glitch-pink" style={{textShadow: '0 0 10px rgba(236,72,153,0.8), 0 0 20px rgba(236,72,153,0.6), 0 0 30px rgba(236,72,153,0.4), 0 2px 4px rgba(0,0,0,0.8)'}}>The interactive breakup reprogramming ritual</p>
+                <p className="text-glitch-pink text-lg font-semibold tracking-wide" style={{textShadow: '0 0 10px rgba(236,72,153,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                  The interactive breakup reprogramming ritual
+                </p>
               </div>
-              <h1 className="text-6xl font-black tracking-tight lg:text-7xl leading-tight mb-6 relative">
-                <span className="text-white font-black tracking-wider" style={{textShadow: '0 4px 8px rgba(0,0,0,0.8), 0 0 20px rgba(6,182,212,0.3)'}}>CTRL+ALT</span><br />
-                <span className="text-glitch-pink font-black tracking-wider relative" style={{textShadow: '0 0 10px rgba(236,72,153,1), 0 0 20px rgba(236,72,153,0.8), 0 0 40px rgba(236,72,153,0.6), 0 0 60px rgba(236,72,153,0.4), 0 4px 8px rgba(0,0,0,0.8)'}}>
-                  BLOCK
-                  {/* Enhanced glitch effect lines with neon glow */}
-                  <div className="absolute -top-1 -left-1 text-glitch-pink opacity-70 -z-10" style={{textShadow: '0 0 8px rgba(236,72,153,0.6), 0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
-                  <div className="absolute top-1 left-1 text-glitch-pink opacity-50 -z-10" style={{textShadow: '0 0 8px rgba(236,72,153,0.6), 0 2px 4px rgba(0,0,0,0.8)'}}>BLOCK</div>
-                </span>
+              
+              <h1 className="mb-6">
+                <div className="text-6xl lg:text-8xl font-black tracking-tighter leading-none mb-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <span className="text-white" style={{textShadow: '0 0 20px rgba(255,255,255,0.3), 0 4px 8px rgba(0,0,0,0.8)'}}>
+                    CTRL+ALT
+                  </span>
+                </div>
+                <div className="text-6xl lg:text-8xl font-black tracking-tighter leading-none" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
+                  <span className="text-glitch-pink" style={{textShadow: '0 0 20px rgba(236,72,153,0.8), 0 0 40px rgba(236,72,153,0.6), 0 4px 8px rgba(0,0,0,0.8)'}}>
+                    BLOCK
+                  </span>
+                </div>
               </h1>
-              <p className="text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                Reclaim your <span className="text-white font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">sanity</span> (and your <span className="text-glitch-pink font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">savage</span>) with our AI-powered emotional recovery protocol.
+              
+              <p className="text-lg lg:text-xl text-glitch-cyan leading-relaxed mb-8 max-w-lg font-medium" style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                Reclaim your sanity (and your savage) with<br />
+                our AI-powered emotional recovery protocol.
               </p>
-              <div className="mb-12">
+              
+              <div>
                 <a href="/sign-up">
-                  <Button size="lg" className="text-lg rounded-none border-2 border-glitch-pink bg-black/50 backdrop-blur-sm hover:bg-glitch-pink/20 hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] text-glitch-pink font-bold transition-all duration-300 px-12 py-4 uppercase tracking-wider relative overflow-hidden group">
-                    <span className="relative z-10 drop-shadow-lg">BEGIN THE RITUAL</span>
-                    {/* Button glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-glitch-pink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <Button 
+                    size="lg" 
+                    className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-none border-2 border-glitch-pink bg-transparent text-glitch-pink hover:bg-glitch-pink/10 transition-all duration-300"
+                    style={{textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}
+                  >
+                    BEGIN THE RITUAL
                   </Button>
                 </a>
               </div>
             </div>
             
-            {/* Right side - Visual element */}
-            <div className="relative flex justify-center lg:justify-end z-20">
+            {/* Right side - Figure with glow */}
+            <div className="flex justify-center lg:justify-end">
               <div className="relative">
-                {/* Multiple glowing rings */}
-                <div className="absolute inset-0 rounded-full border-4 border-glitch-cyan opacity-80 animate-pulse scale-105"></div>
-                <div className="absolute inset-0 rounded-full border-2 border-glitch-pink opacity-60 animate-pulse scale-110" style={{animationDelay: '1s'}}></div>
-                <div className="absolute inset-0 rounded-full border border-glitch-lime opacity-40 animate-pulse scale-115" style={{animationDelay: '2s'}}></div>
+                {/* Cyan glow ring - exactly like the mockup */}
+                <div className="absolute inset-0 w-80 h-80 lg:w-96 lg:h-96 rounded-full border-4 border-glitch-cyan opacity-90 animate-pulse"></div>
                 
-                {/* Main figure container with enhanced glow and backdrop */}
-                <div className="w-80 h-80 rounded-full bg-gradient-to-br from-gray-900/60 via-blue-900/40 to-purple-900/20 backdrop-blur-sm flex items-center justify-center relative overflow-hidden border-2 border-glitch-cyan/50 shadow-[0_0_50px_rgba(6,182,212,0.3)]">
+                {/* Figure container */}
+                <div className="w-80 h-80 lg:w-96 lg:h-96 rounded-full flex items-center justify-center relative">
+                  {/* The cloaked figure */}
+                  <img
+                    src="/figure.png"
+                    alt="Cloaked figure"
+                    className="w-64 h-64 lg:w-80 lg:h-80 object-contain relative z-10"
+                    style={{
+                      filter: 'brightness(0.7) contrast(1.1) saturate(1.2)'
+                    }}
+                  />
                   
-                  {/* Background tech grid */}
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:20px_20px] opacity-30"></div>
-                  
-                  {/* Cloaked Figure Image */}
-                  <div className="relative w-64 h-64 flex items-center justify-center">
-                    <img
-                      src="/figure.png"
-                      alt="Cloaked figure representing emotional transformation"
-                      className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_20px_rgba(6,182,212,0.4)]"
-                      style={{
-                        filter: 'drop-shadow(0 0 30px rgba(236,72,153,0.3)) drop-shadow(0 0 15px rgba(6,182,212,0.5))'
-                      }}
-                    />
-                    
-                    {/* Enhanced broken heart overlay positioned on the figure */}
-                    <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className="relative">
-                        {/* Heart pieces with enhanced glow */}
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)] animate-pulse"></div>
-                          <div className="w-8 h-8 bg-gradient-to-br from-glitch-pink to-red-500 transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)] animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                        </div>
-                        {/* Enhanced crack effect */}
-                        <div className="absolute top-1/2 left-1/2 w-12 h-1 bg-gradient-to-r from-transparent via-white to-transparent transform -translate-x-1/2 -translate-y-1/2 rotate-12 opacity-90 shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                        <div className="absolute top-1/2 left-1/2 w-10 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+                  {/* Broken heart positioned on chest area */}
+                  <div className="absolute bottom-28 lg:bottom-32 left-1/2 transform -translate-x-1/2 z-20">
+                    <div className="relative">
+                      {/* Heart pieces */}
+                      <div className="flex items-center gap-1">
+                        <div className="w-6 h-6 lg:w-8 lg:h-8 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
+                        <div className="w-6 h-6 lg:w-8 lg:h-8 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
                       </div>
+                      {/* Crack line */}
+                      <div className="absolute top-1/2 left-1/2 w-8 lg:w-10 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
+                      <div className="absolute top-1/2 left-1/2 w-8 lg:w-10 h-px bg-white/50 transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
                     </div>
                   </div>
-                  
-                  {/* Enhanced glow effects */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-glitch-cyan/15 to-transparent rounded-full"></div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-glitch-pink/10 to-glitch-purple/10 rounded-full"></div>
-                  
-                  {/* Floating particles around the figure */}
-                  <div className="absolute top-8 left-8 w-1 h-1 bg-glitch-cyan rounded-full animate-ping opacity-60 shadow-[0_0_5px_rgba(6,182,212,0.8)]"></div>
-                  <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-glitch-pink rounded-full animate-ping opacity-50 shadow-[0_0_5px_rgba(236,72,153,0.8)]" style={{animationDelay: '1s'}}></div>
-                  <div className="absolute bottom-16 left-16 w-1 h-1 bg-glitch-lime rounded-full animate-ping opacity-70 shadow-[0_0_5px_rgba(132,204,22,0.8)]" style={{animationDelay: '2s'}}></div>
-                  <div className="absolute bottom-12 right-8 w-2 h-2 bg-glitch-orange rounded-full animate-ping opacity-40 shadow-[0_0_5px_rgba(249,115,22,0.8)]" style={{animationDelay: '1.5s'}}></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section id="how-it-works" className="py-20 bg-transparent w-full relative">
-        {/* Section divider */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-glitch-cyan to-transparent opacity-50"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-             <h2 className="text-4xl font-black text-white mb-6 relative">
-               Your Arsenal for <span className="text-glitch-pink drop-shadow-[0_0_20px_rgba(236,72,153,0.5)]">Emotional Recovery</span>
-               {/* Subtle underline effect */}
-               <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-glitch-cyan to-transparent"></div>
-             </h2>
-             <p className="text-xl text-glitch-cyan max-w-2xl mx-auto leading-relaxed">Tools engineered for <span className="text-glitch-lime font-bold drop-shadow-lg">structured chaos</span> healing.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-2 border-glitch-cyan rounded-lg p-8 text-center group hover:bg-glitch-cyan/5 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all duration-500 relative overflow-hidden">
-              {/* Card background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-glitch-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="w-16 h-16 mx-auto mb-6 rounded-lg bg-gradient-to-br from-glitch-cyan/20 to-glitch-cyan/10 flex items-center justify-center border border-glitch-cyan shadow-[0_0_20px_rgba(6,182,212,0.3)] relative z-10">
-                <Bot className="h-8 w-8 text-glitch-cyan drop-shadow-lg" />
+        {/* Features Section - Integrated into Hero, positioned at bottom */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-16">
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            
+            {/* AI TOOLS Card */}
+            <div className="bg-gray-900/40 border-2 border-glitch-cyan rounded-lg p-6 text-left shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all duration-300 backdrop-blur-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-glitch-cyan rounded-lg flex items-center justify-center mr-4 shadow-lg">
+                  <Bot className="h-6 w-6 text-gray-900 font-bold" />
+                </div>
+                <h3 className="text-xl font-black text-white tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>AI TOOLS</h3>
               </div>
-              <h3 className="text-xl font-bold text-white mb-4 relative z-10 drop-shadow-lg">AI TOOLS</h3>
-              <p className="text-glitch-cyan relative z-10">Choke your breakup to death, <span className="text-white font-semibold">virtually</span>.</p>
+              <p className="text-white text-base font-medium leading-relaxed">
+                Choke your breakup<br />
+                to death, virtually.
+              </p>
             </div>
             
-            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-2 border-glitch-pink rounded-lg p-8 text-center group hover:bg-glitch-pink/5 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] transition-all duration-500 relative overflow-hidden">
-              {/* Card background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-glitch-pink/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="w-16 h-16 mx-auto mb-6 rounded-lg bg-gradient-to-br from-glitch-pink/20 to-glitch-pink/10 flex items-center justify-center border border-glitch-pink shadow-[0_0_20px_rgba(236,72,153,0.3)] relative z-10">
-                <Award className="h-8 w-8 text-glitch-pink drop-shadow-lg" />
+            {/* GAMIFIED HEALING Card */}
+            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] transition-all duration-300 backdrop-blur-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-glitch-pink rounded-lg flex items-center justify-center mr-4 shadow-lg">
+                  <Award className="h-6 w-6 text-white font-bold" />
+                </div>
+                <h3 className="text-xl font-black text-white tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>GAMIFIED HEALING</h3>
               </div>
-              <h3 className="text-xl font-bold text-white mb-4 relative z-10 drop-shadow-lg">GAMIFIED HEALING</h3>
-              <p className="text-glitch-cyan relative z-10">Level up your <span className="text-glitch-pink font-semibold">No Contact</span> streak.</p>
+              <p className="text-white text-base font-medium leading-relaxed">
+                Level up your<br />
+                No Contact streak.
+              </p>
             </div>
             
-            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-2 border-glitch-pink rounded-lg p-8 text-center group hover:bg-glitch-pink/5 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] transition-all duration-500 relative overflow-hidden">
-              {/* Card background glow */}
-              <div className="absolute inset-0 bg-gradient-to-br from-glitch-pink/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="w-16 h-16 mx-auto mb-6 rounded-lg bg-gradient-to-br from-glitch-pink/20 to-glitch-pink/10 flex items-center justify-center border border-glitch-pink shadow-[0_0_20px_rgba(236,72,153,0.3)] relative z-10">
-                <ShieldQuestion className="h-8 w-8 text-glitch-pink drop-shadow-lg" />
+            {/* CONFESSIONAL Card */}
+            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] transition-all duration-300 backdrop-blur-sm">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-glitch-pink rounded-lg flex items-center justify-center mr-4 shadow-lg">
+                  <ShieldQuestion className="h-6 w-6 text-white font-bold" />
+                </div>
+                <h3 className="text-xl font-black text-white tracking-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>CONFESSIONAL</h3>
               </div>
-              <h3 className="text-xl font-bold text-white mb-4 relative z-10 drop-shadow-lg">CONFESSIONAL</h3>
-              <p className="text-glitch-cyan relative z-10">Vent on our private <span className="text-white font-semibold">wall of doom</span>.</p>
+              <p className="text-white text-base font-medium leading-relaxed">
+                Vent on our private<br />
+                wall of doom.
+              </p>
             </div>
+            
           </div>
         </div>
       </section>
