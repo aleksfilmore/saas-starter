@@ -38,6 +38,82 @@ export const sessions = pgTable('sessions', {
 });
 
 // =====================================
+// NO CONTACT TRACKER TABLES
+// =====================================
+
+export const noContactPeriods = pgTable('no_contact_periods', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  contactName: text('contact_name').notNull(),
+  startDate: timestamp('start_date', { withTimezone: true, mode: 'date' }).notNull(),
+  targetDays: integer('target_days').notNull(),
+  isActive: boolean('is_active').notNull().default(true),
+  streakShieldsUsed: integer('streak_shields_used').notNull().default(0),
+  maxStreakShieldsPerWeek: integer('max_streak_shields_per_week').notNull().default(2),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const noContactBreaches = pgTable('no_contact_breaches', {
+  id: text('id').primaryKey(),
+  periodId: text('period_id').notNull().references(() => noContactPeriods.id),
+  breachDate: timestamp('breach_date', { withTimezone: true, mode: 'date' }).notNull(),
+  breachType: text('breach_type').notNull(),
+  notes: text('notes'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const dailyCheckIns = pgTable('daily_check_ins', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  periodId: text('period_id').notNull().references(() => noContactPeriods.id),
+  checkInDate: timestamp('check_in_date', { withTimezone: true, mode: 'date' }).notNull(),
+  didTextTrash: boolean('did_text_trash').notNull().default(false),
+  mood: integer('mood').notNull(),
+  hadIntrusiveThoughts: boolean('had_intrusive_thoughts').notNull().default(false),
+  notes: text('notes'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
+// RITUAL SYSTEM TABLES
+// =====================================
+
+export const dailyRituals = pgTable('daily_rituals', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  category: text('category').notNull(),
+  targetFrequency: text('target_frequency').notNull().default('daily'),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const ritualCompletions = pgTable('ritual_completions', {
+  id: text('id').primaryKey(),
+  ritualId: text('ritual_id').notNull().references(() => dailyRituals.id),
+  userId: text('user_id').notNull().references(() => users.id),
+  completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }).notNull(),
+  notes: text('notes'),
+  mood: integer('mood'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const userDailyPrescriptions = pgTable('user_daily_prescriptions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  prescribedDate: timestamp('prescribed_date', { withTimezone: true, mode: 'date' }).notNull(),
+  ritualKey: text('ritual_key').notNull(),
+  shufflesUsed: integer('shuffles_used').notNull().default(0),
+  isCompleted: boolean('is_completed').notNull().default(false),
+  completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
+  completionNotes: text('completion_notes'),
+  completionMood: integer('completion_mood'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
 // WALL OF WOUNDS TABLES
 // =====================================
 
@@ -138,6 +214,18 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
+export type NoContactPeriod = typeof noContactPeriods.$inferSelect;
+export type NewNoContactPeriod = typeof noContactPeriods.$inferInsert;
+export type NoContactBreach = typeof noContactBreaches.$inferSelect;
+export type NewNoContactBreach = typeof noContactBreaches.$inferInsert;
+export type DailyCheckIn = typeof dailyCheckIns.$inferSelect;
+export type NewDailyCheckIn = typeof dailyCheckIns.$inferInsert;
+export type DailyRitual = typeof dailyRituals.$inferSelect;
+export type NewDailyRitual = typeof dailyRituals.$inferInsert;
+export type RitualCompletion = typeof ritualCompletions.$inferSelect;
+export type NewRitualCompletion = typeof ritualCompletions.$inferInsert;
+export type UserDailyPrescription = typeof userDailyPrescriptions.$inferSelect;
+export type NewUserDailyPrescription = typeof userDailyPrescriptions.$inferInsert;
 export type AnonymousPost = typeof anonymousPosts.$inferSelect;
 export type NewAnonymousPost = typeof anonymousPosts.$inferInsert;
 export type WallPostReaction = typeof wallPostReactions.$inferSelect;
