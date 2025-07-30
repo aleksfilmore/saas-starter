@@ -7,6 +7,35 @@ export const users = pgTable('users', {
   id: text('id').primaryKey(), // Changed from serial to text to match Lucia expectations
   email: varchar('email', { length: 255 }).notNull().unique(),
   hashedPassword: text('password_hash').notNull(),
+  
+  // Onboarding & Identity
+  username: text('username').unique(), // Faceless alias/codename
+  avatar: text('avatar'), // System icon identifier
+  onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
+  
+  // Subscription & Gamification
+  subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'), // ghost_mode, firewall_mode, cult_leader
+  xpPoints: integer('xp_points').notNull().default(0),
+  byteBalance: integer('byte_balance').notNull().default(100), // Start with 100 Bytes
+  glowUpLevel: integer('glow_up_level').notNull().default(1),
+  
+  // Admin & Moderation
+  isAdmin: boolean('is_admin').notNull().default(false),
+  isBanned: boolean('is_banned').notNull().default(false),
+  lastActiveAt: timestamp('last_active_at', {
+    withTimezone: true,
+    mode: 'date',
+  }),
+  
+  // Timestamps
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
 });
 
 // Lucia auth sessions table (new for auth system)
@@ -184,6 +213,57 @@ export const aiLetters = pgTable('ai_letters', {
   generatedContent: text('generated_content').notNull(),
   isPrivate: boolean('is_private').notNull().default(true),
   wasSent: boolean('was_sent').notNull().default(false),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Badges System
+export const badges = pgTable('badges', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),
+  description: text('description').notNull(),
+  iconUrl: text('icon_url').notNull(),
+  category: text('category').notNull(), // 'streak', 'ritual', 'ai_usage', 'community', 'milestone'
+  xpReward: integer('xp_reward').notNull().default(0),
+  byteReward: integer('byte_reward').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// User Badge Achievements
+export const userBadges = pgTable('user_badges', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  badgeId: text('badge_id')
+    .notNull()
+    .references(() => badges.id),
+  earnedAt: timestamp('earned_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+  metadata: text('metadata'), // JSON string for badge-specific data
+});
+
+// Admin Audit Log
+export const adminAuditLog = pgTable('admin_audit_log', {
+  id: text('id').primaryKey(),
+  adminUserId: text('admin_user_id')
+    .notNull()
+    .references(() => users.id),
+  action: text('action').notNull(), // 'user_tier_change', 'badge_grant', 'content_moderate', etc.
+  targetUserId: text('target_user_id')
+    .references(() => users.id),
+  targetResourceId: text('target_resource_id'), // ID of post, ritual, etc. being acted upon
+  oldValue: text('old_value'),
+  newValue: text('new_value'),
+  reason: text('reason'),
   createdAt: timestamp('created_at', {
     withTimezone: true,
     mode: 'date',

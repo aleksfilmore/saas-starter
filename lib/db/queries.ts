@@ -268,3 +268,46 @@ export async function getUserPrescriptionHistory(days: number = 30) {
     prescribedDate: prescription.prescribedDate,
   }));
 }
+
+// User Management Queries
+export async function getUserById(userId: string) {
+  const userFromDb = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
+
+  if (!userFromDb) {
+    return null;
+  }
+
+  // Return user data without sensitive information
+  return {
+    id: userFromDb.id,
+    email: userFromDb.email,
+    username: userFromDb.username,
+    avatar: userFromDb.avatar,
+    subscriptionTier: userFromDb.subscriptionTier,
+    xpPoints: userFromDb.xpPoints,
+    byteBalance: userFromDb.byteBalance,
+    glowUpLevel: userFromDb.glowUpLevel,
+    hasCompletedOnboarding: userFromDb.hasCompletedOnboarding,
+    isAdmin: userFromDb.isAdmin,
+    createdAt: userFromDb.createdAt,
+    onboardedAt: userFromDb.onboardedAt,
+  };
+}
+
+export async function updateUser(userId: string, updates: Partial<{
+  username: string;
+  avatar: string;
+  subscriptionTier: string;
+  xpPoints: number;
+  byteBalance: number;
+  glowUpLevel: number;
+  hasCompletedOnboarding: boolean;
+  isAdmin: boolean;
+  onboardedAt: Date;
+}>) {
+  await db.update(users)
+    .set(updates)
+    .where(eq(users.id, userId));
+}
