@@ -8,7 +8,7 @@ import { users } from '@/lib/db/schema';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 
 // This interface defines the shape of the state object.
@@ -62,6 +62,11 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
 
   try {
     console.log('Signup attempt for email:', email.toLowerCase());
+    console.log('Attempting to connect to database...');
+    
+    // Test basic database connection first
+    const testConnection = await db.execute(sql`SELECT 1 as test`);
+    console.log('Database connection test:', testConnection);
     
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, email.toLowerCase()),
@@ -82,6 +87,16 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
       id: userId,
       email: email.toLowerCase(),
       hashedPassword: hashedPassword,
+      username: null, // Allow null for now
+      avatar: null,
+      onboardingCompleted: false,
+      subscriptionTier: 'ghost_mode',
+      xpPoints: 0,
+      byteBalance: 100,
+      glowUpLevel: 1,
+      isAdmin: false,
+      isBanned: false,
+      lastActiveAt: null,
     }).returning({ id: users.id });
     console.log('New user created with ID:', newUser.id);
 

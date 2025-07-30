@@ -279,20 +279,20 @@ export async function getUserById(userId: string) {
     return null;
   }
 
-  // Return user data without sensitive information
+  // Return user data without sensitive information - only basic fields for now
   return {
     id: userFromDb.id,
     email: userFromDb.email,
-    username: userFromDb.username,
-    avatar: userFromDb.avatar,
-    subscriptionTier: userFromDb.subscriptionTier,
-    xpPoints: userFromDb.xpPoints,
-    byteBalance: userFromDb.byteBalance,
-    glowUpLevel: userFromDb.glowUpLevel,
-    hasCompletedOnboarding: userFromDb.hasCompletedOnboarding,
-    isAdmin: userFromDb.isAdmin,
+    // username: userFromDb.username,
+    // avatar: userFromDb.avatar,
+    // subscriptionTier: userFromDb.subscriptionTier,
+    // xpPoints: userFromDb.xpPoints,
+    // byteBalance: userFromDb.byteBalance,
+    // glowUpLevel: userFromDb.glowUpLevel,
+    // hasCompletedOnboarding: userFromDb.hasCompletedOnboarding,
+    // isAdmin: userFromDb.isAdmin,
     createdAt: userFromDb.createdAt,
-    onboardedAt: userFromDb.onboardedAt,
+    // onboardedAt: userFromDb.onboardedAt,
   };
 }
 

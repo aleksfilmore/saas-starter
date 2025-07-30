@@ -11,10 +11,10 @@ export default async function OnboardingPage() {
   }
 
   // Check if user has already completed onboarding
-  const userData = await getUserById(user.id);
-  if (userData?.hasCompletedOnboarding) {
-    redirect('/dashboard');
-  }
+  // const userData = await getUserById(user.id);
+  // if (userData?.hasCompletedOnboarding) {
+  //   redirect('/dashboard');
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black">

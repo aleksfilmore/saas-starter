@@ -4,7 +4,7 @@ import * as path from 'path';
 
 async function runMigration() {
   try {
-    const sql = postgres(process.env.DATABASE_URL || process.env.POSTGRES_URL!);
+    const sql = postgres(process.env.POSTGRES_URL || process.env.DATABASE_URL!);
     
     console.log('🔄 Applying database migration...');
     
@@ -13,7 +13,7 @@ async function runMigration() {
     const migrationSql = fs.readFileSync(migrationPath, 'utf8');
     
     // Split by statement-breakpoint and execute each statement
-    const statements = migrationSql.split('-->statement-breakpoint').map(s => s.trim()).filter(s => s);
+    const statements = migrationSql.split('--> statement-breakpoint').map(s => s.trim()).filter(s => s);
     
     for (const statement of statements) {
       if (statement && !statement.startsWith('--')) {
