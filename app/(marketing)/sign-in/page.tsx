@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -28,20 +28,20 @@ function LoginButton() {
   );
 }
 
-const initialState: ActionResult = {
-  error: null,
-  success: false,
-};
-
 export default function SignInPage() {
   const router = useRouter();
-  const [state, formAction] = useActionState(login, initialState);
+  const [isPending, startTransition] = useTransition();
+  const [state, setState] = useState<ActionResult>({ error: null, success: false });
 
-  useEffect(() => {
-    if (state.success) {
-      router.push('/dashboard');
-    }
-  }, [state, router]);
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      const result = await login(state, formData);
+      setState(result);
+      if (result.success) {
+        router.push('/dashboard');
+      }
+    });
+  };
 
   return (
     <div className="relative min-h-screen bg-gray-950 text-foreground overflow-hidden">
@@ -72,7 +72,7 @@ export default function SignInPage() {
               Re-enter the emotional reformat zone
             </p>
           </div>
-          <form action={formAction} className="grid gap-6">
+          <form action={handleSubmit} className="grid gap-6">
             <div className="grid gap-3">
               <Label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Email</Label>
               <Input

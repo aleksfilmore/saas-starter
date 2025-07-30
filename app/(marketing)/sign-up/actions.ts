@@ -5,7 +5,7 @@
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
-import { Argon2id } from 'oslo/password';
+import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
@@ -73,7 +73,7 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     }
 
     console.log('Hashing password...');
-    const hashedPassword = await new Argon2id().hash(password);
+    const hashedPassword = await bcrypt.hash(password, 12);
     console.log('Password hashed successfully');
 
     console.log('Inserting new user...');

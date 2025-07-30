@@ -5,7 +5,7 @@
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
-import { Argon2id } from 'oslo/password';
+import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
@@ -40,7 +40,7 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
     }
 
     console.log('Verifying password...');
-    const validPassword = await new Argon2id().verify(existingUser.hashedPassword, password);
+    const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
     console.log('Password verification:', validPassword ? 'Valid' : 'Invalid');
     
     if (!validPassword) {

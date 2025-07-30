@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useActionState } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { signup } from './actions';
@@ -37,20 +36,20 @@ function SignUpButton() {
   );
 }
 
-const initialState = {
-  error: null,
-  success: false,
-};
-
 export default function SignUpPage() {
   const router = useRouter();
-  const [state, formAction] = useActionState(signup, initialState);
+  const [isPending, startTransition] = useTransition();
+  const [state, setState] = useState<any>({ error: null, success: false });
 
-  useEffect(() => {
-    if (state.success) {
-      router.push('/dashboard');
-    }
-  }, [state, router]);
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      const result = await signup(state, formData);
+      setState(result);
+      if (result.success) {
+        router.push('/dashboard');
+      }
+    });
+  };
 
   return (
     <div className="relative min-h-screen bg-gray-950 text-foreground overflow-hidden">
@@ -82,7 +81,7 @@ export default function SignUpPage() {
               Begin your emotional OS upgrade — <span className="text-blue-400 font-bold">FREE</span>
             </p>
           </div>
-          <form action={formAction} className="grid gap-6">
+          <form action={handleSubmit} className="grid gap-6">
             <div className="grid gap-3">
               <label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                 Email
