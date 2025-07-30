@@ -149,10 +149,22 @@ const THERAPY_SCENARIOS: TherapyScenario[] = [
 interface WeeklyTherapySessionProps {
   userXP: number;
   userWeek: number;
+  userTier: 'free' | 'firewall' | 'cult-leader';
+  lastSessionDate?: Date;
   onComplete: (xp: number, bytes: number) => void;
+  onPurchaseSession?: () => void;
+  onXPUnlock?: (cost: number) => void;
 }
 
-export default function WeeklyTherapySession({ userXP, userWeek, onComplete }: WeeklyTherapySessionProps) {
+export default function WeeklyTherapySession({ 
+  userXP, 
+  userWeek, 
+  userTier, 
+  lastSessionDate, 
+  onComplete, 
+  onPurchaseSession, 
+  onXPUnlock 
+}: WeeklyTherapySessionProps) {
   const [currentScenario, setCurrentScenario] = useState<TherapyScenario | null>(null);
   const [selectedChoice, setSelectedChoice] = useState<TherapyChoice | null>(null);
   const [showResult, setShowResult] = useState(false);
@@ -160,10 +172,173 @@ export default function WeeklyTherapySession({ userXP, userWeek, onComplete }: W
 
   const availableScenario = THERAPY_SCENARIOS.find(s => s.week === userWeek) || THERAPY_SCENARIOS[0];
 
+  // Calculate session availability
+  const getSessionAvailability = () => {
+    if (!lastSessionDate) return { canAccess: true, reason: 'first-session' };
+    
+    const now = new Date();
+    const daysSinceLastSession = Math.floor((now.getTime() - lastSessionDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    const requiredDays = userTier === 'free' ? 30 : 14; // Monthly for free, bi-weekly for paid
+    
+    if (daysSinceLastSession >= requiredDays) {
+      return { canAccess: true, reason: 'cooldown-complete' };
+    }
+    
+    const daysRemaining = requiredDays - daysSinceLastSession;
+    return { 
+      canAccess: false, 
+      reason: 'cooldown-active',
+      daysRemaining,
+      requiredDays
+    };
+  };
+
+  const sessionAvailability = getSessionAvailability();
+  const xpUnlockCost = userTier === 'free' ? 200 : 150; // Higher cost for free users
+  const canUnlockWithXP = userXP >= xpUnlockCost;
+
   const startSession = () => {
+    if (!sessionAvailability.canAccess) return;
     setCurrentScenario(availableScenario);
     setIsSessionStarted(true);
   };
+
+  const handleXPUnlock = () => {
+    if (onXPUnlock && canUnlockWithXP) {
+      onXPUnlock(xpUnlockCost);
+      setCurrentScenario(availableScenario);
+      setIsSessionStarted(true);
+    }
+  };
+
+  const handlePurchaseSession = () => {
+    if (onPurchaseSession) {
+      onPurchaseSession();
+    }
+  };
+
+  // Session locked - show unlock options
+  if (!sessionAvailability.canAccess && !isSessionStarted) {
+    return (
+      <Card className="bg-gradient-to-br from-red-900/20 via-orange-900/30 to-yellow-900/20 border-2 border-orange-500/50 backdrop-blur-sm">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+            🔒 SESSION LOCKED
+          </CardTitle>
+          <p className="text-orange-400 text-lg font-medium">
+            {sessionAvailability.reason === 'cooldown-active' 
+              ? `Next session in ${sessionAvailability.daysRemaining} days`
+              : 'Therapy session on cooldown'
+            }
+          </p>
+          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 mx-auto">
+            {userTier === 'free' ? 'Monthly Sessions' : 'Bi-weekly Sessions'} - {userTier.toUpperCase()} Tier
+          </Badge>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          <div className="text-center">
+            <p className="text-white text-lg mb-4 leading-relaxed">
+              Deep therapy sessions need time to integrate. But if you're in crisis or need extra support...
+            </p>
+          </div>
+
+          {/* Emergency unlock options */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* XP Unlock */}
+            <div className="bg-purple-900/20 border-2 border-purple-500/50 rounded-xl p-6">
+              <div className="text-center mb-4">
+                <Trophy className="h-12 w-12 text-purple-400 mx-auto mb-3" />
+                <h3 className="text-xl font-black text-purple-400" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                  UNLOCK WITH XP
+                </h3>
+                <p className="text-white text-sm mt-2">Use your emotional growth points</p>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Cost:</span>
+                  <span className="text-purple-400 font-bold">{xpUnlockCost} XP</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Your XP:</span>
+                  <span className={`font-bold ${userXP >= xpUnlockCost ? 'text-green-400' : 'text-red-400'}`}>
+                    {userXP} XP
+                  </span>
+                </div>
+                
+                <Button
+                  onClick={handleXPUnlock}
+                  disabled={!canUnlockWithXP}
+                  className={`w-full mt-4 font-black ${
+                    canUnlockWithXP 
+                      ? 'bg-purple-500 hover:bg-purple-600 text-white' 
+                      : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  {canUnlockWithXP ? '🚀 UNLOCK NOW' : '❌ NOT ENOUGH XP'}
+                </Button>
+                
+                {!canUnlockWithXP && (
+                  <p className="text-xs text-gray-400 text-center mt-2">
+                    Complete more rituals to earn XP
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Cash Unlock */}
+            <div className="bg-green-900/20 border-2 border-green-500/50 rounded-xl p-6">
+              <div className="text-center mb-4">
+                <Zap className="h-12 w-12 text-green-400 mx-auto mb-3" />
+                <h3 className="text-xl font-black text-green-400" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                  EMERGENCY SESSION
+                </h3>
+                <p className="text-white text-sm mt-2">Instant access, any time</p>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="text-center">
+                  <div className="text-3xl font-black text-green-400 mb-2">$5.00</div>
+                  <p className="text-gray-300 text-sm">One-time emergency unlock</p>
+                </div>
+                
+                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+                  <p className="text-green-400 text-xs font-medium text-center">
+                    ✨ Perfect for crisis moments or when you need extra support
+                  </p>
+                </div>
+                
+                <Button
+                  onClick={handlePurchaseSession}
+                  className="w-full bg-green-500 hover:bg-green-600 text-white font-black"
+                >
+                  💳 PURCHASE SESSION
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Tier upgrade suggestion */}
+          <div className="bg-gray-800/50 border border-blue-500/30 rounded-xl p-4">
+            <div className="text-center">
+              <h4 className="text-blue-400 font-bold mb-2">💡 Want More Sessions?</h4>
+              <p className="text-gray-300 text-sm mb-3">
+                {userTier === 'free' 
+                  ? 'Upgrade to Firewall Mode for bi-weekly sessions + unlimited Protocol Ghost'
+                  : 'Cult Leader tier gets priority access + bonus XP for faster unlocks'
+                }
+              </p>
+              <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+                {userTier === 'free' ? '⬆️ UPGRADE TO FIREWALL' : '👑 JOIN CULT LEADERS'}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleChoiceSelect = (choice: TherapyChoice) => {
     setSelectedChoice(choice);
@@ -189,14 +364,23 @@ export default function WeeklyTherapySession({ userXP, userWeek, onComplete }: W
       <Card className="bg-gradient-to-br from-purple-900/20 via-pink-900/30 to-red-900/20 border-2 border-purple-500/50 backdrop-blur-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-            🎮 WEEKLY AI THERAPY
+            🎮 AI THERAPY SESSION
           </CardTitle>
           <p className="text-purple-400 text-lg font-medium">
             Choose-your-path healing session
           </p>
-          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50 mx-auto">
-            Week {userWeek}: {availableScenario.title}
-          </Badge>
+          <div className="flex justify-center space-x-2 mt-2">
+            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50">
+              Week {userWeek}: {availableScenario.title}
+            </Badge>
+            <Badge className={`${
+              userTier === 'free' ? 'bg-blue-500/20 text-blue-400' :
+              userTier === 'firewall' ? 'bg-orange-500/20 text-orange-400' :
+              'bg-purple-500/20 text-purple-400'
+            }`}>
+              {userTier.toUpperCase()} TIER
+            </Badge>
+          </div>
         </CardHeader>
         
         <CardContent className="space-y-6">
@@ -204,9 +388,14 @@ export default function WeeklyTherapySession({ userXP, userWeek, onComplete }: W
             <p className="text-white text-lg mb-4 leading-relaxed">
               Black Mirror meets therapy. Navigate emotional scenarios, get XP for growth choices.
             </p>
-            <p className="text-fuchsia-400 text-sm font-medium">
-              ⚡ Each path leads to unique AI guidance and rewards
-            </p>
+            <div className="bg-gray-800/50 rounded-lg p-4 border border-purple-500/30 mb-4">
+              <p className="text-fuchsia-400 text-sm font-medium">
+                ⚡ Session frequency: {userTier === 'free' ? 'Monthly' : 'Bi-weekly'}
+              </p>
+              <p className="text-gray-400 text-xs mt-1">
+                Emergency sessions available via XP ({xpUnlockCost} XP) or $5
+              </p>
+            </div>
           </div>
           
           <div className="flex justify-center">
@@ -217,6 +406,20 @@ export default function WeeklyTherapySession({ userXP, userWeek, onComplete }: W
             >
               Start Session <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
+          </div>
+          
+          {/* Session info */}
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div className="bg-gray-800/30 rounded-lg p-3 border border-green-500/30">
+              <h4 className="text-green-400 font-bold mb-1">✅ This Session</h4>
+              <p className="text-gray-300">Free access available</p>
+            </div>
+            <div className="bg-gray-800/30 rounded-lg p-3 border border-orange-500/30">
+              <h4 className="text-orange-400 font-bold mb-1">⏰ Next Session</h4>
+              <p className="text-gray-300">
+                {userTier === 'free' ? '30 days' : '14 days'} from completion
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

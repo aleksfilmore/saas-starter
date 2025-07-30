@@ -15,14 +15,33 @@ export default function AITherapyDemo() {
     bytes: 320,
     week: 2,
     tier: 'firewall' as 'free' | 'firewall' | 'cult-leader',
-    dailyChatUsed: false
+    dailyChatUsed: false,
+    lastSessionDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) // 10 days ago
   });
 
   const handleTherapyComplete = (xp: number, bytes: number) => {
     setUserStats(prev => ({
       ...prev,
       xp: prev.xp + xp,
-      bytes: prev.bytes + bytes
+      bytes: prev.bytes + bytes,
+      lastSessionDate: new Date()
+    }));
+  };
+
+  const handleXPUnlock = (cost: number) => {
+    setUserStats(prev => ({
+      ...prev,
+      xp: prev.xp - cost,
+      lastSessionDate: new Date() // Reset cooldown
+    }));
+  };
+
+  const handlePurchaseSession = () => {
+    // In real app, this would trigger Stripe payment
+    console.log('Purchasing emergency session for $5');
+    setUserStats(prev => ({
+      ...prev,
+      lastSessionDate: new Date() // Reset cooldown after purchase
     }));
   };
 
@@ -109,9 +128,9 @@ export default function AITherapyDemo() {
                     <div className="bg-gray-800/50 rounded-lg p-4 border border-purple-500/30">
                       <h4 className="font-bold text-white mb-2">📝 How It Works</h4>
                       <ul className="text-sm text-gray-300 space-y-1">
-                        <li>• Weekly unlocked scenarios based on your progress</li>
+                        <li>• Monthly therapy sessions (not weekly)</li>
                         <li>• 4 different response paths per scenario</li>
-                        <li>• Personalized AI feedback for each choice</li>
+                        <li>• Emergency unlock: 200 XP or $5</li>
                         <li>• XP rewards scale with emotional growth choices</li>
                       </ul>
                     </div>
@@ -131,7 +150,11 @@ export default function AITherapyDemo() {
                 <WeeklyTherapySession 
                   userXP={userStats.xp}
                   userWeek={userStats.week}
+                  userTier={userStats.tier}
+                  lastSessionDate={userStats.lastSessionDate}
                   onComplete={handleTherapyComplete}
+                  onXPUnlock={handleXPUnlock}
+                  onPurchaseSession={handlePurchaseSession}
                 />
               </CardContent>
             </Card>
@@ -248,10 +271,16 @@ export default function AITherapyDemo() {
                     </thead>
                     <tbody className="text-sm">
                       <tr className="border-b border-gray-800">
-                        <td className="p-4 text-white font-medium">Weekly AI Therapy Sessions</td>
-                        <td className="p-4 text-center text-green-400">✅</td>
-                        <td className="p-4 text-center text-green-400">✅</td>
-                        <td className="p-4 text-center text-green-400">✅</td>
+                        <td className="p-4 text-white font-medium">AI Therapy Session Frequency</td>
+                        <td className="p-4 text-center text-blue-400">Monthly</td>
+                        <td className="p-4 text-center text-orange-400">Bi-weekly</td>
+                        <td className="p-4 text-center text-purple-400">Bi-weekly + Priority</td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-4 text-white font-medium">Emergency Session Unlock</td>
+                        <td className="p-4 text-center text-blue-400">200 XP or $5</td>
+                        <td className="p-4 text-center text-orange-400">150 XP or $5</td>
+                        <td className="p-4 text-center text-purple-400">100 XP or $5</td>
                       </tr>
                       <tr className="border-b border-gray-800">
                         <td className="p-4 text-white font-medium">Choose-Your-Path Scenarios</td>

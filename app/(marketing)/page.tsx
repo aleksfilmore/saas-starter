@@ -93,7 +93,7 @@ export default function HomePage() {
               <div className="mb-8 space-y-2">
                 <div className="flex items-center text-sm font-medium text-white/80">
                   <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
-                  <span>🎮 Weekly AI Therapy Sessions (Choose-your-path style)</span>
+                  <span>🎮 AI Therapy Sessions (Monthly/Bi-weekly + Emergency unlock)</span>
                 </div>
                 <div className="flex items-center text-sm font-medium text-white/80">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mr-3 animate-pulse"></div>
@@ -119,6 +119,20 @@ export default function HomePage() {
                     🔥 JOIN THE CULT FREE 🔥
                   </Button>
                 </a>
+                <div className="mt-4">
+                  <a href="/ai-therapy-demo">
+                    <Button 
+                      size="lg" 
+                      className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-lg bg-transparent border-2 border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-gray-900 transition-all duration-300 hover:scale-105"
+                      style={{
+                        fontFamily: 'system-ui, -apple-system, sans-serif', 
+                        fontWeight: '900'
+                      }}
+                    >
+                      🎮 TRY AI THERAPY DEMO 🎮
+                    </Button>
+                  </a>
+                </div>
                 <p className="text-xs text-white/60 mt-2 font-medium">No credit card. No judgment. Just digital exorcism.</p>
               </div>
             </div>
@@ -187,13 +201,13 @@ export default function HomePage() {
                   <span className="text-2xl">🎮</span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-black text-purple-400 tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>CHOOSE-YOUR-PATH THERAPY</h3>
+                  <h3 className="text-xl font-black text-purple-400 tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>AI THERAPY SESSIONS</h3>
                   <p className="text-white text-sm font-medium leading-relaxed">
-                    Weekly AI sessions. Black Mirror meets therapy.<br />
-                    <span className="text-purple-400">"You almost texted them..." → Choose your response → Get XP</span>
+                    Monthly deep-dive sessions. Black Mirror meets therapy.<br />
+                    <span className="text-purple-400">Emergency unlock: XP or $5. Bi-weekly for paid tiers.</span>
                   </p>
                   <div className="mt-2 text-xs">
-                    <span className="bg-purple-400/20 text-purple-400 px-2 py-1 rounded-full font-bold">Unlocks weekly</span>
+                    <span className="bg-purple-400/20 text-purple-400 px-2 py-1 rounded-full font-bold">Freemium: Monthly</span>
                   </div>
                 </div>
               </div>
