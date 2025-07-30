@@ -103,8 +103,21 @@
         async function testServer() {
             try {
                 showResult('serverResult', 'Testing connection...', 'info');
-                const response = await fetch(`${API_BASE}/api/test`);
+                console.log('Attempting to connect to:', `${API_BASE}/api/test`);
+                
+                const response = await fetch(`${API_BASE}/api/test`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
                 const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (response.ok) {
                     showResult('serverResult', `✅ ${data.message} (${data.timestamp})`, 'success');
@@ -112,6 +125,7 @@
                     showResult('serverResult', `❌ Server error: ${data.error}`, 'error');
                 }
             } catch (error) {
+                console.error('Fetch error details:', error);
                 showResult('serverResult', `❌ Connection failed: ${error.message}`, 'error');
             }
         }
