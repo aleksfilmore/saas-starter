@@ -60,27 +60,38 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
   }
 
   try {
+    console.log('Signup attempt for email:', email.toLowerCase());
+    
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, email.toLowerCase()),
     });
+    console.log('Existing user check complete:', existingUser ? 'User exists' : 'No existing user');
 
     if (existingUser) {
       return { error: 'An account with this email already exists. Try signing in instead.', success: false };
     }
 
+    console.log('Hashing password...');
     const hashedPassword = await new Argon2id().hash(password);
+    console.log('Password hashed successfully');
 
+    console.log('Inserting new user...');
     const [newUser] = await db.insert(users).values({
       email: email.toLowerCase(),
       hashedPassword: hashedPassword,
     }).returning({ id: users.id });
+    console.log('New user created with ID:', newUser.id);
 
-        const session = await lucia.createSession(newUser.id.toString(), {});
+    console.log('Creating session...');
+    const session = await lucia.createSession(newUser.id.toString(), {});
+    console.log('Session created:', session.id);
+    
     const sessionCookie = lucia.createSessionCookie(session.id);
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    console.log('Session cookie set');
 
   } catch (e) {
-    console.error(e);
+    console.error('Signup error:', e);
     return { error: 'An unknown error occurred.', success: false };
   }
   

@@ -28,25 +28,35 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
   }
 
   try {
+    console.log('Login attempt for email:', email.toLowerCase());
+    
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, email.toLowerCase()),
     });
+    console.log('User lookup complete:', existingUser ? 'User found' : 'No user found');
 
     if (!existingUser || !existingUser.hashedPassword) {
       return { error: 'Incorrect email or password.', success: false };
     }
 
+    console.log('Verifying password...');
     const validPassword = await new Argon2id().verify(existingUser.hashedPassword, password);
+    console.log('Password verification:', validPassword ? 'Valid' : 'Invalid');
+    
     if (!validPassword) {
       return { error: 'Incorrect email or password.', success: false };
     }
 
+    console.log('Creating session for user ID:', existingUser.id);
     const session = await lucia.createSession(existingUser.id.toString(), {});
+    console.log('Session created:', session.id);
+    
     const sessionCookie = lucia.createSessionCookie(session.id);
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    console.log('Session cookie set');
 
   } catch (e) {
-    console.error(e);
+    console.error('Login error:', e);
     return { error: 'An unknown error occurred.', success: false };
   }
   
