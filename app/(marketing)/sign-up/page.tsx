@@ -65,7 +65,7 @@ export default function SignUpPage() {
         
         if (response.ok && result.success) {
           setState({ error: null, success: true });
-          router.push('/dashboard');
+          router.push('/onboarding');
         } else {
           setState({ error: result.error || 'Signup failed', success: false });
         }

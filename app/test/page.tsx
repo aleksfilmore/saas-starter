@@ -17,10 +17,10 @@ export default function TestPage() {
           </Link>
           
           <Link 
-            href="/signup" 
+            href="/sign-up" 
             className="block w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-center transition-colors"
           >
-            Test Sign-Up (Standalone)
+            Test Sign-Up (Updated)
           </Link>
           
           <Link 
@@ -31,10 +31,10 @@ export default function TestPage() {
           </Link>
           
           <Link 
-            href="/signin" 
+            href="/sign-in" 
             className="block w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg text-center transition-colors"
           >
-            Test Sign-In (Standalone)
+            Test Sign-In (Updated)
           </Link>
         </div>
         

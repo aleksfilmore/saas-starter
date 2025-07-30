@@ -108,7 +108,7 @@ export default function SignInPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-400">
               Need to join the ritual?{' '}
-              <Link href="/signup" className="text-pink-500 hover:text-pink-400 underline">
+              <Link href="/sign-up" className="text-pink-500 hover:text-pink-400 underline">
                 Sign up FREE
               </Link>
             </p>

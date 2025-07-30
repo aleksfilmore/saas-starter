@@ -19,7 +19,11 @@ const mockUserStats = {
   wallPosts: 12,
   badgesEarned: 8,
   codename: 'GHOST_PROTOCOL',
-  avatar: '👻'
+  avatar: '👻',
+  heartState: 'ACTIVE_HEALING',
+  urgencyLevel: 'moderate',
+  primaryFocus: 'rebuilding',
+  stateDescription: 'You\'re in the work phase. Building new patterns and healing old wounds.'
 };
 
 // Beginner user to show simplified interface
@@ -31,6 +35,17 @@ const mockBeginnerStats = {
   bytes: 125,
   streak: 5,
   longestStreak: 5,
+  phase: 'kernel_wounded',
+  ritualsCompleted: 8,
+  wallPosts: 1,
+  badgesEarned: 2,
+  codename: 'BYTE_HEAL',
+  avatar: '🌱',
+  heartState: 'ACUTE_CRISIS',
+  urgencyLevel: 'immediate',
+  primaryFocus: 'stabilization',
+  stateDescription: 'You\'re in the immediate aftermath. Focus on basic stability and self-care.'
+};
   phase: 'kernel_wounded',
   ritualsCompleted: 8,
   wallPosts: 1,

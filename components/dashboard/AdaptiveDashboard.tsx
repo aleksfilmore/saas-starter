@@ -3,7 +3,7 @@
 // REFORMAT PROTOCOL™ - Adaptive Dashboard
 // Progressive disclosure with beginner/advanced modes
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,11 @@ interface UserStats {
   badgesEarned: number;
   codename: string;
   avatar: string;
+  // Heart State assessment data
+  heartState?: string;
+  urgencyLevel?: 'immediate' | 'high' | 'moderate' | 'stable';
+  primaryFocus?: string;
+  stateDescription?: string;
 }
 
 interface AdaptiveDashboardProps {
@@ -46,6 +51,27 @@ export function AdaptiveDashboard({ userStats, onNavigate }: AdaptiveDashboardPr
   const [viewMode, setViewMode] = useState<'focus' | 'overview' | 'detailed'>('focus');
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
 
+  // Heart State-based dashboard personalization
+  const getDefaultViewMode = () => {
+    if (userStats.heartState === 'ACUTE_CRISIS' || userStats.urgencyLevel === 'immediate') {
+      return 'focus'; // Simplify interface for crisis situations
+    }
+    if (userStats.heartState === 'EARLY_PROCESSING' || userStats.urgencyLevel === 'high') {
+      return 'focus'; // Keep simple during early healing
+    }
+    if (userStats.heartState === 'CHAOS_MODE') {
+      return 'focus'; // Reduce overwhelm in chaotic situations
+    }
+    return 'overview'; // Default for stable states
+  };
+
+  // Initialize view mode based on Heart State if not manually set
+  React.useEffect(() => {
+    if (userStats.heartState && !localStorage.getItem('dashboard-view-preference')) {
+      setViewMode(getDefaultViewMode());
+    }
+  }, [userStats.heartState]);
+
   const phaseColors: Record<string, string> = {
     'kernel_wounded': 'bg-red-900/20 text-red-400 border-red-700',
     'system_stabilizing': 'bg-yellow-900/20 text-yellow-400 border-yellow-700',
@@ -55,9 +81,11 @@ export function AdaptiveDashboard({ userStats, onNavigate }: AdaptiveDashboardPr
     'glow_up_complete': 'bg-gradient-to-r from-pink-500 to-cyan-500 text-white border-transparent'
   };
 
-  // Determine if user is a beginner (first 2 weeks)
-  const isBeginnerLevel = userStats.level <= 5;
-  const shouldShowSimplified = isBeginnerLevel && viewMode === 'focus';
+  // Determine if user needs simplified interface
+  const needsSimplified = userStats.level <= 5 || 
+                         userStats.urgencyLevel === 'immediate' || 
+                         userStats.heartState === 'ACUTE_CRISIS';
+  const shouldShowSimplified = needsSimplified && viewMode === 'focus';
 
   if (shouldShowSimplified) {
     return <BeginnerFocusView userStats={userStats} onNavigate={onNavigate} setViewMode={setViewMode} />;
@@ -72,7 +100,19 @@ export function AdaptiveDashboard({ userStats, onNavigate }: AdaptiveDashboardPr
             <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-pink-400 bg-clip-text text-transparent">
               {userStats.codename || 'AGENT_UNKNOWN'}
             </h1>
-            <p className="text-gray-400">Level {userStats.level} • {userStats.phase.replace('_', ' ').toUpperCase()}</p>
+            <div className="flex items-center gap-3">
+              <p className="text-gray-400">Level {userStats.level} • {userStats.phase.replace('_', ' ').toUpperCase()}</p>
+              {userStats.heartState && (
+                <Badge className={`text-xs ${
+                  userStats.urgencyLevel === 'immediate' ? 'bg-red-600' :
+                  userStats.urgencyLevel === 'high' ? 'bg-orange-600' :
+                  userStats.urgencyLevel === 'moderate' ? 'bg-yellow-600' :
+                  'bg-green-600'
+                }`}>
+                  {userStats.heartState.replace('_', ' ')}
+                </Badge>
+              )}
+            </div>
           </div>
           
           {/* View Mode Selector */}

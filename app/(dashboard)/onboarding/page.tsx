@@ -1,7 +1,21 @@
+'use client';
+
 import { redirect } from 'next/navigation';
 import { validateRequest } from '@/lib/auth';
-import { OnboardingFlow } from './components/onboarding-flow';
+import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 import { getUserById } from '@/lib/db/queries';
+import { useRouter } from 'next/navigation';
+
+function OnboardingClient({ userId }: { userId: string }) {
+  const router = useRouter();
+  
+  const handleComplete = () => {
+    // Redirect to dashboard when onboarding is complete
+    router.push('/dashboard');
+  };
+
+  return <OnboardingFlow userId={userId} onComplete={handleComplete} />;
+}
 
 export default async function OnboardingPage() {
   const { user } = await validateRequest();
@@ -22,13 +36,13 @@ export default async function OnboardingPage() {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-4">
-              System Identity Configuration
+              REFORMAT PROTOCOL™ Initialization
             </h1>
             <p className="text-gray-300 text-lg">
-              Welcome to the faceless protocol. Configure your anonymous identity and begin your healing journey.
+              Configure your healing journey with our comprehensive assessment system.
             </p>
           </div>
-          <OnboardingFlow userId={user.id} />
+          <OnboardingClient userId={user.id} />
         </div>
       </div>
     </div>
