@@ -1,9 +1,10 @@
-// File: app/(marketing)/page.tsx
+// REFORMAT PROTOCOL™ - Gaming Therapy/Glow Viral Platform Homepage
+// Evolution from simple heartbreak tool to comprehensive healing ecosystem
 
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Brain, Trophy, MessageCircle, Check, Zap, Target, Flame, TrendingUp, ChevronRight, AlertTriangle, Sparkles, Rocket, ShieldCheck, Lock, Heart, RefreshCw, Download, Users, Star, Mail, Send, Shield, HelpCircle, Bot, Database, Globe, Eye, Settings, Trash2 } from 'lucide-react';
+import { ArrowRight, Brain, Trophy, MessageCircle, Check, Zap, Target, Flame, TrendingUp, ChevronRight, AlertTriangle, Sparkles, Rocket, ShieldCheck, Lock, Heart, RefreshCw, Download, Users, Star, Mail, Send, Shield, HelpCircle, Bot, Database, Globe, Eye, Settings, Trash2, Crown, Award, Coins, Timer, Activity } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import React from 'react';
 
