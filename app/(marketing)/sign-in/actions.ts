@@ -2,13 +2,6 @@
 
 'use server';
 
-import { lucia } from '@/lib/auth';
-import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
-import bcrypt from 'bcryptjs';
-import { cookies } from 'next/headers';
-import { eq, sql } from 'drizzle-orm';
-
 // This is the fix: We now export this interface so other files can use it.
 export interface ActionResult {
   error: string | null;
@@ -26,49 +19,7 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
     return { error: 'Password must be at least 6 characters long.', success: false };
   }
 
-  try {
-    console.log('Login attempt for email:', email.toLowerCase());
-    console.log('Database URL exists:', !!process.env.POSTGRES_URL);
-    console.log('Database URL starts with postgres:', process.env.POSTGRES_URL?.startsWith('postgres://'));
-    
-    // Test basic database connection first
-    console.log('Testing database connection...');
-    const connectionTest = await db.execute(sql`SELECT current_timestamp as now`);
-    console.log('Database connection successful:', connectionTest[0]);
-    
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.email, email.toLowerCase()),
-    });
-    console.log('User lookup complete:', existingUser ? 'User found' : 'No user found');
-
-    if (!existingUser || !existingUser.hashedPassword) {
-      return { error: 'Incorrect email or password.', success: false };
-    }
-
-    console.log('Verifying password...');
-    const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
-    console.log('Password verification:', validPassword ? 'Valid' : 'Invalid');
-    
-    if (!validPassword) {
-      return { error: 'Incorrect email or password.', success: false };
-    }
-
-    console.log('Creating session for user ID:', existingUser.id);
-    console.log('User ID type:', typeof existingUser.id);
-    const session = await lucia.createSession(existingUser.id, {}); // No need to convert to string anymore
-    console.log('Session created:', session.id);
-    console.log('Session userId:', session.userId);
-    console.log('Session userId type:', typeof session.userId);
-    
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-    console.log('Session cookie set');
-
-    // Return success result instead of redirecting from server
-    return { error: null, success: true };
-
-  } catch (e) {
-    console.error('Login error:', e);
-    return { error: 'An unknown error occurred.', success: false };
-  }
+  // Temporary: Just return success to test if the action is working
+  console.log('Login attempt for email:', email.toLowerCase());
+  return { error: 'Authentication temporarily disabled for testing. Please check back soon.', success: false };
 }
