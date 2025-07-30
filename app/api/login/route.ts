@@ -32,10 +32,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     const bcrypt = await import('bcryptjs');
     const { lucia } = await import('@/lib/auth');
     
-    // Find user by email
-    const user = await db.query.users.findFirst({
-      where: eq(users.email, email.toLowerCase()),
-    });
+    // Find user by email with explicit column selection to avoid schema issues
+    const userResult = await db.select({
+      id: users.id,
+      email: users.email,
+      hashedPassword: users.hashedPassword
+    }).from(users).where(eq(users.email, email.toLowerCase())).limit(1);
+    
+    const user = userResult[0];
     
     if (!user || !user.hashedPassword) {
       return NextResponse.json({ 

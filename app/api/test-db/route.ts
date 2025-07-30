@@ -22,29 +22,46 @@ export async function GET() {
     
     console.log('✅ Environment variables OK');
     
-    // Test basic connection with timeout
+    // Import postgres directly to avoid schema issues
+    const postgres = (await import('postgres')).default;
+    const sql = postgres(postgresUrl, {
+      ssl: 'require',
+      max: 1,
+      prepare: false,
+    });
+    
+    // Test basic connection
     console.log('Testing database connection...');
+    const connectionTest = await sql`SELECT 1 as test`;
+    console.log('✅ Database connection successful');
     
-    const { client } = await import('@/lib/db/drizzle');
+    // Check users table structure
+    console.log('Checking users table structure...');
+    const columns = await sql`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'users' 
+      ORDER BY ordinal_position
+    `;
     
-    // Simple connection test with timeout
-    const connectionTest = await Promise.race([
-      client`SELECT 1 as test`,
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Connection timeout after 5 seconds')), 5000)
-      )
-    ]);
+    console.log('Current columns:', columns.map(c => c.column_name));
     
-    console.log('✅ Database connection successful:', connectionTest);
+    // Check if username column exists
+    const hasUsername = columns.some(col => col.column_name === 'username');
+    console.log('Has username column:', hasUsername);
     
-    // Test schema import
-    const { users } = await import('@/lib/db/schema');
-    console.log('✅ Schema import successful');
+    // Add username column if missing
+    if (!hasUsername) {
+      console.log('Adding username column...');
+      await sql`ALTER TABLE users ADD COLUMN username text UNIQUE`;
+      console.log('✅ Username column added');
+    }
     
-    // Test simple query
-    const { db } = await import('@/lib/db/drizzle');
-    const userCount = await db.select().from(users).limit(1);
-    console.log('✅ Database query successful, found', userCount.length, 'users');
+    // Test user count
+    const userCount = await sql`SELECT COUNT(*) as count FROM users`;
+    console.log('✅ User count:', userCount[0].count);
+    
+    await sql.end();
     
     return NextResponse.json({
       status: 'success',
@@ -54,7 +71,9 @@ export async function GET() {
         nodeEnv: process.env.NODE_ENV || 'not set'
       },
       connectionTest: 'passed',
-      userSample: userCount.length
+      userCount: userCount[0].count,
+      hasUsername: hasUsername,
+      columns: columns.map(c => c.column_name)
     });
     
   } catch (error) {
