@@ -31,7 +31,10 @@ export default function SignUpPage() {
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<ActionResult>({ error: null, success: false });
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    
     startTransition(async () => {
       try {
         console.log('About to call signup API...');
@@ -66,7 +69,7 @@ export default function SignUpPage() {
             </p>
           </div>
           
-          <form action={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email
