@@ -12,6 +12,11 @@ export default function AuthTestPage() {
   const [signupPassword, setSignupPassword] = useState('password123');
   const [loginEmail, setLoginEmail] = useState('test@example.com');
   const [loginPassword, setLoginPassword] = useState('password123');
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordResult, setForgotPasswordResult] = useState('');
+  const [resetPasswordEmail, setResetPasswordEmail] = useState('');
+  const [resetPasswordNew, setResetPasswordNew] = useState('');
+  const [resetPasswordResult, setResetPasswordResult] = useState('');
 
   const API_BASE = 'http://localhost:3002';
 
@@ -128,6 +133,63 @@ export default function AuthTestPage() {
     }
   };
 
+  const forgotPassword = async () => {
+    if (!forgotPasswordEmail) {
+      showResult(setForgotPasswordResult, 'Please enter an email address', 'error');
+      return;
+    }
+    
+    try {
+      showResult(setForgotPasswordResult, 'Sending reset request...', 'info');
+      const response = await fetch(`${API_BASE}/api/forgot-password`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotPasswordEmail })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        showResult(setForgotPasswordResult, `${data.message}${data.debug ? ` (Debug: ${data.debug})` : ''}`, 'success');
+      } else {
+        showResult(setForgotPasswordResult, data.error, 'error');
+      }
+    } catch (error: any) {
+      showResult(setForgotPasswordResult, `Failed: ${error.message}`, 'error');
+    }
+  };
+
+  const resetPassword = async () => {
+    if (!resetPasswordEmail || !resetPasswordNew) {
+      showResult(setResetPasswordResult, 'Please enter email and new password', 'error');
+      return;
+    }
+    
+    try {
+      showResult(setResetPasswordResult, 'Resetting password...', 'info');
+      const response = await fetch(`${API_BASE}/api/reset-password`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetPasswordEmail, newPassword: resetPasswordNew })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        showResult(setResetPasswordResult, data.message, 'success');
+        // Update login form with new password for testing
+        setLoginEmail(resetPasswordEmail);
+        setLoginPassword(resetPasswordNew);
+      } else {
+        showResult(setResetPasswordResult, data.error, 'error');
+      }
+    } catch (error: any) {
+      showResult(setResetPasswordResult, `Failed: ${error.message}`, 'error');
+    }
+  };
+
   // Auto-test server connection on page load
   useState(() => {
     testServer();
@@ -153,7 +215,7 @@ export default function AuthTestPage() {
             >
               Test Standalone Server
             </button>
-            <div className="p-3 bg-gray-100 border rounded min-h-[40px]">
+            <div className="p-3 bg-gray-100 border rounded min-h-[40px] text-gray-800">
               {serverResult}
             </div>
           </div>
@@ -181,7 +243,7 @@ export default function AuthTestPage() {
             >
               Sign Up
             </button>
-            <div className="p-3 bg-gray-100 border rounded min-h-[40px]">
+            <div className="p-3 bg-gray-100 border rounded min-h-[40px] text-gray-800">
               {signupResult}
             </div>
           </div>
@@ -209,7 +271,7 @@ export default function AuthTestPage() {
             >
               Login
             </button>
-            <div className="p-3 bg-gray-100 border rounded min-h-[40px]">
+            <div className="p-3 bg-gray-100 border rounded min-h-[40px] text-gray-800">
               {loginResult}
             </div>
           </div>
@@ -223,8 +285,57 @@ export default function AuthTestPage() {
             >
               View All Users
             </button>
-            <div className="p-3 bg-gray-100 border rounded min-h-[40px]">
+            <div className="p-3 bg-gray-100 border rounded min-h-[40px] text-gray-800">
               {usersResult}
+            </div>
+          </div>
+
+          {/* Forgot Password */}
+          <div className="border border-gray-200 p-6 rounded-lg bg-gray-50">
+            <h3 className="text-xl font-semibold mb-4">5. Forgot Password</h3>
+            <input
+              type="email"
+              value={forgotPasswordEmail}
+              onChange={(e) => setForgotPasswordEmail(e.target.value)}
+              placeholder="Email address"
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+            />
+            <button 
+              onClick={forgotPassword}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded mb-4"
+            >
+              Send Reset Request
+            </button>
+            <div className="p-3 bg-gray-100 border rounded min-h-[40px] text-gray-800">
+              {forgotPasswordResult}
+            </div>
+          </div>
+
+          {/* Reset Password */}
+          <div className="border border-gray-200 p-6 rounded-lg bg-gray-50">
+            <h3 className="text-xl font-semibold mb-4">6. Reset Password</h3>
+            <input
+              type="email"
+              value={resetPasswordEmail}
+              onChange={(e) => setResetPasswordEmail(e.target.value)}
+              placeholder="Email address"
+              className="w-full p-2 border border-gray-300 rounded mb-2"
+            />
+            <input
+              type="password"
+              value={resetPasswordNew}
+              onChange={(e) => setResetPasswordNew(e.target.value)}
+              placeholder="New password"
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+            />
+            <button 
+              onClick={resetPassword}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mb-4"
+            >
+              Reset Password
+            </button>
+            <div className="p-3 bg-gray-100 border rounded min-h-[40px] text-gray-800">
+              {resetPasswordResult}
             </div>
           </div>
         </div>

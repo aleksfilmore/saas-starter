@@ -6,6 +6,31 @@ const querystring = require('querystring');
 // Simple in-memory storage
 const users = new Map();
 
+// Pre-register some test users for convenience
+const preRegisterTestUsers = () => {
+  const testUsers = [
+    { email: 'test@example.com', password: 'password123' },
+    { email: 'user@example.com', password: 'password123' },
+    { email: 'demo@example.com', password: 'password123' }
+  ];
+  
+  testUsers.forEach(({ email, password }) => {
+    if (!users.has(email.toLowerCase())) {
+      const user = {
+        id: Date.now() + Math.random(),
+        email: email.toLowerCase(),
+        password,
+        createdAt: new Date().toISOString()
+      };
+      users.set(email.toLowerCase(), user);
+      console.log(`Pre-registered test user: ${email}`);
+    }
+  });
+};
+
+// Pre-register test users on startup
+preRegisterTestUsers();
+
 // Helper function to parse request body
 function parseBody(req) {
   return new Promise((resolve, reject) => {
@@ -137,6 +162,78 @@ const server = http.createServer(async (req, res) => {
       
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ users: userList, count: userList.length }));
+      
+    } else if (path === '/api/forgot-password' && req.method === 'POST') {
+      const data = await parseBody(req);
+      const { email } = data;
+      
+      // Validation
+      if (!email) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Email is required', success: false }));
+        return;
+      }
+      
+      // Find user
+      const user = users.get(email.toLowerCase());
+      if (!user) {
+        // For security, don't reveal if email exists or not
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ 
+          success: true, 
+          message: 'If that email exists, a password reset link has been sent.'
+        }));
+        return;
+      }
+      
+      // In a real app, you'd send an email here
+      // For now, we'll just log the "reset token"
+      const resetToken = Math.random().toString(36).substring(2, 15);
+      console.log(`Password reset for ${email}: Token would be ${resetToken}`);
+      
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        success: true, 
+        message: 'If that email exists, a password reset link has been sent.',
+        // In development, show the reset info
+        debug: `Reset token for ${email}: ${resetToken}`
+      }));
+      
+    } else if (path === '/api/reset-password' && req.method === 'POST') {
+      const data = await parseBody(req);
+      const { email, newPassword } = data;
+      
+      // Validation
+      if (!email || !newPassword) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Email and new password are required', success: false }));
+        return;
+      }
+      
+      if (newPassword.length < 6) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Password must be at least 6 characters', success: false }));
+        return;
+      }
+      
+      // Find user
+      const user = users.get(email.toLowerCase());
+      if (!user) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'User not found', success: false }));
+        return;
+      }
+      
+      // Update password
+      user.password = newPassword;
+      users.set(email.toLowerCase(), user);
+      
+      console.log('Password reset successful for:', email);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        success: true, 
+        message: 'Password has been reset successfully'
+      }));
       
     } else {
       res.writeHead(404, { 'Content-Type': 'application/json' });
