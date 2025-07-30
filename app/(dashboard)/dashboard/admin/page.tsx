@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { validateRequest } from '@/lib/auth';
-import { AdminDashboard } from './components/admin-dashboard';
+import { AdminDashboard } from './components/admin-dashboard-simple';
 
 export default async function AdminPage() {
   const { user } = await validateRequest();
