@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { dailyCheckIns } from '@/lib/db/schema';
 import { validateRequest } from '@/lib/auth';
+import { parseUserId } from '@/lib/utils';
 import { nanoid } from 'nanoid';
 import { eq, and, gte, desc } from 'drizzle-orm';
 
@@ -12,6 +13,18 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    console.log('Daily check-in API - User object:', { id: user.id, type: typeof user.id });
+    
+    try {
+      const parsedUserId = parseUserId(user);
+      console.log('Parsed user ID successfully:', parsedUserId);
+    } catch (error) {
+      console.error('Failed to parse user ID:', error);
+      return NextResponse.json({ error: 'Invalid user session' }, { status: 400 });
+    }
+    
+    const parsedUserId = parseUserId(user);
 
     const body = await request.json();
     const { periodId, didTextTrash, mood, hadIntrusiveThoughts, notes } = body;
@@ -34,7 +47,7 @@ export async function POST(request: NextRequest) {
       .from(dailyCheckIns)
       .where(
         and(
-          eq(dailyCheckIns.userId, parseInt(user.id)),
+          eq(dailyCheckIns.userId, parsedUserId),
           eq(dailyCheckIns.periodId, periodId),
           gte(dailyCheckIns.checkInDate, today)
         )
@@ -50,7 +63,7 @@ export async function POST(request: NextRequest) {
       .insert(dailyCheckIns)
       .values({
         id: nanoid(),
-        userId: parseInt(user.id),
+        userId: parsedUserId,
         periodId,
         checkInDate: new Date(),
         didTextTrash,
@@ -82,6 +95,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    console.log('Daily check-in GET API - User object:', { id: user.id, type: typeof user.id });
+    
+    try {
+      const parsedUserId = parseUserId(user);
+      console.log('GET: Parsed user ID successfully:', parsedUserId);
+    } catch (error) {
+      console.error('GET: Failed to parse user ID:', error);
+      return NextResponse.json({ error: 'Invalid user session' }, { status: 400 });
+    }
+    
+    const parsedUserId = parseUserId(user);
+
     const url = new URL(request.url);
     const periodId = url.searchParams.get('periodId');
 
@@ -95,7 +120,7 @@ export async function GET(request: NextRequest) {
       .from(dailyCheckIns)
       .where(
         and(
-          eq(dailyCheckIns.userId, parseInt(user.id)),
+          eq(dailyCheckIns.userId, parsedUserId),
           eq(dailyCheckIns.periodId, periodId)
         )
       )
