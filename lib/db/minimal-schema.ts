@@ -6,8 +6,6 @@ export const users = pgTable('users', {
   id: text('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   hashedPassword: text('password_hash').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).defaultNow(),
 });
 
 // Sessions table
