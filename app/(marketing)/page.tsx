@@ -26,7 +26,7 @@ const Glow = ({ className }: { className?: string }) => (
 export default function HomePage() {
   return (
     <div className="relative overflow-hidden bg-gray-950 text-foreground">
-      {/* Hero Section with Integrated Features */}
+      {/* Hero Section - Raw, Authentic, Gaming Cult Vibe */}
       <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gray-950">
         {/* Background Image */}
         <div 
@@ -38,15 +38,18 @@ export default function HomePage() {
           }}
         />
         
+        {/* Glitch overlay effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-purple-900/30 to-pink-900/20 animate-pulse"></div>
+        
         {/* Main Hero Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex-1 flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
-            {/* Left side - Text content */}
+            {/* Left side - Raw, authentic messaging */}
             <div className="text-left">
               <div className="mb-6">
-                <p className="text-fuchsia-400 text-lg font-semibold tracking-wide" style={{textShadow: '0 0 10px rgba(217,70,239,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                  The interactive breakup reprogramming ritual
+                <p className="text-fuchsia-400 text-lg font-semibold tracking-wide animate-pulse" style={{textShadow: '0 0 10px rgba(217,70,239,0.8)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                  ⚡ EMOTIONAL FIREWALL ACTIVATED ⚡
                 </p>
               </div>
               
@@ -74,25 +77,49 @@ export default function HomePage() {
                 </div>
               </h1>
               
-              <p className="text-lg lg:text-xl text-blue-400 leading-relaxed mb-12 max-w-lg font-medium" style={{textShadow: '0 0 10px rgba(59,130,246,0.6)', fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                Reclaim your sanity (and your savage) with<br />
-                our AI-powered emotional recovery protocol.
-              </p>
+              <div className="text-lg lg:text-xl leading-relaxed mb-8 max-w-lg font-medium space-y-3" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                <p className="text-white font-bold">
+                  Stop stalking their Instagram. Start <span className="text-glitch-pink">leveling up</span>.
+                </p>
+                <p className="text-blue-400" style={{textShadow: '0 0 10px rgba(59,130,246,0.6)'}}>
+                  Turn your heartbreak into <span className="text-white font-black">XP</span>. Get <span className="text-fuchsia-400 font-black">Bytes</span> for not texting them.
+                </p>
+                <p className="text-purple-400 italic">
+                  Join the cult of people who chose themselves over chaos.
+                </p>
+              </div>
+              
+              {/* Quick preview of unique features */}
+              <div className="mb-8 space-y-2">
+                <div className="flex items-center text-sm font-medium text-white/80">
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
+                  <span>🎮 Weekly AI Therapy Sessions (Choose-your-path style)</span>
+                </div>
+                <div className="flex items-center text-sm font-medium text-white/80">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full mr-3 animate-pulse"></div>
+                  <span>💬 24/7 Protocol Ghost Chat (Your AI confidant)</span>
+                </div>
+                <div className="flex items-center text-sm font-medium text-white/80">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 animate-pulse"></div>
+                  <span>🏆 Anonymous Wall of Wounds (Viral confessional)</span>
+                </div>
+              </div>
               
               <div className="mb-16">
                 <a href="/sign-up">
                   <Button 
                     size="lg" 
-                    className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-lg bg-glitch-pink hover:bg-glitch-pink/90 text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105"
+                    className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-lg bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 hover:from-purple-500 hover:via-pink-500 hover:to-red-500 text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 animate-pulse"
                     style={{
                       textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
                       fontFamily: 'system-ui, -apple-system, sans-serif', 
                       fontWeight: '900'
                     }}
                   >
-                    BEGIN THE RITUAL
+                    🔥 JOIN THE CULT FREE 🔥
                   </Button>
                 </a>
+                <p className="text-xs text-white/60 mt-2 font-medium">No credit card. No judgment. Just digital exorcism.</p>
               </div>
             </div>
             
@@ -134,50 +161,59 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pb-16">
           <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
             
-            {/* AI TOOLS Card */}
-            <div className="bg-gray-900/40 border-2 border-blue-400 rounded-lg p-6 text-left shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)] transition-all duration-300 backdrop-blur-sm">
-              <div className="flex items-center mb-4">
-                <div className="w-16 h-16 bg-blue-400 rounded-lg flex items-center justify-center mr-6 shadow-lg">
-                  <Brain className="h-10 w-10 text-gray-900 font-bold" />
+            {/* Protocol Ghost Chat - Always-On AI */}
+            <div className="bg-gray-900/40 border-2 border-green-400 rounded-lg p-6 text-left shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] transition-all duration-300 backdrop-blur-sm group">
+              <div className="flex items-start mb-4">
+                <div className="w-16 h-16 bg-green-400 rounded-lg flex items-center justify-center mr-4 shadow-lg group-hover:animate-bounce">
+                  <span className="text-2xl">👻</span>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-black text-white tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>AI TOOLS</h3>
-                  <p className="text-white text-base font-medium leading-relaxed">
-                    Digitally exorcise your ex.<br />
-                    Write. Delete. Reboot. Simulated closure on demand.
+                <div className="flex-1">
+                  <h3 className="text-xl font-black text-green-400 tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>PROTOCOL GHOST</h3>
+                  <p className="text-white text-sm font-medium leading-relaxed">
+                    24/7 AI confidant. Always listening.<br />
+                    <span className="text-green-400">Chat about your chaos. Get sassy healing.</span>
                   </p>
+                  <div className="mt-2 text-xs">
+                    <span className="bg-green-400/20 text-green-400 px-2 py-1 rounded-full font-bold">FREE: 1 chat/day</span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            {/* GAMIFIED HEALING Card */}
-            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] transition-all duration-300 backdrop-blur-sm">
-              <div className="flex items-center mb-4">
-                <div className="w-16 h-16 bg-glitch-pink rounded-lg flex items-center justify-center mr-6 shadow-lg">
-                  <Trophy className="h-10 w-10 text-white font-bold" />
+            {/* Weekly AI Therapy Sessions */}
+            <div className="bg-gray-900/40 border-2 border-purple-400 rounded-lg p-6 text-left shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300 backdrop-blur-sm group">
+              <div className="flex items-start mb-4">
+                <div className="w-16 h-16 bg-purple-400 rounded-lg flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
+                  <span className="text-2xl">🎮</span>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-black text-white tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>GAMIFIED HEALING</h3>
-                  <p className="text-white text-base font-medium leading-relaxed">
-                    Turn pain into points.<br />
-                    Track your streaks. Win at not texting them.
+                <div className="flex-1">
+                  <h3 className="text-xl font-black text-purple-400 tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>CHOOSE-YOUR-PATH THERAPY</h3>
+                  <p className="text-white text-sm font-medium leading-relaxed">
+                    Weekly AI sessions. Black Mirror meets therapy.<br />
+                    <span className="text-purple-400">"You almost texted them..." → Choose your response → Get XP</span>
                   </p>
+                  <div className="mt-2 text-xs">
+                    <span className="bg-purple-400/20 text-purple-400 px-2 py-1 rounded-full font-bold">Unlocks weekly</span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            {/* CONFESSIONAL Card */}
-            <div className="bg-gray-900/40 border-2 border-purple-400 rounded-lg p-6 text-left shadow-[0_0_20px_rgba(168,85,247,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300 backdrop-blur-sm">
-              <div className="flex items-center mb-4">
-                <div className="w-16 h-16 bg-purple-400 rounded-lg flex items-center justify-center mr-6 shadow-lg">
-                  <MessageCircle className="h-10 w-10 text-white font-bold" />
+            {/* Wall of Wounds - Viral Confessional */}
+            <div className="bg-gray-900/40 border-2 border-glitch-pink rounded-lg p-6 text-left shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] transition-all duration-300 backdrop-blur-sm group">
+              <div className="flex items-start mb-4">
+                <div className="w-16 h-16 bg-glitch-pink rounded-lg flex items-center justify-center mr-4 shadow-lg group-hover:pulse">
+                  <MessageCircle className="h-8 w-8 text-white font-bold" />
                 </div>
-                <div>
-                  <h3 className="text-2xl font-black text-white tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>CONFESSIONAL</h3>
-                  <p className="text-white text-base font-medium leading-relaxed">
-                    Scream anonymously.<br />
-                    Drop your heartbreak into the void. Get reactions.
+                <div className="flex-1">
+                  <h3 className="text-xl font-black text-glitch-pink tracking-tight mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>WALL OF WOUNDS</h3>
+                  <p className="text-white text-sm font-medium leading-relaxed">
+                    Anonymous confessional. TikTok-style reactions.<br />
+                    <span className="text-glitch-pink">Scream into the void. Get community love back.</span>
                   </p>
+                  <div className="mt-2 text-xs">
+                    <span className="bg-glitch-pink/20 text-glitch-pink px-2 py-1 rounded-full font-bold">Trending: 🔥</span>
+                  </div>
                 </div>
               </div>
             </div>
