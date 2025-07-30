@@ -11,3 +11,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+/* Floating animation for particles */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+  100% { transform: translateY(0px) rotate(360deg); opacity: 0.4; }
+}

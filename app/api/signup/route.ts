@@ -51,7 +51,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
 
     // Temporary: Just return success to test if the API route is working
     console.log('Signup attempt for email:', email.toLowerCase());
-    return NextResponse.json({ error: 'Registration temporarily disabled for testing. API route is working!', success: false });
+    
+    // TODO: Add actual user creation logic here
+    // For now, simulate successful registration
+    return NextResponse.json({ error: null, success: true });
 
   } catch (error) {
     console.error('Signup API error:', error);

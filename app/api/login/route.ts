@@ -21,7 +21,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
 
     // Temporary: Just return success to test if the API route is working
     console.log('Login attempt for email:', email.toLowerCase());
-    return NextResponse.json({ error: 'Authentication temporarily disabled for testing. API route is working!', success: false });
+    
+    // TODO: Add actual authentication logic here
+    // For now, simulate successful login
+    return NextResponse.json({ error: null, success: true });
 
   } catch (error) {
     console.error('Login API error:', error);
