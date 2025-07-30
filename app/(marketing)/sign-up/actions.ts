@@ -86,16 +86,7 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
       id: userId,
       email: email.toLowerCase(),
       hashedPassword: hashedPassword,
-      username: null, // Allow null for now
-      avatar: null,
-      onboardingCompleted: false,
-      subscriptionTier: 'ghost_mode',
-      xpPoints: 0,
-      byteBalance: 100,
-      glowUpLevel: 1,
-      isAdmin: false,
-      isBanned: false,
-      lastActiveAt: null,
+      // Only use basic columns that exist in original schema
     }).returning({ id: users.id });
     console.log('New user created with ID:', newUser.id);
 

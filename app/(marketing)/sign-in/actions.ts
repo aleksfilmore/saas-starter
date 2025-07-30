@@ -7,7 +7,7 @@ import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 // This is the fix: We now export this interface so other files can use it.
 export interface ActionResult {
@@ -28,6 +28,13 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
 
   try {
     console.log('Login attempt for email:', email.toLowerCase());
+    console.log('Database URL exists:', !!process.env.POSTGRES_URL);
+    console.log('Database URL starts with postgres:', process.env.POSTGRES_URL?.startsWith('postgres://'));
+    
+    // Test basic database connection first
+    console.log('Testing database connection...');
+    const connectionTest = await db.execute(sql`SELECT current_timestamp as now`);
+    console.log('Database connection successful:', connectionTest[0]);
     
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, email.toLowerCase()),
