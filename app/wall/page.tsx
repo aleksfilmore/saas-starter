@@ -1,18 +1,13 @@
 // Wall of Wounds Test Page
-import { validateRequest } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+'use client';
+
 import WallOfWounds from '@/components/wall/WallOfWounds';
+import AuthWrapper from '@/components/AuthWrapper';
 
-export default async function WallTestPage() {
-  const { user } = await validateRequest();
-  
-  if (!user) {
-    redirect('/sign-in');
-  }
-
+export default function WallTestPage() {
   return (
-    <div>
+    <AuthWrapper>
       <WallOfWounds />
-    </div>
+    </AuthWrapper>
   );
 }

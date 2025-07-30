@@ -46,24 +46,35 @@ export default function SignUpPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
     
     startTransition(async () => {
       try {
-        console.log('About to call signup API...');
-        const response = await fetch('/api/signup', {
+        console.log('About to call standalone auth server signup...');
+        
+        // Use standalone auth server instead of broken Next.js API
+        const response = await fetch('http://localhost:3002/api/signup', {
           method: 'POST',
-          body: formData,
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
         });
         
-        const result: ActionResult = await response.json();
+        const result = await response.json();
         console.log('Signup result received:', result);
-        setState(result);
-        if (result && result.success) {
+        
+        if (response.ok && result.success) {
+          // Store user info in localStorage for now (in production, use proper session management)
+          localStorage.setItem('user', JSON.stringify(result.data));
+          setState({ error: null, success: true });
           router.push('/dashboard');
+        } else {
+          setState({ error: result.error || 'Signup failed', success: false });
         }
       } catch (error) {
         console.error('Signup error:', error);
-        setState({ error: 'Failed to connect to server. Please try again.', success: false });
+        setState({ error: 'Failed to connect to authentication server. Please try again.', success: false });
       }
     });
   };
