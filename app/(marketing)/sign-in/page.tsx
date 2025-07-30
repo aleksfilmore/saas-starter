@@ -3,11 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 export interface ActionResult {
   error: string | null;
@@ -17,7 +13,7 @@ export interface ActionResult {
 function LoginButton() {
   const { pending } = useFormStatus();
   return (
-    <Button
+    <button
       type="submit"
       disabled={pending}
       className="w-full text-lg font-black bg-glitch-pink hover:bg-glitch-pink/90 text-white rounded-xl py-4 px-8 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
@@ -28,7 +24,7 @@ function LoginButton() {
       }}
     >
       {pending ? 'ACCESSING SYSTEM...' : 'ENTER THE RITUAL'}
-    </Button>
+    </button>
   );
 }
 
@@ -75,9 +71,9 @@ export default function SignInPage() {
       
       {/* Floating background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-glitch-pink rounded-full animate-float opacity-40"></div>
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-400 rounded-full animate-float opacity-60" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/3 left-1/5 w-3 h-3 bg-purple-400 rounded-full animate-float opacity-30" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-glitch-pink rounded-full opacity-40" style={{animation: 'float 3s ease-in-out infinite'}}></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-400 rounded-full opacity-60" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/3 left-1/5 w-3 h-3 bg-purple-400 rounded-full opacity-30" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '2s'}}></div>
       </div>
       
       <div className="flex items-center justify-center min-h-screen relative z-10">
@@ -92,8 +88,8 @@ export default function SignInPage() {
           </div>
           <form action={handleSubmit} className="grid gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Email</Label>
-              <Input
+              <label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Email</label>
+              <input
                 id="email"
                 type="email"
                 name="email"
@@ -107,8 +103,8 @@ export default function SignInPage() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="password" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Password</Label>
-              <Input
+              <label htmlFor="password" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Password</label>
+              <input
                 id="password"
                 name="password"
                 type="password"
@@ -149,15 +145,6 @@ export default function SignInPage() {
           </div>
         </div>
       </div>
-      
-      {/* CSS for animations */}
-      <style jsx global>{`
-        @keyframes float {
-          0% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
-          100% { transform: translateY(0px) rotate(360deg); opacity: 0.4; }
-        }
-      `}</style>
     </div>
   );
 }
