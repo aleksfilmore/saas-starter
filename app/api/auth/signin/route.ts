@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/minimal-schema';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { verifyPassword } from '@/lib/crypto/password';
@@ -29,7 +29,13 @@ export async function POST(request: NextRequest) {
     // Find user
     console.log('Querying database...');
     const user = await db
-      .select()
+      .select({
+        id: users.id,
+        email: users.email,
+        hashedPassword: users.hashedPassword,
+        onboardingCompleted: users.onboardingCompleted,
+        isBanned: users.isBanned,
+      })
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
       .limit(1);
@@ -89,7 +95,6 @@ export async function POST(request: NextRequest) {
         user: {
           id: existingUser.id,
           email: existingUser.email,
-          username: existingUser.username,
           onboardingCompleted: existingUser.onboardingCompleted,
         }
       },

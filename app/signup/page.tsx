@@ -38,7 +38,7 @@ export default function SignUpPage() {
     startTransition(async () => {
       try {
         console.log('About to call signup API...');
-        const response = await fetch('/api/signup', {
+        const response = await fetch('/api/auth/signup', {
           method: 'POST',
           body: formData,
         });

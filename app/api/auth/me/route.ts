@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       id: user.id,
       email: user.email,
-      username: user.username,
       onboardingCompleted: user.onboardingCompleted,
       subscriptionTier: user.subscriptionTier,
       xpPoints: user.xpPoints,

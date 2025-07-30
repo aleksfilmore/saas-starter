@@ -3,7 +3,7 @@
 import { Lucia, Session, User as LuciaUser } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { db } from '@/lib/db/drizzle';
-import { sessions, users, User as DbUser } from '@/lib/db/schema';
+import { sessions, users, User as DbUser } from '@/lib/db/minimal-schema';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 
@@ -20,13 +20,13 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
-      username: attributes.username,
-      onboardingCompleted: attributes.onboardingCompleted,
-      subscriptionTier: attributes.subscriptionTier,
-      xpPoints: attributes.xpPoints,
-      byteBalance: attributes.byteBalance,
-      glowUpLevel: attributes.glowUpLevel,
-      isAdmin: attributes.isAdmin,
+      // Only include fields that exist in the current database
+      onboardingCompleted: attributes.onboardingCompleted || false,
+      subscriptionTier: attributes.subscriptionTier || 'ghost_mode',
+      xpPoints: attributes.xpPoints || 0,
+      byteBalance: attributes.byteBalance || 100,
+      glowUpLevel: attributes.glowUpLevel || 1,
+      isAdmin: attributes.isAdmin || false,
     };
   },
 });
@@ -83,7 +83,6 @@ declare module 'lucia' {
 
 interface DatabaseUserAttributes {
   email: string;
-  username: string | null;
   onboardingCompleted: boolean;
   subscriptionTier: string;
   xpPoints: number;

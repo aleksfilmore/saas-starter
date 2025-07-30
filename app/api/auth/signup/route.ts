@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/minimal-schema';
 import { generateId } from 'lucia';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
@@ -39,7 +39,10 @@ export async function POST(request: NextRequest) {
     // Check if user already exists
     console.log('Checking if user exists...');
     const existingUser = await db
-      .select()
+      .select({
+        id: users.id,
+        email: users.email,
+      })
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
       .limit(1);
@@ -62,11 +65,11 @@ export async function POST(request: NextRequest) {
       id: userId,
       email: email.toLowerCase(),
       hashedPassword,
-      byteBalance: 100, // Starting bytes
-      xpPoints: 0,
-      glowUpLevel: 1,
-      subscriptionTier: 'ghost_mode',
       onboardingCompleted: false,
+      subscriptionTier: 'ghost_mode',
+      xpPoints: 0,
+      byteBalance: 100,
+      glowUpLevel: 1,
       isAdmin: false,
       isBanned: false,
     });
