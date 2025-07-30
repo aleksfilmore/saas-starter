@@ -83,8 +83,13 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     console.log('New user created with ID:', newUser.id);
 
     console.log('Creating session...');
+    console.log('New user ID:', newUser.id);
+    console.log('New user ID type:', typeof newUser.id);
+    console.log('Converting to string:', newUser.id.toString());
     const session = await lucia.createSession(newUser.id.toString(), {});
     console.log('Session created:', session.id);
+    console.log('Session userId:', session.userId);
+    console.log('Session userId type:', typeof session.userId);
     
     const sessionCookie = lucia.createSessionCookie(session.id);
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);

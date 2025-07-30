@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
 import { dailyRituals, ritualCompletions } from '@/lib/db/schema';
 import { validateRequest } from '@/lib/auth';
+import { parseUserId } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 
 export async function createRitual(formData: FormData) {
@@ -26,7 +27,7 @@ export async function createRitual(formData: FormData) {
   
   await db.insert(dailyRituals).values({
     id: ritualId,
-    userId: parseInt(user.id),
+    userId: parseUserId(user),
     title,
     description: description || null,
     category,

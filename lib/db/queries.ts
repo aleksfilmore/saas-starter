@@ -4,6 +4,7 @@ import { eq, and, desc, gte, lt } from 'drizzle-orm';
 import { db } from './drizzle';
 import { users, noContactPeriods, noContactBreaches, dailyRituals, ritualCompletions, userDailyPrescriptions } from './schema';
 import { validateRequest } from '@/lib/auth';
+import { parseUserId } from '@/lib/utils';
 
 export async function getUser() {
   const { user } = await validateRequest();
@@ -12,7 +13,7 @@ export async function getUser() {
   }
 
   const userFromDb = await db.query.users.findFirst({
-    where: eq(users.id, parseInt(user.id)),
+    where: eq(users.id, parseUserId(user)),
   });
 
   if (!userFromDb) {
@@ -41,7 +42,7 @@ export async function getUserNoContactPeriods() {
   }
 
   const periods = await db.query.noContactPeriods.findMany({
-    where: eq(noContactPeriods.userId, parseInt(user.id)),
+    where: eq(noContactPeriods.userId, parseUserId(user)),
     orderBy: [desc(noContactPeriods.createdAt)],
   });
 
@@ -66,7 +67,7 @@ export async function getNoContactPeriodById(periodId: string) {
   const period = await db.query.noContactPeriods.findFirst({
     where: and(
       eq(noContactPeriods.id, periodId),
-      eq(noContactPeriods.userId, parseInt(user.id))
+      eq(noContactPeriods.userId, parseUserId(user))
     ),
   });
 
@@ -119,7 +120,7 @@ export async function getUserRituals() {
 
   const rituals = await db.query.dailyRituals.findMany({
     where: and(
-      eq(dailyRituals.userId, parseInt(user.id)),
+      eq(dailyRituals.userId, parseUserId(user)),
       eq(dailyRituals.isActive, true)
     ),
     orderBy: [desc(dailyRituals.createdAt)],
@@ -146,7 +147,7 @@ export async function getRitualCompletions(ritualId: string, days: number = 7) {
   const ritual = await db.query.dailyRituals.findFirst({
     where: and(
       eq(dailyRituals.id, ritualId),
-      eq(dailyRituals.userId, parseInt(user.id))
+      eq(dailyRituals.userId, parseUserId(user))
     ),
   });
 
@@ -221,7 +222,7 @@ export async function getTodaysPrescribedRitual() {
 
   const todaysPrescription = await db.query.userDailyPrescriptions.findFirst({
     where: and(
-      eq(userDailyPrescriptions.userId, parseInt(user.id)),
+      eq(userDailyPrescriptions.userId, parseUserId(user)),
       gte(userDailyPrescriptions.prescribedDate, today),
       lt(userDailyPrescriptions.prescribedDate, tomorrow)
     ),
@@ -250,7 +251,7 @@ export async function getUserPrescriptionHistory(days: number = 30) {
 
   const prescriptions = await db.query.userDailyPrescriptions.findMany({
     where: and(
-      eq(userDailyPrescriptions.userId, parseInt(user.id)),
+      eq(userDailyPrescriptions.userId, parseUserId(user)),
       gte(userDailyPrescriptions.prescribedDate, cutoffDate)
     ),
     orderBy: [desc(userDailyPrescriptions.prescribedDate)],

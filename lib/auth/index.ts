@@ -40,6 +40,20 @@ export const validateRequest = cache(
     }
 
     const result = await lucia.validateSession(sessionId);
+    
+    // Debug: Log the result of session validation
+    console.log('Session validation result:', {
+      session: result.session ? {
+        id: result.session.id,
+        userId: result.session.userId,
+        userIdType: typeof result.session.userId
+      } : null,
+      user: result.user ? {
+        id: result.user.id,
+        idType: typeof result.user.id,
+        email: result.user.email
+      } : null
+    });
     // Next.js throws an error when you attempt to set a cookie when rendering a page
     try {
       if (result.session && result.session.fresh) {

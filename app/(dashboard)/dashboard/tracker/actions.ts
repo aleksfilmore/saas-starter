@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { db } from '@/lib/db/drizzle';
 import { noContactPeriods, noContactBreaches } from '@/lib/db/schema';
 import { validateRequest } from '@/lib/auth';
+import { parseUserId } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 
 export async function createNoContactPeriod(formData: FormData) {
@@ -24,7 +25,7 @@ export async function createNoContactPeriod(formData: FormData) {
   
   await db.insert(noContactPeriods).values({
     id: periodId,
-    userId: parseInt(user.id),
+    userId: parseUserId(user),
     contactName,
     startDate: new Date(),
     targetDays,
@@ -47,7 +48,7 @@ export async function endNoContactPeriod(periodId: string) {
     .where(
       and(
         eq(noContactPeriods.id, periodId),
-        eq(noContactPeriods.userId, parseInt(user.id))
+        eq(noContactPeriods.userId, parseUserId(user))
       )
     );
 
@@ -72,7 +73,7 @@ export async function recordBreach(formData: FormData) {
   const period = await db.query.noContactPeriods.findFirst({
     where: and(
       eq(noContactPeriods.id, periodId),
-      eq(noContactPeriods.userId, parseInt(user.id))
+      eq(noContactPeriods.userId, parseUserId(user))
     ),
   });
 
@@ -111,7 +112,7 @@ export async function deleteBreach(breachId: string) {
   const period = await db.query.noContactPeriods.findFirst({
     where: and(
       eq(noContactPeriods.id, breach.periodId),
-      eq(noContactPeriods.userId, parseInt(user.id))
+      eq(noContactPeriods.userId, parseUserId(user))
     ),
   });
 
