@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Send, Minimize2, Maximize2, MessageCircle, Zap, Lock, Crown, Sparkles } from 'lucide-react';
+import { useErrorHandling, LoadingSpinner, ErrorDisplay, OfflineIndicator } from '@/components/ui/error-handling';
 
 interface Message {
   id: string;
@@ -97,6 +98,9 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
   const [selectedPersonality, setSelectedPersonality] = useState<keyof typeof GHOST_PERSONALITIES>('chaotic-bestie');
   const [sessionStarted, setSessionStarted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Enhanced error handling
+  const { error, isLoading, handleAsyncOperation, clearError } = useErrorHandling();
 
   const canChat = userTier !== 'free' || !dailyChatUsed;
   const hasMemory = userTier !== 'free';
@@ -133,7 +137,6 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
   const sendMessage = async () => {
     if (!currentMessage.trim() || !canChat) return;
 
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       text: currentMessage,
@@ -142,11 +145,15 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = currentMessage;
     setCurrentMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    // Enhanced error handling for message sending
+    await handleAsyncOperation(async () => {
+      // Simulate AI response with better error handling
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+      
       const responses = SAMPLE_RESPONSES[userTier] || SAMPLE_RESPONSES.free;
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
       
@@ -168,7 +175,13 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
 
       setMessages(prev => [...prev, ghostMessage]);
       setIsTyping(false);
-    }, 1000 + Math.random() * 2000);
+
+      if (userTier === 'free' && !dailyChatUsed) {
+        onChatUsed();
+      }
+    }, "Failed to send message. Please check your connection and try again.");
+
+    setIsTyping(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -178,15 +191,17 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
     }
   };
 
-  // Floating chat bubble when closed
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={startChat}
-          disabled={!canChat}
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-emerald-500 hover:to-green-500 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group relative overflow-hidden"
-        >
+  return (
+    <>
+      <OfflineIndicator />
+      {!isOpen ? (
+        // Floating chat bubble when closed
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={startChat}
+            disabled={!canChat}
+            className="w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-emerald-500 hover:to-green-500 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group relative overflow-hidden"
+          >
           <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 animate-pulse"></div>
           <div className="relative">
             <span className="text-2xl animate-bounce">👻</span>
@@ -207,14 +222,11 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
             {canChat ? 'Click to chat' : 'Upgrade for unlimited'}
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
-      isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
-    }`}>
+      ) : (
+        // Full chat interface
+        <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
+          isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
+        }`}>
       <Card className="h-full bg-gray-900/95 border-2 border-green-500/50 backdrop-blur-sm shadow-2xl overflow-hidden">
         <CardHeader className="pb-2 px-4 py-3 border-b border-green-500/30">
           <div className="flex items-center justify-between">
@@ -291,6 +303,17 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
             )}
 
             <CardContent className="flex-1 overflow-hidden p-0">
+              {/* Error Display */}
+              {error && (
+                <div className="p-4 border-b border-green-500/20">
+                  <ErrorDisplay 
+                    error={error}
+                    onRetry={sendMessage}
+                    onDismiss={clearError}
+                  />
+                </div>
+              )}
+
               {/* Messages */}
               <div className="h-96 overflow-y-auto p-4 space-y-3">
                 {messages.map((message) => (
@@ -321,11 +344,7 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-800 border border-green-500/30 rounded-lg px-3 py-2">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                      </div>
+                      <LoadingSpinner size="small" message="Protocol Ghost is thinking..." />
                     </div>
                   </div>
                 )}
@@ -348,11 +367,11 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
                     />
                     <Button
                       onClick={sendMessage}
-                      disabled={!currentMessage.trim()}
+                      disabled={!currentMessage.trim() || isLoading}
                       size="sm"
-                      className="bg-green-500 hover:bg-green-600 text-white px-3"
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 disabled:opacity-50"
                     >
-                      <Send className="h-4 w-4" />
+                      {isLoading ? <LoadingSpinner size="small" message="" /> : <Send className="h-4 w-4" />}
                     </Button>
                   </div>
                 ) : (
@@ -387,6 +406,7 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
           </>
         )}
       </Card>
-    </div>
+      )}
+    </>
   );
 }

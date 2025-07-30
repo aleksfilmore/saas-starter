@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, Trophy, Zap, Heart, Timer, ArrowLeft } from 'lucide-react';
+import { useErrorHandling, LoadingSpinner, ErrorDisplay } from '@/components/ui/error-handling';
 
 interface TherapyChoice {
   id: string;
