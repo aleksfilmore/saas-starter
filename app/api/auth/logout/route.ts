@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { lucia, validateRequest } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
+// Force Node.js runtime for database operations
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     const { session } = await validateRequest();

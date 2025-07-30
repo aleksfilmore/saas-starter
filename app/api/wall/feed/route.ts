@@ -1,4 +1,11 @@
-// Wall of Wounds API - READ/FEED (Mock Version)
+// Wall of Wounds API - FEED (Mock Version)
+import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
+
+// Force Node.js runtime
+export const runtime = 'nodejs';
+
+export async function GET(request: NextRequest) {ll of Wounds API - READ/FEED (Mock Version)
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 

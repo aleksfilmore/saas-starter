@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 
+// Force Node.js runtime for database operations
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
     const { user, session } = await validateRequest();

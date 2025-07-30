@@ -1,10 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Force ES modules resolution and disable problematic features
+  // Force ES modules resolution 
   experimental: {
     esmExternals: true,
-    serverComponentsExternalPackages: ['bcryptjs', 'lucia'],
+    serverComponentsExternalPackages: ['lucia'],
   },
   // Webpack optimizations for bundler stability
   webpack: (config, { dev, isServer }) => {

@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 
+// Force Node.js runtime
+export const runtime = 'nodejs';
+
 interface ReactToPostRequest {
   postId: string;
   reactionType: string;

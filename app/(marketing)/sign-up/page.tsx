@@ -130,7 +130,7 @@ export default function SignUpPage() {
                   Password
                 </label>
                 <span className="text-sm text-blue-400 bg-blue-900/30 px-3 py-1 rounded-full font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                  8-50 chars
+                  8+ chars, mixed case
                 </span>
               </div>
               <input
@@ -150,11 +150,11 @@ export default function SignUpPage() {
               <div id="password-requirements" className="text-xs text-gray-400 space-y-1">
                 <p className="flex items-center gap-2">
                   <span className="text-blue-400">•</span>
-                  8-50 characters (letters, numbers, symbols allowed)
+                  8-128 characters with uppercase, lowercase, number, and special character
                 </p>
                 <p className="flex items-center gap-2">
                   <span className="text-blue-400">•</span>
-                  At least 1 uppercase letter and 1 number recommended
+                  Strong passwords help protect your ritual progress and data
                 </p>
               </div>
             </div>
