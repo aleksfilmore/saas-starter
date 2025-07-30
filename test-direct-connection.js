@@ -2,7 +2,13 @@
 import postgres from 'postgres';
 
 async function testDirectConnection() {
-  const postgresUrl = process.env.POSTGRES_URL || "postgres://neondb_owner:npg_bO30IoEuCtyS@ep-cool-leaf-aef6j3r5-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require";
+  // SECURITY: Only use environment variables - NEVER hardcode credentials!
+  const postgresUrl = process.env.POSTGRES_URL;
+  
+  if (!postgresUrl) {
+    console.error('❌ POSTGRES_URL environment variable not set!');
+    return;
+  }
   
   console.log('🔍 Testing direct database connection...');
   console.log('Database URL starts with:', postgresUrl.substring(0, 30) + '...');
