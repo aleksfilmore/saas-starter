@@ -15,12 +15,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       id: user.id,
       email: user.email,
-      onboardingCompleted: user.onboardingCompleted,
-      subscriptionTier: user.subscriptionTier,
-      xpPoints: user.xpPoints,
-      byteBalance: user.byteBalance,
-      glowUpLevel: user.glowUpLevel,
-      isAdmin: user.isAdmin,
     });
 
   } catch (error) {

@@ -33,8 +33,6 @@ export async function POST(request: NextRequest) {
         id: users.id,
         email: users.email,
         hashedPassword: users.hashedPassword,
-        onboardingCompleted: users.onboardingCompleted,
-        isBanned: users.isBanned,
       })
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
@@ -64,14 +62,6 @@ export async function POST(request: NextRequest) {
 
     console.log('Password verified successfully');
 
-    // Check if user is banned
-    if (existingUser.isBanned) {
-      return NextResponse.json(
-        { error: 'Account has been suspended' },
-        { status: 403 }
-      );
-    }
-
     // Create session
     console.log('Creating session...');
     const session = await lucia.createSession(existingUser.id, {});
@@ -79,12 +69,6 @@ export async function POST(request: NextRequest) {
 
     const cookieStore = await cookies();
     cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-
-    // Update last active
-    await db
-      .update(users)
-      .set({ lastActiveAt: new Date() })
-      .where(eq(users.id, existingUser.id));
 
     console.log('Login successful for user:', existingUser.id);
 
@@ -95,7 +79,6 @@ export async function POST(request: NextRequest) {
         user: {
           id: existingUser.id,
           email: existingUser.email,
-          onboardingCompleted: existingUser.onboardingCompleted,
         }
       },
       { status: 200 }

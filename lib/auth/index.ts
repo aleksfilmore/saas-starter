@@ -20,13 +20,6 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
-      // Only include fields that exist in the current database
-      onboardingCompleted: attributes.onboardingCompleted || false,
-      subscriptionTier: attributes.subscriptionTier || 'ghost_mode',
-      xpPoints: attributes.xpPoints || 0,
-      byteBalance: attributes.byteBalance || 100,
-      glowUpLevel: attributes.glowUpLevel || 1,
-      isAdmin: attributes.isAdmin || false,
     };
   },
 });
@@ -83,10 +76,4 @@ declare module 'lucia' {
 
 interface DatabaseUserAttributes {
   email: string;
-  onboardingCompleted: boolean;
-  subscriptionTier: string;
-  xpPoints: number;
-  byteBalance: number;
-  glowUpLevel: number;
-  isAdmin: boolean;
 }

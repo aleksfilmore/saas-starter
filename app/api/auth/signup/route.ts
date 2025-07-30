@@ -65,13 +65,6 @@ export async function POST(request: NextRequest) {
       id: userId,
       email: email.toLowerCase(),
       hashedPassword,
-      onboardingCompleted: false,
-      subscriptionTier: 'ghost_mode',
-      xpPoints: 0,
-      byteBalance: 100,
-      glowUpLevel: 1,
-      isAdmin: false,
-      isBanned: false,
     });
 
     console.log('User created successfully:', userId);
