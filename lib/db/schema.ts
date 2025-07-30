@@ -170,23 +170,41 @@ export const dailyCheckIns = pgTable('daily_check_ins', {
   }).notNull().defaultNow(),
 });
 
-// Anonymous Wall Posts
+// Anonymous Wall Posts (Enhanced Confessional Wall)
 export const anonymousPosts = pgTable('anonymous_posts', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .references(() => users.id), // Nullable for true anonymity
   content: text('content').notNull(),
-  category: text('category').notNull().default('general'), // 'vent', 'victory', 'advice', 'general'
+  glitchTitle: text('glitch_title'), // Auto-generated titles like "Loop Detected", "Firewall Breach"
+  glitchCategory: text('glitch_category').notNull().default('general'), // 'system_error', 'loop_detected', etc.
+  category: text('category').notNull().default('general'), // 'heartbreak', 'relapse', 'ghosted', 'rage', 'nostalgia', 'shame'
+  glitchOverlay: text('glitch_overlay'), // 'static', 'distorted_heart', 'crt_style'
   hearts: integer('hearts').notNull().default(0),
+  resonateCount: integer('resonate_count').notNull().default(0),
+  sameLoopCount: integer('same_loop_count').notNull().default(0),
+  draggedMeTooCount: integer('dragged_me_too_count').notNull().default(0),
+  stoneColdCount: integer('stone_cold_count').notNull().default(0),
+  cleansedCount: integer('cleansed_count').notNull().default(0),
+  commentCount: integer('comment_count').notNull().default(0),
+  bytesEarned: integer('bytes_earned').notNull().default(25), // Bytes earned from this post
   isActive: boolean('is_active').notNull().default(true),
+  isAnonymous: boolean('is_anonymous').notNull().default(true),
+  isFeatured: boolean('is_featured').notNull().default(false), // Daily Pulse featured
+  isOraclePost: boolean('is_oracle_post').notNull().default(false), // Top weekly post
+  isViralAwarded: boolean('is_viral_awarded').notNull().default(false), // Prevent duplicate viral rewards
   createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', {
     withTimezone: true,
     mode: 'date',
   }).notNull().defaultNow(),
 });
 
-// Anonymous Wall Hearts (reactions)
-export const anonymousPostHearts = pgTable('anonymous_post_hearts', {
+// Wall Post Reactions (Enhanced with Glitch Reactions)
+export const wallPostReactions = pgTable('wall_post_reactions', {
   id: text('id').primaryKey(),
   postId: text('post_id')
     .notNull()
@@ -194,6 +212,113 @@ export const anonymousPostHearts = pgTable('anonymous_post_hearts', {
   userId: text('user_id')
     .notNull()
     .references(() => users.id),
+  reactionType: text('reaction_type').notNull(), // 'resonate', 'same_loop', 'dragged_me_too', 'stone_cold', 'cleansed'
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Wall Post Comments (Premium/Ultra Only)
+export const wallPostComments = pgTable('wall_post_comments', {
+  id: text('id').primaryKey(),
+  postId: text('post_id')
+    .notNull()
+    .references(() => anonymousPosts.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  content: text('content').notNull(), // Max 140 characters
+  parentCommentId: text('parent_comment_id')
+    .references(() => wallPostComments.id), // For nested replies
+  bytesEarned: integer('bytes_earned').notNull().default(5),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Cult Bubbles (Ultra-Exclusive Micro Communities)
+export const cultBubbles = pgTable('cult_bubbles', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  creatorId: text('creator_id')
+    .notNull()
+    .references(() => users.id),
+  description: text('description'),
+  maxMembers: integer('max_members').notNull().default(3),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Cult Bubble Members
+export const cultBubbleMembers = pgTable('cult_bubble_members', {
+  id: text('id').primaryKey(),
+  bubbleId: text('bubble_id')
+    .notNull()
+    .references(() => cultBubbles.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  role: text('role').notNull().default('member'), // 'creator', 'member'
+  joinedAt: timestamp('joined_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Bubble Posts (Private Confessions within Bubbles)
+export const bubblePosts = pgTable('bubble_posts', {
+  id: text('id').primaryKey(),
+  bubbleId: text('bubble_id')
+    .notNull()
+    .references(() => cultBubbles.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  content: text('content').notNull(),
+  glitchTitle: text('glitch_title'),
+  category: text('category').notNull().default('general'),
+  reactionCount: integer('reaction_count').notNull().default(0),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// XP Transactions (Track all XP earnings/spending)
+export const xpTransactions = pgTable('xp_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  amount: integer('amount').notNull(), // Can be negative for spending
+  source: text('source').notNull(), // 'ritual_complete', 'ai_tool_use', 'streak_bonus', 'badge_unlock'
+  description: text('description').notNull(),
+  relatedId: text('related_id'), // ID of ritual, tool use, etc.
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'date',
+  }).notNull().defaultNow(),
+});
+
+// Byte Transactions (Track all Byte earnings/spending)
+export const byteTransactions = pgTable('byte_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  amount: integer('amount').notNull(), // Can be negative for spending
+  source: text('source').notNull(), // 'wall_post', 'upvote_received', 'comment', 'purchase', 'donation'
+  description: text('description').notNull(),
+  relatedId: text('related_id'), // ID of post, purchase, etc.
   createdAt: timestamp('created_at', {
     withTimezone: true,
     mode: 'date',
@@ -226,6 +351,8 @@ export const badges = pgTable('badges', {
   description: text('description').notNull(),
   iconUrl: text('icon_url').notNull(),
   category: text('category').notNull(), // 'streak', 'ritual', 'ai_usage', 'community', 'milestone'
+  tier: text('tier').notNull().default('bronze'), // 'bronze', 'silver', 'gold', 'platinum', 'diamond'
+  rarity: text('rarity').notNull().default('common'), // 'common', 'uncommon', 'rare', 'epic', 'legendary'
   xpReward: integer('xp_reward').notNull().default(0),
   byteReward: integer('byte_reward').notNull().default(0),
   isActive: boolean('is_active').notNull().default(true),
@@ -270,7 +397,7 @@ export const adminAuditLog = pgTable('admin_audit_log', {
   }).notNull().defaultNow(),
 });
 
-// This defines the type for a user object, which is used elsewhere.
+// Type exports
 export type User = typeof users.$inferSelect;
 export type NoContactPeriod = typeof noContactPeriods.$inferSelect;
 export type NoContactBreach = typeof noContactBreaches.$inferSelect;
@@ -279,5 +406,13 @@ export type RitualCompletion = typeof ritualCompletions.$inferSelect;
 export type UserDailyPrescription = typeof userDailyPrescriptions.$inferSelect;
 export type DailyCheckIn = typeof dailyCheckIns.$inferSelect;
 export type AnonymousPost = typeof anonymousPosts.$inferSelect;
-export type AnonymousPostHeart = typeof anonymousPostHearts.$inferSelect;
+export type WallPostReaction = typeof wallPostReactions.$inferSelect;
+export type WallPostComment = typeof wallPostComments.$inferSelect;
+export type CultBubble = typeof cultBubbles.$inferSelect;
+export type CultBubbleMember = typeof cultBubbleMembers.$inferSelect;
+export type BubblePost = typeof bubblePosts.$inferSelect;
+export type XpTransaction = typeof xpTransactions.$inferSelect;
+export type ByteTransaction = typeof byteTransactions.$inferSelect;
+export type Badge = typeof badges.$inferSelect;
+export type UserBadge = typeof userBadges.$inferSelect;
 export type AILetter = typeof aiLetters.$inferSelect;

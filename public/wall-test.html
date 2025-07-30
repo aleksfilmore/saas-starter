@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall of Wounds™ API Test</title>
+    <style>
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #ff0000;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .test-section {
+            background: #111;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .test-section h2 {
+            color: #00ff00;
+            margin-top: 0;
+        }
+        
+        button {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-family: inherit;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        
+        button:hover {
+            background: #cc0000;
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        
+        .log {
+            background: #000;
+            border: 1px solid #333;
+            padding: 15px;
+            margin-top: 10px;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        
+        .status {
+            color: #ffff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        input, textarea, select {
+            background: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 8px;
+            font-family: inherit;
+            width: 100%;
+            margin: 5px 0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        .info { color: #00ffff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>W4LL_0F_W0UND5™ API T35T 1NT3RF4C3</h1>
+        
+        <div class="status" id="status">SYSTEM_STATUS: INITIALIZING...</div>
+        
+        <div class="grid">
+            <div>
+                <!-- Authentication Section -->
+                <div class="test-section">
+                    <h2>🔐 AUTHENTICATION_MODULE</h2>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="email" value="test-wall@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="password" value="testpassword123">
+                    </div>
+                    <button onclick="testAuth()">AUTHENTICATE</button>
+                    <button onclick="clearLog()">CLEAR_LOG</button>
+                </div>
+                
+                <!-- Wall Post Creation -->
+                <div class="test-section">
+                    <h2>📝 WALL_POST_CREATION</h2>
+                    <div class="form-group">
+                        <label>Glitch Category:</label>
+                        <select id="glitchCategory">
+                            <option value="system_error">5Y5T3M_3RR0R_D3T3CT3D</option>
+                            <option value="loop_detected">L00P_1NF1N1T3_D3T3CT3D</option>
+                            <option value="memory_leak">M3M0RY_L34K_1D3NT1F13D</option>
+                            <option value="buffer_overflow">BUFF3R_0V3RFL0W_W4RN1NG</option>
+                            <option value="syntax_error">5YNT4X_3RR0R_L1N3_0</option>
+                            <option value="null_pointer">NULL_P01NT3R_3XC3PT10N</option>
+                            <option value="stack_overflow">5T4CK_0V3RFL0W_3XC3PT10N</option>
+                            <option value="access_denied">4CC355_D3N13D_3RR0R_403</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Emotional Data:</label>
+                        <textarea id="postContent" rows="4" placeholder="Process your emotional data here...">Testing the Wall of Wounds™ system from the test interface. This is a transmission to the void to verify all systems are operational.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="isAnonymous" checked> 
+                            ANONYMOUS_MODE
+                        </label>
+                    </div>
+                    <button onclick="createWallPost()">TRANSMIT_TO_VOID</button>
+                </div>
+                
+                <!-- Reaction Testing -->
+                <div class="test-section">
+                    <h2>👍 REACTION_SYSTEM</h2>
+                    <div class="form-group">
+                        <label>Post ID:</label>
+                        <input type="text" id="reactionPostId" placeholder="Post ID for reaction">
+                    </div>
+                    <div class="form-group">
+                        <label>Reaction Type:</label>
+                        <select id="reactionType">
+                            <option value="resonate">🌀 Resonates</option>
+                            <option value="same_loop">🔄 Same Loop</option>
+                            <option value="dragged_me_too">⬇️ Dragged Me</option>
+                            <option value="stone_cold">🗿 Stone Cold</option>
+                            <option value="cleansed">✨ Cleansed</option>
+                        </select>
+                    </div>
+                    <button onclick="addReaction()">PROCESS_REACTION</button>
+                </div>
+            </div>
+            
+            <div>
+                <!-- Wall Feed -->
+                <div class="test-section">
+                    <h2>📋 WALL_FEED_LOADER</h2>
+                    <div class="form-group">
+                        <label>Filter:</label>
+                        <select id="feedFilter">
+                            <option value="recent">RECENT_TRANSMISSIONS</option>
+                            <option value="viral">VIRAL_LOOPS</option>
+                            <option value="oracle">ORACLE_POSTS</option>
+                            <option value="pulse">DAILY_PULSE</option>
+                        </select>
+                    </div>
+                    <button onclick="loadWallFeed()">LOAD_FEED</button>
+                    <button onclick="loadUserStats()">LOAD_STATS</button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="test-section">
+                    <h2>⚡ QUICK_ACTIONS</h2>
+                    <button onclick="runFullTest()">RUN_FULL_TEST</button>
+                    <button onclick="testGamification()">TEST_GAMIFICATION</button>
+                    <button onclick="loadOracles()">LOAD_ORACLES</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Log Output -->
+        <div class="test-section">
+            <h2>📊 SYSTEM_LOG</h2>
+            <div class="log" id="log">Waiting for commands...\n</div>
+        </div>
+    </div>
+
+    <script>
+        let authCookie = '';
+        let testUserId = '';
+        let lastPostId = '';
+        
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                success: '#00ff00',
+                error: '#ff0000', 
+                warning: '#ffff00',
+                info: '#00ffff'
+            };
+            
+            const coloredMessage = `<span style="color: ${colors[type] || '#00ffff'}">[${timestamp}] ${message}</span>\n`;
+            logElement.innerHTML += coloredMessage;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = 'Log cleared...\n';
+        }
+        
+        function updateStatus(status) {
+            document.getElementById('status').textContent = `SYSTEM_STATUS: ${status}`;
+        }
+        
+        async function makeRequest(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            };
+            
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json();
+                return { status: response.status, data, response };
+            } catch (error) {
+                return { status: 0, data: { error: error.message }, response: null };
+            }
+        }
+        
+        async function testAuth() {
+            log('🔐 Testing Authentication...', 'info');
+            updateStatus('AUTHENTICATING...');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Try signup first
+            const signupResult = await makeRequest('/api/signup', 'POST', { email, password });
+            
+            if (signupResult.status === 201) {
+                log('✅ User created successfully', 'success');
+                testUserId = signupResult.data.userId;
+                updateStatus('AUTHENTICATED');
+            } else if (signupResult.status === 409) {
+                log('ℹ️ User exists, trying login...', 'warning');
+                
+                // Try login
+                const loginResult = await makeRequest('/api/login', 'POST', { email, password });
+                
+                if (loginResult.status === 200) {
+                    log('✅ Login successful', 'success');
+                    testUserId = loginResult.data.userId;
+                    updateStatus('AUTHENTICATED');
+                } else {
+                    log('❌ Login failed: ' + JSON.stringify(loginResult.data), 'error');
+                    updateStatus('AUTH_FAILED');
+                    return;
+                }
+            } else {
+                log('❌ Authentication failed: ' + JSON.stringify(signupResult.data), 'error');
+                updateStatus('AUTH_FAILED');
+                return;
+            }
+            
+            log(`User ID: ${testUserId}`, 'success');
+        }
+        
+        async function createWallPost() {
+            log('📝 Creating wall post...', 'info');
+            
+            const content = document.getElementById('postContent').value;
+            const glitchCategory = document.getElementById('glitchCategory').value;
+            const isAnonymous = document.getElementById('isAnonymous').checked;
+            
+            const result = await makeRequest('/api/wall/create', 'POST', {
+                content,
+                glitchCategory,
+                isAnonymous
+            });
+            
+            if (result.status === 200) {
+                log('✅ Wall post created successfully', 'success');
+                log(`   Post ID: ${result.data.postId}`, 'info');
+                lastPostId = result.data.postId;
+                document.getElementById('reactionPostId').value = lastPostId;
+            } else {
+                log('❌ Wall post creation failed: ' + JSON.stringify(result.data), 'error');
+            }
+        }
+        
+        async function loadWallFeed() {
+            log('📋 Loading wall feed...', 'info');
+            
+            const filter = document.getElementById('feedFilter').value;
+            const result = await makeRequest(`/api/wall/feed?filter=${filter}&limit=5`);
+            
+            if (result.status === 200) {
+                log('✅ Wall feed loaded successfully', 'success');
+                log(`   Found ${result.data.posts.length} posts`, 'info');
+                
+                if (result.data.posts.length > 0) {
+                    result.data.posts.forEach((post, index) => {
+                        log(`   Post ${index + 1}: ${post.glitchTitle}`, 'info');
+                        log(`     Content: "${post.content.substring(0, 100)}..."`, 'info');
+                        log(`     Reactions: ${post.totalReactions} | Comments: ${post.commentCount}`, 'info');
+                        if (index === 0) {
+                            lastPostId = post.id;
+                            document.getElementById('reactionPostId').value = lastPostId;
+                        }
+                    });
+                }
+            } else {
+                log('❌ Wall feed loading failed: ' + JSON.stringify(result.data), 'error');
+            }
+        }
+        
+        async function addReaction() {
+            log('👍 Adding reaction...', 'info');
+            
+            const postId = document.getElementById('reactionPostId').value;
+            const reactionType = document.getElementById('reactionType').value;
+            
+            if (!postId) {
+                log('⚠️ No post ID provided', 'warning');
+                return;
+            }
+            
+            const result = await makeRequest('/api/wall/react', 'POST', {
+                postId,
+                reactionType
+            });
+            
+            if (result.status === 200) {
+                log('✅ Reaction processed successfully', 'success');
+                log(`   Action: ${result.data.action}`, 'info');
+                log(`   Reaction: ${result.data.reactionType}`, 'info');
+            } else {
+                log('❌ Reaction failed: ' + JSON.stringify(result.data), 'error');
+            }
+        }
+        
+        async function loadUserStats() {
+            log('📊 Loading user stats...', 'info');
+            
+            const result = await makeRequest('/api/user/stats?endpoint=stats');
+            
+            if (result.status === 200) {
+                log('✅ User stats loaded successfully', 'success');
+                log(`   Level: ${result.data.level} (${result.data.title})`, 'info');
+                log(`   XP: ${result.data.xp.toLocaleString()}`, 'info');
+                log(`   Bytes: ${result.data.bytes.toLocaleString()} Ψ`, 'info');
+                log(`   Badges: ${result.data.badges}`, 'info');
+                log(`   Wall Posts: ${result.data.wallPosts}`, 'info');
+                log(`   Tier: ${result.data.tier}`, 'info');
+            } else {
+                log('❌ User stats loading failed: ' + JSON.stringify(result.data), 'error');
+            }
+        }
+        
+        async function loadOracles() {
+            log('🔮 Loading weekly oracles...', 'info');
+            
+            const result = await makeRequest('/api/user/stats?endpoint=oracles');
+            
+            if (result.status === 200) {
+                log('✅ Oracle data loaded', 'success');
+                log(`   Oracle count: ${result.data.oracles.length}`, 'info');
+            } else {
+                log('❌ Oracle loading failed: ' + JSON.stringify(result.data), 'error');
+            }
+        }
+        
+        async function testGamification() {
+            log('🎮 Testing gamification system...', 'info');
+            await loadUserStats();
+            
+            // Create a post to test XP/Byte rewards
+            document.getElementById('postContent').value = 'Testing gamification rewards system...';
+            await createWallPost();
+            
+            // Check stats again
+            setTimeout(async () => {
+                log('📊 Checking updated stats...', 'info');
+                await loadUserStats();
+            }, 1000);
+        }
+        
+        async function runFullTest() {
+            log('🚀 Running full system test...', 'info');
+            updateStatus('RUNNING_FULL_TEST...');
+            
+            await testAuth();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await createWallPost();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await loadWallFeed();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            if (lastPostId) {
+                await addReaction();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            
+            await loadUserStats();
+            
+            log('🎉 Full test completed!', 'success');
+            updateStatus('TEST_COMPLETE');
+        }
+        
+        // Initialize
+        log('W4LL_0F_W0UND5™ API Test Interface initialized', 'success');
+        log('Click AUTHENTICATE to begin testing...', 'info');
+    </script>
+</body>
+</html>
