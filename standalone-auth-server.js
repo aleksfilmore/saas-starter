@@ -31,8 +31,9 @@ function parseBody(req) {
 // CORS headers
 function setCORSHeaders(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 }
 
 const server = http.createServer(async (req, res) => {
@@ -48,7 +49,7 @@ const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const path = parsedUrl.pathname;
 
-  console.log(`${req.method} ${path}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${path}`);
 
   try {
     if (path === '/api/test' && req.method === 'GET') {
