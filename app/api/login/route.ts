@@ -91,8 +91,8 @@ function validateLoginData(email: unknown, password: unknown) {
     return { valid: false, error: 'Email is required.' };
   }
   
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  // Simple email validation
+  if (!email.includes('@') || !email.includes('.')) {
     return { valid: false, error: 'Please enter a valid email address.' };
   }
 
