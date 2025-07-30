@@ -8,7 +8,6 @@ import { users } from '@/lib/db/schema';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { eq } from 'drizzle-orm';
-import { redirect } from 'next/navigation';
 
 // This is the fix: We now export this interface so other files can use it.
 export interface ActionResult {
@@ -58,11 +57,11 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
     console.log('Session cookie set');
 
+    // Return success result instead of redirecting from server
+    return { error: null, success: true };
+
   } catch (e) {
     console.error('Login error:', e);
     return { error: 'An unknown error occurred.', success: false };
   }
-  
-  // On success, we redirect from the server.
-  redirect('/dashboard');
 }

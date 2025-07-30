@@ -7,7 +7,6 @@ import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 
@@ -112,11 +111,11 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     (await cookies()).set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
     console.log('Session cookie set');
 
+    // Return success result instead of redirecting from server
+    return { error: null, success: true };
+
   } catch (e) {
     console.error('Signup error:', e);
     return { error: 'An unknown error occurred.', success: false };
   }
-  
-  // On success, we redirect from the server.
-  redirect('/dashboard');
 }
