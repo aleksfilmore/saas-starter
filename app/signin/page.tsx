@@ -1,4 +1,10 @@
-'use client'function LoginButton({ isPending }: { isPending: boolean }) {
+'use client';
+
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+function LoginButton({ isPending }: { isPending: boolean }) {
   return (
     <button
       type="submit"
@@ -13,12 +19,7 @@
       {isPending ? 'ACCESSING SYSTEM...' : 'ENTER THE RITUAL'}
     </button>
   );
-}State, useTransition } from 'react';
-import { useFormStatus } from 'react-dom';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-
-export interface ActionResult {
+}
   error: string | null;
   success: boolean;
 }
