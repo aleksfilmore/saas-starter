@@ -2,24 +2,73 @@
 
 'use client';
 
-import { useActionState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, Trash2, Loader2, Shield, AlertTriangle, Key } from 'lucide-react';
-// This is the fix: Import both the functions and the type from the actions file.
-import { updatePassword, deleteAccount, type ActionResult } from './actions';
 
-// This is the fix: We explicitly type 'initialState' with the imported 'ActionResult' type.
-const initialState: ActionResult = {
-  error: null,
-  success: null,
-};
+interface ActionResult {
+  error: string | null;
+  success: string | null;
+}
 
 export default function SecurityPage() {
-  // The hooks are now correctly typed, resolving the overload errors.
-  const [passwordState, passwordAction, isPasswordPending] = useActionState(updatePassword, initialState);
-  const [deleteState, deleteAction, isDeletePending] = useActionState(deleteAccount, initialState);
+  const [passwordState, setPasswordState] = useState<ActionResult>({ error: null, success: null });
+  const [deleteState, setDeleteState] = useState<ActionResult>({ error: null, success: null });
+  const [isPasswordPending, setIsPasswordPending] = useState(false);
+  const [isDeletePending, setIsDeletePending] = useState(false);
+
+  const handlePasswordUpdate = async (formData: FormData) => {
+    setIsPasswordPending(true);
+    try {
+      const response = await fetch('/api/auth/update-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: formData.get('currentPassword'),
+          newPassword: formData.get('newPassword'),
+          confirmPassword: formData.get('confirmPassword'),
+        }),
+      });
+      
+      const result = await response.json();
+      if (response.ok) {
+        setPasswordState({ error: null, success: 'Password updated successfully!' });
+      } else {
+        setPasswordState({ error: result.error || 'Failed to update password', success: null });
+      }
+    } catch (error) {
+      setPasswordState({ error: 'Network error', success: null });
+    } finally {
+      setIsPasswordPending(false);
+    }
+  };
+
+  const handleAccountDelete = async (formData: FormData) => {
+    setIsDeletePending(true);
+    try {
+      const response = await fetch('/api/auth/delete-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password: formData.get('password'),
+        }),
+      });
+      
+      const result = await response.json();
+      if (response.ok) {
+        // Redirect to home page after successful deletion
+        window.location.href = '/';
+      } else {
+        setDeleteState({ error: result.error || 'Failed to delete account', success: null });
+      }
+    } catch (error) {
+      setDeleteState({ error: 'Network error', success: null });
+    } finally {
+      setIsDeletePending(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-gray-950 text-white overflow-hidden">
@@ -55,7 +104,7 @@ export default function SecurityPage() {
                 Update Password
               </h2>
               
-              <form className="space-y-6" action={passwordAction}>
+              <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handlePasswordUpdate(new FormData(e.target as HTMLFormElement)); }}>
                 <div className="grid gap-3">
                   <Label htmlFor="current-password" className="text-white font-black text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                     Current Password
@@ -157,7 +206,7 @@ export default function SecurityPage() {
                 </p>
               </div>
               
-              <form action={deleteAction} className="space-y-6">
+              <form onSubmit={(e) => { e.preventDefault(); handleAccountDelete(new FormData(e.target as HTMLFormElement)); }} className="space-y-6">
                 <div className="grid gap-3">
                   <Label htmlFor="delete-password" className="text-white font-black text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                     Confirm Password

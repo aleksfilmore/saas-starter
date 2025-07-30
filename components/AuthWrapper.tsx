@@ -13,25 +13,32 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is authenticated via localStorage
-    const user = localStorage.getItem('user');
-    if (user) {
+    // Check authentication status with server
+    const checkAuth = async () => {
       try {
-        const userData = JSON.parse(user);
-        if (userData && userData.email) {
-          setIsAuthenticated(true);
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const user = await response.json();
+          if (user && user.email) {
+            setIsAuthenticated(true);
+          } else {
+            router.push('/sign-in');
+          }
         } else {
           router.push('/sign-in');
         }
       } catch (error) {
-        console.error('Invalid user data in localStorage:', error);
-        localStorage.removeItem('user');
+        console.error('Auth check failed:', error);
         router.push('/sign-in');
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      router.push('/sign-in');
-    }
-    setIsLoading(false);
+    };
+
+    checkAuth();
   }, [router]);
 
   if (isLoading) {

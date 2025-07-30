@@ -51,12 +51,11 @@ export default function SignUpPage() {
     
     startTransition(async () => {
       try {
-        console.log('About to call standalone auth server signup...');
+        console.log('Creating account with production API...');
         
-        // Use standalone auth server instead of broken Next.js API
-        const response = await fetch('http://localhost:3002/api/signup', {
+        // Use production API routes
+        const response = await fetch('/api/auth/signup', {
           method: 'POST',
-          mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
@@ -65,8 +64,6 @@ export default function SignUpPage() {
         console.log('Signup result received:', result);
         
         if (response.ok && result.success) {
-          // Store user info in localStorage for now (in production, use proper session management)
-          localStorage.setItem('user', JSON.stringify(result.data));
           setState({ error: null, success: true });
           router.push('/dashboard');
         } else {
@@ -74,7 +71,7 @@ export default function SignUpPage() {
         }
       } catch (error) {
         console.error('Signup error:', error);
-        setState({ error: 'Failed to connect to authentication server. Please try again.', success: false });
+        setState({ error: 'Failed to create account. Please try again.', success: false });
       }
     });
   };

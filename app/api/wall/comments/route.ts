@@ -1,11 +1,6 @@
-// Wall of Wounds API - COMMENTS
+// Wall of Wounds API - COMMENTS (Mock Version)
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
-import { db } from '@/lib/db/drizzle';
-import { wallPostComments, anonymousPosts, users } from '@/lib/db/schema';
-import { awardBytes, BYTE_REWARDS } from '@/lib/db/gamification';
-import { generateId } from 'lucia';
-import { eq, desc, and, sql } from 'drizzle-orm';
 
 interface CreateCommentRequest {
   postId: string;
@@ -14,6 +9,106 @@ interface CreateCommentRequest {
 }
 
 export async function POST(request: NextRequest) {
+  try {
+    const { user } = await validateRequest();
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body: CreateCommentRequest = await request.json();
+    const { postId, content, parentCommentId } = body;
+
+    // Validate content
+    if (!content || content.trim().length === 0) {
+      return NextResponse.json({ error: 'Comment content is required' }, { status: 400 });
+    }
+
+    if (content.length > 500) {
+      return NextResponse.json({ error: 'Comment too long (max 500 characters)' }, { status: 400 });
+    }
+
+    // Mock comment creation
+    const mockComment = {
+      id: `comment-${Date.now()}`,
+      postId,
+      userId: user.id,
+      content: content.trim(),
+      parentCommentId: parentCommentId || null,
+      createdAt: new Date(),
+      bytesEarned: 5
+    };
+
+    console.log(`Mock comment created:`, mockComment);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Comment transmitted to the void',
+      comment: mockComment,
+      rewards: {
+        bytes: 5
+      }
+    });
+
+  } catch (error) {
+    console.error('Comment creation error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to transmit comment to the void' 
+    }, { status: 500 });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { user } = await validateRequest();
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const postId = searchParams.get('postId');
+
+    if (!postId) {
+      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 });
+    }
+
+    // Mock comments data
+    const mockComments = [
+      {
+        id: 'comment-1',
+        postId,
+        userId: 'user-123',
+        content: 'This resonates so hard. Same experience here.',
+        parentCommentId: null,
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        userEmail: 'anonymous@void.com',
+        timeAgo: '2h_ago'
+      },
+      {
+        id: 'comment-2',
+        postId,
+        userId: 'user-456',
+        content: 'Sending virtual hugs through the digital void 💜',
+        parentCommentId: null,
+        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
+        userEmail: 'another@void.com',
+        timeAgo: '5h_ago'
+      }
+    ];
+
+    return NextResponse.json({
+      comments: mockComments,
+      total: mockComments.length
+    });
+
+  } catch (error) {
+    console.error('Get comments error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to retrieve comments from the void' 
+    }, { status: 500 });
+  }
+}
   try {
     const { user } = await validateRequest();
     

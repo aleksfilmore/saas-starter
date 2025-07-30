@@ -43,10 +43,19 @@ export default function DashboardLayout({
     { href: '/dashboard/admin', icon: Crown, label: 'Admin Panel', description: 'System management' }
   ];
 
-  const handleLogout = () => {
-    // Clear localStorage session
-    localStorage.removeItem('user');
-    window.location.href = '/';
+  const handleLogout = async () => {
+    try {
+      // Call logout API
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Always redirect to home, regardless of API call success
+      window.location.href = '/';
+    }
   };
 
   return (
