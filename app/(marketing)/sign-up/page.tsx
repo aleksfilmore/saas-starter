@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -10,12 +9,11 @@ export interface ActionResult {
   success: boolean;
 }
 
-function SignUpButton() {
-  const { pending } = useFormStatus();
+function SignUpButton({ isPending }: { isPending: boolean }) {
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={isPending}
       className="w-full text-lg font-black bg-glitch-pink hover:bg-glitch-pink/90 text-white rounded-xl py-4 px-8 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
       style={{
         textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
@@ -23,7 +21,7 @@ function SignUpButton() {
         fontWeight: '900'
       }}
     >
-      {pending ? (
+      {isPending ? (
         <span className="flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
           INITIALIZING RITUAL...
@@ -45,7 +43,10 @@ export default function SignUpPage() {
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<ActionResult>({ error: null, success: false });
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    
     startTransition(async () => {
       try {
         console.log('About to call signup API...');
@@ -56,8 +57,6 @@ export default function SignUpPage() {
         
         const result: ActionResult = await response.json();
         console.log('Signup result received:', result);
-        console.log('Result type:', typeof result);
-        console.log('Result success property:', result?.success);
         setState(result);
         if (result && result.success) {
           router.push('/dashboard');
@@ -99,7 +98,7 @@ export default function SignUpPage() {
               Begin your emotional OS upgrade — <span className="text-blue-400 font-bold">FREE</span>
             </p>
           </div>
-          <form action={handleSubmit} className="grid gap-6">
+          <form onSubmit={handleSubmit} className="grid gap-6">
             <div className="grid gap-3">
               <label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                 Email
@@ -207,7 +206,7 @@ export default function SignUpPage() {
                 {state.error}
               </div>
             )}
-            <SignUpButton />
+            <SignUpButton isPending={isPending} />
           </form>
           <div className="mt-6 text-center text-lg">
             <span className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Already in the system?</span>{' '}

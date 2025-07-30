@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -10,12 +9,11 @@ export interface ActionResult {
   success: boolean;
 }
 
-function LoginButton() {
-  const { pending } = useFormStatus();
+function LoginButton({ isPending }: { isPending: boolean }) {
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={isPending}
       className="w-full text-lg font-black bg-glitch-pink hover:bg-glitch-pink/90 text-white rounded-xl py-4 px-8 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
       style={{
         textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
@@ -23,7 +21,7 @@ function LoginButton() {
         fontWeight: '900'
       }}
     >
-      {pending ? 'ACCESSING SYSTEM...' : 'ENTER THE RITUAL'}
+      {isPending ? 'ACCESSING SYSTEM...' : 'ENTER THE RITUAL'}
     </button>
   );
 }
@@ -33,7 +31,10 @@ export default function SignInPage() {
   const [isPending, startTransition] = useTransition();
   const [state, setState] = useState<ActionResult>({ error: null, success: false });
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    
     startTransition(async () => {
       try {
         console.log('About to call login API...');
@@ -44,8 +45,6 @@ export default function SignInPage() {
         
         const result: ActionResult = await response.json();
         console.log('Login result received:', result);
-        console.log('Result type:', typeof result);
-        console.log('Result success property:', result?.success);
         setState(result);
         if (result && result.success) {
           router.push('/dashboard');
@@ -86,7 +85,7 @@ export default function SignInPage() {
               Re-enter the emotional reformat zone
             </p>
           </div>
-          <form action={handleSubmit} className="grid gap-6">
+          <form onSubmit={handleSubmit} className="grid gap-6">
             <div className="grid gap-3">
               <label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Email</label>
               <input
@@ -135,7 +134,7 @@ export default function SignInPage() {
                 {state.error}
               </div>
             )}
-            <LoginButton />
+            <LoginButton isPending={isPending} />
           </form>
           <div className="mt-6 text-center text-lg">
             <span className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Need to join the ritual?</span>{' '}
