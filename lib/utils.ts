@@ -7,20 +7,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Safely parses a user ID from Lucia auth to an integer for database operations
+ * Safely extracts a user ID from Lucia auth for database operations
  * @param user - The user object from Lucia auth
- * @returns The user ID as a number, or throws an error if invalid
+ * @returns The user ID as a string
  */
-export function parseUserId(user: User): number {
+export function getUserId(user: User): string {
   if (!user || !user.id) {
     throw new Error('User ID is required');
   }
   
-  const parsed = parseInt(user.id, 10);
+  // Log the user object for debugging
+  console.log('getUserId: Input user object:', { 
+    id: user.id, 
+    type: typeof user.id
+  });
   
-  if (isNaN(parsed) || parsed <= 0) {
-    throw new Error(`Invalid user ID: ${user.id} could not be parsed to a valid integer`);
+  // User IDs are now text/UUID strings, so we just validate and return
+  if (typeof user.id !== 'string' || user.id.trim() === '') {
+    throw new Error(`Invalid user ID: ${user.id} must be a non-empty string`);
   }
   
-  return parsed;
+  return user.id;
 }

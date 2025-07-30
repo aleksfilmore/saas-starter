@@ -9,6 +9,7 @@ import { Argon2id } from 'oslo/password';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
+import crypto from 'crypto';
 
 // This interface defines the shape of the state object.
 interface ActionResult {
@@ -76,7 +77,9 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     console.log('Password hashed successfully');
 
     console.log('Inserting new user...');
+    const userId = crypto.randomUUID(); // Generate UUID for user ID
     const [newUser] = await db.insert(users).values({
+      id: userId,
       email: email.toLowerCase(),
       hashedPassword: hashedPassword,
     }).returning({ id: users.id });
@@ -85,8 +88,7 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
     console.log('Creating session...');
     console.log('New user ID:', newUser.id);
     console.log('New user ID type:', typeof newUser.id);
-    console.log('Converting to string:', newUser.id.toString());
-    const session = await lucia.createSession(newUser.id.toString(), {});
+    const session = await lucia.createSession(newUser.id, {}); // No need to convert to string anymore
     console.log('Session created:', session.id);
     console.log('Session userId:', session.userId);
     console.log('Session userId type:', typeof session.userId);

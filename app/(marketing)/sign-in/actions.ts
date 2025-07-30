@@ -49,8 +49,7 @@ export async function login(prevState: ActionResult, formData: FormData): Promis
 
     console.log('Creating session for user ID:', existingUser.id);
     console.log('User ID type:', typeof existingUser.id);
-    console.log('Converting to string:', existingUser.id.toString());
-    const session = await lucia.createSession(existingUser.id.toString(), {});
+    const session = await lucia.createSession(existingUser.id, {}); // No need to convert to string anymore
     console.log('Session created:', session.id);
     console.log('Session userId:', session.userId);
     console.log('Session userId type:', typeof session.userId);

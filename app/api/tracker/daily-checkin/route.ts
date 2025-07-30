@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { dailyCheckIns } from '@/lib/db/schema';
 import { validateRequest } from '@/lib/auth';
-import { parseUserId } from '@/lib/utils';
+import { getUserId } from '@/lib/utils';
 import { nanoid } from 'nanoid';
 import { eq, and, gte, desc } from 'drizzle-orm';
 
@@ -17,14 +17,14 @@ export async function POST(request: NextRequest) {
     console.log('Daily check-in API - User object:', { id: user.id, type: typeof user.id });
     
     try {
-      const parsedUserId = parseUserId(user);
+      const parsedUserId = getUserId(user);
       console.log('Parsed user ID successfully:', parsedUserId);
     } catch (error) {
       console.error('Failed to parse user ID:', error);
       return NextResponse.json({ error: 'Invalid user session' }, { status: 400 });
     }
     
-    const parsedUserId = parseUserId(user);
+    const parsedUserId = getUserId(user);
 
     const body = await request.json();
     const { periodId, didTextTrash, mood, hadIntrusiveThoughts, notes } = body;
@@ -98,14 +98,14 @@ export async function GET(request: NextRequest) {
     console.log('Daily check-in GET API - User object:', { id: user.id, type: typeof user.id });
     
     try {
-      const parsedUserId = parseUserId(user);
+      const parsedUserId = getUserId(user);
       console.log('GET: Parsed user ID successfully:', parsedUserId);
     } catch (error) {
       console.error('GET: Failed to parse user ID:', error);
       return NextResponse.json({ error: 'Invalid user session' }, { status: 400 });
     }
     
-    const parsedUserId = parseUserId(user);
+    const parsedUserId = getUserId(user);
 
     const url = new URL(request.url);
     const periodId = url.searchParams.get('periodId');

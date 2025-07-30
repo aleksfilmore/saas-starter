@@ -4,7 +4,7 @@ import { pgTable, text, timestamp, integer, boolean, serial, varchar } from 'dri
 
 // Original existing users table structure (keeping compatibility)
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
+  id: text('id').primaryKey(), // Changed from serial to text to match Lucia expectations
   email: varchar('email', { length: 255 }).notNull().unique(),
   hashedPassword: text('password_hash').notNull(),
 });
@@ -12,7 +12,7 @@ export const users = pgTable('users', {
 // Lucia auth sessions table (new for auth system)
 export const sessions = pgTable('sessions', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')  // Changed from integer to text to match users.id
     .notNull()
     .references(() => users.id),
   expiresAt: timestamp('expires_at', {
@@ -24,7 +24,7 @@ export const sessions = pgTable('sessions', {
 // No Contact Tracker tables
 export const noContactPeriods = pgTable('no_contact_periods', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')  // Changed from integer to text
     .notNull()
     .references(() => users.id),
   contactName: text('contact_name').notNull(),
@@ -62,7 +62,7 @@ export const noContactBreaches = pgTable('no_contact_breaches', {
 // Daily Rituals tables
 export const dailyRituals = pgTable('daily_rituals', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')  // Changed from integer to text
     .notNull()
     .references(() => users.id),
   title: text('title').notNull(),
@@ -96,7 +96,7 @@ export const ritualCompletions = pgTable('ritual_completions', {
 // Daily Prescribed Rituals
 export const userDailyPrescriptions = pgTable('user_daily_prescriptions', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id),
   prescribedDate: timestamp('prescribed_date', {
@@ -121,7 +121,7 @@ export const userDailyPrescriptions = pgTable('user_daily_prescriptions', {
 // Daily Check-ins for No Contact Tracker
 export const dailyCheckIns = pgTable('daily_check_ins', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id),
   periodId: text('period_id')
@@ -144,7 +144,7 @@ export const dailyCheckIns = pgTable('daily_check_ins', {
 // Anonymous Wall Posts
 export const anonymousPosts = pgTable('anonymous_posts', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')
     .references(() => users.id), // Nullable for true anonymity
   content: text('content').notNull(),
   category: text('category').notNull().default('general'), // 'vent', 'victory', 'advice', 'general'
@@ -162,7 +162,7 @@ export const anonymousPostHearts = pgTable('anonymous_post_hearts', {
   postId: text('post_id')
     .notNull()
     .references(() => anonymousPosts.id),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id),
   createdAt: timestamp('created_at', {
@@ -174,7 +174,7 @@ export const anonymousPostHearts = pgTable('anonymous_post_hearts', {
 // AI Generated Letters
 export const aiLetters = pgTable('ai_letters', {
   id: text('id').primaryKey(),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .references(() => users.id),
   letterType: text('letter_type').notNull(), // 'breakup', 'closure', 'forgiveness', 'angry', 'sad'

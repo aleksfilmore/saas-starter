@@ -1,19 +1,17 @@
 import { NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
-import { parseUserId } from '@/lib/utils';
+import { getUserId } from '@/lib/utils';
 
 export async function GET() {
   try {
     console.log('=== User ID Test Endpoint ===');
     
-    // Test parseUserId function with different inputs
+    // Test getUserId function with different inputs
     const testCases = [
       { input: { id: '1' }, description: 'String "1"' },
       { input: { id: '123' }, description: 'String "123"' },
-      { input: { id: '0' }, description: 'String "0"' },
-      { input: { id: '-1' }, description: 'String "-1"' },
-      { input: { id: 'abc' }, description: 'String "abc"' },
-      { input: { id: '1.5' }, description: 'String "1.5"' },
+      { input: { id: 'abc123' }, description: 'String "abc123"' },
+      { input: { id: 'c70b1a88-8dfb-4537-9a34-91d4cb08324c' }, description: 'UUID string' },
       { input: { id: '' }, description: 'Empty string' },
     ];
 
@@ -21,7 +19,7 @@ export async function GET() {
 
     for (const testCase of testCases) {
       try {
-        const result = parseUserId(testCase.input as any);
+        const result = getUserId(testCase.input as any);
         results.push({
           input: testCase.input.id,
           description: testCase.description,
@@ -55,8 +53,8 @@ export async function GET() {
     console.log('Real user ID:', user.id, 'Type:', typeof user.id);
 
     try {
-      const parsedId = parseUserId(user);
-      console.log('Real user - Successfully parsed user ID:', parsedId);
+      const userId = getUserId(user);
+      console.log('Real user - Successfully got user ID:', userId);
       
       return NextResponse.json({ 
         message: 'Test completed - User authenticated',
@@ -64,21 +62,21 @@ export async function GET() {
         realUser: {
           rawUserId: user.id,
           rawUserIdType: typeof user.id,
-          parsedUserId: parsedId,
-          parsedUserIdType: typeof parsedId,
-          parseSuccess: true
+          userId: userId,
+          userIdType: typeof userId,
+          success: true
         }
       });
-    } catch (parseError) {
-      console.error('Real user - Parse error:', parseError);
+    } catch (getUserIdError) {
+      console.error('Real user - getUserId error:', getUserIdError);
       return NextResponse.json({ 
-        message: 'Test completed - User authenticated but parse failed',
+        message: 'Test completed - User authenticated but getUserId failed',
         testResults: results,
         realUser: {
           rawUserId: user.id,
           rawUserIdType: typeof user.id,
-          parseSuccess: false,
-          parseError: parseError instanceof Error ? parseError.message : String(parseError)
+          success: false,
+          error: getUserIdError instanceof Error ? getUserIdError.message : String(getUserIdError)
         }
       });
     }
