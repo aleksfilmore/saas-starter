@@ -6,9 +6,13 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login, type ActionResult } from './actions';
 import Link from 'next/link';
 import { useEffect } from 'react';
+
+export interface ActionResult {
+  error: string | null;
+  success: boolean;
+}
 
 function LoginButton() {
   const { pending } = useFormStatus();
@@ -35,10 +39,24 @@ export default function SignInPage() {
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      const result = await login(state, formData);
-      setState(result);
-      if (result.success) {
-        router.push('/dashboard');
+      try {
+        console.log('About to call login API...');
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const result: ActionResult = await response.json();
+        console.log('Login result received:', result);
+        console.log('Result type:', typeof result);
+        console.log('Result success property:', result?.success);
+        setState(result);
+        if (result && result.success) {
+          router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setState({ error: 'Failed to connect to server. Please try again.', success: false });
       }
     });
   };

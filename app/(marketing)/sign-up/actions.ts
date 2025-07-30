@@ -53,5 +53,7 @@ export async function signup(prevState: ActionResult, formData: FormData): Promi
 
   // Temporary: Just return success to test if the action is working
   console.log('Signup attempt for email:', email.toLowerCase());
-  return { error: 'Registration temporarily disabled for testing. Please check back soon.', success: false };
+  const result = { error: 'Registration temporarily disabled for testing. Please check back soon.', success: false };
+  console.log('About to return result:', result);
+  return result;
 }

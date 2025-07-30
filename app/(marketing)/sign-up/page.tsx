@@ -3,8 +3,12 @@
 import { useState, useTransition, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { signup, type ActionResult } from './actions';
 import Link from 'next/link';
+
+export interface ActionResult {
+  error: string | null;
+  success: boolean;
+}
 
 function SignUpButton() {
   const { pending } = useFormStatus();
@@ -43,10 +47,24 @@ export default function SignUpPage() {
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      const result = await signup(state, formData);
-      setState(result);
-      if (result.success) {
-        router.push('/dashboard');
+      try {
+        console.log('About to call signup API...');
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const result: ActionResult = await response.json();
+        console.log('Signup result received:', result);
+        console.log('Result type:', typeof result);
+        console.log('Result success property:', result?.success);
+        setState(result);
+        if (result && result.success) {
+          router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        setState({ error: 'Failed to connect to server. Please try again.', success: false });
       }
     });
   };
