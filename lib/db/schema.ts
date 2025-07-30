@@ -83,12 +83,75 @@ export const wallPostComments = pgTable('wall_post_comments', {
   parentCommentId: text('parent_comment_id'),
   bytesEarned: integer('bytes_earned').notNull().default(5),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
-});d: text('id').primaryKey(), // Changed from serial to text to match Lucia expectations
-  email: varchar('email', { length: 255 }).notNull().unique(),
-  hashedPassword: text('password_hash').notNull(),
-  
-  // Onboarding & Identity
-  username: text('username').unique(), // Faceless alias/codename
+});
+
+// =====================================
+// GAMIFICATION TABLES
+// =====================================
+
+export const badges = pgTable('badges', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),
+  description: text('description').notNull(),
+  iconUrl: text('icon_url').notNull(),
+  category: text('category').notNull(),
+  tier: text('tier').notNull().default('bronze'),
+  rarity: text('rarity').notNull().default('common'),
+  xpReward: integer('xp_reward').notNull().default(0),
+  byteReward: integer('byte_reward').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const userBadges = pgTable('user_badges', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  badgeId: text('badge_id').notNull().references(() => badges.id),
+  earnedAt: timestamp('earned_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const xpTransactions = pgTable('xp_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  amount: integer('amount').notNull(),
+  source: text('source').notNull(),
+  description: text('description').notNull(),
+  relatedId: text('related_id'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const byteTransactions = pgTable('byte_transactions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  amount: integer('amount').notNull(),
+  source: text('source').notNull(),
+  description: text('description').notNull(),
+  relatedId: text('related_id'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
+// TYPE EXPORTS
+// =====================================
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
+export type AnonymousPost = typeof anonymousPosts.$inferSelect;
+export type NewAnonymousPost = typeof anonymousPosts.$inferInsert;
+export type WallPostReaction = typeof wallPostReactions.$inferSelect;
+export type NewWallPostReaction = typeof wallPostReactions.$inferInsert;
+export type WallPostComment = typeof wallPostComments.$inferSelect;
+export type NewWallPostComment = typeof wallPostComments.$inferInsert;
+export type Badge = typeof badges.$inferSelect;
+export type NewBadge = typeof badges.$inferInsert;
+export type UserBadge = typeof userBadges.$inferSelect;
+export type NewUserBadge = typeof userBadges.$inferInsert;
+export type XpTransaction = typeof xpTransactions.$inferSelect;
+export type NewXpTransaction = typeof xpTransactions.$inferInsert;
+export type ByteTransaction = typeof byteTransactions.$inferSelect;
+export type NewByteTransaction = typeof byteTransactions.$inferInsert;
   avatar: text('avatar'), // System icon identifier
   onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
   
