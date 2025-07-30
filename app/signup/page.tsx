@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -10,12 +9,11 @@ export interface ActionResult {
   success: boolean;
 }
 
-function SignUpButton() {
-  const { pending } = useFormStatus();
+function SignUpButton({ isPending }: { isPending: boolean }) {
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={isPending}
       className="w-full text-lg font-black bg-pink-500 hover:bg-pink-600 text-white rounded-xl py-4 px-8 transition-all duration-300 disabled:opacity-50"
       style={{
         textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
@@ -23,7 +21,7 @@ function SignUpButton() {
         fontWeight: '900'
       }}
     >
-      {pending ? 'INITIALIZING RITUAL...' : 'BEGIN THE RITUAL FREE'}
+      {isPending ? 'INITIALIZING RITUAL...' : 'BEGIN THE RITUAL FREE'}
     </button>
   );
 }
@@ -153,7 +151,7 @@ export default function SignUpPage() {
               </div>
             )}
             
-            <SignUpButton />
+            <SignUpButton isPending={isPending} />
           </form>
           
           <div className="mt-6 text-center">
