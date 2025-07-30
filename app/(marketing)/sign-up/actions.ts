@@ -11,7 +11,7 @@ import { eq, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 
 // This interface defines the shape of the state object.
-interface ActionResult {
+export interface ActionResult {
   error: string | null;
   success: boolean;
 }

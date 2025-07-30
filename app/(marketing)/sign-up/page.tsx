@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { signup } from './actions';
+import { signup, type ActionResult } from './actions';
 import Link from 'next/link';
 
 function SignUpButton() {
@@ -39,7 +39,7 @@ function SignUpButton() {
 export default function SignUpPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [state, setState] = useState<any>({ error: null, success: false });
+  const [state, setState] = useState<ActionResult>({ error: null, success: false });
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
