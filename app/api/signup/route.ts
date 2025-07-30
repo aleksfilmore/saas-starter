@@ -27,21 +27,46 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
       }, { status: 400 });
     }
 
-    // TODO: Implement actual user creation logic
-    // This is where you would:
-    // 1. Hash the password
-    // 2. Create user in database
-    // 3. Create session
-    // 4. Set authentication cookies
+    // Hash the password
+    const bcrypt = await import('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 12);
     
-    console.log('Signup attempt for email:', email.toLowerCase());
+    // Import database, schema, and ID generation
+    const { db } = await import('@/lib/db/drizzle');
+    const { users } = await import('@/lib/db/schema');
+    const { eq } = await import('drizzle-orm');
+    const { generateId } = await import('lucia');
     
-    // Simulate successful registration for now
+    // Check if user already exists
+    const existingUser = await db.query.users.findFirst({
+      where: eq(users.email, email.toLowerCase()),
+    });
+    
+    if (existingUser) {
+      return NextResponse.json({ 
+        error: 'An account with this email already exists.', 
+        success: false 
+      }, { status: 400 });
+    }
+    
+    // Generate user ID for Lucia
+    const userId = generateId(15);
+    
+    // Create new user
+    const [newUser] = await db.insert(users).values({
+      id: userId,
+      email: email.toLowerCase(),
+      hashedPassword: hashedPassword,
+    }).returning({ id: users.id, email: users.email });
+    
+    console.log('User created successfully:', newUser.email);
+    
     return NextResponse.json({ 
       error: null, 
       success: true,
       data: {
-        email: email.toLowerCase()
+        userId: newUser.id,
+        email: newUser.email
       }
     });
 

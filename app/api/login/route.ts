@@ -25,23 +25,51 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       }, { status: 400 });
     }
 
-    // TODO: Implement actual authentication logic
-    // This is where you would:
-    // 1. Look up user by email
-    // 2. Verify password hash
-    // 3. Create session
-    // 4. Set authentication cookies
+    // Import database and authentication
+    const { db } = await import('@/lib/db/drizzle');
+    const { users } = await import('@/lib/db/schema');
+    const { eq } = await import('drizzle-orm');
+    const bcrypt = await import('bcryptjs');
+    const { lucia } = await import('@/lib/auth');
     
-    console.log('Login attempt for email:', email.toLowerCase());
+    // Find user by email
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, email.toLowerCase()),
+    });
     
-    // Simulate successful login for now
-    return NextResponse.json({ 
+    if (!user || !user.hashedPassword) {
+      return NextResponse.json({ 
+        error: 'Invalid email or password.', 
+        success: false 
+      }, { status: 401 });
+    }
+    
+    // Verify password
+    const validPassword = await bcrypt.compare(password, user.hashedPassword);
+    if (!validPassword) {
+      return NextResponse.json({ 
+        error: 'Invalid email or password.', 
+        success: false 
+      }, { status: 401 });
+    }
+    
+    // Create session
+    const session = await lucia.createSession(user.id, {});
+    const sessionCookie = lucia.createSessionCookie(session.id);
+    
+    // Create response with session cookie
+    const response = NextResponse.json({ 
       error: null, 
       success: true,
       data: {
-        email: email.toLowerCase()
+        email: user.email
       }
     });
+    
+    response.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    
+    console.log('Login successful for:', user.email);
+    return response;
 
   } catch (error) {
     console.error('Login API error:', error);
