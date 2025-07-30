@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test - Bypass</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #1a1a1a; color: #fff; }
+        .container { background: #2a2a2a; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        input, button { padding: 10px; margin: 5px; border: none; border-radius: 4px; }
+        input { background: #3a3a3a; color: #fff; width: 200px; }
+        button { background: #e91e63; color: #fff; cursor: pointer; font-weight: bold; }
+        button:hover { background: #c2185b; }
+        .result { background: #333; padding: 15px; border-radius: 4px; margin: 10px 0; white-space: pre-wrap; }
+        .success { border-left: 4px solid #4caf50; }
+        .error { border-left: 4px solid #f44336; }
+        h1 { color: #e91e63; }
+        h2 { color: #2196f3; }
+    </style>
+</head>
+<body>
+    <h1>🔬 Authentication System Test (Bypassing React Bundler)</h1>
+    
+    <div class="container">
+        <h2>1. Signup Test</h2>
+        <input type="email" id="signupEmail" placeholder="Email" value="test@example.com">
+        <input type="password" id="signupPassword" placeholder="Password" value="Test123456">
+        <button onclick="testSignup()">Test Signup API</button>
+        <div id="signupResult" class="result"></div>
+    </div>
+    
+    <div class="container">
+        <h2>2. Login Test</h2>
+        <input type="email" id="loginEmail" placeholder="Email" value="test@example.com">
+        <input type="password" id="loginPassword" placeholder="Password" value="Test123456">
+        <button onclick="testLogin()">Test Login API</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+    
+    <div class="container">
+        <h2>3. Database Test</h2>
+        <button onclick="testDatabase()">Test Database Connection</button>
+        <div id="dbResult" class="result"></div>
+    </div>
+
+    <script>
+        async function testSignup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const resultDiv = document.getElementById('signupResult');
+            
+            try {
+                resultDiv.textContent = 'Testing signup...';
+                
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('password', password);
+                formData.append('acceptTerms', 'on');
+                formData.append('acceptPrivacy', 'on');
+
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nResult: ${JSON.stringify(result, null, 2)}`;
+                resultDiv.className = result.success ? 'result success' : 'result error';
+                
+                if (result.success) {
+                    document.getElementById('loginEmail').value = email;
+                    document.getElementById('loginPassword').value = password;
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                resultDiv.textContent = 'Testing login...';
+                
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nResult: ${JSON.stringify(result, null, 2)}`;
+                resultDiv.className = result.success ? 'result success' : 'result error';
+                
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        async function testDatabase() {
+            const resultDiv = document.getElementById('dbResult');
+            
+            try {
+                resultDiv.textContent = 'Testing database connection...';
+                
+                // Test a simple API that checks database
+                const response = await fetch('/api/test-user-id');
+                const result = await response.text();
+                
+                resultDiv.textContent = `Database Test Result:\n${result}`;
+                resultDiv.className = 'result success';
+                
+            } catch (error) {
+                resultDiv.textContent = `Database Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+        
+        // Auto-generate unique email for testing
+        document.getElementById('signupEmail').value = `test-${Date.now()}@example.com`;
+    </script>
+</body>
+</html>
