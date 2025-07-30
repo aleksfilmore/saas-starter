@@ -14,6 +14,7 @@ import { WelcomeStep } from './steps/WelcomeStep';
 import { CodenameStep } from './steps/CodenameStep';
 import { AvatarStep } from './steps/AvatarStep';
 import { AttachmentAssessment } from './steps/AttachmentAssessment';
+import { HeartStateAssessment } from './steps/HeartStateAssessment';
 import { DistressAssessment } from './steps/DistressAssessment';
 import { ProgramSelection } from './steps/ProgramSelection';
 import { RitualPreferences } from './steps/RitualPreferences';
@@ -150,6 +151,8 @@ export function OnboardingFlow({ userId, onComplete }: OnboardingFlowProps) {
         return <AvatarStep {...stepProps} />;
       case 'AttachmentAssessment':
         return <AttachmentAssessment {...stepProps} />;
+      case 'HeartStateAssessment':
+        return <HeartStateAssessment {...stepProps} />;
       case 'DistressAssessment':
         return <DistressAssessment {...stepProps} />;
       case 'ProgramSelection':

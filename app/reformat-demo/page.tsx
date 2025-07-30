@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { GlowUpConsole } from '@/components/dashboard/GlowUpConsole';
+import { AdaptiveDashboard } from '@/components/dashboard/AdaptiveDashboard';
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
 
 // Mock user data for demonstration
@@ -21,9 +22,27 @@ const mockUserStats = {
   avatar: '👻'
 };
 
+// Beginner user to show simplified interface
+const mockBeginnerStats = {
+  level: 3,
+  xp: 180,
+  nextLevelXP: 300,
+  progressToNext: 60,
+  bytes: 125,
+  streak: 5,
+  longestStreak: 5,
+  phase: 'kernel_wounded',
+  ritualsCompleted: 8,
+  wallPosts: 1,
+  badgesEarned: 2,
+  codename: 'BYTE_HEAL',
+  avatar: '🌱'
+};
+
 export default function ReformatDemoPage() {
-  const [currentView, setCurrentView] = useState<'onboarding' | 'console'>('console');
+  const [currentView, setCurrentView] = useState<'onboarding' | 'console' | 'adaptive'>('adaptive');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userType, setUserType] = useState<'beginner' | 'experienced'>('experienced');
 
   const handleNavigation = (section: string) => {
     console.log('Navigating to:', section);
@@ -37,7 +56,7 @@ export default function ReformatDemoPage() {
   };
 
   const completeOnboarding = () => {
-    setCurrentView('console');
+    setCurrentView('adaptive');
     setShowOnboarding(false);
     alert('Onboarding completed! Welcome to REFORMAT PROTOCOL™');
   };
@@ -61,7 +80,7 @@ export default function ReformatDemoPage() {
         <p className="text-gray-300 mb-4">
           Experience the future of heartbreak recovery
         </p>
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 mb-4">
           <button
             onClick={startOnboarding}
             className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
@@ -69,19 +88,60 @@ export default function ReformatDemoPage() {
             Try Onboarding Flow
           </button>
           <button
-            onClick={() => setCurrentView('console')}
+            onClick={() => setCurrentView('adaptive')}
             className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2 rounded-lg transition-colors"
           >
-            View Main Console
+            Adaptive Dashboard
           </button>
+          <button
+            onClick={() => setCurrentView('console')}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Original Console
+          </button>
+        </div>
+        
+        {/* User Type Toggle */}
+        <div className="flex justify-center">
+          <div className="bg-gray-800 rounded-lg p-1 flex">
+            <button
+              onClick={() => setUserType('beginner')}
+              className={`px-4 py-2 rounded text-sm transition-colors ${
+                userType === 'beginner'
+                  ? 'bg-yellow-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Beginner User (Level 3)
+            </button>
+            <button
+              onClick={() => setUserType('experienced')}
+              className={`px-4 py-2 rounded text-sm transition-colors ${
+                userType === 'experienced'
+                  ? 'bg-yellow-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Experienced User (Level 15)
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main Console */}
-      <GlowUpConsole
-        userStats={mockUserStats}
-        onNavigate={handleNavigation}
-      />
+      {/* Main Dashboard */}
+      {currentView === 'adaptive' && (
+        <AdaptiveDashboard
+          userStats={userType === 'beginner' ? mockBeginnerStats : mockUserStats}
+          onNavigate={handleNavigation}
+        />
+      )}
+      
+      {currentView === 'console' && (
+        <GlowUpConsole
+          userStats={userType === 'beginner' ? mockBeginnerStats : mockUserStats}
+          onNavigate={handleNavigation}
+        />
+      )}
 
       {/* Demo Footer */}
       <div className="bg-gray-900 border-t border-gray-800 p-6 text-center">

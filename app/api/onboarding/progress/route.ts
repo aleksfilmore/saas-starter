@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Mock onboarding progress structure
 const createOnboardingProgress = (userId: string) => ({
   currentStep: 0,
-  totalSteps: 8,
+  totalSteps: 9,
   steps: [
     {
       id: 'welcome',
@@ -32,6 +32,13 @@ const createOnboardingProgress = (userId: string) => ({
       title: 'Attachment Style Scan',
       description: 'Understanding your relationship patterns helps us customize your experience.',
       component: 'AttachmentAssessment',
+      isComplete: false
+    },
+    {
+      id: 'heart_state_assessment',
+      title: 'State of Heart Analysis', 
+      description: 'Tell us about your current heartbreak situation so we can personalize your healing journey.',
+      component: 'HeartStateAssessment',
       isComplete: false
     },
     {
