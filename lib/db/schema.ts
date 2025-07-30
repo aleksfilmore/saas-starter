@@ -5,7 +5,6 @@ import { pgTable, text, timestamp, integer, boolean, serial, varchar } from 'dri
 // Original existing users table structure (keeping compatibility)
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
-  name: varchar('name', { length: 100 }),
   email: varchar('email', { length: 255 }).notNull().unique(),
   hashedPassword: text('password_hash').notNull(),
   role: varchar('role', { length: 20 }).notNull().default('member'),
