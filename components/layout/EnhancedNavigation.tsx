@@ -35,7 +35,7 @@ const navigationItems = [
       {
         id: 'dashboard',
         label: 'Enhanced Dashboard',
-        href: '/dashboard/enhanced',
+        href: '/dashboard/glow-up-console',
         icon: Home,
         description: 'Unified healing command center',
         badge: '🚀'
@@ -109,7 +109,7 @@ const navigationItems = [
       {
         id: 'signup-enhanced',
         label: 'Enhanced Sign Up',
-        href: '/sign-up/enhanced',
+        href: '/sign-up',
         icon: User,
         description: 'Improved registration flow',
         badge: '📝'

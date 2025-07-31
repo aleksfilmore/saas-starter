@@ -45,31 +45,30 @@ const features = [
 const tiers = [
   {
     name: 'Free',
-    price: '$0',
-    period: 'forever',
-    description: 'Perfect for getting started',
+    price: 'FREE',
+    period: '',
+    description: 'Core tools to get you started',
     features: [
-      'Weekly therapy sessions',
-      'Basic progress tracking',
-      'Community wall access',
-      'Emotional tone selection'
+      '🛡️ No Contact Tracker',
+      '🧠 1x Weekly AI Therapy',
+      '📅 30-Day Recovery Protocol',
+      '💸 XP Emergency Unlocks'
     ],
     cta: 'Start Free',
     popular: false,
     color: 'blue'
   },
   {
-    name: 'Firewall',
-    price: '$9.99',
+    name: 'Firewall Mode',
+    price: '$19',
     period: 'month',
-    description: 'Advanced healing tools',
+    description: 'Unlock the full 90-day deep reset',
     features: [
-      'Unlimited therapy sessions',
-      'Advanced progress analytics',
-      'Priority community features',
-      'Custom emotional tracking',
-      'Weekly streak bonuses',
-      'Achievement celebrations'
+      '🔥 Unlimited AI Therapy',
+      '📊 90-Day Deep Reset Protocol', 
+      '🏪 Earn + Spend Bytes',
+      '👑 Cult-Only Drops Access',
+      '⚡ Reduced XP Unlock Costs'
     ],
     cta: 'Upgrade to Firewall',
     popular: true,
@@ -77,17 +76,15 @@ const tiers = [
   },
   {
     name: 'Cult Leader',
-    price: '$19.99',
+    price: '$49',
     period: 'month',
-    description: 'Ultimate healing experience',
+    description: 'Beta access + exclusive features',
     features: [
-      'Everything in Firewall',
-      'Exclusive glitch effects',
-      'Community moderation tools',
-      'Custom AI personality',
-      'Early feature access',
-      'Direct developer feedback',
-      'VIP support'
+      '👑 Everything in Firewall Mode',
+      '🎭 Custom Tools & Avatars',
+      '🔮 Exclusive Glitch Effects',
+      '⚡ Priority Support',
+      '🚀 Beta Feature Access'
     ],
     cta: 'Become Cult Leader',
     popular: false,
@@ -122,49 +119,59 @@ export default function EnhancedLandingPage() {
           <div className="text-center space-y-8">
             <div className="space-y-4">
               <h1 className="text-6xl md:text-8xl font-black text-white leading-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                DIGITAL HEALING
-                <br />
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                  EVOLVED
-                </span>
+                CTRL+ALT+<span className="text-glitch-pink" style={{textShadow: '0 0 20px rgba(255,20,147,0.8)'}}>BLOCK</span>™
               </h1>
-              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-                Experience the next generation of therapeutic technology with AI personality adaptation, 
-                gamified progress tracking, and viral community healing mechanics.
+              <div className="text-3xl md:text-4xl font-black text-glitch-pink mb-6" style={{
+                fontFamily: 'monospace',
+                textShadow: '0 0 20px rgba(255,20,147,0.8)'
+              }}>
+                TERMINATE. FORMAT. GLOW-UP.
+              </div>
+              <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto">
+                The Post-Breakup Ritual Portal™ with three core tools: 
+                <span className="text-red-400 font-bold"> No Contact Tracker</span>, 
+                <span className="text-purple-400 font-bold"> AI Therapy Sessions</span>, and 
+                <span className="text-green-400 font-bold"> Daily Recovery Protocols</span>.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/sign-up/enhanced">
+              <Link href="/dashboard/glow-up-console">
                 <Button 
                   size="lg" 
-                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-lg px-8 py-4"
+                  className="bg-gradient-to-r from-glitch-pink to-purple-500 hover:from-pink-600 hover:to-purple-600 text-lg px-8 py-4 font-black"
                 >
-                  🚀 Start Enhanced Journey
+                  🚀 ENTER THE CONSOLE
                 </Button>
               </Link>
-              <Link href="/enhanced-features-demo">
+              <Link href="/ai-therapy-demo">
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700 text-lg px-8 py-4"
+                  className="border-2 border-purple-500 text-purple-400 hover:bg-purple-500/20 text-lg px-8 py-4 font-bold"
                 >
-                  🎮 Try Interactive Demo
+                  🎮 Try AI Therapy Demo
                 </Button>
               </Link>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
-              {stats.map((stat, index) => (
-                <Card key={index} className="bg-gray-800/50 border border-gray-600">
-                  <CardContent className="p-6 text-center">
-                    <div className="text-3xl mb-2">{stat.icon}</div>
-                    <div className="text-2xl font-bold text-white">{stat.value}</div>
-                    <div className="text-sm text-gray-400">{stat.label}</div>
-                  </CardContent>
-                </Card>
-              ))}
+            {/* Three Core Pillars Preview */}
+            <div className="grid md:grid-cols-3 gap-6 mt-16 max-w-5xl mx-auto">
+              <div className="bg-red-900/20 border-2 border-red-500/50 rounded-xl p-6 backdrop-blur-sm">
+                <div className="text-4xl mb-4">🛡️</div>
+                <h3 className="text-xl font-bold text-red-400 mb-2">No Contact Tracker</h3>
+                <p className="text-red-300/70">Anti-relapse streak counter. Daily reason to log in. Feels like progress even when you're doing nothing.</p>
+              </div>
+              <div className="bg-purple-900/20 border-2 border-purple-500/50 rounded-xl p-6 backdrop-blur-sm">
+                <div className="text-4xl mb-4">🧠</div>
+                <h3 className="text-xl font-bold text-purple-400 mb-2">AI Therapy Sessions</h3>
+                <p className="text-purple-300/70">Choose-your-path breakup therapy. Once a week. Structured. Intimate. Premium feeling.</p>
+              </div>
+              <div className="bg-green-900/20 border-2 border-green-500/50 rounded-xl p-6 backdrop-blur-sm">
+                <div className="text-4xl mb-4">📅</div>
+                <h3 className="text-xl font-bold text-green-400 mb-2">30/90 Day Protocols</h3>
+                <p className="text-green-300/70">Your heartbreak recovery OS. One ritual daily. Unlocks slowly. Builds unbreakable habits.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -225,11 +232,18 @@ export default function EnhancedLandingPage() {
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            💳 TIER UPGRADES
+            The Post-Breakup Ritual Portal™
           </h2>
+          <div className="text-2xl text-glitch-pink font-black mb-4" style={{
+            textShadow: '0 0 20px rgba(255,20,147,0.8)',
+            fontFamily: 'monospace'
+          }}>
+            TERMINATE. FORMAT. GLOW-UP.
+          </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Choose your level of digital healing. All tiers include the enhanced features, 
-            with higher tiers unlocking exclusive capabilities.
+            **The Three Core Tools:** No Contact Tracker (your anti-relapse streak), 
+            AI Therapy Sessions (choose-your-path breakup therapy), and 30/90-Day Protocols 
+            (structured heartbreak recovery OS). Everything else is unlockable.
           </p>
         </div>
 
@@ -277,7 +291,7 @@ export default function EnhancedLandingPage() {
                   ))}
                 </ul>
                 
-                <Link href="/sign-up/enhanced">
+                <Link href="/sign-up">
                   <Button 
                     className={`w-full ${
                       tier.popular 
@@ -307,7 +321,7 @@ export default function EnhancedLandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/sign-up/enhanced">
+              <Link href="/sign-up">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-lg px-8 py-4"

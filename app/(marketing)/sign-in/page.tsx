@@ -1,157 +1,204 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, Zap, Shield, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export interface ActionResult {
-  error: string | null;
-  success: boolean;
-}
-
-function LoginButton({ isPending }: { isPending: boolean }) {
-  return (
-    <button
-      type="submit"
-      disabled={isPending}
-      className="w-full text-lg font-black bg-glitch-pink hover:bg-glitch-pink/90 text-white rounded-xl py-4 px-8 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
-      style={{
-        textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
-        fontFamily: 'system-ui, -apple-system, sans-serif', 
-        fontWeight: '900'
-      }}
-    >
-      {isPending ? 'ACCESSING SYSTEM...' : 'ENTER THE RITUAL'}
-    </button>
-  );
-}
-
-export default function SignInPage() {
+export default function EnhancedSignIn() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [state, setState] = useState<ActionResult>({ error: null, success: false });
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    
-    startTransition(async () => {
-      try {
-        console.log('Authenticating with production API...');
-        
-        // Use production API routes
-        const response = await fetch('/api/auth/signin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        
-        const result = await response.json();
-        console.log('Login result received:', result);
-        
-        if (response.ok && result.success) {
-          setState({ error: null, success: true });
-          router.push('/dashboard');
-        } else {
-          setState({ error: result.error || 'Login failed', success: false });
-        }
-      } catch (error) {
-        console.error('Login error:', error);
-        setState({ error: 'Failed to authenticate. Please try again.', success: false });
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        router.push('/dashboard/glow-up-console');
+      } else {
+        setError(result.error || 'Authentication failed');
       }
-    });
+    } catch (error) {
+      console.error('Sign-in error:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-950 text-foreground overflow-hidden">
-      {/* Background with same style as homepage */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-        style={{
-          backgroundImage: 'url(/bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      />
-      
-      {/* Floating background particles */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-glitch-pink rounded-full opacity-40" style={{animation: 'float 3s ease-in-out infinite'}}></div>
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-blue-400 rounded-full opacity-60" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/3 left-1/5 w-3 h-3 bg-purple-400 rounded-full opacity-30" style={{animation: 'float 3s ease-in-out infinite', animationDelay: '2s'}}></div>
+        <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-purple-400 rounded-full animate-pulse opacity-40"></div>
+        <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-pink-400 rounded-full animate-bounce opacity-60"></div>
+        <div className="absolute bottom-1/3 left-1/5 w-1 h-1 bg-blue-400 rounded-full animate-pulse opacity-50"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-2 h-2 bg-cyan-400 rounded-full animate-bounce opacity-30"></div>
       </div>
-      
-      <div className="flex items-center justify-center min-h-screen relative z-10">
-        <div className="mx-auto grid w-[420px] gap-8 p-10 border-2 border-glitch-pink/50 rounded-2xl bg-gray-900/60 backdrop-blur-sm shadow-[0_0_40px_rgba(255,20,147,0.3)]">
-          <div className="grid gap-4 text-center">
-            <h1 className="text-4xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '1px #ec4899'}}>
-              SYSTEM <span className="text-glitch-pink" style={{textShadow: '0 0 20px rgba(255,20,147,0.8)'}}>ACCESS</span>
-            </h1>
-            <p className="text-lg text-fuchsia-400 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>
+
+      <Card className="w-full max-w-lg bg-gray-900/60 border-2 border-purple-500/50 backdrop-blur-sm relative z-10">
+        <CardHeader>
+          <div className="text-center">
+            <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+              SYSTEM <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">ACCESS</span>
+            </CardTitle>
+            <p className="text-purple-400 flex items-center justify-center gap-2">
+              <Shield className="h-4 w-4" />
               Re-enter the emotional reformat zone
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="grid gap-6">
-            <div className="grid gap-3">
-              <label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Email</label>
-              <input
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {error && (
+            <Alert className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-400 flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-300 font-medium">
+                Email Address
+              </Label>
+              <Input
                 id="email"
                 type="email"
-                name="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className="bg-gray-800/80 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/50 transition-all"
                 placeholder="your.email@domain.com"
                 required
-                autoComplete="email"
-                className="bg-gray-800/80 border-2 border-blue-400/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-glitch-pink focus-visible:border-glitch-pink rounded-xl px-4 py-3 text-lg font-medium transition-all duration-300 hover:border-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
-                aria-invalid={!!state?.error}
-                aria-describedby={state?.error ? 'login-error' : undefined}
               />
             </div>
-            <div className="grid gap-3">
-              <label htmlFor="password" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                className="bg-gray-800/80 border-2 border-blue-400/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-glitch-pink focus-visible:border-glitch-pink rounded-xl px-4 py-3 text-lg font-medium transition-all duration-300 hover:border-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
-                aria-invalid={!!state?.error}
-                aria-describedby={state?.error ? 'login-error' : undefined}
-              />
-              <div className="text-right">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-purple-400 hover:text-glitch-pink underline font-medium transition-colors duration-300"
-                  style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-gray-300 font-medium">
+                  Password
+                </Label>
+                <Link 
+                  href="/reset-password" 
+                  className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
                 >
                   Forgot password?
                 </Link>
               </div>
-            </div>
-            {state?.error && (
-              <div
-                id="login-error"
-                className="text-lg font-bold text-red-400 text-center bg-red-900/20 border border-red-400/50 rounded-xl py-3 px-4"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
-                role="alert"
-              >
-                {state.error}
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  className="bg-gray-800/80 border-gray-600 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/50 pr-10 transition-all"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-            )}
-            <LoginButton isPending={isPending} />
+            </div>
+
+            {/* Security Notice */}
+            <div className="bg-blue-900/20 border border-blue-500/50 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Shield className="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <h4 className="text-blue-400 font-medium mb-1">Secure Access</h4>
+                  <p className="text-blue-200">
+                    Your session is encrypted and your data is protected. All healing progress is securely stored.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Sign In Button */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 text-lg transition-all duration-300 hover:scale-105 disabled:scale-100 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ACCESSING SYSTEM...
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  ENTER THE RITUAL
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              )}
+            </Button>
           </form>
-          <div className="mt-6 text-center text-lg">
-            <span className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Need to join the ritual?</span>{' '}
-            <Link href="/sign-up" className="underline text-glitch-pink hover:text-fuchsia-400 font-bold transition-colors duration-300" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              Sign up FREE
-            </Link>
+
+          {/* Features Preview */}
+          <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/50 rounded-lg p-4">
+            <h4 className="text-white font-medium mb-3 text-center">🎯 Your Glow-Up Console Awaits</h4>
+            <div className="grid grid-cols-1 gap-2 text-sm">
+              <div className="flex items-center gap-2 text-gray-300">
+                <span className="text-purple-400">•</span>
+                No Contact Tracker with real-time progress
+              </div>
+              <div className="flex items-center gap-2 text-gray-300">
+                <span className="text-pink-400">•</span>
+                AI Therapy Sessions tailored to your emotional tone
+              </div>
+              <div className="flex items-center gap-2 text-gray-300">
+                <span className="text-blue-400">•</span>
+                30/90 Day Protocols for systematic healing
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+
+          {/* Sign Up Link */}
+          <div className="text-center pt-4 border-t border-gray-700">
+            <p className="text-gray-400">
+              New to the digital healing revolution?{' '}
+              <Link href="/sign-up" className="text-purple-400 hover:underline font-medium">
+                Join the ritual FREE
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

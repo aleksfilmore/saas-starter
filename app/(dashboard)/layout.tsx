@@ -34,9 +34,10 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainNavItems = [
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', description: 'Overview & Stats' },
+    { href: '/dashboard/glow-up-console', icon: Crown, label: 'Glow-Up Console', description: 'Your focused command center' },
+    { href: '/dashboard', icon: LayoutDashboard, label: 'Full Dashboard', description: 'Complete overview' },
     { href: '/dashboard/tracker', icon: Shield, label: 'No Contact Tracker', description: 'Track your progress' },
-    { href: '/dashboard/rituals', icon: Zap, label: 'Daily Rituals', description: 'Your healing practices' },
+    { href: '/dashboard/rituals', icon: Zap, label: 'Daily Protocols', description: 'Your healing practices' },
     { href: '/wall', icon: MessageSquare, label: 'Wall of Wounds™', description: 'Anonymous confessions' }
   ];
 

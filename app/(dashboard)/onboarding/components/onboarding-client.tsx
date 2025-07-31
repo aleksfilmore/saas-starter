@@ -12,7 +12,7 @@ export function OnboardingClient({ userId }: OnboardingClientProps) {
   
   const handleComplete = () => {
     // Redirect to enhanced dashboard when onboarding is complete
-    router.push('/dashboard/enhanced');
+    router.push('/dashboard/glow-up-console');
   };
 
   return <SystemBootOnboarding userId={userId} onComplete={handleComplete} />;

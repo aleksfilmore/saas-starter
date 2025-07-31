@@ -1,238 +1,445 @@
-'use client';
+"use client";
 
-import { useState, useTransition } from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export interface ActionResult {
-  error: string | null;
-  success: boolean;
+interface SignUpData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  alias: string;
+  emotionalTone: 'numb' | 'vengeance' | 'logic' | 'helpOthers';
+  acceptedTerms: boolean;
 }
 
-function SignUpButton({ isPending }: { isPending: boolean }) {
-  return (
-    <button
-      type="submit"
-      disabled={isPending}
-      className="w-full text-lg font-black bg-glitch-pink hover:bg-glitch-pink/90 text-white rounded-xl py-4 px-8 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
-      style={{
-        textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
-        fontFamily: 'system-ui, -apple-system, sans-serif', 
-        fontWeight: '900'
-      }}
-    >
-      {isPending ? (
-        <span className="flex items-center justify-center">
-          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-          INITIALIZING RITUAL...
-        </span>
-      ) : (
-        <span className="flex items-center justify-center">
-          BEGIN THE RITUAL FREE
-          <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </span>
-      )}
-    </button>
-  );
-}
+const emotionalTones = [
+  {
+    id: 'numb' as const,
+    emoji: '😶',
+    title: 'Numb',
+    description: 'Feeling disconnected, going through the motions',
+    color: 'bg-gray-500/20 border-gray-500/50 text-gray-400'
+  },
+  {
+    id: 'vengeance' as const,
+    emoji: '😤',
+    title: 'Vengeance Mode',
+    description: 'Channel that anger into growth and success',
+    color: 'bg-red-500/20 border-red-500/50 text-red-400'
+  },
+  {
+    id: 'logic' as const,
+    emoji: '🤖',
+    title: 'Pure Logic',
+    description: 'Analytical approach to healing and growth',
+    color: 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+  },
+  {
+    id: 'helpOthers' as const,
+    emoji: '🤝',
+    title: 'Help Others',
+    description: 'Find healing through supporting the community',
+    color: 'bg-green-500/20 border-green-500/50 text-green-400'
+  }
+];
+
+const pricingTiers = {
+  free: [
+    'Essential therapy tools',
+    'Basic progress tracking',
+    'Community support'
+  ],
+  firewall: [
+    'Unlimited therapy sessions',
+    'Advanced progress analytics',
+    'Priority community features',
+    'Custom emotional tracking',
+    'Weekly streak bonuses'
+  ],
+  'cult-leader': [
+    'Everything in Firewall',
+    'Exclusive glitch effects',
+    'Community moderation tools',
+    'Custom AI personality',
+    'Early feature access',
+    'Direct developer feedback'
+  ]
+};
 
 export default function SignUpPage() {
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState<SignUpData>({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    alias: '',
+    emotionalTone: 'logic',
+    acceptedTerms: false
+  });
+  
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [state, setState] = useState<ActionResult>({ error: null, success: false });
+  const totalSteps = 4;
+  const progressPercentage = (step / totalSteps) * 100;
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    
-    startTransition(async () => {
-      try {
-        console.log('Creating account with production API...');
-        
-        // Use production API routes
-        const response = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        
-        const result = await response.json();
-        console.log('Signup result received:', result);
-        
-        if (response.ok && result.success) {
-          setState({ error: null, success: true });
-          router.push('/onboarding');
-        } else {
-          setState({ error: result.error || 'Signup failed', success: false });
+  const handleInputChange = (field: keyof SignUpData, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setError('');
+  };
+
+  const validateStep = (stepNumber: number): boolean => {
+    switch (stepNumber) {
+      case 1:
+        if (!formData.email || !formData.email.includes('@')) {
+          setError('Please enter a valid email address');
+          return false;
         }
-      } catch (error) {
-        console.error('Signup error:', error);
-        setState({ error: 'Failed to create account. Please try again.', success: false });
+        if (!formData.password || formData.password.length < 8) {
+          setError('Password must be at least 8 characters');
+          return false;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
+          return false;
+        }
+        return true;
+      case 2:
+        if (!formData.alias || formData.alias.length < 3) {
+          setError('Alias must be at least 3 characters');
+          return false;
+        }
+        return true;
+      case 3:
+        return true; // Emotional tone has default
+      case 4:
+        if (!formData.acceptedTerms) {
+          setError('Please accept the terms and conditions');
+          return false;
+        }
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep(prev => Math.min(prev + 1, totalSteps));
+    }
+  };
+
+  const handleBack = () => {
+    setStep(prev => Math.max(prev - 1, 1));
+    setError('');
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(4)) return;
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/signup/enhanced', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          alias: formData.alias,
+          emotionalTone: formData.emotionalTone
+        })
+      });
+
+      if (response.ok) {
+        router.push('/dashboard/glow-up-console');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Registration failed');
       }
-    });
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError('Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🔐</div>
+              <h3 className="text-xl font-bold text-white">Create Your Account</h3>
+              <p className="text-gray-400">Your journey to digital healing starts here</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="email" className="text-gray-300">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white"
+                  placeholder="your.email@example.com"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white"
+                  placeholder="Choose a strong password"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="confirmPassword" className="text-gray-300">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white"
+                  placeholder="Confirm your password"
+                />
+              </div>
+            </div>
+          </div>
+        );
+
+      case 2:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">👤</div>
+              <h3 className="text-xl font-bold text-white">Choose Your Identity</h3>
+              <p className="text-gray-400">Pick an alias for your healing journey</p>
+            </div>
+            
+            <div>
+              <Label htmlFor="alias" className="text-gray-300">Alias</Label>
+              <Input
+                id="alias"
+                type="text"
+                value={formData.alias}
+                onChange={(e) => handleInputChange('alias', e.target.value)}
+                className="bg-gray-800 border-gray-600 text-white"
+                placeholder="DigitalPhoenix, VoidWalker, etc."
+                maxLength={20}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                3-20 characters. This will be your identity on the Wall of Wounds.
+              </p>
+            </div>
+            
+            <Alert className="bg-blue-900/20 border-blue-500/50">
+              <AlertDescription className="text-blue-400">
+                💡 <strong>Tip:</strong> Choose something that represents your healing journey. 
+                You can change this later in your profile settings.
+              </AlertDescription>
+            </Alert>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🎛️</div>
+              <h3 className="text-xl font-bold text-white">Your Emotional Tone</h3>
+              <p className="text-gray-400">This helps our AI adapt to your communication style</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {emotionalTones.map((tone) => (
+                <Button
+                  key={tone.id}
+                  onClick={() => handleInputChange('emotionalTone', tone.id)}
+                  variant={formData.emotionalTone === tone.id ? 'default' : 'outline'}
+                  className={`p-6 h-auto flex-col space-y-3 transition-all ${
+                    formData.emotionalTone === tone.id 
+                      ? 'bg-purple-600 border-purple-400' 
+                      : 'bg-gray-800 border-gray-600 hover:border-purple-500'
+                  }`}
+                >
+                  <div className="text-2xl">{tone.emoji}</div>
+                  <div className="text-center">
+                    <div className="font-bold text-white">{tone.title}</div>
+                    <div className="text-sm text-gray-400 mt-1">{tone.description}</div>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🚀</div>
+              <h3 className="text-xl font-bold text-white">Ready to Begin!</h3>
+              <p className="text-gray-400">Review your information and start your healing journey</p>
+            </div>
+            
+            {/* Summary */}
+            <Card className="bg-gray-800/50 border border-gray-600">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Email:</span>
+                  <span className="text-white">{formData.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Alias:</span>
+                  <span className="text-white">{formData.alias}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Emotional Tone:</span>
+                  <span className="text-white">
+                    {emotionalTones.find(t => t.id === formData.emotionalTone)?.title}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Free Tier Benefits */}
+            <Card className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 border border-purple-500/50">
+              <CardHeader>
+                <CardTitle className="text-lg text-white">🎁 FREE Starter Benefits</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {pricingTiers.free.map((benefit, index) => (
+                    <li key={index} className="flex items-center text-gray-300">
+                      <span className="text-green-400 mr-2">✓</span>
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-gray-400 mt-4">
+                  You can upgrade to Firewall or Cult Leader tiers anytime from your dashboard.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Terms */}
+            <div className="flex items-start space-x-3">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={formData.acceptedTerms}
+                onChange={(e) => handleInputChange('acceptedTerms', e.target.checked)}
+                className="mt-1"
+              />
+              <label htmlFor="terms" className="text-sm text-gray-400">
+                I accept the{' '}
+                <Link href="/terms" className="text-purple-400 hover:underline">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="/privacy" className="text-purple-400 hover:underline">
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-950 text-foreground overflow-hidden">
-      {/* Background with same style as homepage */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-        style={{
-          backgroundImage: 'url(/bg.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      />
-      
-      {/* Floating background particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/5 left-1/5 w-3 h-3 bg-glitch-pink rounded-full animate-float opacity-40"></div>
-        <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-blue-400 rounded-full animate-float opacity-60" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-purple-400 rounded-full animate-float opacity-50" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-1/5 right-1/5 w-2 h-2 bg-glitch-cyan rounded-full animate-float opacity-30" style={{animationDelay: '0.5s'}}></div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl bg-gray-900/60 border-2 border-purple-500/50 backdrop-blur-sm">
+        <CardHeader>
+          <div className="text-center">
+            <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+              CTRL+ALT+BLOCK™
+            </CardTitle>
+            <p className="text-purple-400">Join the digital healing revolution</p>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-6">
+            <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <span>Step {step} of {totalSteps}</span>
+              <span>{Math.round(progressPercentage)}% Complete</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
+        </CardHeader>
 
-      <div className="flex items-center justify-center min-h-screen relative z-10">
-        <div className="mx-auto grid w-[450px] gap-8 p-10 border-2 border-purple-400/50 rounded-2xl bg-gray-900/60 backdrop-blur-sm shadow-[0_0_40px_rgba(168,85,247,0.3)]">
-          <div className="grid gap-4 text-center">
-            <h1 className="text-4xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900', WebkitTextStroke: '1px #ec4899'}}>
-              JOIN THE <span className="text-glitch-pink" style={{textShadow: '0 0 20px rgba(255,20,147,0.8)'}}>RITUAL</span>
-            </h1>
-            <p className="text-lg text-fuchsia-400 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif', textShadow: '0 0 10px rgba(217,70,239,0.6)'}}>
-              Begin your emotional OS upgrade — <span className="text-blue-400 font-bold">FREE</span>
+        <CardContent className="space-y-6">
+          {error && (
+            <Alert className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-400">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {getStepContent()}
+
+          {/* Navigation */}
+          <div className="flex justify-between pt-4">
+            <Button
+              onClick={handleBack}
+              variant="outline"
+              disabled={step === 1}
+              className="border-gray-600 text-gray-400 hover:bg-gray-700"
+            >
+              ← Back
+            </Button>
+
+            {step < totalSteps ? (
+              <Button
+                onClick={handleNext}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                Next →
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={isLoading}
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+              >
+                {isLoading ? 'Creating Account...' : 'Start Healing Journey 🚀'}
+              </Button>
+            )}
+          </div>
+
+          {/* Sign In Link */}
+          <div className="text-center pt-4 border-t border-gray-700">
+            <p className="text-gray-400">
+              Already have an account?{' '}
+              <Link href="/sign-in" className="text-purple-400 hover:underline">
+                Sign in here
+              </Link>
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="grid gap-6">
-            <div className="grid gap-3">
-              <label htmlFor="email" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="your.email@domain.com"
-                required
-                autoComplete="email"
-                className="bg-gray-800/80 border-2 border-purple-400/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-glitch-pink focus-visible:border-glitch-pink rounded-xl px-4 py-3 text-lg font-medium transition-all duration-300 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.3)]"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
-                aria-invalid={!!state?.error}
-                aria-describedby={state?.error ? 'signup-error' : undefined}
-              />
-            </div>
-            <div className="grid gap-3">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-white font-semibold text-lg" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                  Password
-                </label>
-                <span className="text-sm text-blue-400 bg-blue-900/30 px-3 py-1 rounded-full font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                  8+ chars, mixed case
-                </span>
-              </div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                minLength={8}
-                maxLength={50}
-                autoComplete="new-password"
-                placeholder="Create a strong password"
-                className="bg-gray-800/80 border-2 border-purple-400/50 text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-glitch-pink focus-visible:border-glitch-pink rounded-xl px-4 py-3 text-lg font-medium transition-all duration-300 hover:border-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.3)]"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
-                aria-invalid={!!state?.error}
-                aria-describedby={state?.error ? 'signup-error password-requirements' : 'password-requirements'}
-              />
-              <div id="password-requirements" className="text-xs text-gray-400 space-y-1">
-                <p className="flex items-center gap-2">
-                  <span className="text-blue-400">•</span>
-                  8-128 characters with uppercase, lowercase, number, and special character
-                </p>
-                <p className="flex items-center gap-2">
-                  <span className="text-blue-400">•</span>
-                  Strong passwords help protect your ritual progress and data
-                </p>
-              </div>
-            </div>
-            
-            {/* Terms of Service and Privacy Policy */}
-            <div className="grid gap-3">
-              <div className="space-y-3">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    name="acceptTerms"
-                    required
-                    className="mt-1 w-4 h-4 bg-gray-800 border-2 border-purple-400/50 rounded text-glitch-pink focus:ring-2 focus:ring-glitch-pink focus:border-glitch-pink transition-all duration-300"
-                  />
-                  <span className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
-                    I have read and agree to the{' '}
-                    <Link href="/terms" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-medium">
-                      Terms of Service
-                    </Link>
-                  </span>
-                </label>
-                
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    name="acceptPrivacy"
-                    required
-                    className="mt-1 w-4 h-4 bg-gray-800 border-2 border-purple-400/50 rounded text-glitch-pink focus:ring-2 focus:ring-glitch-pink focus:border-glitch-pink transition-all duration-300"
-                  />
-                  <span className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
-                    I have read and agree to the{' '}
-                    <Link href="/privacy" target="_blank" className="text-blue-400 hover:text-blue-300 underline font-medium">
-                      Privacy Policy
-                    </Link>
-                  </span>
-                </label>
-                
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    name="emailUpdates"
-                    className="mt-1 w-4 h-4 bg-gray-800 border-2 border-purple-400/50 rounded text-purple-400 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300"
-                  />
-                  <span className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
-                    <span className="text-gray-400">(Optional)</span> Send me ritual updates and emotional intelligence tips
-                  </span>
-                </label>
-              </div>
-            </div>
-            {state?.error && (
-              <div
-                id="signup-error"
-                className="text-lg font-bold text-red-400 text-center bg-red-900/20 border border-red-400/50 rounded-xl py-3 px-4"
-                style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}
-                role="alert"
-              >
-                {state.error}
-              </div>
-            )}
-            <SignUpButton isPending={isPending} />
-          </form>
-          <div className="mt-6 text-center text-lg">
-            <span className="text-white font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>Already in the system?</span>{' '}
-            <Link href="/sign-in" className="underline text-glitch-pink hover:text-fuchsia-400 font-bold transition-colors duration-300" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              Log in
-            </Link>
-          </div>
-        </div>
-      </div>
-      
-      {/* CSS for animations */}
-      <style jsx global>{`
-        @keyframes float {
-          0% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
-          100% { transform: translateY(0px) rotate(360deg); opacity: 0.4; }
-        }
-      `}</style>
+        </CardContent>
+      </Card>
     </div>
   );
 }
