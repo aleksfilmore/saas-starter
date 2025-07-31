@@ -7,11 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import WeeklyTherapySession from '@/components/ai-therapy/WeeklyTherapySession';
 import ProtocolGhostChat from '@/components/ai-therapy/ProtocolGhostChat';
 import AuthWrapper from '@/components/AuthWrapper';
+import Link from 'next/link';
 import { 
   Trophy, Zap, Flame, Calendar, MessageCircle, Target, 
   TrendingUp, Award, Timer, Heart, Brain, Shield, 
   ChevronRight, Star, Users, Activity, BarChart3,
-  ShieldCheck, Sparkles, Bot
+  ShieldCheck, Sparkles, Bot, Gamepad2, Home
 } from 'lucide-react';
 
 // Mock user data - in real app this would come from your auth/database
@@ -321,6 +322,117 @@ export default function DashboardPage() {
                 </Card>
               </div>
 
+              {/* Enhanced Features Showcase */}
+              <Card className="bg-gradient-to-br from-purple-900/20 via-pink-900/30 to-blue-900/20 border-2 border-purple-500/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-purple-400">
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    🚀 Enhanced Platform Features
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Link href="/dashboard/enhanced">
+                      <Card className="bg-gray-800/50 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="text-2xl">📊</div>
+                            <div>
+                              <h4 className="font-bold text-white group-hover:text-purple-400 transition-colors">Enhanced Dashboard</h4>
+                              <p className="text-xs text-gray-400">Next-gen healing center</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-purple-500/20 text-purple-400 text-xs">NEW</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    <Link href="/enhanced-features-demo">
+                      <Card className="bg-gray-800/50 border border-green-500/30 hover:border-green-500/50 transition-all duration-300 cursor-pointer group">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="text-2xl">🎮</div>
+                            <div>
+                              <h4 className="font-bold text-white group-hover:text-green-400 transition-colors">Interactive Demo</h4>
+                              <p className="text-xs text-gray-400">Try all enhanced features</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-green-500/20 text-green-400 text-xs">DEMO</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    <Link href="/enhanced">
+                      <Card className="bg-gray-800/50 border border-blue-500/30 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="text-2xl">🎨</div>
+                            <div>
+                              <h4 className="font-bold text-white group-hover:text-blue-400 transition-colors">Enhanced Home</h4>
+                              <p className="text-xs text-gray-400">Marketing showcase</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-blue-500/20 text-blue-400 text-xs">ENHANCED</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    <Link href="/sign-up/enhanced">
+                      <Card className="bg-gray-800/50 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-300 cursor-pointer group">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="text-2xl">📝</div>
+                            <div>
+                              <h4 className="font-bold text-white group-hover:text-orange-400 transition-colors">Enhanced Sign-Up</h4>
+                              <p className="text-xs text-gray-400">Improved registration</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-orange-500/20 text-orange-400 text-xs">FLOW</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    <Link href="/implementation-status">
+                      <Card className="bg-gray-800/50 border border-yellow-500/30 hover:border-yellow-500/50 transition-all duration-300 cursor-pointer group">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="text-2xl">📋</div>
+                            <div>
+                              <h4 className="font-bold text-white group-hover:text-yellow-400 transition-colors">Implementation Status</h4>
+                              <p className="text-xs text-gray-400">Development progress</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-yellow-500/20 text-yellow-400 text-xs">STATUS</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    <Link href="/achievements">
+                      <Card className="bg-gray-800/50 border border-pink-500/30 hover:border-pink-500/50 transition-all duration-300 cursor-pointer group">
+                        <CardContent className="p-4">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="text-2xl">🏆</div>
+                            <div>
+                              <h4 className="font-bold text-white group-hover:text-pink-400 transition-colors">Achievements</h4>
+                              <p className="text-xs text-gray-400">Milestone tracking</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-pink-500/20 text-pink-400 text-xs">REWARDS</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </div>
+                  
+                  <div className="mt-6 text-center">
+                    <Link href="/enhanced-features-demo">
+                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                        🚀 Explore All Enhanced Features
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Recent Achievements */}
               <Card className="bg-gradient-to-br from-yellow-900/20 via-amber-900/30 to-orange-900/20 border-2 border-yellow-500/50">
                 <CardHeader>
@@ -374,18 +486,49 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <Card className="bg-gray-900/50 border border-blue-500/30">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-black text-blue-400">
-                    📈 Progress Analytics - Coming Soon
+                  <CardTitle className="text-2xl font-black text-blue-400 flex items-center">
+                    <BarChart3 className="h-6 w-6 mr-2" />
+                    📈 Progress Analytics
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center space-y-4">
-                    <p className="text-gray-400 text-lg">
-                      Advanced progress tracking and analytics dashboard.
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Detailed mood tracking, therapy session analytics, and healing progress visualization.
-                    </p>
+                  <div className="space-y-6">
+                    <div className="text-center space-y-4">
+                      <p className="text-gray-400 text-lg">
+                        Advanced progress tracking and analytics dashboard.
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Detailed mood tracking, therapy session analytics, and healing progress visualization.
+                      </p>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Link href="/enhanced-features-demo?tab=progress">
+                        <Card className="bg-gray-800/50 border border-green-500/30 hover:border-green-500/50 transition-all duration-300 cursor-pointer">
+                          <CardContent className="p-4 text-center">
+                            <div className="text-3xl mb-3">📊</div>
+                            <h4 className="font-bold text-green-400 mb-2">Enhanced Progress Visualization</h4>
+                            <p className="text-xs text-gray-400 mb-3">Advanced XP tracking with achievement celebrations</p>
+                            <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white">
+                              🎮 Try Interactive Demo
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                      
+                      <Link href="/dashboard/enhanced">
+                        <Card className="bg-gray-800/50 border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300 cursor-pointer">
+                          <CardContent className="p-4 text-center">
+                            <div className="text-3xl mb-3">🚀</div>
+                            <h4 className="font-bold text-purple-400 mb-2">Enhanced Dashboard</h4>
+                            <p className="text-xs text-gray-400 mb-3">Full-featured dashboard with all enhancements</p>
+                            <Button size="sm" className="bg-purple-500 hover:bg-purple-600 text-white">
+                              📊 Open Enhanced View
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -396,21 +539,49 @@ export default function DashboardPage() {
             <div className="space-y-8">
               <Card className="bg-gray-900/50 border border-purple-500/30">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-black text-purple-400">
-                    🏗️ Wall of Wounds - Coming Soon
+                  <CardTitle className="text-2xl font-black text-purple-400 flex items-center">
+                    <Users className="h-6 w-6 mr-2" />
+                    🏗️ Wall of Wounds Community
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center space-y-4">
-                    <p className="text-gray-400 text-lg">
-                      Anonymous confessional community is being built.
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Drop your heartbreak into the void. Get reactions from fellow warriors.
-                    </p>
-                    <Button className="bg-purple-500 hover:bg-purple-600 text-white">
-                      Join Waitlist
-                    </Button>
+                  <div className="space-y-6">
+                    <div className="text-center space-y-4">
+                      <p className="text-gray-400 text-lg">
+                        Anonymous confessional community with enhanced features.
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Drop your heartbreak into the void. Get reactions from fellow warriors with viral mechanics and emotional tagging.
+                      </p>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <Link href="/enhanced-features-demo?tab=community">
+                        <Card className="bg-gray-800/50 border border-pink-500/30 hover:border-pink-500/50 transition-all duration-300 cursor-pointer">
+                          <CardContent className="p-4 text-center">
+                            <div className="text-3xl mb-3">📱</div>
+                            <h4 className="font-bold text-pink-400 mb-2">Enhanced Wall of Wounds</h4>
+                            <p className="text-xs text-gray-400 mb-3">Viral mechanics, emotional tagging, tier indicators</p>
+                            <Button size="sm" className="bg-pink-500 hover:bg-pink-600 text-white">
+                              🎮 Try Interactive Demo
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                      
+                      <Link href="/wall">
+                        <Card className="bg-gray-800/50 border border-orange-500/30 hover:border-orange-500/50 transition-all duration-300 cursor-pointer">
+                          <CardContent className="p-4 text-center">
+                            <div className="text-3xl mb-3">💬</div>
+                            <h4 className="font-bold text-orange-400 mb-2">Current Wall</h4>
+                            <p className="text-xs text-gray-400 mb-3">Basic community features</p>
+                            <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white">
+                              💬 Join Community
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

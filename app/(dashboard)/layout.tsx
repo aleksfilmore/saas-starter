@@ -17,7 +17,11 @@ import {
   User,
   Lock,
   LogOut,
-  Home
+  Home,
+  Sparkles,
+  Target,
+  Trophy,
+  Users
 } from 'lucide-react';
 import Footer from '@/components/layout/footer';
 
@@ -31,6 +35,8 @@ export default function DashboardLayout({
 
   const mainNavItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', description: 'Overview & Stats' },
+    { href: '/dashboard/enhanced', icon: Zap, label: '🚀 Enhanced Dashboard', description: 'Next-gen healing center' },
+    { href: '/enhanced-features-demo', icon: Shield, label: '🎮 Interactive Demo', description: 'Try all enhanced features' },
     { href: '/dashboard/tracker', icon: Shield, label: 'No Contact Tracker', description: 'Track your progress' },
     { href: '/dashboard/rituals', icon: Zap, label: 'Daily Rituals', description: 'Your healing practices' },
     { href: '/wall', icon: MessageSquare, label: 'Wall of Wounds™', description: 'Anonymous confessions' },
@@ -41,6 +47,14 @@ export default function DashboardLayout({
     { href: '/dashboard/general', icon: Settings, label: 'General Settings', description: 'Profile & preferences' },
     { href: '/dashboard/security', icon: Lock, label: 'Security', description: 'Password & privacy' },
     { href: '/dashboard/admin', icon: Crown, label: 'Admin Panel', description: 'System management' }
+  ];
+
+  const enhancedNavItems = [
+    { href: '/enhanced-features-demo', icon: Sparkles, label: '🎮 Features Demo', description: 'Try all enhanced features' },
+    { href: '/enhanced', icon: Home, label: '🎨 Enhanced Home', description: 'Marketing showcase' },
+    { href: '/sign-up/enhanced', icon: User, label: '📝 Enhanced Sign-Up', description: 'Improved registration' },
+    { href: '/implementation-status', icon: Target, label: '📊 Implementation Status', description: 'Development progress' },
+    { href: '/achievements', icon: Trophy, label: '🏆 Achievements', description: 'Milestone tracking' }
   ];
 
   const handleLogout = async () => {
@@ -97,6 +111,32 @@ export default function DashboardLayout({
                     <span className="font-semibold text-sm">{item.label}</span>
                   </div>
                   <span className="text-xs text-gray-400 ml-8 font-normal">{item.description}</span>
+                </Button>
+              </Link>
+            ))}
+          </div>
+
+          {/* Enhanced Features Navigation */}
+          <div className="mb-6">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3 px-3">
+              🚀 Enhanced Features
+            </h3>
+            {enhancedNavItems.map((item) => (
+              <Link key={item.href} href={item.href} passHref>
+                <Button
+                  variant="ghost"
+                  className={`w-full justify-start text-left p-3 h-auto flex-col items-start gap-1 mb-1 rounded-xl transition-all duration-300 ${
+                    pathname === item.href 
+                      ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 text-white shadow-lg shadow-purple-400/20' 
+                      : 'hover:bg-gray-800/60 hover:border-gray-600/50 border border-transparent text-gray-300 hover:text-white'
+                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <div className="flex items-center w-full">
+                    <item.icon className={`h-4 w-4 mr-3 ${pathname === item.href ? 'text-purple-400' : ''}`} />
+                    <span className="font-semibold text-sm">{item.label}</span>
+                  </div>
+                  <span className="text-xs text-gray-400 ml-7 font-normal">{item.description}</span>
                 </Button>
               </Link>
             ))}
