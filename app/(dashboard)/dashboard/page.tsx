@@ -433,6 +433,87 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
+              {/* Today's Protocol Tasks */}
+              <Card className="bg-gradient-to-br from-blue-900/20 via-cyan-900/30 to-teal-900/20 border-2 border-blue-500/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-blue-400">
+                    <Calendar className="h-5 w-5 mr-2" />
+                    📅 Today's Protocol Tasks
+                  </CardTitle>
+                  <p className="text-blue-300 text-sm">
+                    Day {daysActive} • Week {userData.weekInHealing} • REPROGRAMMING Phase
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Today's Main Task */}
+                    <div className="bg-gray-800/50 p-4 rounded-lg border border-blue-500/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Target className="w-4 h-4 text-blue-400" />
+                          <span className="font-medium text-white">Daily Ritual</span>
+                          <Badge className="bg-blue-500/20 text-blue-400 text-xs">Week 3</Badge>
+                        </div>
+                        <Badge className="bg-green-500/20 text-green-400">+75 XP</Badge>
+                      </div>
+                      <p className="text-gray-300 text-sm">
+                        Start a new ritual: every morning, speak out your codename and one core value.
+                      </p>
+                      <div className="mt-3 flex items-center space-x-2">
+                        <Timer className="w-3 h-3 text-gray-400" />
+                        <span className="text-xs text-gray-400">5 mins</span>
+                      </div>
+                    </div>
+
+                    {/* Suggested Based on Mood */}
+                    <div className="bg-gray-800/50 p-4 rounded-lg border border-purple-500/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Brain className="w-4 h-4 text-purple-400" />
+                          <span className="font-medium text-white">Mood-Based Suggestion</span>
+                          <Badge className="bg-purple-500/20 text-purple-400 text-xs">For Your State</Badge>
+                        </div>
+                        <Badge className="bg-purple-500/20 text-purple-400">+100 XP</Badge>
+                      </div>
+                      <p className="text-gray-300 text-sm">
+                        Do one thing your ex hated (the food, the playlist, the lipstick). Revel in it.
+                      </p>
+                      <div className="mt-3 flex items-center space-x-2">
+                        <Timer className="w-3 h-3 text-gray-400" />
+                        <span className="text-xs text-gray-400">30 mins</span>
+                      </div>
+                    </div>
+
+                    {/* Emergency Protocol */}
+                    <div className="bg-gray-800/50 p-4 rounded-lg border border-orange-500/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Zap className="w-4 h-4 text-orange-400" />
+                          <span className="font-medium text-white">Emergency Protocol</span>
+                          <Badge className="bg-orange-500/20 text-orange-400 text-xs">Always Available</Badge>
+                        </div>
+                        <Badge className="bg-orange-500/20 text-orange-400">+75 XP</Badge>
+                      </div>
+                      <p className="text-gray-300 text-sm">
+                        "Run Joy Surge" — find a song that makes you dance like a glitch.
+                      </p>
+                      <div className="mt-3 flex items-center space-x-2">
+                        <Timer className="w-3 h-3 text-gray-400" />
+                        <span className="text-xs text-gray-400">10 mins</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 text-center">
+                    <Link href="/dashboard/enhanced">
+                      <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600">
+                        📋 View All Today's Tasks & Protocol
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Recent Achievements */}
               <Card className="bg-gradient-to-br from-yellow-900/20 via-amber-900/30 to-orange-900/20 border-2 border-yellow-500/50">
                 <CardHeader>

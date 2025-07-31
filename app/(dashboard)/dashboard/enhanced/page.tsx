@@ -5,11 +5,84 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, T            </Card>
+
+            {/* Today's Quick Tasks Preview */}
+            <Card className="bg-gray-800/50 border border-purple-500/30">
+              <CardHeader>
+                <CardTitle className="text-xl text-purple-400">📅 Today's Protocol Tasks</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="text-2xl">🎯</div>
+                      <div>
+                        <div className="font-medium text-white">Day {daysSinceJoined} Task</div>
+                        <div className="text-sm text-gray-400">Week {user.week} • REPROGRAMMING</div>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={() => setActiveTab('activities')}
+                      size="sm"
+                      className="bg-purple-500 hover:bg-purple-600"
+                    >
+                      View All
+                    </Button>
+                  </div>
+                  
+                  <div className="text-center">
+                    <Button 
+                      onClick={() => setActiveTab('activities')}
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    >
+                      📋 View Today's Recommended Activities
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Protocol Progress */}
+            <Card className="bg-gray-800/50 border border-green-500/30">
+              <CardHeader>
+                <CardTitle className="text-xl text-green-400">📊 Protocol Progress</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-400">{user.protocolType.toUpperCase()} Protocol</span>
+                      <span className="text-white">Day {daysSinceJoined} of {user.protocolType === '30-day' ? '30' : '90'}</span>
+                    </div>
+                    <Progress 
+                      value={(daysSinceJoined / (user.protocolType === '30-day' ? 30 : 90)) * 100} 
+                      className="h-3" 
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Tasks Completed:</span>
+                    <span className="text-green-400">{user.completedTasks.length}</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Current Week:</span>
+                    <span className="text-white">Week {user.week} • REPROGRAMMING</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity */}
+            <Card className="bg-gray-800/50 border border-green-500/30">ontent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WeeklyTherapySession from '@/components/ai-therapy/WeeklyTherapySession';
 import ProgressVisualization from '@/components/gamification/ProgressVisualization';
 import EnhancedWallOfWounds from '@/components/wall/EnhancedWallOfWounds';
 import ProtocolGhostChat from '@/components/ai-therapy/ProtocolGhostChat';
+import TodaysRecommendedActivities from '@/components/dashboard/TodaysRecommendedActivities';
 import { useRouter } from 'next/navigation';
 import { validateRequest } from '@/lib/auth';
 
@@ -28,6 +101,8 @@ interface User {
   totalSessions: number;
   joinedAt: Date;
   lastActive: Date;
+  completedTasks: string[];
+  protocolType: '30-day' | '90-day';
 }
 
 // Mock user data - in real app this would come from database
@@ -44,7 +119,9 @@ const mockUser: User = {
   streakDays: 12,
   totalSessions: 18,
   joinedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-  lastActive: new Date()
+  lastActive: new Date(),
+  completedTasks: ['day-15', 'day-16', 'day-14', 'day-13'],
+  protocolType: '30-day'
 };
 
 const mockAchievements = [
@@ -119,6 +196,15 @@ export default function EnhancedDashboard() {
 
     loadUserData();
   }, [router]);
+
+  const handleCompleteTask = (taskId: string, xp: number) => {
+    setUser(prev => ({
+      ...prev,
+      xp: prev.xp + xp,
+      dailyXP: prev.dailyXP + xp,
+      completedTasks: [...prev.completedTasks, taskId]
+    }));
+  };
 
   const handleTherapyComplete = (xp: number, bytes: number) => {
     setUser(prev => ({
@@ -250,9 +336,12 @@ export default function EnhancedDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800/50 border border-gray-600">
+          <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 border border-gray-600">
             <TabsTrigger value="overview" className="data-[state=active]:bg-purple-500">
               📊 Overview
+            </TabsTrigger>
+            <TabsTrigger value="activities" className="data-[state=active]:bg-purple-500">
+              📅 Today's Tasks
             </TabsTrigger>
             <TabsTrigger value="therapy" className="data-[state=active]:bg-purple-500">
               🎮 Therapy
@@ -274,8 +363,15 @@ export default function EnhancedDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Button 
+                    onClick={() => setActiveTab('activities')}
+                    className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+                  >
+                    📅 View Today's Tasks
+                  </Button>
+                  <Button 
                     onClick={() => setActiveTab('therapy')}
-                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                    variant="outline"
+                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
                   >
                     🎮 Start Weekly Therapy Session
                   </Button>
@@ -349,6 +445,17 @@ export default function EnhancedDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="activities">
+            <TodaysRecommendedActivities
+              userDay={daysSinceJoined}
+              userWeek={user.week}
+              emotionalTone={user.emotionalTone}
+              completedTasks={user.completedTasks}
+              onCompleteTask={handleCompleteTask}
+              protocolType={user.protocolType}
+            />
           </TabsContent>
 
           <TabsContent value="therapy">
