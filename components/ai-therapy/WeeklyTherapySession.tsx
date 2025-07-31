@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Trophy, Zap, Heart, Timer, ArrowLeft } from 'lucide-react';
+import { ChevronRight, Trophy, Zap, Heart, Timer, ArrowLeft, Sparkles, Star, Crown } from 'lucide-react';
 import { useErrorHandling, LoadingSpinner, ErrorDisplay } from '@/components/ui/error-handling';
 
 interface TherapyChoice {
@@ -155,6 +155,11 @@ interface WeeklyTherapySessionProps {
   onComplete: (xp: number, bytes: number) => void;
   onPurchaseSession?: () => void;
   onXPUnlock?: (cost: number) => void;
+  // New props for enhanced UX
+  onAchievementUnlock?: (achievement: { id: string; title: string; type: 'rare' | 'milestone' | 'standard' }) => void;
+  dailyXPGained?: number;
+  weeklyXPTarget?: number;
+  emotionalToneDial?: 'numb' | 'vengeance' | 'logic' | 'help-others';
 }
 
 export default function WeeklyTherapySession({ 
@@ -164,12 +169,18 @@ export default function WeeklyTherapySession({
   lastSessionDate, 
   onComplete, 
   onPurchaseSession, 
-  onXPUnlock 
+  onXPUnlock,
+  onAchievementUnlock,
+  dailyXPGained = 0,
+  weeklyXPTarget = 500,
+  emotionalToneDial = 'numb'
 }: WeeklyTherapySessionProps) {
   const [currentScenario, setCurrentScenario] = useState<TherapyScenario | null>(null);
   const [selectedChoice, setSelectedChoice] = useState<TherapyChoice | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [isSessionStarted, setIsSessionStarted] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const { error, isLoading, handleAsyncOperation, clearError } = useErrorHandling();
 
   const availableScenario = THERAPY_SCENARIOS.find(s => s.week === userWeek) || THERAPY_SCENARIOS[0];
 
@@ -207,15 +218,115 @@ export default function WeeklyTherapySession({
 
   const handleXPUnlock = () => {
     if (onXPUnlock && canUnlockWithXP) {
-      onXPUnlock(xpUnlockCost);
-      setCurrentScenario(availableScenario);
-      setIsSessionStarted(true);
+      handleAsyncOperation(async () => {
+        if (onXPUnlock) {
+          onXPUnlock(xpUnlockCost);
+          setCurrentScenario(availableScenario);
+          setIsSessionStarted(true);
+        }
+      }, 'Failed to unlock session with XP');
     }
   };
 
   const handlePurchaseSession = () => {
     if (onPurchaseSession) {
-      onPurchaseSession();
+      handleAsyncOperation(async () => {
+        if (onPurchaseSession) {
+          onPurchaseSession();
+        }
+      }, 'Failed to purchase emergency session');
+    }
+  };
+
+  // Enhanced XP progress calculation
+  const getXPProgressData = () => {
+    const dailyProgress = Math.min((dailyXPGained / 50) * 100, 100); // Assume 50 XP daily target
+    const weeklyProgress = Math.min((userXP / weeklyXPTarget) * 100, 100);
+    const nextMilestone = Math.ceil(userXP / 100) * 100; // Next 100 XP milestone
+    
+    return {
+      dailyProgress,
+      weeklyProgress,
+      nextMilestone,
+      xpToNextMilestone: nextMilestone - userXP
+    };
+  };
+
+  const xpData = getXPProgressData();
+
+  // AI Personality customization based on emotional tone
+  const getAIPersonality = () => {
+    switch (emotionalToneDial) {
+      case 'vengeance':
+        return {
+          name: 'Spicy Revenge Bot',
+          color: 'text-red-400',
+          bgColor: 'bg-red-900/20',
+          borderColor: 'border-red-500/50',
+          responseStyle: 'bold and intense'
+        };
+      case 'logic':
+        return {
+          name: 'Logic Protocol',
+          color: 'text-blue-400',
+          bgColor: 'bg-blue-900/20',
+          borderColor: 'border-blue-500/50',
+          responseStyle: 'analytical and precise'
+        };
+      case 'help-others':
+        return {
+          name: 'Wise Therapist',
+          color: 'text-green-400',
+          bgColor: 'bg-green-900/20',
+          borderColor: 'border-green-500/50',
+          responseStyle: 'compassionate and guiding'
+        };
+      default: // numb
+        return {
+          name: 'Protocol Ghost',
+          color: 'text-purple-400',
+          bgColor: 'bg-purple-900/20',
+          borderColor: 'border-purple-500/50',
+          responseStyle: 'gentle and understanding'
+        };
+    }
+  };
+
+  const aiPersonality = getAIPersonality();
+
+  // Achievement celebration trigger
+  const triggerAchievementCelebration = (xpGained: number) => {
+    const achievements = [];
+    const nextMilestone = Math.ceil(userXP / 100) * 100;
+    
+    // Check for milestones
+    if ((userXP + xpGained) >= nextMilestone && userXP < nextMilestone) {
+      achievements.push({
+        id: `xp-milestone-${nextMilestone}`,
+        title: `${nextMilestone} XP Milestone Reached!`,
+        type: 'milestone' as const
+      });
+    }
+    
+    // Check for session completion achievements
+    if (userWeek === 1 && !isSessionStarted) {
+      achievements.push({
+        id: 'first-therapy-session',
+        title: 'First Therapy Session Complete',
+        type: 'standard' as const
+      });
+    }
+    
+    // Trigger celebrations
+    achievements.forEach(achievement => {
+      if (onAchievementUnlock) {
+        onAchievementUnlock(achievement);
+      }
+    });
+    
+    if (achievements.length > 0) {
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 3000);
     }
   };
 
@@ -223,6 +334,9 @@ export default function WeeklyTherapySession({
   if (!sessionAvailability.canAccess && !isSessionStarted) {
     return (
       <Card className="bg-gradient-to-br from-red-900/20 via-orange-900/30 to-yellow-900/20 border-2 border-orange-500/50 backdrop-blur-sm">
+        {/* Error Display */}
+        {error && <ErrorDisplay error={error} onDismiss={clearError} />}
+        
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
             🔒 SESSION LOCKED
@@ -245,19 +359,63 @@ export default function WeeklyTherapySession({
             </p>
           </div>
 
+          {/* Enhanced XP Progress Display */}
+          <div className="bg-gray-800/50 border border-purple-500/30 rounded-xl p-4 mb-6">
+            <h4 className="text-purple-400 font-bold mb-3 text-center">📊 Your Progress Today</h4>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-gray-300">Daily XP</span>
+                  <span className="text-purple-400 font-bold">+{dailyXPGained}</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${xpData.dailyProgress}%` }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-gray-300">To Next Milestone</span>
+                  <span className="text-yellow-400 font-bold">{xpData.xpToNextMilestone} XP</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${100 - (xpData.xpToNextMilestone / 100) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Emergency unlock options */}
           <div className="grid md:grid-cols-2 gap-4">
-            {/* XP Unlock */}
-            <div className="bg-purple-900/20 border-2 border-purple-500/50 rounded-xl p-6">
-              <div className="text-center mb-4">
-                <Trophy className="h-12 w-12 text-purple-400 mx-auto mb-3" />
+            {/* Enhanced XP Unlock */}
+            <div className="bg-purple-900/20 border-2 border-purple-500/50 rounded-xl p-6 relative overflow-hidden">
+              {/* Glitch effect for cult leaders */}
+              {userTier === 'cult-leader' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse" />
+              )}
+              
+              <div className="text-center mb-4 relative z-10">
+                <div className="flex items-center justify-center mb-3">
+                  <Trophy className="h-12 w-12 text-purple-400 mr-2" />
+                  {userTier === 'cult-leader' && <Crown className="h-6 w-6 text-yellow-400" />}
+                </div>
                 <h3 className="text-xl font-black text-purple-400" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
                   UNLOCK WITH XP
                 </h3>
                 <p className="text-white text-sm mt-2">Use your emotional growth points</p>
+                {userTier === 'cult-leader' && (
+                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 mt-2">
+                    CULT LEADER PRIORITY
+                  </Badge>
+                )}
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-3 relative z-10">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-300">Cost:</span>
                   <span className="text-purple-400 font-bold">{xpUnlockCost} XP</span>
@@ -269,16 +427,49 @@ export default function WeeklyTherapySession({
                   </span>
                 </div>
                 
+                {/* XP Progress Ring */}
+                <div className="flex justify-center my-4">
+                  <div className="relative w-20 h-20">
+                    <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                      <path
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="rgb(75 85 99)"
+                        strokeWidth="2"
+                      />
+                      <path
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="rgb(168 85 247)"
+                        strokeWidth="2"
+                        strokeDasharray={`${(userXP / xpUnlockCost) * 100}, 100`}
+                        className="transition-all duration-500"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-bold text-purple-400">
+                        {Math.round((userXP / xpUnlockCost) * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
                 <Button
                   onClick={handleXPUnlock}
-                  disabled={!canUnlockWithXP}
+                  disabled={!canUnlockWithXP || isLoading}
                   className={`w-full mt-4 font-black ${
                     canUnlockWithXP 
                       ? 'bg-purple-500 hover:bg-purple-600 text-white' 
                       : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  {canUnlockWithXP ? '🚀 UNLOCK NOW' : '❌ NOT ENOUGH XP'}
+                  {isLoading ? (
+                    <LoadingSpinner size="small" />
+                  ) : canUnlockWithXP ? (
+                    '🚀 UNLOCK NOW'
+                  ) : (
+                    '❌ NOT ENOUGH XP'
+                  )}
                 </Button>
                 
                 {!canUnlockWithXP && (
@@ -348,6 +539,7 @@ export default function WeeklyTherapySession({
 
   const completeSession = () => {
     if (selectedChoice) {
+      triggerAchievementCelebration(selectedChoice.xpReward);
       onComplete(selectedChoice.xpReward, selectedChoice.byteReward);
     }
     resetSession();
@@ -429,45 +621,106 @@ export default function WeeklyTherapySession({
 
   if (showResult && selectedChoice && currentScenario) {
     return (
-      <Card className="bg-gradient-to-br from-gray-900/80 via-purple-900/40 to-pink-900/20 border-2 border-purple-500/50 backdrop-blur-sm">
+      <Card className={`bg-gradient-to-br from-gray-900/80 via-purple-900/40 to-pink-900/20 border-2 ${aiPersonality.borderColor} backdrop-blur-sm relative overflow-hidden`}>
+        {/* Celebration Animation */}
+        {showCelebration && (
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-400/20 to-purple-400/20 animate-pulse" />
+            <div className="flex items-center justify-center h-full">
+              <div className="text-6xl animate-bounce">🎉</div>
+            </div>
+          </div>
+        )}
+        
+        {/* Error Display */}
+        {error && <ErrorDisplay error={error} onDismiss={clearError} />}
+        
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-black text-white" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              AI Therapist Response
-            </CardTitle>
-            <Badge className={`${
-              selectedChoice.emotion === 'growth' ? 'bg-green-500/20 text-green-400 border-green-500/50' :
-              selectedChoice.emotion === 'angry' ? 'bg-red-500/20 text-red-400 border-red-500/50' :
-              selectedChoice.emotion === 'vulnerable' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' :
-              'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
-            }`}>
-              {selectedChoice.emotion.toUpperCase()}
-            </Badge>
+            <div className="flex items-center space-x-3">
+              <CardTitle className="text-2xl font-black text-white" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                {aiPersonality.name} Response
+              </CardTitle>
+              {selectedChoice.emotion === 'growth' && (
+                <Sparkles className="h-6 w-6 text-yellow-400 animate-pulse" />
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge className={`${
+                selectedChoice.emotion === 'growth' ? 'bg-green-500/20 text-green-400 border-green-500/50' :
+                selectedChoice.emotion === 'angry' ? 'bg-red-500/20 text-red-400 border-red-500/50' :
+                selectedChoice.emotion === 'vulnerable' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' :
+                'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
+              }`}>
+                {selectedChoice.emotion.toUpperCase()}
+              </Badge>
+              {userTier === 'cult-leader' && (
+                <Crown className="h-5 w-5 text-yellow-400" />
+              )}
+            </div>
           </div>
+          <p className={`text-sm ${aiPersonality.color}`}>
+            Response style: {aiPersonality.responseStyle}
+          </p>
         </CardHeader>
         
         <CardContent className="space-y-6">
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-purple-500/30">
-            <p className="text-white text-lg leading-relaxed font-medium">
+          <div className={`${aiPersonality.bgColor} rounded-xl p-6 border ${aiPersonality.borderColor}`}>
+            <p className={`text-white text-lg leading-relaxed font-medium ${
+              emotionalToneDial === 'vengeance' ? 'font-bold' : 
+              emotionalToneDial === 'logic' ? 'font-normal' :
+              'font-medium'
+            }`}>
               {selectedChoice.followUp}
             </p>
           </div>
           
+          {/* Enhanced Reward Display */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center justify-center bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-              <Trophy className="h-6 w-6 text-green-400 mr-2" />
-              <div>
+            <div className="flex items-center justify-center bg-green-500/10 border border-green-500/30 rounded-lg p-4 relative overflow-hidden">
+              {selectedChoice.xpReward >= 20 && (
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 to-yellow-400/10 animate-pulse" />
+              )}
+              <Trophy className="h-6 w-6 text-green-400 mr-2 relative z-10" />
+              <div className="relative z-10">
                 <p className="text-green-400 font-bold text-lg">+{selectedChoice.xpReward} XP</p>
                 <p className="text-green-400/70 text-sm">Emotional Growth</p>
+                {selectedChoice.xpReward >= 20 && (
+                  <p className="text-yellow-400 text-xs font-bold">HIGH VALUE!</p>
+                )}
               </div>
             </div>
             
-            <div className="flex items-center justify-center bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-              <Zap className="h-6 w-6 text-blue-400 mr-2" />
-              <div>
+            <div className="flex items-center justify-center bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 relative overflow-hidden">
+              {selectedChoice.byteReward >= 40 && (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 animate-pulse" />
+              )}
+              <Zap className="h-6 w-6 text-blue-400 mr-2 relative z-10" />
+              <div className="relative z-10">
                 <p className="text-blue-400 font-bold text-lg">+{selectedChoice.byteReward} Bytes</p>
                 <p className="text-blue-400/70 text-sm">Healing Currency</p>
+                {selectedChoice.byteReward >= 40 && (
+                  <p className="text-purple-400 text-xs font-bold">BONUS EARNED!</p>
+                )}
               </div>
+            </div>
+          </div>
+
+          {/* Progress toward next milestone */}
+          <div className="bg-gray-800/50 border border-purple-500/30 rounded-lg p-3">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-gray-300 text-sm">Progress to next milestone:</span>
+              <span className="text-purple-400 font-bold text-sm">
+                {Math.max(0, xpData.xpToNextMilestone - selectedChoice.xpReward)} XP remaining
+              </span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
+                style={{ 
+                  width: `${Math.min(100, ((userXP + selectedChoice.xpReward) / xpData.nextMilestone) * 100)}%` 
+                }}
+              />
             </div>
           </div>
           
@@ -476,6 +729,7 @@ export default function WeeklyTherapySession({
               onClick={resetSession}
               variant="outline"
               className="border-gray-500 text-gray-400 hover:bg-gray-800"
+              disabled={isLoading}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Try Different Path
@@ -483,8 +737,13 @@ export default function WeeklyTherapySession({
             <Button
               onClick={completeSession}
               className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-blue-500 hover:to-green-500 text-white font-bold px-8"
+              disabled={isLoading}
             >
-              Complete Session <ChevronRight className="h-4 w-4 ml-2" />
+              {isLoading ? (
+                <LoadingSpinner size="small" />
+              ) : (
+                <>Complete Session <ChevronRight className="h-4 w-4 ml-2" /></>
+              )}
             </Button>
           </div>
         </CardContent>
