@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AuthWrapper } from '@/components/AuthWrapper';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { DailyRitual } from '@/components/rituals/DailyRitual';
 import Link from 'next/link';
 import { 
   Shield, 
@@ -19,6 +20,8 @@ import {
 } from 'lucide-react';
 
 export default function GlowUpConsolePage() {
+  const [ritualStreak, setRitualStreak] = useState(12);
+  
   // Mock user data - replace with real data later
   const user = {
     noContactStreak: 23,
@@ -26,13 +29,21 @@ export default function GlowUpConsolePage() {
     avatar: "🔥",
     bytes: 342,
     level: 3,
-    tier: "free", // free, firewall, cult_leader
+    tier: "firewall" as const, // ghost, firewall, deep-reset
     nextTherapySession: "3 days",
     todaysProtocol: {
       title: "Delete One Photo",
       description: "Remove one digital trace that triggers you",
       completed: false
     }
+  };
+
+  const handleRitualComplete = (ritualId: string, proof?: string) => {
+    // Update streak and user stats
+    setRitualStreak(prev => prev + 1);
+    
+    // In real app, this would call an API to update user progress
+    console.log('Ritual completed:', ritualId, proof);
   };
 
   return (
@@ -93,6 +104,16 @@ export default function GlowUpConsolePage() {
               Get More
             </Button>
           </div>
+        </div>
+
+        {/* DAILY RITUAL SECTION */}
+        <div className="mb-8">
+          <DailyRitual 
+            userId={user.codename}
+            userTier={user.tier}
+            streak={ritualStreak}
+            onRitualComplete={handleRitualComplete}
+          />
         </div>
 
         {/* THE THREE CORE PILLARS */}
