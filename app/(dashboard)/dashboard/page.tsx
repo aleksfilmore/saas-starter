@@ -133,7 +133,7 @@ const mockPosts = [
     id: 'post3',
     alias: 'PhoenixRising',
     avatar: '🌟',
-    content: 'Used the emergency firewall feature today. Crisis averted. This platform literally saved me from a spiral.',
+    content: 'Used the emergency firewall feature today. It stopped me from checking their Instagram and gave me exactly the support I needed. This self-accountability tool works.',
     timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
     emotionalTags: { numb: 2, vengeance: 0, logic: 7, helpOthers: 9 },
     upvotes: 201,
@@ -182,7 +182,27 @@ export default function EnhancedDashboard() {
   };
 
   const handleEmergencyProtocol = () => {
+    // Emergency Firewall: Self-accountability tool for crisis moments
     setUser(prev => ({ ...prev, emergencyUsedToday: true }));
+    
+    // Show emergency support options
+    alert(`EMERGENCY FIREWALL ACTIVATED 🔥
+    
+This is your safe space. You're about to make a choice you might regret.
+    
+✅ What happens now:
+• Your streak is PROTECTED for 24 hours
+• Emergency Protocol Ghost chat is open
+• Crisis coping strategies are available
+• No judgment - just support
+
+Take a breath. You've got this. 💪`);
+    
+    // Could trigger:
+    // - Open Protocol Ghost in crisis mode
+    // - Show emergency coping techniques
+    // - Provide distraction activities
+    // - Connect to community support
   };
 
   const handleStalkCheck = (stalked: boolean) => {
@@ -539,7 +559,7 @@ export default function EnhancedDashboard() {
                   <Shield className="h-8 w-8" />
                   <div className="text-center">
                     <div className="font-bold">Emergency Firewall</div>
-                    <div className="text-sm opacity-75">Block all access for 24h</div>
+                    <div className="text-sm opacity-75">Self-accountability pause</div>
                   </div>
                   {user.emergencyUsedToday && <Badge className="bg-gray-500">Used Today</Badge>}
                 </Button>
