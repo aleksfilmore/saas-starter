@@ -18,11 +18,3 @@ export async function updateNoContactPeriod(formData: FormData) {
 export async function markBreach(formData: FormData) {
   throw new Error('Tracker functionality not yet implemented - schema mismatch');
 }
-
-export async function endNoContactPeriod(periodId: string) {
-  throw new Error('Tracker functionality not yet implemented - schema mismatch');
-}
-
-export async function recordBreach(formData: FormData) {
-  throw new Error('Tracker functionality not yet implemented - schema mismatch');
-}

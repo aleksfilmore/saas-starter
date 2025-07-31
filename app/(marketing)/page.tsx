@@ -1,272 +1,337 @@
 "use client";
 
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Brain, Trophy, MessageCircle, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-export default function HomePage() {
+const features = [
+  {
+    id: 'progressive-onboarding',
+    icon: '🎯',
+    title: 'Progressive Onboarding',
+    description: 'Step-by-step guided introduction with visual progress indicators and XP rewards',
+    benefits: ['Clear step indicators', 'Time estimates', 'Completion rewards', 'Skip options'],
+    demoPath: '/enhanced-features-demo?tab=onboarding'
+  },
+  {
+    id: 'enhanced-therapy',
+    icon: '🎮',
+    title: 'Enhanced AI Therapy',
+    description: 'Adaptive AI personality that responds to your emotional tone with tier-specific features',
+    benefits: ['AI personality adaptation', 'Achievement celebrations', 'Tier-based unlocks', 'XP visualization'],
+    demoPath: '/enhanced-features-demo?tab=therapy'
+  },
+  {
+    id: 'progress-visualization',
+    icon: '📊',
+    title: 'Advanced Progress Tracking',
+    description: 'Multi-metric progress visualization with achievement celebrations and milestone tracking',
+    benefits: ['Animated progress rings', 'Achievement celebrations', 'Social sharing', 'Milestone rewards'],
+    demoPath: '/enhanced-features-demo?tab=progress'
+  },
+  {
+    id: 'wall-enhancement',
+    icon: '📱',
+    title: 'Enhanced Community Wall',
+    description: 'Viral mechanics with emotional tagging, filtering, and tier-based engagement features',
+    benefits: ['Emotional reactions', 'Content filtering', 'Tier indicators', 'Community engagement'],
+    demoPath: '/enhanced-features-demo?tab=community'
+  }
+];
+
+const tiers = [
+  {
+    name: 'Free',
+    price: '$0',
+    period: 'forever',
+    description: 'Perfect for getting started',
+    features: [
+      'Weekly therapy sessions',
+      'Basic progress tracking',
+      'Community wall access',
+      'Emotional tone selection'
+    ],
+    cta: 'Start Free',
+    popular: false,
+    color: 'blue'
+  },
+  {
+    name: 'Firewall',
+    price: '$9.99',
+    period: 'month',
+    description: 'Advanced healing tools',
+    features: [
+      'Unlimited therapy sessions',
+      'Advanced progress analytics',
+      'Priority community features',
+      'Custom emotional tracking',
+      'Weekly streak bonuses',
+      'Achievement celebrations'
+    ],
+    cta: 'Upgrade to Firewall',
+    popular: true,
+    color: 'orange'
+  },
+  {
+    name: 'Cult Leader',
+    price: '$19.99',
+    period: 'month',
+    description: 'Ultimate healing experience',
+    features: [
+      'Everything in Firewall',
+      'Exclusive glitch effects',
+      'Community moderation tools',
+      'Custom AI personality',
+      'Early feature access',
+      'Direct developer feedback',
+      'VIP support'
+    ],
+    cta: 'Become Cult Leader',
+    popular: false,
+    color: 'purple'
+  }
+];
+
+const stats = [
+  { label: 'Active Healers', value: '12,847', icon: '👥' },
+  { label: 'Sessions Completed', value: '847,293', icon: '🎮' },
+  { label: 'XP Earned', value: '2.4M', icon: '⚡' },
+  { label: 'Achievements Unlocked', value: '156,729', icon: '🏆' }
+];
+
+export default function EnhancedLandingPage() {
+  const [currentFeature, setCurrentFeature] = useState(0);
+  const router = useRouter();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentFeature((prev) => (prev + 1) % features.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="relative overflow-hidden bg-gray-950 text-foreground">
-      {/* Hero Section - Clean, Unified Poster Layout */}
-      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gray-950">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
-          style={{
-            backgroundImage: 'url(/bg.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        />
-        
-        {/* Unified Content Container */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-screen">
-            
-            {/* Left side - Core Value Proposition */}
-            <div className="text-left">
-              {/* Main Title */}
-              <div className="mb-8">
-                <div className="text-7xl lg:text-8xl font-black tracking-tighter leading-none mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-                  <span className="text-white">CTRL+ALT</span>
-                </div>
-                <div className="text-7xl lg:text-8xl font-black tracking-tighter leading-none" style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}>
-                  <span className="text-glitch-pink">BLOCK</span>
-                </div>
-              </div>
-              
-              {/* Core Promise */}
-              <div className="text-xl lg:text-2xl leading-relaxed mb-12 font-medium" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-                <p className="text-white">
-                  Stop stalking their Instagram.<br />
-                  Start <span className="text-glitch-pink font-black">leveling up</span>.
-                </p>
-              </div>
-              
-              {/* Core Features - Clean List */}
-              <div className="mb-12 space-y-4">
-                <div className="flex items-center space-x-4">
-                  <Brain className="h-6 w-6 text-purple-400" />
-                  <span className="text-lg text-white font-medium">AI Therapy Sessions</span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <MessageCircle className="h-6 w-6 text-green-400" />
-                  <span className="text-lg text-white font-medium">24/7 Protocol Ghost</span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Trophy className="h-6 w-6 text-yellow-400" />
-                  <span className="text-lg text-white font-medium">XP for Growth Choices</span>
-                </div>
-              </div>
-              
-              {/* CTA Buttons */}
-              <div className="space-y-4">
-                <a href="/sign-up">
-                  <Button 
-                    size="lg" 
-                    className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-lg bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 hover:from-purple-500 hover:via-pink-500 hover:to-red-500 text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105"
-                    style={{
-                      textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
-                      fontFamily: 'system-ui, -apple-system, sans-serif', 
-                      fontWeight: '900'
-                    }}
-                  >
-                    Join Free
-                  </Button>
-                </a>
-                <div>
-                  <a href="/ai-therapy-demo">
-                    <Button 
-                      size="lg" 
-                      className="text-lg font-black uppercase tracking-wider px-12 py-4 rounded-lg bg-transparent border-2 border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-gray-900 transition-all duration-300 hover:scale-105"
-                      style={{
-                        fontFamily: 'system-ui, -apple-system, sans-serif', 
-                        fontWeight: '900'
-                      }}
-                    >
-                      Try Demo
-                    </Button>
-                  </a>
-                </div>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900">
+      {/* Hero Section */}
+      <div className="relative">
+        {/* Hero Content */}
+        <div className="max-w-7xl mx-auto px-6 py-20">
+          <div className="text-center space-y-8">
+            <div className="space-y-4">
+              <h1 className="text-6xl md:text-8xl font-black text-white leading-tight" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+                DIGITAL HEALING
+                <br />
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  EVOLVED
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+                Experience the next generation of therapeutic technology with AI personality adaptation, 
+                gamified progress tracking, and viral community healing mechanics.
+              </p>
             </div>
 
-            {/* Right side - Figure with clean presentation */}
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative">
-                <div className="w-96 h-96 lg:w-[36rem] lg:h-[36rem] rounded-full flex items-center justify-center relative">
-                  <img
-                    src="/figure.png"
-                    alt="Cloaked figure"
-                    className="w-80 h-80 lg:w-[32rem] lg:h-[32rem] object-contain relative z-10"
-                    style={{
-                      filter: 'brightness(0.7) contrast(1.1) saturate(1.2)'
-                    }}
-                  />
-                  
-                  {/* Broken heart on chest */}
-                  <div className="absolute bottom-32 lg:bottom-48 left-1/2 transform -translate-x-1/2 z-20">
-                    <div className="relative">
-                      <div className="flex items-center gap-1">
-                        <div className="w-8 h-8 lg:w-12 lg:h-12 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
-                        <div className="w-8 h-8 lg:w-12 lg:h-12 bg-glitch-pink transform rotate-45 rounded-tl-full rounded-tr-full shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
-                      </div>
-                      <div className="absolute top-1/2 left-1/2 w-10 lg:w-14 h-0.5 bg-black transform -translate-x-1/2 -translate-y-1/2 rotate-12"></div>
-                    </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/sign-up/enhanced">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-lg px-8 py-4"
+                >
+                  🚀 Start Enhanced Journey
+                </Button>
+              </Link>
+              <Link href="/enhanced-features-demo">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700 text-lg px-8 py-4"
+                >
+                  🎮 Try Interactive Demo
+                </Button>
+              </Link>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+              {stats.map((stat, index) => (
+                <Card key={index} className="bg-gray-800/50 border border-gray-600">
+                  <CardContent className="p-6 text-center">
+                    <div className="text-3xl mb-2">{stat.icon}</div>
+                    <div className="text-2xl font-bold text-white">{stat.value}</div>
+                    <div className="text-sm text-gray-400">{stat.label}</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            🎯 ENHANCED FEATURES
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Every aspect of the platform has been enhanced with advanced psychology, 
+            gamification, and community-driven healing mechanics.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {features.map((feature, index) => (
+            <Card 
+              key={feature.id} 
+              className={`bg-gray-800/50 border transition-all duration-300 hover:transform hover:scale-105 ${
+                index === currentFeature 
+                  ? 'border-purple-500 shadow-2xl shadow-purple-500/20' 
+                  : 'border-gray-600'
+              }`}
+            >
+              <CardHeader>
+                <div className="flex items-center space-x-3">
+                  <div className="text-4xl">{feature.icon}</div>
+                  <div>
+                    <CardTitle className="text-xl text-white">{feature.title}</CardTitle>
+                    <p className="text-gray-400">{feature.description}</p>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <ul className="space-y-2">
+                  {feature.benefits.map((benefit, benefitIndex) => (
+                    <li key={benefitIndex} className="flex items-center text-gray-300">
+                      <span className="text-green-400 mr-2">✓</span>
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+                <Link href={feature.demoPath}>
+                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                    🎮 Try Interactive Demo
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* How It Works - Clean Process */}
-      <section className="py-24 bg-gray-900/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-white mb-4" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              How It Works
-            </h2>
-            <p className="text-xl text-gray-400">Three steps to emotional freedom</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Brain className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">AI Therapy</h3>
-              <p className="text-gray-400">Choose-your-path scenarios. Get XP for growth choices.</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">Protocol Ghost</h3>
-              <p className="text-gray-400">24/7 AI confidant when you need support.</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Trophy className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-4">Level Up</h3>
-              <p className="text-gray-400">Track progress. Build streaks. Unlock achievements.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing - Clean Tiers */}
-      <section className="py-24 bg-gray-950">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-white mb-4" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              Choose Your Path
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Free */}
-            <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
-              <p className="text-4xl font-black text-white mb-6">$0</p>
-              <div className="space-y-3 mb-8">
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Monthly AI therapy</span>
-                </div>
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Daily Protocol Ghost</span>
-                </div>
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Basic progress tracking</span>
-                </div>
-              </div>
-              <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">
-                Start Free
-              </Button>
-            </div>
-
-            {/* Firewall */}
-            <div className="bg-gradient-to-br from-orange-900/20 to-red-900/20 border-2 border-orange-500 rounded-xl p-8 relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold">POPULAR</span>
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Firewall</h3>
-              <p className="text-4xl font-black text-white mb-6">$19<span className="text-lg text-gray-400">/mo</span></p>
-              <div className="space-y-3 mb-8">
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Bi-weekly AI therapy</span>
-                </div>
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Unlimited Protocol Ghost</span>
-                </div>
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Advanced analytics</span>
-                </div>
-              </div>
-              <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-                Upgrade
-              </Button>
-            </div>
-
-            {/* Cult Leader */}
-            <div className="bg-gray-800/50 border border-purple-500 rounded-xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Cult Leader</h3>
-              <p className="text-4xl font-black text-white mb-6">$49<span className="text-lg text-gray-400">/mo</span></p>
-              <div className="space-y-3 mb-8">
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Priority therapy access</span>
-                </div>
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Exclusive features</span>
-                </div>
-                <div className="flex items-center">
-                  <Check className="h-5 w-5 text-green-400 mr-3" />
-                  <span className="text-gray-300">Direct support line</span>
-                </div>
-              </div>
-              <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white">
-                Join Cult
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA - Clean Close */}
-      <section className="py-24 bg-gradient-to-br from-purple-900/20 to-pink-900/20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-5xl font-black text-white mb-6" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-            Ready to Level Up?
+      {/* Pricing Section */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            💳 TIER UPGRADES
           </h2>
-          <p className="text-xl text-gray-400 mb-8">
-            Join thousands who chose themselves over chaos.
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Choose your level of digital healing. All tiers include the enhanced features, 
+            with higher tiers unlocking exclusive capabilities.
           </p>
-          <a href="/sign-up">
-            <Button 
-              size="lg" 
-              className="text-xl font-black uppercase tracking-wider px-16 py-6 rounded-lg bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 hover:from-purple-500 hover:via-pink-500 hover:to-red-500 text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,20,147,0.4)] hover:shadow-[0_0_30px_rgba(255,20,147,0.6)] border-2 border-glitch-pink hover:scale-105"
-              style={{
-                textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
-                fontFamily: 'system-ui, -apple-system, sans-serif', 
-                fontWeight: '900'
-              }}
-            >
-              Start Your Journey <ArrowRight className="ml-2 h-6 w-6" />
-            </Button>
-          </a>
         </div>
-      </section>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {tiers.map((tier, index) => (
+            <Card 
+              key={tier.name} 
+              className={`relative bg-gray-800/50 border-2 transition-all duration-300 hover:transform hover:scale-105 ${
+                tier.popular 
+                  ? 'border-orange-500 shadow-2xl shadow-orange-500/20' 
+                  : 'border-gray-600'
+              }`}
+            >
+              {tier.popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-orange-500 text-white px-4 py-1 text-sm">
+                    🔥 Most Popular
+                  </Badge>
+                </div>
+              )}
+              
+              <CardHeader className="text-center">
+                <CardTitle className={`text-2xl font-bold ${
+                  tier.color === 'blue' ? 'text-blue-400' :
+                  tier.color === 'orange' ? 'text-orange-400' : 'text-purple-400'
+                }`}>
+                  {tier.name} Tier
+                </CardTitle>
+                <div className="space-y-2">
+                  <div className="text-4xl font-black text-white">
+                    {tier.price}
+                    <span className="text-lg text-gray-400">/{tier.period}</span>
+                  </div>
+                  <p className="text-gray-400">{tier.description}</p>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-6">
+                <ul className="space-y-3">
+                  {tier.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center text-gray-300">
+                      <span className="text-green-400 mr-2">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                
+                <Link href="/sign-up/enhanced">
+                  <Button 
+                    className={`w-full ${
+                      tier.popular 
+                        ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600'
+                        : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+                    }`}
+                  >
+                    {tier.cta}
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <Card className="bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-blue-900/40 border-2 border-purple-500/50">
+          <CardContent className="p-12 text-center space-y-8">
+            <h2 className="text-4xl md:text-5xl font-black text-white">
+              Ready to Begin Your Enhanced Healing Journey?
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Join thousands of digital healers experiencing the next generation of therapeutic technology. 
+              AI adaptation, gamified progress, and community-driven healing await.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/sign-up/enhanced">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-lg px-8 py-4"
+                >
+                  🚀 Start Enhanced Journey - Free
+                </Button>
+              </Link>
+              <Link href="/enhanced-features-demo">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700 text-lg px-8 py-4"
+                >
+                  🎮 Explore Interactive Demo
+                </Button>
+              </Link>
+            </div>
+            
+            <p className="text-sm text-gray-400">
+              Free tier includes all enhanced features • No credit card required • Upgrade anytime
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { db } from './drizzle.ts';
+import { db } from './drizzle';
 import { sql } from 'drizzle-orm';
 
 async function runMigration() {

@@ -205,11 +205,11 @@ export async function POST(request: NextRequest) {
         });
 
       case 'unlock':
-        if (!achievementId || !ACHIEVEMENT_REGISTRY[achievementId]) {
+        if (!achievementId || !(achievementId in ACHIEVEMENT_REGISTRY)) {
           return NextResponse.json({ error: 'Invalid achievement ID' }, { status: 400 });
         }
 
-        const achievement = ACHIEVEMENT_REGISTRY[achievementId];
+        const achievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
         
         // Mock unlock logic - in real app, check if user meets criteria
         const canUnlock = true; // Replace with actual validation
@@ -234,11 +234,11 @@ export async function POST(request: NextRequest) {
         });
 
       case 'claim':
-        if (!achievementId || !ACHIEVEMENT_REGISTRY[achievementId]) {
+        if (!achievementId || !(achievementId in ACHIEVEMENT_REGISTRY)) {
           return NextResponse.json({ error: 'Invalid achievement ID' }, { status: 400 });
         }
 
-        const claimAchievement = ACHIEVEMENT_REGISTRY[achievementId];
+        const claimAchievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
         
         // Mock claim logic - in real app, check if user has unlocked this achievement
         return NextResponse.json({
@@ -261,14 +261,18 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Missing share data' }, { status: 400 });
         }
 
-        const shareAchievement = ACHIEVEMENT_REGISTRY[achievementId];
-        if (!shareAchievement) {
+        if (!(achievementId in ACHIEVEMENT_REGISTRY)) {
           return NextResponse.json({ error: 'Achievement not found' }, { status: 404 });
         }
 
+        const shareAchievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
+
         // Generate share content
         const shareContent = shareData.message || 
-          SHARE_TEMPLATES[shareData.platform]?.[achievementId] || 
+          (shareData.platform in SHARE_TEMPLATES && 
+           achievementId in SHARE_TEMPLATES[shareData.platform as keyof typeof SHARE_TEMPLATES] ? 
+           SHARE_TEMPLATES[shareData.platform as keyof typeof SHARE_TEMPLATES][achievementId as keyof typeof SHARE_TEMPLATES[keyof typeof SHARE_TEMPLATES]] : 
+           null) ||
           `Just unlocked "${shareAchievement.title}" in CTRL+ALT+BLOCK™! 🎯`;
 
         // Generate share URLs

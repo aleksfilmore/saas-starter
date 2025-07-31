@@ -1,6 +1,6 @@
 'use client';
 
-import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
+import { SystemBootOnboarding } from '@/components/onboarding/SystemBootOnboarding';
 import { useRouter } from 'next/navigation';
 
 interface OnboardingClientProps {
@@ -11,9 +11,9 @@ export function OnboardingClient({ userId }: OnboardingClientProps) {
   const router = useRouter();
   
   const handleComplete = () => {
-    // Redirect to dashboard when onboarding is complete - now with AI therapy!
-    router.push('/dashboard');
+    // Redirect to enhanced dashboard when onboarding is complete
+    router.push('/dashboard/enhanced');
   };
 
-  return <OnboardingFlow userId={userId} onComplete={handleComplete} />;
+  return <SystemBootOnboarding userId={userId} onComplete={handleComplete} />;
 }

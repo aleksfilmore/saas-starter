@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       .where(
         and(
           eq(noContactPeriods.id, periodId),
-          eq(noContactPeriods.userId, parseInt(user.id))
+          eq(noContactPeriods.userId, user.id)
         )
       )
       .limit(1);
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(noContactPeriods.id, periodId),
-          eq(noContactPeriods.userId, parseInt(user.id))
+          eq(noContactPeriods.userId, user.id)
         )
       )
       .limit(1);

@@ -5,6 +5,11 @@ import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+export interface ActionResult {
+  error: string | null;
+  success: boolean;
+}
+
 function LoginButton() {
   const { pending } = useFormStatus();
   return (

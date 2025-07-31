@@ -42,10 +42,10 @@ export async function GET(request: NextRequest) {
         currentUser = {
           id: user.id,
           email: user.email,
-          level: user.glowUpLevel,
-          xp: user.xpPoints,
-          bytes: user.byteBalance,
-          tier: user.subscriptionTier
+          level: 1, // Default level for minimal schema
+          xp: 0, // Default XP for minimal schema
+          bytes: 0, // Default bytes for minimal schema
+          tier: 'free' // Default tier for minimal schema
         };
       } else {
         authStatus = 'UNAUTHENTICATED';

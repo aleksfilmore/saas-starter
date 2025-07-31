@@ -4,10 +4,11 @@ import { CheckCircle, Clock, Target, Zap } from 'lucide-react';
 export async function RitualsOverview() {
   const rituals = await getUserRituals();
   
-  const totalRituals = rituals.length;
-  const morningRituals = rituals.filter(r => r.category === 'morning').length;
-  const eveningRituals = rituals.filter(r => r.category === 'evening').length;
-  const dailyRituals = rituals.filter(r => r.targetFrequency === 'daily').length;
+  // Until full schema is migrated, show placeholder statistics
+  const totalRituals = 0;
+  const morningRituals = 0;
+  const eveningRituals = 0;
+  const dailyRituals = 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

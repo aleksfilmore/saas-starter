@@ -345,11 +345,7 @@ export default function AITherapyDemo() {
         </Tabs>
 
         {/* Protocol Ghost Chat Component */}
-        <ProtocolGhostChat 
-          userTier={userStats.tier}
-          dailyChatUsed={userStats.dailyChatUsed}
-          onChatUsed={handleChatUsed}
-        />
+        <ProtocolGhostChat />
       </div>
     </div>
   );

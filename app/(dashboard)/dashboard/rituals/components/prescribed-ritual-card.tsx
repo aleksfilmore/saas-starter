@@ -42,25 +42,12 @@ export function PrescribedRitualCard({ initialPrescription }: PrescribedRitualCa
   const handleAssignRitual = async () => {
     setIsLoading(true);
     try {
-      const result = await assignTodaysPrescribedRitual();
-      if (result.success) {
-        const mappedPrescription = {
-          id: result.prescription.id,
-          ritualKey: result.prescription.ritualKey,
-          shufflesUsed: result.prescription.shufflesUsed,
-          isCompleted: result.prescription.isCompleted,
-          completedAt: result.prescription.completedAt,
-          mood: result.prescription.completionMood,
-          notes: result.prescription.completionNotes,
-          prescribedDate: result.prescription.prescribedDate,
-        };
-        setPrescription(mappedPrescription);
-        setRitual(result.ritual);
-        // toast.success('Today\'s ritual assigned!');
-      }
+      // Temporarily disabled due to schema mismatch
+      console.log('Prescribed rituals functionality is temporarily disabled');
+      // toast.error('Prescribed rituals are being updated. Please try again later.');
     } catch (error) {
-      // toast.error(error instanceof Error ? error.message : 'Failed to assign ritual');
-      console.error('Failed to assign ritual:', error);
+      console.error('Error:', error);
+      // toast.error('Failed to assign ritual. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -71,22 +58,9 @@ export function PrescribedRitualCard({ initialPrescription }: PrescribedRitualCa
     
     setIsLoading(true);
     try {
-      const result = await shufflePrescribedRitual();
-      if (result.success) {
-        const mappedPrescription = {
-          id: result.prescription.id,
-          ritualKey: result.prescription.ritualKey,
-          shufflesUsed: result.prescription.shufflesUsed,
-          isCompleted: result.prescription.isCompleted,
-          completedAt: result.prescription.completedAt,
-          mood: result.prescription.completionMood,
-          notes: result.prescription.completionNotes,
-          prescribedDate: result.prescription.prescribedDate,
-        };
-        setPrescription(mappedPrescription);
-        setRitual(result.ritual);
-        // toast.success(`New ritual assigned! ${result.shufflesRemaining} shuffles remaining.`);
-      }
+      // Temporarily disabled due to schema mismatch
+      console.log('Shuffle functionality is temporarily disabled');
+      // toast.error('Shuffle functionality is being updated. Please try again later.');
     } catch (error) {
       // toast.error(error instanceof Error ? error.message : 'Failed to shuffle ritual');
       console.error('Failed to shuffle ritual:', error);
@@ -98,24 +72,9 @@ export function PrescribedRitualCard({ initialPrescription }: PrescribedRitualCa
   const handleComplete = async () => {
     setIsLoading(true);
     try {
-      const result = await completePrescribedRitual({ mood, notes });
-      if (result.success) {
-        const mappedPrescription = {
-          id: result.prescription.id,
-          ritualKey: result.prescription.ritualKey,
-          shufflesUsed: result.prescription.shufflesUsed,
-          isCompleted: result.prescription.isCompleted,
-          completedAt: result.prescription.completedAt,
-          mood: result.prescription.completionMood,
-          notes: result.prescription.completionNotes,
-          prescribedDate: result.prescription.prescribedDate,
-        };
-        setPrescription(mappedPrescription);
-        setShowCompletionForm(false);
-        setNotes('');
-        setMood('okay');
-        // toast.success('Ritual completed! Well done.');
-      }
+      // Temporarily disabled due to schema mismatch
+      console.log('Complete ritual functionality is temporarily disabled');
+      // toast.error('Complete ritual functionality is being updated. Please try again later.');
     } catch (error) {
       // toast.error(error instanceof Error ? error.message : 'Failed to complete ritual');
       console.error('Failed to complete ritual:', error);
@@ -127,21 +86,9 @@ export function PrescribedRitualCard({ initialPrescription }: PrescribedRitualCa
   const handleUndo = async () => {
     setIsLoading(true);
     try {
-      const result = await undoRitualCompletion();
-      if (result.success) {
-        const mappedPrescription = {
-          id: result.prescription.id,
-          ritualKey: result.prescription.ritualKey,
-          shufflesUsed: result.prescription.shufflesUsed,
-          isCompleted: result.prescription.isCompleted,
-          completedAt: result.prescription.completedAt,
-          mood: result.prescription.completionMood,
-          notes: result.prescription.completionNotes,
-          prescribedDate: result.prescription.prescribedDate,
-        };
-        setPrescription(mappedPrescription);
-        // toast.success('Completion undone');
-      }
+      // Temporarily disabled due to schema mismatch
+      console.log('Undo ritual functionality is temporarily disabled');
+      // toast.error('Undo functionality is being updated. Please try again later.');
     } catch (error) {
       // toast.error(error instanceof Error ? error.message : 'Failed to undo completion');
       console.error('Failed to undo completion:', error);

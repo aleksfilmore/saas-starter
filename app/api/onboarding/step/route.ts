@@ -1,7 +1,7 @@
 // API endpoint for saving onboarding step data
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/connection';
-import { users, onboardingResponses } from '@/lib/db/minimal-schema';
+import { db } from '@/lib/db/drizzle';
+import { users } from '@/lib/db/minimal-schema';
 import { eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 

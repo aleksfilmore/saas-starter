@@ -45,14 +45,10 @@ export default async function TrackerPage() {
 async function StatsOverview() {
   const periods = await getUserNoContactPeriods();
   
-  const activePeriods = periods.filter(p => p.isActive);
-  const completedPeriods = periods.filter(p => !p.isActive);
-  const totalDaysTracked = periods.reduce((total, period) => {
-    const daysSinceStart = Math.floor(
-      (new Date().getTime() - new Date(period.startDate).getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return total + Math.min(daysSinceStart, period.targetDays);
-  }, 0);
+  // Until full schema is migrated, show placeholder statistics
+  const activePeriods = [];
+  const completedPeriods = [];
+  const totalDaysTracked = 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

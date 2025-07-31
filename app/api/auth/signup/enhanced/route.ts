@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     const sessionCookie = lucia.createSessionCookie(session.id);
     
     // Set cookie
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
     // Enhanced response with onboarding data
