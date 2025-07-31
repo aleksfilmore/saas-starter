@@ -5,8 +5,35 @@ import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'CTRL+ALT+BLOCK | The Emotional Reformat',
-  description: 'The reprogramming ritual you didn’t know you needed. Fusing savage wit with structured healing to help you reclaim your sanity after heartbreak.'
+  title: 'CTRL+ALT+BLOCK™ | Enhanced Digital Healing Platform',
+  description: 'Next-generation therapeutic technology with AI personality adaptation, gamified progress tracking, and viral community healing mechanics. The reprogramming ritual evolved.',
+  keywords: 'digital healing, AI therapy, mental health, gamification, community support, emotional wellness, enhanced platform',
+  openGraph: {
+    title: 'CTRL+ALT+BLOCK™ - Enhanced Digital Healing',
+    description: 'Experience the evolution of digital healing with adaptive AI, achievement celebrations, and community-driven recovery.',
+    url: 'https://ctrl-alt-block.com',
+    siteName: 'CTRL+ALT+BLOCK™',
+    images: [
+      {
+        url: '/hero-illustration.png',
+        width: 1200,
+        height: 630,
+        alt: 'CTRL+ALT+BLOCK™ Enhanced Platform'
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CTRL+ALT+BLOCK™ - Enhanced Digital Healing',
+    description: 'AI-powered therapy, gamified progress, viral community healing.',
+    images: ['/hero-illustration.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  }
 };
 
 export const viewport: Viewport = {
