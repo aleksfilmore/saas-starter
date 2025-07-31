@@ -16,7 +16,8 @@ import {
   Target,
   Sparkles,
   Menu,
-  X
+  X,
+  Flame
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -49,12 +50,28 @@ const navigationItems = [
         badge: '🎮'
       },
       {
+        id: 'rituals',
+        label: 'Ritual Library',
+        href: '/rituals',
+        icon: Flame,
+        description: 'Sacred healing ritual vault',
+        badge: '🔥'
+      },
+      {
         id: 'progress',
         label: 'Progress Tracking',
         href: '/enhanced-features-demo?tab=progress',
         icon: BarChart3,
         description: 'Advanced XP visualization',
         badge: '📊'
+      },
+      {
+        id: 'analytics',
+        label: 'Ritual Analytics',
+        href: '/analytics',
+        icon: Target,
+        description: 'Deep healing insights dashboard',
+        badge: '🎯'
       },
       {
         id: 'community',
@@ -73,7 +90,7 @@ const navigationItems = [
         id: 'onboarding',
         label: 'Progressive Onboarding',
         href: '/enhanced-features-demo?tab=onboarding',
-        icon: Target,
+        icon: Users,
         description: 'Step-by-step guided setup',
         badge: '🎯'
       },
@@ -92,6 +109,14 @@ const navigationItems = [
         icon: Sparkles,
         description: 'Try all enhanced features',
         badge: '✨'
+      },
+      {
+        id: 'showcase',
+        label: 'System Showcase',
+        href: '/system-showcase',
+        icon: Trophy,
+        description: 'Complete platform overview',
+        badge: '🏆'
       }
     ]
   },
