@@ -46,6 +46,8 @@ const mockBeginnerStats = {
   primaryFocus: 'stabilization',
   stateDescription: 'You\'re in the immediate aftermath. Focus on basic stability and self-care.'
 };
+
+const mockUser = {
   phase: 'kernel_wounded',
   ritualsCompleted: 8,
   wallPosts: 1,

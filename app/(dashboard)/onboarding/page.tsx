@@ -1,21 +1,7 @@
-'use client';
-
 import { redirect } from 'next/navigation';
 import { validateRequest } from '@/lib/auth';
-import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow';
+import { OnboardingClient } from './components/onboarding-client';
 import { getUserById } from '@/lib/db/queries';
-import { useRouter } from 'next/navigation';
-
-function OnboardingClient({ userId }: { userId: string }) {
-  const router = useRouter();
-  
-  const handleComplete = () => {
-    // Redirect to dashboard when onboarding is complete - now with AI therapy!
-    router.push('/dashboard');
-  };
-
-  return <OnboardingFlow userId={userId} onComplete={handleComplete} />;
-}
 
 export default async function OnboardingPage() {
   const { user } = await validateRequest();

@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db/drizzle';
 import { users, teams, teamMembers } from '@/lib/db/schema';
-import { setSession } from '@/lib/auth/session';
+import { lucia } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/payments/stripe';
 import Stripe from 'stripe';
@@ -88,8 +88,14 @@ export async function GET(request: NextRequest) {
       })
       .where(eq(teams.id, userTeam[0].teamId));
 
-    await setSession(user[0]);
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    // Create a new session for the user
+    const userSession = await lucia.createSession(user[0].id, {});
+    const sessionCookie = lucia.createSessionCookie(userSession.id);
+    
+    const response = NextResponse.redirect(new URL('/dashboard', request.url));
+    response.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    
+    return response;
   } catch (error) {
     console.error('Error handling successful checkout:', error);
     return NextResponse.redirect(new URL('/error', request.url));

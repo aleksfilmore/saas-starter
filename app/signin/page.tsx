@@ -1,28 +1,9 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-function LoginButton({ isPending }: { isPending: boolean }) {
-  return (
-    <button
-      type="submit"
-      disabled={isPending}
-      className="w-full text-lg font-black bg-pink-500 hover:bg-pink-600 text-white rounded-xl py-4 px-8 transition-all duration-300 disabled:opacity-50"
-      style={{
-        textShadow: '0 2px 4px rgba(0,0,0,0.8)', 
-        fontFamily: 'system-ui, -apple-system, sans-serif', 
-        fontWeight: '900'
-      }}
-    >
-      {isPending ? 'ACCESSING SYSTEM...' : 'ENTER THE RITUAL'}
-    </button>
-  );
-}
-  error: string | null;
-  success: boolean;
-}
 
 function LoginButton() {
   const { pending } = useFormStatus();
