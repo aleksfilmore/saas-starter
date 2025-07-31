@@ -195,7 +195,6 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
     <>
       <OfflineIndicator />
       {!isOpen ? (
-        // Floating chat bubble when closed
         <div className="fixed bottom-6 right-6 z-50">
           <Button
             onClick={startChat}
@@ -223,7 +222,6 @@ export default function ProtocolGhostChat({ userTier, dailyChatUsed, onChatUsed 
           </div>
         </div>
       ) : (
-        // Full chat interface
         <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
           isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
         }`}>
