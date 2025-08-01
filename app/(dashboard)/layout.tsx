@@ -21,7 +21,8 @@ import {
   Sparkles,
   Target,
   Trophy,
-  Users
+  Users,
+  Star
 } from 'lucide-react';
 import Footer from '@/components/layout/footer';
 
@@ -38,7 +39,11 @@ export default function DashboardLayout({
     { href: '/dashboard', icon: LayoutDashboard, label: 'Full Dashboard', description: 'Complete overview' },
     { href: '/dashboard/tracker', icon: Shield, label: 'No Contact Tracker', description: 'Track your progress' },
     { href: '/dashboard/rituals', icon: Zap, label: 'Daily Protocols', description: 'Your healing practices' },
-    { href: '/wall', icon: MessageSquare, label: 'Wall of Wounds™', description: 'Anonymous confessions' }
+    { href: '/gamification-showcase', icon: Star, label: 'Gamification Engine', description: 'Avatar & badge systems' },
+    { href: '/wall-ecosystem', icon: Sparkles, label: 'Wall Ecosystem', description: 'Complete viral confession system' },
+    { href: '/wall', icon: MessageSquare, label: 'Wall of Wounds™', description: 'Anonymous confessions' },
+    { href: '/avatar-system', icon: User, label: 'Avatar Identity', description: 'Customize your digital self' },
+    { href: '/badge-system', icon: Trophy, label: 'Badge Collection', description: 'Achievement trophies' }
   ];
 
   const settingsNavItems = [

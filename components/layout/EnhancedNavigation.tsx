@@ -80,6 +80,22 @@ const navigationItems = [
         icon: Users,
         description: 'Enhanced community platform',
         badge: '📱'
+      },
+      {
+        id: 'wall-enhanced',
+        label: 'Confession Cards',
+        href: '/wall-enhanced',
+        icon: Heart,
+        description: 'Viral confession card system',
+        badge: '💔'
+      },
+      {
+        id: 'byte-shop',
+        label: 'Byte Shop',
+        href: '/byte-shop',
+        icon: Trophy,
+        description: 'Emotional reformat emporium',
+        badge: '🛍️'
       }
     ]
   },
@@ -93,6 +109,14 @@ const navigationItems = [
         icon: Users,
         description: 'Step-by-step guided setup',
         badge: '🎯'
+      },
+      {
+        id: 'onboarding-quiz',
+        label: 'Emotional System Check',
+        href: '/onboarding-quiz',
+        icon: Target,
+        description: 'Attachment style assessment',
+        badge: '🧠'
       },
       {
         id: 'achievements',
