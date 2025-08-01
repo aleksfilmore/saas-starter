@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,15 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userArchetype, setUserArchetype] = useState<any>(null);
+
+  useEffect(() => {
+    // Load user archetype from localStorage
+    const savedArchetype = localStorage.getItem('userArchetype');
+    if (savedArchetype) {
+      setUserArchetype(JSON.parse(savedArchetype));
+    }
+  }, []);
 
   const mainNavItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Glow-Up Console', description: 'Your main command center' },
@@ -153,12 +162,34 @@ export default function DashboardLayout({
           {/* User Info */}
           <div className="mt-auto border-t border-gray-700/50 pt-4">
             <div className="flex items-center p-3 rounded-xl bg-gray-800/40 border border-gray-700/30">
-              <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-r from-glitch-pink to-purple-500 mr-3">
-                <User className="h-5 w-5 text-white" />
+              <div className={`flex items-center justify-center h-10 w-10 rounded-full mr-3 ${
+                userArchetype?.id === 'firewall' ? 'bg-gradient-to-r from-orange-500 to-red-500' :
+                userArchetype?.id === 'flooder' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' :
+                userArchetype?.id === 'ghost' ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
+                userArchetype?.id === 'secure' ? 'bg-gradient-to-r from-green-500 to-emerald-500' :
+                'bg-gradient-to-r from-gray-500 to-gray-600'
+              }`}>
+                <span className="text-white font-bold text-sm">
+                  {userArchetype?.id === 'firewall' ? '🔥' :
+                   userArchetype?.id === 'flooder' ? '⚡' :
+                   userArchetype?.id === 'ghost' ? '👻' :
+                   userArchetype?.id === 'secure' ? '🎯' : '⭐'}
+                </span>
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-sm text-white">Warrior</p>
-                <p className="text-xs text-gray-400">test@example.com</p>
+                <p className="font-semibold text-sm text-white">DigitalPhoenix</p>
+                <p className={`text-xs font-bold ${
+                  userArchetype?.id === 'firewall' ? 'text-orange-400' :
+                  userArchetype?.id === 'flooder' ? 'text-blue-400' :
+                  userArchetype?.id === 'ghost' ? 'text-purple-400' :
+                  userArchetype?.id === 'secure' ? 'text-green-400' : 'text-gray-400'
+                }`}>
+                  {userArchetype?.id === 'firewall' ? '🔥 FIREWALL MODE' :
+                   userArchetype?.id === 'flooder' ? '⚡ FLOODER MODE' :
+                   userArchetype?.id === 'ghost' ? '👻 GHOST MODE' :
+                   userArchetype?.id === 'secure' ? '🎯 SECURE MODE' : '⭐ WARRIOR MODE'}
+                </p>
+                <p className="text-xs text-gray-400">Level 3</p>
               </div>
             </div>
           </div>

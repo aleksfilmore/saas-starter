@@ -293,7 +293,7 @@ export default function EmotionalSystemCheck({ onComplete }: EmotionalSystemChec
         <p className="text-gray-600">
           Before we configure your healing protocol, the system needs to scan for vulnerabilities.
         </p>
-        <p className="text-sm text-gray-500 italic">
+        <p className="text-sm text-gray-500 italic font-bold">
           Answer with brutal honesty—your protocol depends on it.
         </p>
       </div>

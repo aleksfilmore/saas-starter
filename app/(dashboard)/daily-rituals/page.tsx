@@ -25,6 +25,9 @@ export default function DailyRitualsPage() {
   const userArchetype = 'data-flooder' // or 'firewall-builder', 'ghost-in-shell', 'secure-node'
   const userTier = 'firewall' // ghost, firewall, cult-leader
   
+  // Calculate completed rituals count
+  const completedCount = dailyRituals.filter(ritual => ritual.completed).length;
+  
   // Daily ritual recommendations based on archetype and healing progress
   const dailyRituals = [
     {
@@ -41,6 +44,7 @@ export default function DailyRitualsPage() {
       duration: '10 min',
       xpReward: 25,
       byteReward: 15,
+      difficulty: 1, // 1-3 fire icons
       archetype: ['data-flooder', 'secure-node'],
       completed: false
     },
@@ -58,6 +62,7 @@ export default function DailyRitualsPage() {
       duration: '15 min',
       xpReward: 40,
       byteReward: 25,
+      difficulty: 2,
       archetype: ['firewall-builder', 'secure-node'],
       completed: true
     },
@@ -75,6 +80,7 @@ export default function DailyRitualsPage() {
       duration: '20 min',
       xpReward: 50,
       byteReward: 35,
+      difficulty: 3,
       archetype: ['data-flooder', 'ghost-in-shell'],
       completed: false
     },
@@ -92,6 +98,7 @@ export default function DailyRitualsPage() {
       duration: '12 min',
       xpReward: 30,
       byteReward: 20,
+      difficulty: 1,
       archetype: ['all'],
       completed: false
     }
@@ -134,6 +141,7 @@ export default function DailyRitualsPage() {
   )
 
   const completedToday = availableRituals.filter(r => r.completed).length
+  const completedCount = completedToday
   const progressPercentage = (completedToday / availableRituals.length) * 100
 
   return (
@@ -144,9 +152,16 @@ export default function DailyRitualsPage() {
           {/* Header */}
           <Card className="bg-gradient-to-r from-purple-900 to-blue-900 text-white">
             <CardHeader>
-              <CardTitle className="text-3xl flex items-center space-x-2">
-                <Calendar className="h-8 w-8" />
-                <span>Daily Ritual Protocol</span>
+              <CardTitle className="text-3xl flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-8 w-8" />
+                  <span>Daily Ritual Protocol</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-purple-600 text-white text-lg px-4 py-2 rounded-full">
+                    {completedCount}/5
+                  </Badge>
+                </div>
               </CardTitle>
               <CardDescription className="text-purple-200 text-lg">
                 Personalized healing rituals based on your {currentArchetype.name} archetype
@@ -255,6 +270,11 @@ export default function DailyRitualsPage() {
                               {ritual.category.replace('-', ' ')}
                             </Badge>
                             <span className="text-gray-400">{ritual.duration}</span>
+                            <div className="flex items-center">
+                              {Array.from({ length: ritual.difficulty }, (_, i) => (
+                                <span key={i} className="text-orange-400">🔥</span>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>

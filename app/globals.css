@@ -10,6 +10,17 @@
     color: rgb(248 250 252);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Font Weight Hierarchy - Brand Cohesion */
+  h1 { font-weight: 800; }
+  h2 { font-weight: 700; }
+  h3 { font-weight: 600; }
+  h4, h5, h6 { font-weight: 600; }
+  p, span, div { font-weight: 400; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
+  .font-black { font-weight: 800; }
 }
 
 /* Floating animation for particles */
@@ -17,4 +28,29 @@
   0% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
   50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
   100% { transform: translateY(0px) rotate(360deg); opacity: 0.4; }
+}
+
+/* Glitch pulse animation for voice trial button */
+@keyframes glitch-pulse {
+  0%, 96% { opacity: 1; }
+  97%, 98% { opacity: 0.8; }
+  99%, 100% { opacity: 1; }
+}
+
+.glitch-pulse {
+  animation: glitch-pulse 3s infinite;
+}
+
+/* Focus rings for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #fff !important;
+  outline-offset: 2px !important;
+}
+
+/* Progress bar contrast fix */
+.progress-contrast .bg-purple-600 {
+  background-color: #10b981 !important; /* Green for completion */
 }

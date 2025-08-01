@@ -101,6 +101,9 @@ export default function GlowUpConsole() {
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [noContactData, setNoContactData] = useState<any>(null);
+  const [isPanicBannerCollapsed, setIsPanicBannerCollapsed] = useState(false);
+  const [showGlitchPulse, setShowGlitchPulse] = useState(false);
+  const [userArchetype, setUserArchetype] = useState<any>(null);
 
   // Check if user has completed onboarding
   useEffect(() => {
@@ -113,6 +116,20 @@ export default function GlowUpConsole() {
       if (savedNoContactData) {
         setNoContactData(JSON.parse(savedNoContactData));
       }
+
+      // Load user archetype
+      const savedArchetype = localStorage.getItem('userArchetype');
+      if (savedArchetype) {
+        setUserArchetype(JSON.parse(savedArchetype));
+      }
+
+      // Auto-collapse panic banner after first visit
+      const hasVisitedBefore = localStorage.getItem('hasVisitedDashboard') === 'true';
+      if (hasVisitedBefore) {
+        setIsPanicBannerCollapsed(true);
+      } else {
+        localStorage.setItem('hasVisitedDashboard', 'true');
+      }
       
       setIsOnboardingCompleted(userHasCompletedOnboarding);
       setIsLoading(false);
@@ -124,6 +141,15 @@ export default function GlowUpConsole() {
 
     checkOnboardingStatus();
   }, [router]);
+
+  // Glitch pulse for voice trial after idle
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGlitchPulse(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Don't render dashboard if onboarding not completed
   if (isLoading) {
@@ -154,6 +180,11 @@ export default function GlowUpConsole() {
     'cult-leader': 'text-purple-400 bg-purple-500/20'
   };
 
+  // Dynamic tier based on archetype
+  const currentTier = userArchetype?.id === 'secure' ? 'cult-leader' : 
+                     userArchetype?.id === 'firewall' ? 'firewall' : 
+                     'ghost';
+
   return (
     <AuthWrapper>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
@@ -181,7 +212,12 @@ export default function GlowUpConsole() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-white">Welcome back, {mockUser.alias}</h2>
-                    <p className="text-gray-400">Level {mockUser.level} • {mockUser.tier.toUpperCase()} Tier</p>
+                    <p className="text-gray-400">Level {mockUser.level} • {currentTier.toUpperCase()} Tier</p>
+                    {userArchetype && (
+                      <p className="text-xs text-purple-300 mt-1">
+                        {userArchetype.name} • {userArchetype.tagline}
+                      </p>
+                    )}
                     {noContactData && noContactData.startedBefore && noContactData.originalDate && (
                       <p className="text-xs text-purple-300 mt-1">
                         In no-contact since {new Date(noContactData.originalDate).toLocaleDateString()} • Platform Day {mockUser.streakDays}
@@ -200,8 +236,8 @@ export default function GlowUpConsole() {
                       <div className="text-xs text-gray-400">{stat.label}</div>
                     </div>
                   ))}
-                  <Badge className={`${tierColors[mockUser.tier]} border-0 px-3 py-1`}>
-                    {mockUser.tier.toUpperCase()}
+                  <Badge className={`${tierColors[currentTier]} border-0 px-3 py-1`}>
+                    {currentTier.toUpperCase()}
                   </Badge>
                 </div>
               </div>
@@ -209,73 +245,93 @@ export default function GlowUpConsole() {
           </Card>
 
           {/* Emergency Section */}
-          <Card className="bg-gradient-to-r from-red-900/40 to-orange-900/40 border-2 border-red-500/50 relative">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <AlertTriangle className="h-6 w-6 text-red-400 animate-pulse" />
-                  <div>
-                    <h3 className="font-bold text-white">Emergency Protocols</h3>
-                    <p className="text-sm text-gray-400">Crisis support tools available 24/7</p>
+          {!isPanicBannerCollapsed ? (
+            <Card className="bg-gradient-to-r from-red-900/40 to-orange-900/40 border-2 border-red-500/50 relative">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <AlertTriangle className="h-6 w-6 text-red-400 animate-pulse" />
+                    <div>
+                      <h3 className="font-bold text-white">Emergency Protocols</h3>
+                      <p className="text-sm text-gray-400">Crisis support tools available 24/7</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="lg"
+                      className="bg-red-600 hover:bg-red-700 text-white border-0 px-6 py-3 text-lg font-bold"
+                      disabled={mockUser.emergencyUsed}
+                      onClick={() => setEmergencyMode(true)}
+                    >
+                      🚨 PANIC MODE
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="border-purple-500 text-purple-400 hover:bg-purple-500/20"
+                      onClick={() => {
+                        // Show stalk resistance check modal
+                        alert('Stalk Resistance Check:\n\n1. Have you checked their social media today?\n2. Have you texted them?\n3. Have you driven by their place?\n\nIf you answered YES to any - you need the emergency protocols below.');
+                      }}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Stalk Resistance Check
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-400 hover:text-white ml-2"
+                      onClick={() => setIsPanicBannerCollapsed(true)}
+                    >
+                      ✕
+                    </Button>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button 
-                    size="lg"
-                    className="bg-red-600 hover:bg-red-700 text-white border-0 px-6 py-3 text-lg font-bold"
-                    disabled={mockUser.emergencyUsed}
-                    onClick={() => setEmergencyMode(true)}
-                  >
-                    🚨 PANIC MODE
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    className="border-purple-500 text-purple-400 hover:bg-purple-500/20"
-                    onClick={() => {
-                      // Show stalk resistance check modal
-                      alert('Stalk Resistance Check:\n\n1. Have you checked their social media today?\n2. Have you texted them?\n3. Have you driven by their place?\n\nIf you answered YES to any - you need the emergency protocols below.');
-                    }}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Stalk Resistance Check
-                  </Button>
+                
+                {/* Quick Crisis Tools */}
+                <div className="mt-4 pt-4 border-t border-red-500/30">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start text-sm text-red-300 hover:text-white hover:bg-red-500/20"
+                      onClick={() => {
+                        window.open('tel:988', '_blank'); // National Suicide Prevention Lifeline
+                      }}
+                    >
+                      📞 Crisis Hotline
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start text-sm text-orange-300 hover:text-white hover:bg-orange-500/20"
+                      onClick={() => {
+                        alert('5-Minute Breathing Protocol:\n\n1. Breathe in for 4 counts\n2. Hold for 4 counts\n3. Breathe out for 6 counts\n4. Repeat 10 times\n\nYou are safe. This feeling will pass.');
+                      }}
+                    >
+                      🧘 5-Min Breathing Protocol
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start text-sm text-purple-300 hover:text-white hover:bg-purple-500/20"
+                      onClick={() => {
+                        alert('Emergency Affirmations:\n\n• I am worthy of love and respect\n• This pain is temporary\n• I am stronger than I know\n• I choose healing over hurt\n• My future self is proud of me\n\nRepeat these until you feel grounded.');
+                      }}
+                    >
+                      💪 Emergency Affirmations
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              
-              {/* Quick Crisis Tools */}
-              <div className="mt-4 pt-4 border-t border-red-500/30">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <Button 
-                    variant="ghost" 
-                    className="justify-start text-sm text-red-300 hover:text-white hover:bg-red-500/20"
-                    onClick={() => {
-                      window.open('tel:988', '_blank'); // National Suicide Prevention Lifeline
-                    }}
-                  >
-                    📞 Crisis Hotline
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="justify-start text-sm text-orange-300 hover:text-white hover:bg-orange-500/20"
-                    onClick={() => {
-                      alert('5-Minute Breathing Protocol:\n\n1. Breathe in for 4 counts\n2. Hold for 4 counts\n3. Breathe out for 6 counts\n4. Repeat 10 times\n\nYou are safe. This feeling will pass.');
-                    }}
-                  >
-                    🧘 5-Min Breathing Protocol
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="justify-start text-sm text-purple-300 hover:text-white hover:bg-purple-500/20"
-                    onClick={() => {
-                      alert('Emergency Affirmations:\n\n• I am worthy of love and respect\n• This pain is temporary\n• I am stronger than I know\n• I choose healing over hurt\n• My future self is proud of me\n\nRepeat these until you feel grounded.');
-                    }}
-                  >
-                    💪 Emergency Affirmations
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="fixed bottom-4 right-4 z-40">
+              <Button
+                className="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 shadow-lg"
+                onClick={() => setIsPanicBannerCollapsed(false)}
+                title="Emergency Protocols"
+              >
+                ⚠️
+              </Button>
+            </div>
+          )}
 
           {/* Emergency Mode Modal */}
           {emergencyMode && (
@@ -352,13 +408,17 @@ export default function GlowUpConsole() {
                           <div>
                             <p className="text-green-400 font-semibold text-sm">🎙️ Voice Oracle Trial</p>
                             <p className="text-gray-400 text-xs">3-minute session • 300 Bytes or $3</p>
+                            <p className="text-green-300 text-xs mt-1">Try 'Brutal Saint': direct & truth-telling</p>
                           </div>
                           <Button 
                             size="sm" 
-                            className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1"
+                            className={`bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1 transition-all ${
+                              showGlitchPulse ? 'glitch-pulse' : ''
+                            }`}
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
+                              setShowGlitchPulse(false);
                               // Handle voice trial purchase
                             }}
                           >
@@ -388,6 +448,10 @@ export default function GlowUpConsole() {
           {/* Live Community Metrics */}
           <Card className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-500/30">
             <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold text-purple-300">Live Community Stats</h4>
+                <span className="text-xs text-gray-400">Resets in 3h 12m</span>
+              </div>
               <div className="flex items-center justify-center space-x-8 text-center">
                 <div>
                   <div className="text-2xl font-bold text-purple-400">194,322</div>

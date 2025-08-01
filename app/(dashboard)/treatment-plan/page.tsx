@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -105,6 +105,16 @@ const treatmentPlan = {
 };
 
 export default function TreatmentPlanPage() {
+  const [showConfetti, setShowConfetti] = useState<string | null>(null);
+
+  const handleStreakClick = (ritualId: string) => {
+    setShowConfetti(ritualId);
+    // Simulate adding bytes
+    setTimeout(() => {
+      setShowConfetti(null);
+      alert('🎉 +5 Bytes earned! Keep up the streak!');
+    }, 1000);
+  };
   return (
     <AuthWrapper>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
@@ -142,7 +152,7 @@ export default function TreatmentPlanPage() {
                   <span className="text-white font-semibold">Treatment Progress</span>
                   <span className="text-orange-400 font-bold">{treatmentPlan.progress}%</span>
                 </div>
-                <Progress value={treatmentPlan.progress} className="h-3" />
+                <Progress value={treatmentPlan.progress} className="h-3 progress-contrast" />
                 <p className="text-sm text-gray-400 mt-2">
                   {treatmentPlan.phase} • {treatmentPlan.duration} program
                 </p>
@@ -175,7 +185,13 @@ export default function TreatmentPlanPage() {
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-gray-400">{ritual.duration}</div>
-                      <div className="text-orange-400 font-bold">{ritual.streak} day streak</div>
+                      <div 
+                        className="text-orange-400 font-bold cursor-pointer hover:text-orange-300 transition-colors"
+                        onClick={() => handleStreakClick(ritual.id)}
+                        title="Click for micro-reward!"
+                      >
+                        {showConfetti === ritual.id ? '🎊' : '🔥'} {ritual.streak} day streak
+                      </div>
                     </div>
                   </div>
                 ))}
