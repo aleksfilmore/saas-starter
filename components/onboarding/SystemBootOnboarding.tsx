@@ -64,17 +64,6 @@ const BOOT_STEPS: BootStep[] = [
     bootPhase: 'BOOT'
   },
   {
-    id: 'codename',
-    title: 'Identity Configuration',
-    description: 'Choose your secure codename for anonymity',
-    icon: <Shield className="h-5 w-5" />,
-    component: 'CodenameStep',
-    isComplete: false,
-    isUnlocked: false,
-    ctaLabel: 'Configure Alias',
-    bootPhase: 'IDENTITY'
-  },
-  {
     id: 'avatar',
     title: 'Avatar Assignment',
     description: 'Select your digital representation',
@@ -228,8 +217,6 @@ export function SystemBootOnboarding({ userId, onComplete }: SystemBootProps) {
     switch (currentStep.component) {
       case 'WelcomeStep':
         return <WelcomeStep {...stepProps} />;
-      case 'CodenameStep':
-        return <CodenameStep {...stepProps} />;
       case 'AvatarStep':
         return <AvatarStep {...stepProps} />;
       case 'AttachmentAssessment':

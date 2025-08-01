@@ -162,6 +162,9 @@ export default function SignUpPage() {
                   className="bg-gray-800 border-gray-600 text-white"
                   required
                 />
+                <p className="text-xs text-gray-400 mt-1">
+                  Must be 6-50 characters long with at least one letter and one number
+                </p>
               </div>
 
               <div>

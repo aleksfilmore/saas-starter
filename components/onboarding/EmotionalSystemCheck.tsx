@@ -215,15 +215,15 @@ export default function EmotionalSystemCheck({ onComplete }: EmotionalSystemChec
   if (showResult && result) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
-        <Card className={`${result.bgColor} border-2 border-dashed`}>
+        <Card className="bg-white border-2 border-purple-200 shadow-lg">
           <CardHeader className="text-center">
             <div className={`${result.color} mx-auto mb-4`}>
               {result.icon}
             </div>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl text-gray-800">
               {result.name}
             </CardTitle>
-            <CardDescription className="text-lg italic">
+            <CardDescription className="text-lg italic text-gray-600">
               {result.tagline}
             </CardDescription>
           </CardHeader>
@@ -236,39 +236,39 @@ export default function EmotionalSystemCheck({ onComplete }: EmotionalSystemChec
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold mb-3">Core Traits</h4>
+                <h4 className="font-semibold mb-3 text-gray-800">Core Traits</h4>
                 <ul className="space-y-2">
                   {result.traits.map((trait, index) => (
                     <li key={index} className="flex items-center space-x-2 text-sm">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>{trait}</span>
+                      <span className="text-gray-700">{trait}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-3">Ritual Focus Areas</h4>
+                <h4 className="font-semibold mb-3 text-gray-800">Ritual Focus Areas</h4>
                 <ul className="space-y-2">
                   {result.ritualFocus.map((focus, index) => (
                     <li key={index} className="flex items-center space-x-2 text-sm">
                       <Brain className="h-4 w-4 text-purple-500" />
-                      <span>{focus}</span>
+                      <span className="text-gray-700">{focus}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
 
-            <div className="bg-white p-4 rounded-lg border">
-              <h4 className="font-semibold mb-2">Your AI Therapy Persona</h4>
+            <div className="bg-gray-50 p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2 text-gray-800">Your AI Therapy Persona</h4>
               <p className="text-sm text-gray-600">{result.aiPersona}</p>
             </div>
 
             <div className="text-center">
               <Button 
                 onClick={() => onComplete(result)}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
                 size="lg"
               >
                 Begin My Healing Protocol

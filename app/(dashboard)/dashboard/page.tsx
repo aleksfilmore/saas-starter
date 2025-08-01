@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AuthWrapper from '@/components/AuthWrapper';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   Shield, Brain, Sparkles, Trophy, Zap, MessageCircle, 
   Calendar, Timer, Heart, Activity, ChevronRight, 
@@ -24,6 +25,7 @@ interface User {
   completedToday: number;
   lastStalkCheck: string;
   emergencyUsed: boolean;
+  hasCompletedOnboarding: boolean;
 }
 
 const mockUser: User = {
@@ -35,7 +37,8 @@ const mockUser: User = {
   tier: 'firewall',
   completedToday: 3,
   lastStalkCheck: '2 hours ago',
-  emergencyUsed: false
+  emergencyUsed: false,
+  hasCompletedOnboarding: true // Set to true since onboarding is completed
 };
 
 const coreActions = [
@@ -93,7 +96,57 @@ const quickStats = [
 ];
 
 export default function GlowUpConsole() {
+  const router = useRouter();
   const [emergencyMode, setEmergencyMode] = useState(false);
+  const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [noContactData, setNoContactData] = useState<any>(null);
+
+  // Check if user has completed onboarding
+  useEffect(() => {
+    const checkOnboardingStatus = () => {
+      const onboardingCompleted = localStorage.getItem('onboardingCompleted') === 'true';
+      const userHasCompletedOnboarding = mockUser.hasCompletedOnboarding || onboardingCompleted;
+      
+      // Load no-contact data if available
+      const savedNoContactData = localStorage.getItem('noContactData');
+      if (savedNoContactData) {
+        setNoContactData(JSON.parse(savedNoContactData));
+      }
+      
+      setIsOnboardingCompleted(userHasCompletedOnboarding);
+      setIsLoading(false);
+      
+      if (!userHasCompletedOnboarding) {
+        router.push('/onboarding-quiz');
+      }
+    };
+
+    checkOnboardingStatus();
+  }, [router]);
+
+  // Don't render dashboard if onboarding not completed
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isOnboardingCompleted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Redirecting to onboarding...</p>
+        </div>
+      </div>
+    );
+  }
 
   const tierColors = {
     ghost: 'text-gray-400 bg-gray-500/20',
@@ -129,6 +182,11 @@ export default function GlowUpConsole() {
                   <div>
                     <h2 className="text-2xl font-bold text-white">Welcome back, {mockUser.alias}</h2>
                     <p className="text-gray-400">Level {mockUser.level} • {mockUser.tier.toUpperCase()} Tier</p>
+                    {noContactData && noContactData.startedBefore && noContactData.originalDate && (
+                      <p className="text-xs text-purple-300 mt-1">
+                        In no-contact since {new Date(noContactData.originalDate).toLocaleDateString()} • Platform Day {mockUser.streakDays}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -166,12 +224,17 @@ export default function GlowUpConsole() {
                     size="lg"
                     className="bg-red-600 hover:bg-red-700 text-white border-0 px-6 py-3 text-lg font-bold"
                     disabled={mockUser.emergencyUsed}
+                    onClick={() => setEmergencyMode(true)}
                   >
                     🚨 PANIC MODE
                   </Button>
                   <Button 
                     variant="outline"
                     className="border-purple-500 text-purple-400 hover:bg-purple-500/20"
+                    onClick={() => {
+                      // Show stalk resistance check modal
+                      alert('Stalk Resistance Check:\n\n1. Have you checked their social media today?\n2. Have you texted them?\n3. Have you driven by their place?\n\nIf you answered YES to any - you need the emergency protocols below.');
+                    }}
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     Stalk Resistance Check
@@ -182,19 +245,90 @@ export default function GlowUpConsole() {
               {/* Quick Crisis Tools */}
               <div className="mt-4 pt-4 border-t border-red-500/30">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <Button variant="ghost" className="justify-start text-sm text-red-300 hover:text-white hover:bg-red-500/20">
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start text-sm text-red-300 hover:text-white hover:bg-red-500/20"
+                    onClick={() => {
+                      window.open('tel:988', '_blank'); // National Suicide Prevention Lifeline
+                    }}
+                  >
                     📞 Crisis Hotline
                   </Button>
-                  <Button variant="ghost" className="justify-start text-sm text-orange-300 hover:text-white hover:bg-orange-500/20">
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start text-sm text-orange-300 hover:text-white hover:bg-orange-500/20"
+                    onClick={() => {
+                      alert('5-Minute Breathing Protocol:\n\n1. Breathe in for 4 counts\n2. Hold for 4 counts\n3. Breathe out for 6 counts\n4. Repeat 10 times\n\nYou are safe. This feeling will pass.');
+                    }}
+                  >
                     🧘 5-Min Breathing Protocol
                   </Button>
-                  <Button variant="ghost" className="justify-start text-sm text-purple-300 hover:text-white hover:bg-purple-500/20">
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start text-sm text-purple-300 hover:text-white hover:bg-purple-500/20"
+                    onClick={() => {
+                      alert('Emergency Affirmations:\n\n• I am worthy of love and respect\n• This pain is temporary\n• I am stronger than I know\n• I choose healing over hurt\n• My future self is proud of me\n\nRepeat these until you feel grounded.');
+                    }}
+                  >
                     💪 Emergency Affirmations
                   </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Emergency Mode Modal */}
+          {emergencyMode && (
+            <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+              <Card className="bg-red-900/90 border-2 border-red-500 max-w-md w-full">
+                <CardHeader>
+                  <CardTitle className="text-white text-center text-xl">🚨 EMERGENCY MODE ACTIVATED</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-red-100 text-center">
+                    You're in crisis mode. These tools will help you get through the next few minutes.
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-red-600 hover:bg-red-700 text-white"
+                      onClick={() => window.open('tel:988', '_blank')}
+                    >
+                      📞 Call Crisis Hotline (988)
+                    </Button>
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => {
+                        alert('Box Breathing:\n\nIn for 4... Hold for 4... Out for 4... Hold for 4...\n\nRepeat 10 times. You are safe.');
+                      }}
+                    >
+                      🧘 Guided Breathing (30 sec)
+                    </Button>
+                    <Button 
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => {
+                        setEmergencyMode(false);
+                        // Navigate to AI therapy
+                        window.location.href = '/ai-therapy';
+                      }}
+                    >
+                      💬 Emergency AI Session
+                    </Button>
+                  </div>
+                  
+                  <div className="text-center pt-4 border-t border-red-500/50">
+                    <Button 
+                      variant="outline" 
+                      className="border-gray-400 text-gray-300"
+                      onClick={() => setEmergencyMode(false)}
+                    >
+                      I'm Feeling Better
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
 
           {/* Core Functions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

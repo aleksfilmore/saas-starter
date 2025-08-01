@@ -29,6 +29,7 @@ export default function DashboardLayout({
 
   const mainNavItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'Glow-Up Console', description: 'Your main command center' },
+    { href: '/treatment-plan', icon: User, label: 'Treatment Plan', description: 'Your personalized recovery program' },
     { href: '/daily-rituals', icon: Zap, label: 'Daily Rituals', description: 'Personalized healing protocols' },
     { href: '/ai-therapy', icon: MessageSquare, label: 'AI Therapy', description: 'Text & voice healing sessions' },
     { href: '/wall-enhanced', icon: Sparkles, label: 'Wall of Wounds™', description: 'Anonymous confession system' },
