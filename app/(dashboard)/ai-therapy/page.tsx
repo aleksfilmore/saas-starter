@@ -46,8 +46,16 @@ export default function AITherapyPage() {
   const [isTyping, setIsTyping] = useState(false)
   const [userTier, setUserTier] = useState<'ghost' | 'firewall' | 'cult-leader'>('ghost')
   const [dailySessionsUsed, setDailySessionsUsed] = useState(0)
+  const [dailyMessagesUsed, setDailyMessagesUsed] = useState(0)
   const [voiceMinutesRemaining, setVoiceMinutesRemaining] = useState(0)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+
+  // Message limits by tier
+  const tierLimits = {
+    ghost: { textSessions: 1, dailyMessages: 50, voiceMinutes: 0, price: 'FREE' },
+    firewall: { textSessions: 999, dailyMessages: 200, voiceMinutes: 0, price: '$19/mo' },
+    'cult-leader': { textSessions: 999, dailyMessages: 500, voiceMinutes: 60, price: '$49/mo' }
+  }
 
   // AI Response Generator
   const generateAIResponse = (userMessage: string): string => {
@@ -98,7 +106,14 @@ export default function AITherapyPage() {
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
-    // Check session limits
+    // Check daily message limits
+    const currentLimit = tierLimits[userTier].dailyMessages
+    if (dailyMessagesUsed >= currentLimit) {
+      alert(`Daily message limit reached (${currentLimit}). Upgrade tier or spend 50 Bytes for 100 more messages.`)
+      return
+    }
+
+    // Check session limits for ghost tier
     if (userTier === 'ghost' && dailySessionsUsed >= 1) {
       alert('Daily text therapy limit reached. Upgrade to Firewall ($19/mo) for unlimited sessions.')
       return
@@ -114,6 +129,7 @@ export default function AITherapyPage() {
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
     setIsTyping(true)
+    setDailyMessagesUsed(prev => prev + 1)
 
     // Simulate AI thinking time
     setTimeout(() => {
@@ -127,6 +143,7 @@ export default function AITherapyPage() {
       
       setMessages(prev => [...prev, aiResponse])
       setIsTyping(false)
+      setDailyMessagesUsed(prev => prev + 1)
       
       // Update session count for ghost tier
       if (userTier === 'ghost') {
@@ -149,15 +166,9 @@ export default function AITherapyPage() {
     }
   }, [messages])
 
-  const tierLimits = {
-    ghost: { textSessions: 1, voiceMinutes: 0, price: 'FREE' },
-    firewall: { textSessions: 999, voiceMinutes: 0, price: '$19/mo' },
-    'cult-leader': { textSessions: 999, voiceMinutes: 60, price: '$49/mo' }
-  }
-
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
         <div className="max-w-6xl mx-auto space-y-6">
           
           {/* Header */}
@@ -189,11 +200,51 @@ export default function AITherapyPage() {
             </CardHeader>
           </Card>
 
+          {/* Message Limit Status */}
+          <Card className="bg-gradient-to-r from-orange-900/30 to-red-900/30 border-orange-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-semibold text-orange-400">
+                    {tierLimits[userTier].daily - dailyMessagesUsed} messages left today
+                  </div>
+                  <div className="text-sm text-orange-300">
+                    {dailyMessagesUsed >= tierLimits[userTier].daily * 0.8 ? 
+                      "⚠️ Almost at your daily limit" : 
+                      `Resets in ${24 - new Date().getHours()} hours`
+                    }
+                  </div>
+                </div>
+                {dailyMessagesUsed >= tierLimits[userTier].daily * 0.8 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-orange-500 text-orange-400 hover:bg-orange-600 hover:text-white"
+                    onClick={() => alert('Byte top-up coming soon!')}
+                  >
+                    +50 bytes
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-yellow-900/20 border-yellow-500/30">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <Shield className="h-5 w-5 text-yellow-400 mt-0.5" />
+                <div className="text-sm text-yellow-200">
+                  <strong className="text-yellow-400">Important:</strong> This AI is a supportive companion, not a licensed therapist. 
+                  For crisis support, contact your local emergency services or a qualified mental health professional.
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             {/* Chat Interface */}
             <div className="lg:col-span-3">
-              <Card className="h-[600px] flex flex-col">
+              <Card className="h-[600px] flex flex-col bg-gray-800 border-gray-700">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center space-x-2">
@@ -202,7 +253,10 @@ export default function AITherapyPage() {
                     </CardTitle>
                     <div className="flex items-center space-x-2">
                       <Badge variant="outline">
-                        Sessions today: {dailySessionsUsed}/{tierLimits[userTier].textSessions}
+                        Messages: {dailyMessagesUsed}/{tierLimits[userTier].dailyMessages}
+                      </Badge>
+                      <Badge variant="outline">
+                        Sessions: {dailySessionsUsed}/{tierLimits[userTier].textSessions}
                       </Badge>
                     </div>
                   </div>
@@ -221,7 +275,7 @@ export default function AITherapyPage() {
                             className={`max-w-[80%] p-3 rounded-lg ${
                               message.sender === 'user'
                                 ? 'bg-blue-500 text-white'
-                                : 'bg-gray-100 text-gray-900 border'
+                                : 'bg-gray-700 text-gray-100 border border-gray-600'
                             }`}
                           >
                             <p className="text-sm">{message.content}</p>
@@ -253,24 +307,31 @@ export default function AITherapyPage() {
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Share what's on your mind..."
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                      disabled={userTier === 'ghost' && dailySessionsUsed >= 1}
+                      disabled={dailyMessagesUsed >= tierLimits[userTier].dailyMessages}
                     />
                     <Button 
                       onClick={handleSendMessage}
-                      disabled={!inputValue.trim() || (userTier === 'ghost' && dailySessionsUsed >= 1)}
+                      disabled={!inputValue.trim() || dailyMessagesUsed >= tierLimits[userTier].dailyMessages}
                     >
                       <Send className="h-4 w-4" />
                     </Button>
                   </div>
                   
-                  {userTier === 'ghost' && dailySessionsUsed >= 1 && (
+                  {dailyMessagesUsed >= tierLimits[userTier].dailyMessages && (
                     <div className="text-center p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <p className="text-sm text-orange-700">
-                        Daily text therapy limit reached. 
-                        <Button variant="link" className="p-0 text-orange-600 font-medium">
-                          Upgrade to Firewall ($19/mo)
-                        </Button> for unlimited sessions.
+                      <p className="text-sm text-orange-700 mb-2">
+                        Daily message limit reached ({tierLimits[userTier].dailyMessages} messages).
                       </p>
+                      <div className="flex justify-center space-x-3">
+                        <Button variant="outline" size="sm" className="text-orange-600">
+                          Spend 50 Bytes for +100 Messages
+                        </Button>
+                        {userTier === 'ghost' && (
+                          <Button variant="link" size="sm" className="text-orange-600 font-medium">
+                            Upgrade to Firewall ($19/mo)
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </CardContent>
@@ -281,9 +342,9 @@ export default function AITherapyPage() {
             <div className="space-y-4">
               
               {/* Voice Therapy */}
-              <Card>
+              <Card className="bg-gray-800 border-gray-700">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center space-x-2">
+                  <CardTitle className="text-lg flex items-center space-x-2 text-white">
                     <Mic className="h-5 w-5" />
                     <span>Voice AI Therapy</span>
                   </CardTitle>
@@ -293,7 +354,7 @@ export default function AITherapyPage() {
                     <div className="text-2xl font-bold text-purple-600">
                       {voiceMinutesRemaining} min
                     </div>
-                    <div className="text-sm text-gray-600">remaining</div>
+                    <div className="text-sm text-gray-400">remaining</div>
                   </div>
                   
                   <Button 
@@ -309,12 +370,25 @@ export default function AITherapyPage() {
                     ) : (
                       <>
                         <Lock className="h-4 w-4 mr-2" />
-                        Buy 15min - $19.99
+                        Buy 60min - $19.99
                       </>
                     )}
                   </Button>
                   
-                  <div className="text-xs text-gray-500 text-center">
+                  {voiceMinutesRemaining === 0 && (
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-green-500 text-green-400 hover:bg-green-600 hover:text-white"
+                      onClick={() => {
+                        // Handle micro-trial purchase
+                        alert('3-minute voice trial coming soon!');
+                      }}
+                    >
+                      Try Voice: $4.00 (3 min)
+                    </Button>
+                  )}
+                  
+                  <div className="text-xs text-gray-400 text-center">
                     Premium voice therapy with real-time emotional analysis
                   </div>
                 </CardContent>

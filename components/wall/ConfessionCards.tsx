@@ -19,7 +19,8 @@ import {
   Clock,
   Zap,
   Download,
-  Copy
+  Copy,
+  Sparkles
 } from 'lucide-react'
 
 interface Confession {
@@ -42,12 +43,12 @@ interface Confession {
 }
 
 const emotionTags = [
-  { value: 'grief', label: 'Grief', color: 'bg-blue-100 text-blue-800' },
-  { value: 'rage', label: 'Rage', color: 'bg-red-100 text-red-800' },
-  { value: 'relapse', label: 'Relapse', color: 'bg-orange-100 text-orange-800' },
-  { value: 'petty', label: 'Petty', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'freefall', label: 'Freefall', color: 'bg-purple-100 text-purple-800' },
-  { value: 'glow-up', label: 'Glow-Up', color: 'bg-green-100 text-green-800' }
+  { value: 'grief', label: 'Grief', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30', cardColor: 'from-blue-900 to-blue-700' },
+  { value: 'rage', label: 'Rage', color: 'bg-red-500/20 text-red-300 border-red-500/30', cardColor: 'from-red-900 to-red-700' },
+  { value: 'relapse', label: 'Relapse', color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', cardColor: 'from-orange-900 to-orange-700' },
+  { value: 'petty', label: 'Petty', color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30', cardColor: 'from-yellow-900 to-yellow-700' },
+  { value: 'freefall', label: 'Freefall', color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', cardColor: 'from-purple-900 to-purple-700' },
+  { value: 'glow-up', label: 'Glow-Up', color: 'bg-green-500/20 text-green-300 border-green-500/30', cardColor: 'from-green-900 to-green-700' }
 ]
 
 const sampleConfessions: Confession[] = [
@@ -172,7 +173,12 @@ export default function ConfessionCards() {
 
   const getEmotionColor = (emotion?: string) => {
     const tag = emotionTags.find(t => t.value === emotion)
-    return tag?.color || 'bg-gray-100 text-gray-800'
+    return tag?.color || 'bg-gray-500/20 text-gray-300 border-gray-500/30'
+  }
+
+  const getCardGradient = (emotion?: string) => {
+    const tag = emotionTags.find(t => t.value === emotion)
+    return tag?.cardColor || 'from-gray-800 to-gray-700'
   }
 
   const formatTimeAgo = (timestamp: Date) => {
@@ -189,31 +195,30 @@ export default function ConfessionCards() {
     const totalReactions = Object.values(confession.reactions).reduce((sum, count) => sum + count, 0)
     
     return (
-      <Card className={`transition-all duration-200 hover:shadow-lg ${
-        confession.isViral ? 'border-red-200 bg-red-50/30' : ''
-      } ${confession.isFeatured ? 'border-purple-200 bg-purple-50/30' : ''}`}>
+      <Card className={`bg-gradient-to-br ${getCardGradient(confession.emotionTag)} border border-gray-600/50 hover:border-gray-500/70 transition-all duration-300 hover:scale-[1.02]`}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-2">
-              <code className="text-sm font-mono text-purple-600 bg-purple-100 px-2 py-1 rounded">
+              <code className="text-sm font-mono text-gray-300 bg-gray-800/50 px-2 py-1 rounded border border-gray-600/30">
                 {confession.glitchTitle}
               </code>
               {confession.emotionTag && (
-                <Badge className={getEmotionColor(confession.emotionTag)} variant="secondary">
-                  {confession.emotionTag}
+                <Badge className={`${getEmotionColor(confession.emotionTag)} border`} variant="outline">
+                  {confession.emotionTag.toUpperCase()}
                 </Badge>
               )}
             </div>
             <div className="flex items-center space-x-2">
               {confession.isViral && (
-                <Badge className="bg-red-100 text-red-800">🔥 VIRAL</Badge>
+                <Badge className="bg-red-500/20 text-red-300 border border-red-500/30">🔥 VIRAL</Badge>
               )}
               {confession.isFeatured && (
-                <Badge className="bg-purple-100 text-purple-800">⭐ FEATURED</Badge>
+                <Badge className="bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">⭐ FEATURED</Badge>
               )}
               <Button 
                 variant="ghost" 
                 size="sm"
+                className="text-gray-400 hover:text-white hover:bg-gray-700/50"
                 onClick={() => setShowShareModal(confession.id)}
               >
                 <Share className="h-4 w-4" />
@@ -223,7 +228,7 @@ export default function ConfessionCards() {
         </CardHeader>
         
         <CardContent className="space-y-4">
-          <blockquote className="text-lg leading-relaxed italic text-gray-800 border-l-4 border-gray-300 pl-4">
+          <blockquote className="text-lg leading-relaxed text-white border-l-4 border-gray-500/30 pl-4 font-medium">
             "{confession.text}"
           </blockquote>
           
@@ -234,16 +239,16 @@ export default function ConfessionCards() {
                   key={emoji}
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2 hover:bg-gray-100"
+                  className="h-8 px-2 hover:bg-gray-700/50 text-gray-300 hover:text-white transition-colors"
                   onClick={() => handleReaction(confession.id, emoji as keyof Confession['reactions'])}
                 >
                   <span className="text-lg mr-1">{emoji}</span>
-                  <span className="text-xs text-gray-600">{count}</span>
+                  <span className="text-xs">{count}</span>
                 </Button>
               ))}
             </div>
             
-            <div className="flex items-center space-x-3 text-xs text-gray-500">
+            <div className="flex items-center space-x-3 text-xs text-gray-400">
               <span className="flex items-center space-x-1">
                 <Zap className="h-3 w-3" />
                 <span>+{confession.xpEarned} XP</span>
@@ -264,21 +269,23 @@ export default function ConfessionCards() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-purple-600 bg-clip-text text-transparent">
-          Wall of Wounds
+        <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-red-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          🧱 WALL OF WOUNDS™
         </h1>
-        <p className="text-gray-600 text-lg">
-          Anonymous confessions from the digital heartbreak frontlines. 
-          Raw, glitched, witnessed.
+        <p className="text-gray-300 text-lg">
+          Anonymous confessions. Viral healing cards. Zero judgment zone.
+        </p>
+        <p className="text-purple-400 text-sm">
+          Each wound becomes a beautiful, shareable piece of art.
         </p>
       </div>
 
       {/* Confession Input */}
-      <Card className="border-2 border-dashed border-purple-200">
+      <Card className="bg-gray-800/50 border-2 border-dashed border-purple-500/30">
         <CardHeader>
-          <CardTitle>What's the one thing you can't say out loud today?</CardTitle>
-          <CardDescription>
-            Anonymous. Permanent. Witnessed by strangers who get it.
+          <CardTitle className="text-white">What's the one thing you can't say out loud today?</CardTitle>
+          <CardDescription className="text-gray-400">
+            Anonymous. Witnessed. Transformed into viral-ready pain content.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -286,17 +293,17 @@ export default function ConfessionCards() {
             placeholder="Type your confession here... (max 500 characters)"
             value={newConfession}
             onChange={(e) => setNewConfession(e.target.value.slice(0, 500))}
-            className="min-h-[100px] resize-none"
+            className="min-h-[100px] resize-none bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-500"
           />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white">
                 <SelectValue placeholder="Add your current state (optional)" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-gray-800 border-gray-600">
                 {emotionTags.map(tag => (
-                  <SelectItem key={tag.value} value={tag.value}>
+                  <SelectItem key={tag.value} value={tag.value} className="text-white hover:bg-gray-700">
                     {tag.label}
                   </SelectItem>
                 ))}
@@ -308,19 +315,20 @@ export default function ConfessionCards() {
               placeholder="Custom glitch title (or auto-generate)"
               value={customTitle}
               onChange={(e) => setCustomTitle(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
           
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-400">
               {newConfession.length}/500 characters
             </span>
             <Button 
               onClick={handleSubmitConfession}
               disabled={!newConfession.trim()}
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
             >
+              <Sparkles className="h-4 w-4 mr-2" />
               Submit Wound +{Math.floor(Math.random() * 20) + 10} XP
             </Button>
           </div>
@@ -342,7 +350,11 @@ export default function ConfessionCards() {
               variant={activeFilter === filter.id ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveFilter(filter.id)}
-              className="flex items-center space-x-1"
+              className={`flex items-center space-x-1 ${
+                activeFilter === filter.id 
+                  ? 'bg-purple-500 text-white border-purple-500' 
+                  : 'border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
             >
               <Icon className="h-3 w-3" />
               <span>{filter.label}</span>
@@ -360,33 +372,33 @@ export default function ConfessionCards() {
 
       {/* Share Modal */}
       {showShareModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full bg-gray-800 border border-gray-600">
             <CardHeader>
-              <CardTitle>Share Confession Card</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-white">Share Confession Card</CardTitle>
+              <CardDescription className="text-gray-400">
                 Create a viral confession card for social media
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-gradient-to-br from-purple-900 to-black p-6 rounded-lg text-white text-center">
-                <div className="text-sm font-mono text-purple-300 mb-2">
+              <div className={`bg-gradient-to-br ${getCardGradient(confessions.find(c => c.id === showShareModal)?.emotionTag)} p-6 rounded-lg text-white text-center border border-gray-600/30`}>
+                <div className="text-sm font-mono text-gray-300 mb-2">
                   {confessions.find(c => c.id === showShareModal)?.glitchTitle}
                 </div>
-                <blockquote className="text-lg italic mb-4">
+                <blockquote className="text-lg font-medium mb-4">
                   "{confessions.find(c => c.id === showShareModal)?.text}"
                 </blockquote>
                 <div className="text-xs text-gray-400">
-                  Wall of Wounds — ctrlaltblock.com
+                  Wall of Wounds™ — ctrlaltblock.com
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                   <Download className="h-4 w-4 mr-2" />
                   Download PNG
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                   <Copy className="h-4 w-4 mr-2" />
                   Copy Link
                 </Button>
@@ -394,7 +406,7 @@ export default function ConfessionCards() {
               
               <Button 
                 variant="ghost" 
-                className="w-full"
+                className="w-full text-gray-400 hover:text-white hover:bg-gray-700"
                 onClick={() => setShowShareModal(null)}
               >
                 Close

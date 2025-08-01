@@ -7,22 +7,15 @@ import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, 
   Zap, 
-  ShieldQuestion, 
   Settings, 
   Menu, 
-  Shield,
   MessageSquare,
-  Activity,
-  Crown,
+  Trophy,
   User,
   Lock,
   LogOut,
   Home,
-  Sparkles,
-  Target,
-  Trophy,
-  Users,
-  Star
+  Sparkles
 } from 'lucide-react';
 import Footer from '@/components/layout/footer';
 
@@ -35,22 +28,16 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainNavItems = [
-    { href: '/dashboard/glow-up-console', icon: Crown, label: 'Glow-Up Console', description: 'Your focused command center' },
-    { href: '/dashboard', icon: LayoutDashboard, label: 'Full Dashboard', description: 'Complete overview' },
-    { href: '/dashboard/tracker', icon: Shield, label: 'No Contact Tracker', description: 'Track your progress' },
-    { href: '/dashboard/rituals', icon: Zap, label: 'Daily Protocols', description: 'Your healing practices' },
-    { href: '/gamification-showcase', icon: Star, label: 'Gamification Engine', description: 'Avatar & badge systems' },
-    { href: '/wall-ecosystem', icon: Sparkles, label: 'Wall Ecosystem', description: 'Complete viral confession system' },
-    { href: '/wall', icon: MessageSquare, label: 'Wall of Wounds™', description: 'Anonymous confessions' },
-    { href: '/avatar-system', icon: User, label: 'Avatar Identity', description: 'Customize your digital self' },
-    { href: '/badge-system', icon: Trophy, label: 'Badge Collection', description: 'Achievement trophies' }
+    { href: '/dashboard', icon: LayoutDashboard, label: 'Glow-Up Console', description: 'Your main command center' },
+    { href: '/daily-rituals', icon: Zap, label: 'Daily Rituals', description: 'Personalized healing protocols' },
+    { href: '/ai-therapy', icon: MessageSquare, label: 'AI Therapy', description: 'Text & voice healing sessions' },
+    { href: '/wall-enhanced', icon: Sparkles, label: 'Wall of Wounds™', description: 'Anonymous confession system' },
+    { href: '/achievements', icon: Trophy, label: 'Achievements', description: 'Progress tracking & badges' }
   ];
 
   const settingsNavItems = [
-    { href: '/dashboard/security', icon: Lock, label: 'Security', description: 'Password & privacy' }
+    { href: '/pricing', icon: Settings, label: 'Subscription', description: 'Manage your tier' }
   ];
-
-  const enhancedNavItems = [];
 
   const handleLogout = async () => {
     try {

@@ -243,38 +243,57 @@ export default function EnhancedLandingPage() {
           {[
             {
               title: "The Ghost Protocol Activated",
-              category: "digital-detox",
+              emotion: "grief",
               content: "Deleted their number, blocked on everything, even changed my Netflix password. Still crying but at least I'm crying with dignity.",
               reactions: { fire: 247, realness: 89, strength: 156 },
               timeAgo: "2h ago",
-              glitchCode: "DETOX_INITIATED_2024"
+              glitchCode: "GRIEF_PROTOCOL_ACTIVE",
+              color: "from-blue-900/40 to-blue-800/40",
+              borderColor: "border-blue-500/40"
             },
             {
-              title: "Validation Addiction: Day 1",
-              category: "self-worth",
+              title: "Validation Addiction: Day 1", 
+              emotion: "freefall",
               content: "Caught myself checking if they viewed my story 47 times today. My dopamine receptors are filed for divorce.",
               reactions: { relatable: 312, humor: 198, truth: 267 },
-              timeAgo: "4h ago", 
-              glitchCode: "VALIDATION_OVERFLOW_ERR"
+              timeAgo: "4h ago",
+              glitchCode: "FREEFALL_DETECTED",
+              color: "from-purple-900/40 to-purple-800/40", 
+              borderColor: "border-purple-500/40"
             },
             {
               title: "Plot Twist: I'm the Villain",
-              category: "self-awareness",
+              emotion: "glow-up",
               content: "Spent 6 months painting them as toxic. Therapy session revealed: I was the red flag factory all along. Oops.",
               reactions: { growth: 423, brutal: 201, redemption: 178 },
               timeAgo: "1d ago",
-              glitchCode: "SELF_REFLECTION_LOADED"
+              glitchCode: "GLOW_UP_INITIATED", 
+              color: "from-green-900/40 to-green-800/40",
+              borderColor: "border-green-500/40"
             }
           ].map((card, index) => (
-            <Card key={index} className="bg-gradient-to-br from-red-900/30 to-purple-900/30 border-2 border-red-500/30 hover:border-red-400 transition-all duration-300 group">
+            <Card key={index} className={`bg-gradient-to-br ${card.color} border-2 ${card.borderColor} hover:border-opacity-80 transition-all duration-300 group`}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between mb-2">
-                  <Badge className="bg-red-600/80 text-white text-xs">
-                    {card.category.replace('-', ' ').toUpperCase()}
-                  </Badge>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">
+                      {card.emotion === 'grief' ? '😢' :
+                       card.emotion === 'rage' ? '😡' :
+                       card.emotion === 'relapse' ? '😵' :
+                       card.emotion === 'petty' ? '😒' :
+                       card.emotion === 'freefall' ? '😨' : '✨'}
+                    </span>
+                    <Badge className={`${card.emotion === 'grief' ? 'bg-blue-600/80' :
+                                     card.emotion === 'rage' ? 'bg-red-600/80' :
+                                     card.emotion === 'relapse' ? 'bg-orange-600/80' :
+                                     card.emotion === 'petty' ? 'bg-yellow-600/80' :
+                                     card.emotion === 'freefall' ? 'bg-purple-600/80' : 'bg-green-600/80'} text-white text-xs`}>
+                      {card.emotion.toUpperCase()}
+                    </Badge>
+                  </div>
                   <span className="text-xs text-gray-400">{card.timeAgo}</span>
                 </div>
-                <CardTitle className="text-lg text-white group-hover:text-red-300 transition-colors">
+                <CardTitle className="text-lg text-white group-hover:text-gray-200 transition-colors">
                   {card.title}
                 </CardTitle>
               </CardHeader>
