@@ -25,9 +25,6 @@ export default function DailyRitualsPage() {
   const userArchetype = 'data-flooder' // or 'firewall-builder', 'ghost-in-shell', 'secure-node'
   const userTier = 'firewall' // ghost, firewall, cult-leader
   
-  // Calculate completed rituals count
-  const completedCount = dailyRituals.filter(ritual => ritual.completed).length;
-  
   // Daily ritual recommendations based on archetype and healing progress
   const dailyRituals = [
     {

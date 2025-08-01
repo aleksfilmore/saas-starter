@@ -41,12 +41,25 @@
 ## 🎯 **User Journey Flow**
 
 ```
-1. Landing Page → "Begin REFORMAT PROTOCOL™"
-2. Enhanced Page → System Initialization Boot Sequence
+1. Landing Page (/) → "Begin REFORMAT PROTOCOL™" (System Initialization page)
+2. System Initialization → Boot Sequence Animation → Auto-redirect to onboarding
 3. Onboarding Quiz → Stealth attachment assessment (8 questions)
 4. No-Contact Setup → Configure tracking preferences
 5. Dashboard → Personalized experience with archetype-based UI
 ```
+
+## ✅ **File Structure Cleanup Completed**
+
+**Replaced old pages with enhanced versions:**
+- `app/(marketing)/page.tsx` → Now the System Initialization page (REFORMAT PROTOCOL™)
+- `app/(marketing)/sign-up/page.tsx` → Now includes emotional tone selection and enhanced UX
+- Removed duplicate `/enhanced/` subdirectories to maintain clean structure
+
+**Current Routes:**
+- `/` → System Initialization (REFORMAT PROTOCOL™ landing)
+- `/sign-up` → Enhanced sign-up with emotional tone selection
+- `/onboarding-quiz` → Stealth attachment assessment
+- `/dashboard` → Personalized archetype-based dashboard
 
 ## 🔧 **Technical Implementation Details**
 

@@ -1,294 +1,460 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { RefreshCw, Shield, Check } from 'lucide-react';
 
 interface SignUpData {
   email: string;
   password: string;
   confirmPassword: string;
   alias: string;
+  emotionalTone: 'numb' | 'vengeance' | 'logic' | 'helpOthers';
   acceptedTerms: boolean;
 }
 
-export default function SignUpPage() {
-  const router = useRouter();
+const emotionalTones = [
+  {
+    id: 'numb' as const,
+    emoji: '😶',
+    title: 'Numb',
+    description: 'Feeling disconnected, going through the motions',
+    color: 'bg-gray-500/20 border-gray-500/50 text-gray-400'
+  },
+  {
+    id: 'vengeance' as const,
+    emoji: '😤',
+    title: 'Vengeance',
+    description: 'Anger, frustration, need for justice',
+    color: 'bg-red-500/20 border-red-500/50 text-red-400'
+  },
+  {
+    id: 'logic' as const,
+    emoji: '🤖',
+    title: 'Logic',
+    description: 'Analytical, rational, solution-focused',
+    color: 'bg-blue-500/20 border-blue-500/50 text-blue-400'
+  },
+  {
+    id: 'helpOthers' as const,
+    emoji: '🤝',
+    title: 'Help Others',
+    description: 'Empathetic, community-focused, supportive',
+    color: 'bg-green-500/20 border-green-500/50 text-green-400'
+  }
+];
+
+const tierBenefits = {
+  free: [
+    'Weekly therapy sessions',
+    'Basic progress tracking',
+    'Wall of Wounds access',
+    'Community support'
+  ],
+  firewall: [
+    'Unlimited therapy sessions',
+    'Advanced progress analytics',
+    'Priority community features',
+    'Custom emotional tracking',
+    'Weekly streak bonuses'
+  ],
+  'cult-leader': [
+    'Everything in Firewall',
+    'Exclusive glitch effects',
+    'Community moderation tools',
+    'Custom AI personality',
+    'Early feature access',
+    'Direct developer feedback'
+  ]
+};
+
+export default function EnhancedSignUp() {
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState<SignUpData>({
     email: '',
     password: '',
     confirmPassword: '',
     alias: '',
+    emotionalTone: 'logic',
     acceptedTerms: false
   });
   
-  const [generatedAliases, setGeneratedAliases] = useState<string[]>([]);
-  const [selectedAlias, setSelectedAlias] = useState<string>('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const router = useRouter();
+  const totalSteps = 4;
+  const progressPercentage = (step / totalSteps) * 100;
 
-  const generateAliases = async () => {
-    setIsGenerating(true);
-    try {
-      const response = await fetch('/api/onboarding/generate-codenames');
-      const data = await response.json();
+  const handleInputChange = (field: keyof SignUpData, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setError('');
+  };
+
+  const validateStep = (stepNumber: number): boolean => {
+    switch (stepNumber) {
+      case 1:
+        if (!formData.email || !formData.email.includes('@')) {
+          setError('Please enter a valid email address');
+          return false;
+        }
+        if (!formData.password || formData.password.length < 8) {
+          setError('Password must be at least 8 characters long');
+          return false;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
+          return false;
+        }
+        return true;
       
-      if (data.success) {
-        setGeneratedAliases(data.codenames);
-        setSelectedAlias(''); // Reset selection
-      } else {
-        setError('Failed to generate aliases. Please try again.');
-      }
-    } catch (error) {
-      setError('Failed to generate aliases. Please try again.');
-    } finally {
-      setIsGenerating(false);
+      case 2:
+        if (!formData.alias || formData.alias.length < 3) {
+          setError('Alias must be at least 3 characters long');
+          return false;
+        }
+        return true;
+      
+      case 3:
+        return true; // Emotional tone selection
+      
+      case 4:
+        if (!formData.acceptedTerms) {
+          setError('Please accept the terms and conditions');
+          return false;
+        }
+        return true;
+      
+      default:
+        return false;
     }
   };
 
-  useEffect(() => {
-    generateAliases(); // Generate initial aliases on component mount
-  }, []);
+  const handleNext = () => {
+    if (validateStep(step)) {
+      setStep(prev => Math.min(prev + 1, totalSteps));
+    }
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBack = () => {
+    setStep(prev => Math.max(prev - 1, 1));
     setError('');
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(4)) return;
+
     setIsLoading(true);
-
-    // Basic validation
-    if (!formData.email || !formData.password || !selectedAlias) {
-      setError('Please fill in all required fields');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.acceptedTerms) {
-      setError('Please accept the Terms of Service and Privacy Policy');
-      setIsLoading(false);
-      return;
-    }
+    setError('');
 
     try {
-      const signupData = {
-        ...formData,
-        alias: selectedAlias
-      };
-
+      // Simulate API call
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(signupData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          alias: formData.alias,
+          emotionalTone: formData.emotionalTone
+        })
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setSuccess('Account created successfully! Redirecting to onboarding...');
-        setTimeout(() => {
-          router.push('/onboarding');
-        }, 2000);
+      if (response.ok) {
+        // Redirect to onboarding or dashboard
+        router.push('/onboarding');
       } else {
-        setError(data.error || 'Failed to create account');
+        const errorData = await response.json();
+        setError(errorData.error || 'Registration failed');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      console.error('Registration error:', error);
+      setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">JOIN THE COLLECTIVE</h1>
-          <p className="text-purple-400">Begin your healing protocol</p>
-        </div>
-
-        <Card className="bg-gray-900/80 border border-gray-600/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-white text-center">Create Your Account</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-
-            {/* Step 1: Basic Info */}
+  const getStepContent = () => {
+    switch (step) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🔐</div>
+              <h3 className="text-xl font-bold text-white">Create Your Account</h3>
+              <p className="text-gray-400">Your journey to digital healing starts here</p>
+            </div>
+            
             <div className="space-y-4">
               <div>
-                <Label htmlFor="email" className="text-gray-300">Email</Label>
+                <Label htmlFor="email" className="text-gray-300">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your.email@domain.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white"
-                  required
+                  placeholder="your.email@example.com"
                 />
               </div>
-
+              
               <div>
                 <Label htmlFor="password" className="text-gray-300">Password</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Create a secure password"
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white"
-                  required
+                  placeholder="Choose a strong password"
                 />
-                <p className="text-xs text-gray-400 mt-1">
-                  Must be 6-50 characters long with at least one letter and one number
-                </p>
               </div>
-
+              
               <div>
                 <Label htmlFor="confirmPassword" className="text-gray-300">Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
-                  placeholder="Confirm your password"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white"
-                  required
+                  placeholder="Confirm your password"
                 />
               </div>
             </div>
+          </div>
+        );
 
-            {/* Alias Selection */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-gray-300">Choose Your Digital Alias</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={generateAliases}
-                  disabled={isGenerating}
-                  className="border-purple-500 text-purple-400 hover:bg-purple-500/20"
-                >
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isGenerating ? 'animate-spin' : ''}`} />
-                  Generate New
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-2">
-                {generatedAliases.map((alias) => (
-                  <button
-                    key={alias}
-                    type="button"
-                    onClick={() => setSelectedAlias(alias)}
-                    className={`p-3 rounded-lg text-left transition-all ${
-                      selectedAlias === alias
-                        ? 'bg-purple-600 border-2 border-purple-400 text-white'
-                        : 'bg-gray-800 border border-gray-600 text-gray-300 hover:border-purple-500'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold">{alias}</span>
-                      {selectedAlias === alias && <Check className="h-4 w-4" />}
-                    </div>
-                  </button>
-                ))}
-              </div>
-              
-              <p className="text-xs text-gray-400">
-                🛡️ Aliases are auto-generated to protect your identity and maintain anonymity
+      case 2:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">👤</div>
+              <h3 className="text-xl font-bold text-white">Choose Your Alias</h3>
+              <p className="text-gray-400">How others will see you in the community</p>
+            </div>
+            
+            <div>
+              <Label htmlFor="alias" className="text-gray-300">Community Alias</Label>
+              <Input
+                id="alias"
+                type="text"
+                value={formData.alias}
+                onChange={(e) => handleInputChange('alias', e.target.value)}
+                className="bg-gray-800 border-gray-600 text-white"
+                placeholder="DigitalPhoenix, VoidWalker, etc."
+                maxLength={20}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                3-20 characters. This will be your identity on the Wall of Wounds.
               </p>
             </div>
+            
+            <Alert className="bg-blue-900/20 border-blue-500/50">
+              <AlertDescription className="text-blue-400">
+                💡 <strong>Tip:</strong> Choose something that represents your healing journey. 
+                You can change this later in your profile settings.
+              </AlertDescription>
+            </Alert>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🎛️</div>
+              <h3 className="text-xl font-bold text-white">Your Emotional Tone</h3>
+              <p className="text-gray-400">This helps our AI adapt to your communication style</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {emotionalTones.map((tone) => (
+                <Button
+                  key={tone.id}
+                  onClick={() => handleInputChange('emotionalTone', tone.id)}
+                  variant={formData.emotionalTone === tone.id ? 'default' : 'outline'}
+                  className={`p-6 h-auto flex-col space-y-3 transition-all ${
+                    formData.emotionalTone === tone.id 
+                      ? 'bg-purple-500 text-white border-purple-400' 
+                      : 'border-gray-600 text-gray-400 hover:bg-gray-700'
+                  }`}
+                >
+                  <div className="text-3xl">{tone.emoji}</div>
+                  <div className="text-center">
+                    <div className="font-bold">{tone.title}</div>
+                    <div className="text-sm opacity-80">{tone.description}</div>
+                  </div>
+                </Button>
+              ))}
+            </div>
+            
+            <Alert className="bg-purple-900/20 border-purple-500/50">
+              <AlertDescription className="text-purple-400">
+                🔄 <strong>Adaptive AI:</strong> Your selected tone influences how our AI therapist 
+                communicates with you. You can adjust this anytime in your settings.
+              </AlertDescription>
+            </Alert>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🚀</div>
+              <h3 className="text-xl font-bold text-white">Ready to Begin!</h3>
+              <p className="text-gray-400">Review your information and start your healing journey</p>
+            </div>
+            
+            {/* Summary */}
+            <Card className="bg-gray-800/50 border border-gray-600">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Email:</span>
+                  <span className="text-white">{formData.email}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Alias:</span>
+                  <span className="text-white">{formData.alias}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Emotional Tone:</span>
+                  <Badge className="bg-purple-500/20 text-purple-400">
+                    {emotionalTones.find(t => t.id === formData.emotionalTone)?.emoji} {' '}
+                    {emotionalTones.find(t => t.id === formData.emotionalTone)?.title}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tier Information */}
+            <Card className="bg-gray-800/50 border border-green-500/30">
+              <CardHeader>
+                <CardTitle className="text-green-400">🆓 Starting with Free Tier</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2">
+                  {tierBenefits.free.map((benefit, index) => (
+                    <li key={index} className="flex items-center text-gray-300">
+                      <span className="text-green-400 mr-2">✓</span>
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-gray-400 mt-4">
+                  You can upgrade to Firewall or Cult Leader tiers anytime from your dashboard.
+                </p>
+              </CardContent>
+            </Card>
 
             {/* Terms */}
-            <div className="flex items-start space-x-2">
+            <div className="flex items-start space-x-3">
               <input
                 type="checkbox"
                 id="terms"
                 checked={formData.acceptedTerms}
-                onChange={(e) => setFormData({...formData, acceptedTerms: e.target.checked})}
+                onChange={(e) => handleInputChange('acceptedTerms', e.target.checked)}
                 className="mt-1"
               />
               <label htmlFor="terms" className="text-sm text-gray-400">
                 I accept the{' '}
-                <Link href="/terms" className="text-purple-400 hover:text-purple-300">
+                <Link href="/terms" className="text-purple-400 hover:underline">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-purple-400 hover:text-purple-300">
+                <Link href="/privacy" className="text-purple-400 hover:underline">
                   Privacy Policy
                 </Link>
               </label>
             </div>
+          </div>
+        );
 
-            {/* Error/Success Messages */}
-            {error && (
-              <Alert className="border-red-500 bg-red-500/10">
-                <AlertDescription className="text-red-400">{error}</AlertDescription>
-              </Alert>
-            )}
+      default:
+        return null;
+    }
+  };
 
-            {success && (
-              <Alert className="border-green-500 bg-green-500/10">
-                <AlertDescription className="text-green-400">{success}</AlertDescription>
-              </Alert>
-            )}
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-2xl bg-gray-900/60 border-2 border-purple-500/50 backdrop-blur-sm">
+        <CardHeader>
+          <div className="text-center">
+            <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+              CTRL+ALT+BLOCK™
+            </CardTitle>
+            <p className="text-purple-400">Join the digital healing revolution</p>
+          </div>
+          
+          {/* Progress Bar */}
+          <div className="mt-6">
+            <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <span>Step {step} of {totalSteps}</span>
+              <span>{Math.round(progressPercentage)}% Complete</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
+          </div>
+        </CardHeader>
 
-            {/* Submit Button */}
+        <CardContent className="space-y-6">
+          {error && (
+            <Alert className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-400">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {getStepContent()}
+
+          {/* Navigation */}
+          <div className="flex justify-between pt-4">
             <Button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={isLoading || !selectedAlias}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3"
+              onClick={handleBack}
+              variant="outline"
+              disabled={step === 1}
+              className="border-gray-600 text-gray-400 hover:bg-gray-700"
             >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  <Shield className="h-4 w-4 mr-2" />
-                  Begin Your Journey
-                </>
-              )}
+              ← Back
             </Button>
 
-            {/* Sign In Link */}
-            <div className="text-center pt-4 border-t border-gray-600">
-              <p className="text-gray-400">
-                Already part of the collective?{' '}
-                <Link href="/sign-in" className="text-purple-400 hover:text-purple-300 font-medium">
-                  Sign In
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            {step < totalSteps ? (
+              <Button
+                onClick={handleNext}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                Next →
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={isLoading}
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+              >
+                {isLoading ? 'Creating Account...' : 'Start Healing Journey 🚀'}
+              </Button>
+            )}
+          </div>
+
+          {/* Sign In Link */}
+          <div className="text-center pt-4 border-t border-gray-700">
+            <p className="text-gray-400">
+              Already have an account?{' '}
+              <Link href="/sign-in" className="text-purple-400 hover:underline">
+                Sign in here
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
