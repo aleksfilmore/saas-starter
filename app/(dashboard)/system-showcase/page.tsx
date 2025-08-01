@@ -4,232 +4,347 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
-  Flame, 
-  BookOpen, 
-  BarChart3, 
-  Zap, 
-  Trophy,
-  ArrowRight,
-  Star,
-  Target
+  CheckCircle, 
+  ArrowRight, 
+  Star, 
+  Trophy, 
+  MessageSquare, 
+  User, 
+  Coins,
+  Sparkles,
+  Crown,
+  Shield,
+  Zap,
+  Target,
+  Heart,
+  Calendar
 } from 'lucide-react'
 
-export default function RitualSystemShowcase() {
-  const systemFeatures = [
+export default function SystemShowcase() {
+  const systemComponents = [
     {
-      icon: Flame,
-      title: 'Daily Ritual Engine',
-      description: 'Personalized healing rituals delivered daily based on your tier and progress',
-      link: '/dashboard/glow-up-console',
-      status: 'Fully Operational',
-      color: 'text-orange-500'
+      name: 'Wall of Wounds Ecosystem',
+      status: 'complete',
+      description: 'Revolutionary confession card system with viral sharing',
+      features: ['Glitch-coded titles', 'Emoji reactions', 'Social export', 'Anonymous posting'],
+      url: '/wall-ecosystem',
+      icon: MessageSquare,
+      color: 'text-red-500',
+      bgColor: 'from-red-50 to-pink-50'
     },
     {
-      icon: BookOpen,
-      title: 'Sacred Ritual Library',
-      description: 'Browse 8 therapeutic categories with 15+ healing rituals and growing',
-      link: '/rituals',
-      status: 'Complete Vault',
-      color: 'text-blue-500'
+      name: 'Avatar Identity System',
+      status: 'complete',
+      description: '10 unique archetypes with glitch effects and cosmetic frames',
+      features: ['Circuit Heart', 'Firewall Mask', 'Ghost Packet', 'Rarity tiers'],
+      url: '/avatar-system',
+      icon: User,
+      color: 'text-purple-500',
+      bgColor: 'from-purple-50 to-blue-50'
     },
     {
-      icon: BarChart3,
-      title: 'Analytics Dashboard',
-      description: 'Deep insights into healing progress, streaks, and emotional transformation',
-      link: '/analytics',
-      status: 'Advanced Tracking',
-      color: 'text-purple-500'
+      name: 'Badge Achievement System',
+      status: 'complete',
+      description: '15 glitch trophies with progress tracking and byte rewards',
+      features: ['First Blood', 'Block & Blessed', 'Progress bars', 'Equipment system'],
+      url: '/badge-system',
+      icon: Trophy,
+      color: 'text-yellow-500',
+      bgColor: 'from-yellow-50 to-orange-50'
     },
     {
+      name: 'Byte Shop Economy',
+      status: 'complete',
+      description: 'Comprehensive reward marketplace with 5 categories',
+      features: ['Voice sessions', 'Cosmetic frames', 'Mystery drops', 'Status badges'],
+      url: '/byte-shop',
+      icon: Coins,
+      color: 'text-green-500',
+      bgColor: 'from-green-50 to-blue-50'
+    },
+    {
+      name: 'Emotional System Check',
+      status: 'complete',
+      description: 'Stealth attachment-style profiling with therapeutic protocols',
+      features: ['Data Flooder', 'Firewall Builder', 'Ghost in Shell', 'Secure Node'],
+      url: '/onboarding-quiz',
       icon: Target,
-      title: 'Tier-Based Access',
-      description: 'Ghost ($0) → Firewall ($9) → Deep Reset ($29) with progressive ritual unlocks',
-      link: '/pricing',
-      status: 'Revolutionary Pricing',
-      color: 'text-green-500'
+      color: 'text-blue-500',
+      bgColor: 'from-blue-50 to-purple-50'
+    },
+    {
+      name: 'Gamification Engine',
+      status: 'complete',
+      description: 'Unified progress system connecting all platform elements',
+      features: ['XP tracking', 'Level progression', 'Multipliers', 'Cross-system rewards'],
+      url: '/gamification-showcase',
+      icon: Star,
+      color: 'text-pink-500',
+      bgColor: 'from-pink-50 to-purple-50'
     }
   ]
 
-  const ritualCategories = [
-    { name: 'The Grief Cycle', icon: '🩸', description: 'Raw emotional processing' },
-    { name: 'The Petty Purge', icon: '🔥', description: 'Spite-based catharsis' },
-    { name: 'The Glow-Up Forge', icon: '⚒️', description: 'Identity reconstruction' },
-    { name: 'The Reframe Loop', icon: '🌀', description: 'Perception-bending therapy' },
-    { name: 'The Ghost Cleanse', icon: '👻', description: 'Digital exorcism protocols' },
-    { name: 'The Public Face', icon: '🎭', description: 'High-functioning heartbreak survival' },
-    { name: 'The Soft Reset', icon: '🌙', description: 'Gentle self-soothing rituals' },
-    { name: 'The Cult Missions', icon: '🕹️', description: 'Gamified social healing' }
+  const legacyComponents = [
+    {
+      name: 'Old Achievement System',
+      status: 'migrated',
+      newLocation: '/badge-system',
+      description: 'Migrated to enhanced Badge Collection with rarity tiers'
+    },
+    {
+      name: 'Basic Wall System',
+      status: 'migrated', 
+      newLocation: '/wall-enhanced',
+      description: 'Evolved into viral confession card ecosystem'
+    }
   ]
 
-  const achievements = [
-    { title: 'Revolutionary Pricing Model', description: '$9 impulse tier for maximum conversion' },
-    { title: 'Therapeutic Architecture', description: '8 sacred categories with emotional targeting' },
-    { title: 'Gamification Layer', description: 'XP/Bytes rewards with streak tracking' },
-    { title: 'Immersive Experience', description: 'Step-by-step ritual completion interface' },
-    { title: 'Progress Analytics', description: 'Comprehensive healing journey tracking' }
+  const upcomingFeatures = [
+    {
+      name: 'API Integration',
+      description: 'Backend persistence for confessions, profiles, and economy',
+      priority: 'high'
+    },
+    {
+      name: 'Real-time Notifications',
+      description: 'Live achievement unlocks and social engagement alerts',
+      priority: 'medium'
+    },
+    {
+      name: 'Advanced Analytics',
+      description: 'Viral tracking, engagement metrics, and healing insights',
+      priority: 'medium'
+    },
+    {
+      name: 'Social Features',
+      description: 'Following, friend requests, and community building tools',
+      priority: 'low'
+    }
   ]
 
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 p-4">
         <div className="max-w-7xl mx-auto space-y-8">
           
           {/* Hero Section */}
           <div className="text-center py-12">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">
-              CTRL+ALT+BLOCK™
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+              Platform System Overview
             </h1>
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Revolutionary Ritual-Based Healing System
+              Complete Emotional Healing Ecosystem
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-              The complete digital therapy ecosystem is now <span className="font-bold text-green-600">LIVE</span>. 
-              Experience therapeutic rituals, gamified healing, and emotional transformation 
-              powered by next-generation architecture.
+              A comprehensive view of all implemented systems, migrations, and the revolutionary 
+              transformation of anonymous trauma into viral content and gamified healing.
             </p>
             <div className="flex justify-center space-x-4">
               <Badge className="bg-green-100 text-green-800 border-green-300 px-4 py-2 text-lg">
-                ✅ Platform Operational
+                ✅ 6 Complete Systems
               </Badge>
               <Badge className="bg-blue-100 text-blue-800 border-blue-300 px-4 py-2 text-lg">
-                🔥 Ritual Engine Active
+                🔄 2 Legacy Migrations
               </Badge>
               <Badge className="bg-purple-100 text-purple-800 border-purple-300 px-4 py-2 text-lg">
-                📊 Analytics Deployed
+                🚀 4 Upcoming Features
               </Badge>
             </div>
           </div>
 
-          {/* System Features */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {systemFeatures.map((feature, index) => {
-              const Icon = feature.icon
-              return (
-                <Card key={index} className="hover:shadow-lg transition-shadow border-2 border-dashed border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-3">
-                      <Icon className={`h-6 w-6 ${feature.color}`} />
-                      <span>{feature.title}</span>
-                      <Badge variant="outline" className="ml-auto">
-                        {feature.status}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button asChild className="w-full">
-                      <a href={feature.link} className="flex items-center justify-center space-x-2">
-                        <span>Access System</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-
-          {/* Ritual Categories Showcase */}
-          <Card className="border-2 border-purple-200">
+          {/* Complete Systems */}
+          <Card>
             <CardHeader>
-              <CardTitle className="text-2xl text-center">8 Sacred Healing Categories</CardTitle>
-              <CardDescription className="text-center text-lg">
-                Each category targets specific emotional healing patterns with 8-10 therapeutic rituals
+              <CardTitle className="text-2xl flex items-center space-x-2">
+                <CheckCircle className="h-6 w-6 text-green-500" />
+                <span>Complete Systems</span>
+              </CardTitle>
+              <CardDescription>
+                Fully implemented and operational platform components
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {ritualCategories.map((category, index) => (
-                  <div key={index} className="text-center p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="text-3xl mb-2">{category.icon}</div>
-                    <h4 className="font-medium text-sm mb-1">{category.name}</h4>
-                    <p className="text-xs text-gray-600">{category.description}</p>
-                  </div>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {systemComponents.map((system, index) => {
+                  const IconComponent = system.icon
+                  return (
+                    <Card key={index} className={`bg-gradient-to-br ${system.bgColor} border-2 border-gray-200 hover:shadow-lg transition-all duration-300`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <IconComponent className={`h-8 w-8 ${system.color}`} />
+                          <Badge className="bg-green-100 text-green-800">
+                            ✅ Complete
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg">{system.name}</CardTitle>
+                        <CardDescription className="text-sm">
+                          {system.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <h4 className="font-medium mb-2">Key Features:</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {system.features.map((feature, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <Button asChild className="w-full">
+                          <a href={system.url}>
+                            <ArrowRight className="h-4 w-4 mr-2" />
+                            Explore System
+                          </a>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
               </div>
             </CardContent>
           </Card>
 
-          {/* Achievement Showcase */}
-          <Card className="bg-gradient-to-r from-purple-100 to-blue-100 border-purple-200">
+          {/* Legacy System Migrations */}
+          <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
             <CardHeader>
-              <CardTitle className="flex items-center justify-center space-x-2 text-2xl">
-                <Trophy className="h-6 w-6 text-yellow-500" />
-                <span>Platform Evolution Complete</span>
+              <CardTitle className="text-2xl flex items-center space-x-2">
+                <ArrowRight className="h-6 w-6 text-orange-500" />
+                <span>Legacy System Migrations</span>
               </CardTitle>
+              <CardDescription>
+                Old components that have been upgraded to enhanced systems
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className="bg-white p-4 rounded-lg shadow-sm">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Star className="h-4 w-4 text-yellow-500" />
-                      <h4 className="font-bold text-sm">{achievement.title}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {legacyComponents.map((legacy, index) => (
+                  <div key={index} className="p-4 bg-white rounded-lg border border-orange-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-gray-800">{legacy.name}</h4>
+                      <Badge className="bg-orange-100 text-orange-800">
+                        🔄 Migrated
+                      </Badge>
                     </div>
-                    <p className="text-xs text-gray-600">{achievement.description}</p>
+                    <p className="text-sm text-gray-600 mb-3">{legacy.description}</p>
+                    <Button asChild size="sm" variant="outline" className="w-full">
+                      <a href={legacy.newLocation}>
+                        <ArrowRight className="h-3 w-3 mr-2" />
+                        View New System
+                      </a>
+                    </Button>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Quick Access Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-gradient-to-br from-orange-50 to-red-50 border-orange-200">
-              <CardContent className="p-6 text-center">
-                <Flame className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">Start Your Ritual</h3>
-                <p className="text-gray-600 mb-4">Begin today's personalized healing session</p>
-                <Button asChild className="w-full bg-orange-500 hover:bg-orange-600">
-                  <a href="/dashboard/glow-up-console">Launch Console</a>
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Platform Integration Map */}
+          <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="text-2xl">System Integration Flow</CardTitle>
+              <CardDescription>
+                How all platform components work together in the healing ecosystem
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Target className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h4 className="font-medium">1. Emotional Profiling</h4>
+                  <p className="text-sm text-gray-600">System Check determines archetype</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <User className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <h4 className="font-medium">2. Avatar Selection</h4>
+                  <p className="text-sm text-gray-600">Choose archetype-matched avatar</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <MessageSquare className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h4 className="font-medium">3. Content Creation</h4>
+                  <p className="text-sm text-gray-600">Post viral confession cards</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Trophy className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h4 className="font-medium">4. Progress Rewards</h4>
+                  <p className="text-sm text-gray-600">Earn badges and bytes</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-              <CardContent className="p-6 text-center">
-                <BookOpen className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">Explore Rituals</h3>
-                <p className="text-gray-600 mb-4">Browse the complete therapeutic vault</p>
-                <Button asChild className="w-full bg-blue-500 hover:bg-blue-600">
-                  <a href="/rituals">Open Library</a>
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Upcoming Features */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center space-x-2">
+                <Calendar className="h-6 w-6 text-blue-500" />
+                <span>Upcoming Features</span>
+              </CardTitle>
+              <CardDescription>
+                Planned enhancements to expand the platform capabilities
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {upcomingFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <h4 className="font-medium">{feature.name}</h4>
+                      <p className="text-sm text-gray-600">{feature.description}</p>
+                    </div>
+                    <Badge className={
+                      feature.priority === 'high' ? 'bg-red-100 text-red-800' :
+                      feature.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }>
+                      {feature.priority.toUpperCase()}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
-              <CardContent className="p-6 text-center">
-                <BarChart3 className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-                <h3 className="font-bold text-lg mb-2">Track Progress</h3>
-                <p className="text-gray-600 mb-4">Deep analytics on your healing journey</p>
-                <Button asChild className="w-full bg-purple-500 hover:bg-purple-600">
-                  <a href="/analytics">View Analytics</a>
+          {/* Quick Navigation */}
+          <Card className="bg-gradient-to-r from-gray-900 to-black text-white">
+            <CardHeader>
+              <CardTitle className="text-center text-2xl">Quick Navigation</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <Button asChild className="bg-red-600 hover:bg-red-700">
+                  <a href="/wall-ecosystem">Wall Ecosystem</a>
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Final CTA */}
-          <div className="text-center py-12">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              The Future of Digital Therapy is Here
-            </h2>
-            <p className="text-gray-600 text-lg mb-8 max-w-3xl mx-auto">
-              Experience the revolutionary combination of ritual-based healing, 
-              gamification psychology, and therapeutic architecture that transforms 
-              emotional labor into empowering digital ceremonies.
-            </p>
-            <div className="space-x-4">
-              <Button size="lg" asChild className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                <a href="/dashboard/glow-up-console">Begin Your Healing Journey</a>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <a href="/pricing">Explore Pricing Tiers</a>
-              </Button>
-            </div>
-          </div>
+                <Button asChild className="bg-purple-600 hover:bg-purple-700">
+                  <a href="/avatar-system">Avatar System</a>
+                </Button>
+                <Button asChild className="bg-yellow-600 hover:bg-yellow-700">
+                  <a href="/badge-system">Badge System</a>
+                </Button>
+                <Button asChild className="bg-green-600 hover:bg-green-700">
+                  <a href="/byte-shop">Byte Shop</a>
+                </Button>
+                <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                  <a href="/onboarding-quiz">System Check</a>
+                </Button>
+                <Button asChild className="bg-pink-600 hover:bg-pink-700">
+                  <a href="/gamification-showcase">Gamification</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AuthWrapper>

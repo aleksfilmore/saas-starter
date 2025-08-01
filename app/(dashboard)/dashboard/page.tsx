@@ -396,16 +396,24 @@ Take a breath. You've got this. 💪`);
           <Card className="bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-blue-900/40 border-2 border-purple-500/50">
             <CardHeader>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-                <div>
-                  <CardTitle className="text-3xl font-black text-white flex items-center">
-                    <Shield className="h-6 w-6 mr-2 text-orange-400" />
-                    Welcome back, {user.alias} 🔥
-                  </CardTitle>
-                  <p className="text-purple-400 text-lg mt-2">
-                    Week {user.week} • Day {daysSinceJoined} • {user.heartState}
-                  </p>
-                  <div className="mt-2 text-sm text-gray-400 animate-pulse">
-                    {systemStatus}
+                <div className="flex items-center space-x-4">
+                  {/* User Avatar */}
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 p-1">
+                    <div className="h-full w-full rounded-full bg-gray-900 flex items-center justify-center">
+                      <Shield className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <CardTitle className="text-3xl font-black text-white flex items-center">
+                      Welcome back, {user.alias} 🔥
+                    </CardTitle>
+                    <p className="text-purple-400 text-lg mt-2">
+                      Week {user.week} • Day {daysSinceJoined} • {user.heartState}
+                    </p>
+                    <div className="mt-2 text-sm text-gray-400 animate-pulse">
+                      {systemStatus}
+                    </div>
                   </div>
                 </div>
                 
@@ -413,6 +421,10 @@ Take a breath. You've got this. 💪`);
                   <Badge className={`bg-green-500/20 text-green-400 border-green-500/50 text-lg px-3 py-1 ${user.multiplierActive ? 'animate-pulse' : ''}`}>
                     <Star className="h-4 w-4 mr-1" />
                     {user.xp.toLocaleString()} XP {user.multiplierActive && '⚡'}
+                  </Badge>
+                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-lg px-3 py-1">
+                    <Coins className="h-4 w-4 mr-1" />
+                    {user.bytes} Bytes
                   </Badge>
                   <Badge className={`bg-orange-500/20 border-orange-500/50 text-lg px-3 py-1 ${tierColor}`}>
                     {user.tier.toUpperCase()} TIER
