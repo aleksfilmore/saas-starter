@@ -12,7 +12,7 @@ export default function OnboardingQuizPage() {
 
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
         <div className="py-12">
           <EmotionalSystemCheck onComplete={handleQuizComplete} />
         </div>

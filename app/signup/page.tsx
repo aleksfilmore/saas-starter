@@ -38,16 +38,34 @@ export default function SignUpPage() {
     startTransition(async () => {
       try {
         console.log('About to call signup API...');
+        
+        // Convert FormData to JSON
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+        
+        // Clear any previous errors
+        setState({ error: null, success: false });
+        
         const response = await fetch('/api/auth/signup', {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
         });
         
-        const result: ActionResult = await response.json();
+        console.log('Response status:', response.status);
+        const result = await response.json();
         console.log('Signup result received:', result);
-        setState(result);
-        if (result && result.success) {
+        
+        if (response.ok && result.success) {
+          setState({ error: null, success: true });
+          console.log('Signup successful, redirecting...');
           router.push('/dashboard');
+        } else {
+          const errorMessage = result.error || 'Account creation failed. Please try again.';
+          console.error('Signup failed:', errorMessage);
+          setState({ error: errorMessage, success: false });
         }
       } catch (error) {
         console.error('Signup error:', error);
@@ -151,6 +169,12 @@ export default function SignUpPage() {
             {state?.error && (
               <div className="text-red-400 text-sm bg-red-900/20 border border-red-500/50 rounded p-3">
                 {state.error}
+              </div>
+            )}
+            
+            {state?.success && (
+              <div className="text-green-400 text-sm bg-green-900/20 border border-green-500/50 rounded p-3">
+                Account created successfully! Redirecting...
               </div>
             )}
             

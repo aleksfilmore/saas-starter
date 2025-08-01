@@ -44,10 +44,18 @@ const navigationItems = [
       {
         id: 'therapy',
         label: 'AI Therapy',
-        href: '/ai-therapy-demo',
+        href: '/ai-therapy',
         icon: Gamepad2,
-        description: 'Adaptive AI personality sessions',
-        badge: '🎮'
+        description: 'Real-time text & voice therapy',
+        badge: '🧠'
+      },
+      {
+        id: 'daily-rituals',
+        label: 'Daily Rituals',
+        href: '/daily-rituals',
+        icon: Target,
+        description: 'Personalized healing protocols',
+        badge: '📅'
       },
       {
         id: 'rituals',

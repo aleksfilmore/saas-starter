@@ -228,6 +228,102 @@ export default function EnhancedLandingPage() {
         </div>
       </div>
 
+      {/* Featured Wall of Wounds Section */}
+      <div className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            🖤 Live from the Wall of Wounds
+          </h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Real healing happening in real-time. Vote, share, and connect with fellow warriors.
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {[
+            {
+              title: "The Ghost Protocol Activated",
+              category: "digital-detox",
+              content: "Deleted their number, blocked on everything, even changed my Netflix password. Still crying but at least I'm crying with dignity.",
+              reactions: { fire: 247, realness: 89, strength: 156 },
+              timeAgo: "2h ago",
+              glitchCode: "DETOX_INITIATED_2024"
+            },
+            {
+              title: "Validation Addiction: Day 1",
+              category: "self-worth",
+              content: "Caught myself checking if they viewed my story 47 times today. My dopamine receptors are filed for divorce.",
+              reactions: { relatable: 312, humor: 198, truth: 267 },
+              timeAgo: "4h ago", 
+              glitchCode: "VALIDATION_OVERFLOW_ERR"
+            },
+            {
+              title: "Plot Twist: I'm the Villain",
+              category: "self-awareness",
+              content: "Spent 6 months painting them as toxic. Therapy session revealed: I was the red flag factory all along. Oops.",
+              reactions: { growth: 423, brutal: 201, redemption: 178 },
+              timeAgo: "1d ago",
+              glitchCode: "SELF_REFLECTION_LOADED"
+            }
+          ].map((card, index) => (
+            <Card key={index} className="bg-gradient-to-br from-red-900/30 to-purple-900/30 border-2 border-red-500/30 hover:border-red-400 transition-all duration-300 group">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between mb-2">
+                  <Badge className="bg-red-600/80 text-white text-xs">
+                    {card.category.replace('-', ' ').toUpperCase()}
+                  </Badge>
+                  <span className="text-xs text-gray-400">{card.timeAgo}</span>
+                </div>
+                <CardTitle className="text-lg text-white group-hover:text-red-300 transition-colors">
+                  {card.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-300 text-sm leading-relaxed">{card.content}</p>
+                
+                <div className="bg-black/30 p-2 rounded border border-green-500/30">
+                  <div className="text-green-400 text-xs font-mono">{card.glitchCode}</div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex space-x-3">
+                    {Object.entries(card.reactions).map(([emotion, count]) => (
+                      <button 
+                        key={emotion}
+                        className="flex items-center space-x-1 text-xs text-gray-400 hover:text-white transition-colors"
+                      >
+                        <span>
+                          {emotion === 'fire' ? '🔥' : 
+                           emotion === 'realness' ? '💯' :
+                           emotion === 'strength' ? '💪' :
+                           emotion === 'relatable' ? '👀' :
+                           emotion === 'humor' ? '😭' :
+                           emotion === 'truth' ? '⚡' :
+                           emotion === 'growth' ? '🌱' :
+                           emotion === 'brutal' ? '🗡️' : '✨'}
+                        </span>
+                        <span>{count}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                    📤 Share
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        <div className="text-center">
+          <Link href="/wall-enhanced">
+            <Button className="bg-gradient-to-r from-red-600 to-purple-600 hover:from-red-700 hover:to-purple-700 text-lg px-8 py-3">
+              🖤 Enter the Wall of Wounds
+            </Button>
+          </Link>
+        </div>
+      </div>
+
       {/* Pricing Section */}
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
@@ -291,7 +387,7 @@ export default function EnhancedLandingPage() {
                   ))}
                 </ul>
                 
-                <Link href="/sign-up">
+                <Link href="/signup">
                   <Button 
                     className={`w-full ${
                       tier.popular 
@@ -321,7 +417,7 @@ export default function EnhancedLandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/sign-up">
+              <Link href="/signup">
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-lg px-8 py-4"
