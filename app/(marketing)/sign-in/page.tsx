@@ -68,36 +68,8 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
       
-      {/* Header matching homepage */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
-                </Button>
-              </Link>
-              <Link href="/sign-up">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                  Start Healing
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </nav>
-      </header>
-
       {/* Main Content */}
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
+      <div className="flex items-center justify-center min-h-[calc(100vh-160px)] p-4">
         <div className="w-full max-w-md">
           
           {/* Page Title */}
@@ -227,24 +199,6 @@ export default function SignInPage() {
 
         </div>
       </div>
-
-      {/* Footer matching homepage */}
-      <footer className="bg-gray-900/50 border-t border-gray-600/30 mt-auto">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-xl font-bold text-white mb-2">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </div>
-            <p className="text-gray-400 text-sm">
-              Transform your heartbreak into strength
-            </p>
-          </div>
-        </div>
-      </footer>
 
     </div>
   );

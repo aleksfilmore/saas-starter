@@ -120,7 +120,65 @@ export default function DashboardPage() {
 
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+        
+        {/* Dashboard Navigation Header */}
+        <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
+          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="w-full py-4 flex items-center justify-between">
+              <Link href="/dashboard" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
+                <span>CTRL</span>
+                <span className="text-gray-400">+</span>
+                <span>ALT</span>
+                <span className="text-gray-400">+</span>
+                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+              </Link>
+              
+              {/* Dashboard Menu */}
+              <div className="hidden md:flex items-center space-x-6">
+                <Link href="/dashboard" className="text-white hover:text-purple-400 font-medium transition-colors">
+                  Dashboard
+                </Link>
+                <Link href="/ai-therapy" className="text-white hover:text-green-400 font-medium transition-colors">
+                  AI Therapy
+                </Link>
+                <Link href="/daily-rituals" className="text-white hover:text-purple-400 font-medium transition-colors">
+                  Rituals
+                </Link>
+                <Link href="/wall-enhanced" className="text-white hover:text-red-400 font-medium transition-colors">
+                  Wall
+                </Link>
+                <Link href="/achievements" className="text-white hover:text-yellow-400 font-medium transition-colors">
+                  Achievements
+                </Link>
+                <Link href="/settings" className="text-white hover:text-blue-400 font-medium transition-colors">
+                  Settings
+                </Link>
+              </div>
+              
+              {/* User Menu */}
+              <div className="flex items-center space-x-4">
+                <div className="text-right hidden sm:block">
+                  <p className="text-white font-bold">{mockUser.alias}</p>
+                  <p className="text-gray-400 text-sm">Level {mockUser.level}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    localStorage.removeItem('auth_token');
+                    router.push('/');
+                  }}
+                  className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white"
+                >
+                  Logout
+                </Button>
+              </div>
+            </div>
+          </nav>
+        </header>
+
+        <div className="p-4">
         <div className="max-w-6xl mx-auto space-y-6">
           
           {/* Header */}

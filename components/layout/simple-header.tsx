@@ -35,6 +35,13 @@ export function SimpleHeader() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-x-8">
             <Link
+              href="/quiz"
+              className="text-base font-black text-yellow-400 hover:text-yellow-300 transition-all duration-300 px-4 py-2 rounded-xl hover:bg-yellow-400/10 hover:shadow-[0_0_10px_rgba(255,193,7,0.3)]"
+              style={{fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '900'}}
+            >
+              🧠 Take Quiz
+            </Link>
+            <Link
               href="#how-it-works"
               className="text-base font-semibold text-white hover:text-glitch-pink transition-all duration-300 px-4 py-2 rounded-xl hover:bg-glitch-pink/10 hover:shadow-[0_0_10px_rgba(255,20,147,0.3)]"
               style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}

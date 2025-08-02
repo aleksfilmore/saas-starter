@@ -1,0 +1,430 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Sparkles, CheckCircle, Heart, Target, User, Mail, Lock, ArrowRight } from 'lucide-react';
+
+interface QuizResult {
+  attachmentStyle: string;
+  traits: string[];
+  healingPath: string[];
+  completedAt: string;
+}
+
+const styleEmojis = {
+  anxious: "💔",
+  avoidant: "🛡️", 
+  secure: "🌟",
+  disorganized: "🌪️"
+};
+
+const styleColors = {
+  anxious: "from-red-500 to-pink-500",
+  avoidant: "from-blue-500 to-cyan-500",
+  secure: "from-green-500 to-emerald-500", 
+  disorganized: "from-purple-500 to-indigo-500"
+};
+
+export default function SignUpFromQuizPage() {
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    alias: '',
+    termsAccepted: false
+  });
+  
+  const router = useRouter();
+
+  useEffect(() => {
+    const stored = localStorage.getItem('quizResult');
+    if (stored) {
+      setQuizResult(JSON.parse(stored));
+    } else {
+      // Redirect to quiz if no results found
+      router.push('/quiz');
+    }
+  }, [router]);
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setError('');
+  };
+
+  const handleNext = () => {
+    if (currentStep === 1) {
+      if (!formData.email) {
+        setError('Please enter your email');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setError('Please enter a valid email address');
+        return;
+      }
+    }
+    
+    if (currentStep === 2) {
+      if (!formData.password) {
+        setError('Please create a password');
+        return;
+      }
+      if (formData.password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+    }
+
+    setCurrentStep(prev => prev + 1);
+    setError('');
+  };
+
+  const handleSignUp = async () => {
+    if (!formData.alias) {
+      setError('Please choose an alias');
+      return;
+    }
+    if (!formData.termsAccepted) {
+      setError('Please accept the terms and conditions');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const signupData = {
+        ...formData,
+        quizResult,
+        source: 'quiz-conversion'
+      };
+
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(signupData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        localStorage.setItem('onboardingCompleted', 'true');
+        localStorage.setItem('attachmentStyle', quizResult?.attachmentStyle || '');
+        router.push('/dashboard');
+      } else {
+        setError(data.error || 'Signup failed. Please try again.');
+      }
+    } catch (error) {
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!quizResult) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <p className="text-white text-xl">Loading your results...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const styleColor = styleColors[quizResult.attachmentStyle as keyof typeof styleColors] || "from-purple-500 to-pink-500";
+  const styleEmoji = styleEmojis[quizResult.attachmentStyle as keyof typeof styleEmojis] || "🌟";
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+      
+      {/* Header */}
+      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
+              <span>CTRL</span>
+              <span className="text-gray-400">+</span>
+              <span>ALT</span>
+              <span className="text-gray-400">+</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-400">Step {currentStep} of 3</span>
+              <Link href="/sign-in" className="text-purple-400 hover:text-purple-300">
+                Already have an account?
+              </Link>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      {/* Main Content */}
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
+        <div className="w-full max-w-2xl">
+          
+          {/* Quiz Results Summary */}
+          <Card className={`bg-gradient-to-r ${styleColor} p-1 mb-8`}>
+            <div className="bg-gray-900 rounded-lg p-6">
+              <div className="text-center">
+                <div className="text-4xl mb-2">{styleEmoji}</div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Your {quizResult.attachmentStyle.charAt(0).toUpperCase() + quizResult.attachmentStyle.slice(1)} Style
+                </h2>
+                <p className="text-gray-300">
+                  Ready to unlock your personalized healing journey?
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Page Title */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+              Create Your Healing Account
+            </h1>
+            <p className="text-xl text-gray-300">
+              Get instant access to your personalized recovery plan
+            </p>
+          </div>
+
+          <Card className="bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl">
+            <CardContent className="p-8">
+
+              {/* Step 1: Email */}
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <div className="text-center mb-6">
+                    <Mail className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-white">What's your email?</h3>
+                    <p className="text-gray-400">We'll use this to save your progress and send you healing updates</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email" className="text-gray-300 text-lg font-medium">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="your.email@domain.com"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2 text-lg p-4"
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
+
+                  {error && (
+                    <Alert className="border-red-500/50 bg-red-500/10">
+                      <AlertDescription className="text-red-400">{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button
+                    onClick={handleNext}
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 text-lg border-0"
+                  >
+                    Continue
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Button>
+                </div>
+              )}
+
+              {/* Step 2: Password */}
+              {currentStep === 2 && (
+                <div className="space-y-6">
+                  <div className="text-center mb-6">
+                    <Lock className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-white">Secure your account</h3>
+                    <p className="text-gray-400">Choose a strong password to protect your healing journey</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password" className="text-gray-300 text-lg font-medium">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Create a strong password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2 text-lg p-4"
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="confirmPassword" className="text-gray-300 text-lg font-medium">
+                      Confirm Password
+                    </Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="Confirm your password"
+                      value={formData.confirmPassword}
+                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                      className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2 text-lg p-4"
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
+
+                  {error && (
+                    <Alert className="border-red-500/50 bg-red-500/10">
+                      <AlertDescription className="text-red-400">{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="flex space-x-4">
+                    <Button
+                      onClick={() => setCurrentStep(1)}
+                      variant="outline"
+                      className="flex-1 border-gray-500 text-gray-300 hover:bg-gray-700"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      onClick={handleNext}
+                      disabled={isLoading}
+                      className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold"
+                    >
+                      Continue
+                      <ArrowRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Final Details */}
+              {currentStep === 3 && (
+                <div className="space-y-6">
+                  <div className="text-center mb-6">
+                    <User className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-white">Choose your healing alias</h3>
+                    <p className="text-gray-400">This is how you'll appear in the community (anonymous & safe)</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="alias" className="text-gray-300 text-lg font-medium">
+                      Your Alias
+                    </Label>
+                    <Input
+                      id="alias"
+                      type="text"
+                      placeholder="e.g., HealingPhoenix, DigitalWarrior"
+                      value={formData.alias}
+                      onChange={(e) => handleInputChange('alias', e.target.value)}
+                      className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2 text-lg p-4"
+                      disabled={isLoading}
+                      required
+                    />
+                  </div>
+
+                  {/* Terms */}
+                  <div className="flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      checked={formData.termsAccepted}
+                      onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
+                      className="mt-1"
+                    />
+                    <label htmlFor="terms" className="text-gray-400 text-sm">
+                      I agree to the{' '}
+                      <Link href="/terms" className="text-purple-400 hover:text-purple-300">
+                        Terms of Service
+                      </Link>{' '}
+                      and{' '}
+                      <Link href="/privacy" className="text-purple-400 hover:text-purple-300">
+                        Privacy Policy
+                      </Link>
+                    </label>
+                  </div>
+
+                  {error && (
+                    <Alert className="border-red-500/50 bg-red-500/10">
+                      <AlertDescription className="text-red-400">{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="flex space-x-4">
+                    <Button
+                      onClick={() => setCurrentStep(2)}
+                      variant="outline"
+                      className="flex-1 border-gray-500 text-gray-300 hover:bg-gray-700"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      onClick={handleSignUp}
+                      disabled={isLoading}
+                      className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 text-lg border-0"
+                    >
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                          Creating Account...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="h-5 w-5 mr-2" />
+                          Start My Healing Journey
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+            </CardContent>
+          </Card>
+
+          {/* Benefits */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <Target className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                <div className="text-sm text-gray-300">Personalized based on your {quizResult.attachmentStyle} style</div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <Heart className="h-8 w-8 text-red-400 mx-auto mb-2" />
+                <div className="text-sm text-gray-300">AI therapy tuned to your patterns</div>
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="bg-gray-800/50 rounded-lg p-4">
+                <CheckCircle className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                <div className="text-sm text-gray-300">Join 50,000+ people healing</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  );
+}

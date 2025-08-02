@@ -137,6 +137,11 @@ export default function HomePage() {
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
             </Link>
             <div className="flex items-center space-x-4">
+              <Link href="/quiz">
+                <Button variant="ghost" className="text-yellow-400 hover:text-yellow-300 font-bold">
+                  🧠 Take Quiz
+                </Button>
+              </Link>
               <Link href="/sign-in">
                 <Button variant="ghost" className="text-white hover:text-purple-400">
                   Sign In
@@ -167,24 +172,50 @@ export default function HomePage() {
               <span className="text-purple-400 font-bold"> CTRL+ALT+BLOCK</span> - 
               where healing meets gaming psychology.
             </p>
+
+            {/* Quiz CTA - Primary */}
+            <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-2xl p-8 max-w-2xl mx-auto mb-8">
+              <div className="text-center space-y-4">
+                <div className="text-4xl mb-2">🧠</div>
+                <h3 className="text-2xl font-bold text-white">Discover Your Attachment Style</h3>
+                <p className="text-gray-300 text-lg">
+                  Take our 2-minute quiz to understand your relationship patterns and unlock your personalized healing roadmap
+                </p>
+                <div className="flex items-center justify-center space-x-6 text-sm text-gray-400 mb-6">
+                  <span>✓ Free</span>
+                  <span>✓ Anonymous</span>
+                  <span>✓ Instant Results</span>
+                </div>
+                <Link href="/quiz">
+                  <Button 
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-10 py-4 text-white border-0 shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+                  >
+                    <Brain className="h-6 w-6 mr-3" />
+                    Take the Quiz Now
+                  </Button>
+                </Link>
+              </div>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/sign-up">
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg px-8 py-4 text-white border-0"
-                >
-                   Start Healing Journey
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/sign-in">
                 <Button 
                   variant="outline"
                   size="lg"
                   className="border-purple-500 text-purple-400 hover:bg-purple-500/20 text-lg px-8 py-4"
                 >
-                   Access Console
+                   Start Without Quiz
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+              <Link href="/sign-in">
+                <Button 
+                  variant="ghost"
+                  size="lg"
+                  className="text-gray-400 hover:text-white text-lg px-8 py-4"
+                >
+                   Already a Member?
                 </Button>
               </Link>
             </div>
