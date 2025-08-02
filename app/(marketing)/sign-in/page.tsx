@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Shield, RefreshCw } from 'lucide-react';
+import { Eye, EyeOff, Shield, RefreshCw, ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -66,125 +66,186 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-black text-white mb-2">SYSTEM ACCESS</h1>
-          <p className="text-purple-400">Re-enter the collective</p>
-        </div>
-
-        <Card className="bg-gray-900/80 border border-gray-600/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-white text-center">Sign In to Your Account</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="text-gray-300">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@domain.com"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="password" className="text-gray-300">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className="bg-gray-800 border-gray-600 text-white pr-10"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Forgot Password */}
-            <div className="text-right">
-              <Link href="/forgot-password" className="text-sm text-purple-400 hover:text-purple-300">
-                Forgot password?
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+      
+      {/* Header matching homepage */}
+      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
+              <span>CTRL</span>
+              <span className="text-gray-400">+</span>
+              <span>ALT</span>
+              <span className="text-gray-400">+</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button variant="ghost" className="text-white hover:text-purple-400">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Home
+                </Button>
+              </Link>
+              <Link href="/sign-up">
+                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                  Start Healing
+                </Button>
               </Link>
             </div>
+          </div>
+        </nav>
+      </header>
 
-            {/* Error/Success Messages */}
-            {error && (
-              <Alert className="border-red-500 bg-red-500/10">
-                <AlertDescription className="text-red-400">{error}</AlertDescription>
-              </Alert>
-            )}
+      {/* Main Content */}
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
+        <div className="w-full max-w-md">
+          
+          {/* Page Title */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+              Welcome Back
+            </h1>
+            <p className="text-xl text-gray-300">
+              Access your healing console
+            </p>
+          </div>
 
-            {success && (
-              <Alert className="border-green-500 bg-green-500/10">
-                <AlertDescription className="text-green-400">{success}</AlertDescription>
-              </Alert>
-            )}
+          <Card className="bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-white text-2xl font-bold flex items-center justify-center">
+                <Shield className="h-6 w-6 mr-2 text-purple-400" />
+                Sign In
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3"
-            >
-              {isLoading ? (
-                <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                  Accessing System...
-                </>
-              ) : (
-                <>
-                  <Shield className="h-4 w-4 mr-2" />
-                  Access Granted
-                </>
-              )}
-            </Button>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="email" className="text-gray-300 text-sm font-medium">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your.email@domain.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2"
+                    disabled={isLoading}
+                    required
+                  />
+                </div>
 
-            {/* Sign Up Link */}
-            <div className="text-center pt-4 border-t border-gray-600">
-              <p className="text-gray-400">
-                New to the collective?{' '}
-                <Link href="/sign-up" className="text-purple-400 hover:text-purple-300 font-medium">
-                  Join Us
-                </Link>
+                <div>
+                  <Label htmlFor="password" className="text-gray-300 text-sm font-medium">
+                    Password
+                  </Label>
+                  <div className="relative mt-2">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 pr-10"
+                      disabled={isLoading}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                      disabled={isLoading}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Forgot Password */}
+                <div className="text-right">
+                  <Link href="/forgot-password" className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+                    Forgot your password?
+                  </Link>
+                </div>
+
+                {/* Error/Success Messages */}
+                {error && (
+                  <Alert className="border-red-500/50 bg-red-500/10">
+                    <AlertDescription className="text-red-400">{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                {success && (
+                  <Alert className="border-green-500/50 bg-green-500/10">
+                    <AlertDescription className="text-green-400">{success}</AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 text-lg border-0"
+                >
+                  {isLoading ? (
+                    <>
+                      <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                      Signing In...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="h-5 w-5 mr-2" />
+                      Access Console
+                    </>
+                  )}
+                </Button>
+              </form>
+
+              {/* Sign Up Link */}
+              <div className="text-center pt-6 border-t border-gray-600/50">
+                <p className="text-gray-400">
+                  New to CTRL+ALT+BLOCK?{' '}
+                  <Link href="/sign-up" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
+                    Start Your Healing Journey
+                  </Link>
+                </p>
+              </div>
+
+            </CardContent>
+          </Card>
+
+          {/* Test Credentials Info */}
+          <div className="text-center mt-6">
+            <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-600/30">
+              <p className="text-xs text-gray-400 mb-2">For testing purposes:</p>
+              <p className="text-sm text-gray-300">
+                <span className="font-mono">test@example.com</span> / <span className="font-mono">password123</span>
               </p>
             </div>
+          </div>
 
-            {/* Demo Access */}
-            <div className="text-center">
-              <div className="bg-gray-800/50 p-3 rounded-lg border border-gray-600/50">
-                <p className="text-xs text-gray-400 mb-2">Demo Access Available</p>
-                <div className="flex gap-2 text-xs">
-                  <button className="text-blue-400 hover:text-blue-300">Ghost Mode</button>
-                  <span className="text-gray-500">•</span>
-                  <button className="text-orange-400 hover:text-orange-300">Firewall User</button>
-                  <span className="text-gray-500">•</span>
-                  <button className="text-purple-400 hover:text-purple-300">Cult Leader</button>
-                </div>
-              </div>
-            </div>
-
-          </CardContent>
-        </Card>
+        </div>
       </div>
+
+      {/* Footer matching homepage */}
+      <footer className="bg-gray-900/50 border-t border-gray-600/30 mt-auto">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-xl font-bold text-white mb-2">
+              <span>CTRL</span>
+              <span className="text-gray-400">+</span>
+              <span>ALT</span>
+              <span className="text-gray-400">+</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Transform your heartbreak into strength
+            </p>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 }

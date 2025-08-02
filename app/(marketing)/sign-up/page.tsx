@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Shield } from 'lucide-react';
 
 interface SignUpData {
   email: string;
@@ -50,30 +51,6 @@ const emotionalTones = [
     color: 'bg-green-500/20 border-green-500/50 text-green-400'
   }
 ];
-
-const tierBenefits = {
-  free: [
-    'Weekly therapy sessions',
-    'Basic progress tracking',
-    'Wall of Wounds access',
-    'Community support'
-  ],
-  firewall: [
-    'Unlimited therapy sessions',
-    'Advanced progress analytics',
-    'Priority community features',
-    'Custom emotional tracking',
-    'Weekly streak bonuses'
-  ],
-  'cult-leader': [
-    'Everything in Firewall',
-    'Exclusive glitch effects',
-    'Community moderation tools',
-    'Custom AI personality',
-    'Early feature access',
-    'Direct developer feedback'
-  ]
-};
 
 export default function EnhancedSignUp() {
   const [step, setStep] = useState(1);
@@ -185,46 +162,46 @@ export default function EnhancedSignUp() {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-center mb-6">
-              <div className="text-4xl mb-2">🔐</div>
-              <h3 className="text-xl font-bold text-white">Create Your Account</h3>
-              <p className="text-gray-400">Your journey to digital healing starts here</p>
+              <div className="text-4xl mb-4">🔐</div>
+              <h3 className="text-2xl font-bold text-white">Create Your Account</h3>
+              <p className="text-gray-300">Your journey to digital healing starts here</p>
             </div>
             
             <div className="space-y-4">
               <div>
-                <Label htmlFor="email" className="text-gray-300">Email Address</Label>
+                <Label htmlFor="email" className="text-gray-300 text-sm font-medium">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white"
+                  className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2"
                   placeholder="your.email@example.com"
                 />
               </div>
               
               <div>
-                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                <Label htmlFor="password" className="text-gray-300 text-sm font-medium">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white"
-                  placeholder="Choose a strong password"
+                  className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2"
+                  placeholder="Choose a strong password (8+ characters)"
                 />
               </div>
               
               <div>
-                <Label htmlFor="confirmPassword" className="text-gray-300">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-gray-300 text-sm font-medium">Confirm Password</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white"
+                  className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2"
                   placeholder="Confirm your password"
                 />
               </div>
@@ -234,30 +211,30 @@ export default function EnhancedSignUp() {
 
       case 2:
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-center mb-6">
-              <div className="text-4xl mb-2">👤</div>
-              <h3 className="text-xl font-bold text-white">Choose Your Alias</h3>
-              <p className="text-gray-400">How others will see you in the community</p>
+              <div className="text-4xl mb-4">👤</div>
+              <h3 className="text-2xl font-bold text-white">Choose Your Alias</h3>
+              <p className="text-gray-300">How others will see you in the community</p>
             </div>
             
             <div>
-              <Label htmlFor="alias" className="text-gray-300">Community Alias</Label>
+              <Label htmlFor="alias" className="text-gray-300 text-sm font-medium">Community Alias</Label>
               <Input
                 id="alias"
                 type="text"
                 value={formData.alias}
                 onChange={(e) => handleInputChange('alias', e.target.value)}
-                className="bg-gray-800 border-gray-600 text-white"
+                className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2"
                 placeholder="DigitalPhoenix, VoidWalker, etc."
                 maxLength={20}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-400 mt-2">
                 3-20 characters. This will be your identity on the Wall of Wounds.
               </p>
             </div>
             
-            <Alert className="bg-blue-900/20 border-blue-500/50">
+            <Alert className="bg-blue-500/10 border-blue-500/50">
               <AlertDescription className="text-blue-400">
                 💡 <strong>Tip:</strong> Choose something that represents your healing journey. 
                 You can change this later in your profile settings.
@@ -268,11 +245,11 @@ export default function EnhancedSignUp() {
 
       case 3:
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-center mb-6">
-              <div className="text-4xl mb-2">🎛️</div>
-              <h3 className="text-xl font-bold text-white">Your Emotional Tone</h3>
-              <p className="text-gray-400">This helps our AI adapt to your communication style</p>
+              <div className="text-4xl mb-4">🎛️</div>
+              <h3 className="text-2xl font-bold text-white">Your Emotional Tone</h3>
+              <p className="text-gray-300">This helps our AI adapt to your communication style</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,7 +261,7 @@ export default function EnhancedSignUp() {
                   className={`p-6 h-auto flex-col space-y-3 transition-all ${
                     formData.emotionalTone === tone.id 
                       ? 'bg-purple-500 text-white border-purple-400' 
-                      : 'border-gray-600 text-gray-400 hover:bg-gray-700'
+                      : 'bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-600/50'
                   }`}
                 >
                   <div className="text-3xl">{tone.emoji}</div>
@@ -296,7 +273,7 @@ export default function EnhancedSignUp() {
               ))}
             </div>
             
-            <Alert className="bg-purple-900/20 border-purple-500/50">
+            <Alert className="bg-purple-500/10 border-purple-500/50">
               <AlertDescription className="text-purple-400">
                 🔄 <strong>Adaptive AI:</strong> Your selected tone influences how our AI therapist 
                 communicates with you. You can adjust this anytime in your settings.
@@ -309,13 +286,13 @@ export default function EnhancedSignUp() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <div className="text-4xl mb-2">🚀</div>
-              <h3 className="text-xl font-bold text-white">Ready to Begin!</h3>
-              <p className="text-gray-400">Review your information and start your healing journey</p>
+              <div className="text-4xl mb-4">🚀</div>
+              <h3 className="text-2xl font-bold text-white">Ready to Begin!</h3>
+              <p className="text-gray-300">Review your information and start your healing journey</p>
             </div>
             
             {/* Summary */}
-            <Card className="bg-gray-800/50 border border-gray-600">
+            <Card className="bg-gray-700/50 border border-gray-600/50">
               <CardContent className="p-4 space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Email:</span>
@@ -327,7 +304,7 @@ export default function EnhancedSignUp() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400">Emotional Tone:</span>
-                  <Badge className="bg-purple-500/20 text-purple-400">
+                  <Badge className="bg-purple-500/20 text-purple-400 border border-purple-500/50">
                     {emotionalTones.find(t => t.id === formData.emotionalTone)?.emoji} {' '}
                     {emotionalTones.find(t => t.id === formData.emotionalTone)?.title}
                   </Badge>
@@ -335,19 +312,32 @@ export default function EnhancedSignUp() {
               </CardContent>
             </Card>
 
-            {/* Tier Information */}
-            <Card className="bg-gray-800/50 border border-green-500/30">
+            {/* What's Included */}
+            <Card className="bg-green-500/10 border border-green-500/30">
               <CardHeader>
-                <CardTitle className="text-green-400">🆓 Starting with Free Tier</CardTitle>
+                <CardTitle className="text-green-400 flex items-center">
+                  <Shield className="h-5 w-5 mr-2" />
+                  Free Tier Includes
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {tierBenefits.free.map((benefit, index) => (
-                    <li key={index} className="flex items-center text-gray-300">
-                      <span className="text-green-400 mr-2">✓</span>
-                      {benefit}
-                    </li>
-                  ))}
+                  <li className="flex items-center text-gray-300">
+                    <span className="text-green-400 mr-3">✓</span>
+                    Weekly AI therapy sessions
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <span className="text-green-400 mr-3">✓</span>
+                    Basic progress tracking
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <span className="text-green-400 mr-3">✓</span>
+                    Wall of Wounds access
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <span className="text-green-400 mr-3">✓</span>
+                    Community support
+                  </li>
                 </ul>
                 <p className="text-sm text-gray-400 mt-4">
                   You can upgrade to Firewall or Cult Leader tiers anytime from your dashboard.
@@ -356,21 +346,21 @@ export default function EnhancedSignUp() {
             </Card>
 
             {/* Terms */}
-            <div className="flex items-start space-x-3">
+            <div className="flex items-start space-x-3 p-4 bg-gray-700/30 rounded-lg border border-gray-600/50">
               <input
                 type="checkbox"
                 id="terms"
                 checked={formData.acceptedTerms}
                 onChange={(e) => handleInputChange('acceptedTerms', e.target.checked)}
-                className="mt-1"
+                className="mt-1 text-purple-500 focus:ring-purple-500"
               />
-              <label htmlFor="terms" className="text-sm text-gray-400">
+              <label htmlFor="terms" className="text-sm text-gray-300">
                 I accept the{' '}
-                <Link href="/terms" className="text-purple-400 hover:underline">
+                <Link href="/terms" className="text-purple-400 hover:text-purple-300 transition-colors">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-purple-400 hover:underline">
+                <Link href="/privacy" className="text-purple-400 hover:text-purple-300 transition-colors">
                   Privacy Policy
                 </Link>
               </label>
@@ -384,77 +374,131 @@ export default function EnhancedSignUp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-gray-900/60 border-2 border-purple-500/50 backdrop-blur-sm">
-        <CardHeader>
-          <div className="text-center">
-            <CardTitle className="text-3xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-              CTRL+ALT+BLOCK™
-            </CardTitle>
-            <p className="text-purple-400">Join the digital healing revolution</p>
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="mt-6">
-            <div className="flex justify-between text-sm text-gray-400 mb-2">
-              <span>Step {step} of {totalSteps}</span>
-              <span>{Math.round(progressPercentage)}% Complete</span>
-            </div>
-            <Progress value={progressPercentage} className="h-2" />
-          </div>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          {error && (
-            <Alert className="bg-red-900/20 border-red-500/50">
-              <AlertDescription className="text-red-400">
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {getStepContent()}
-
-          {/* Navigation */}
-          <div className="flex justify-between pt-4">
-            <Button
-              onClick={handleBack}
-              variant="outline"
-              disabled={step === 1}
-              className="border-gray-600 text-gray-400 hover:bg-gray-700"
-            >
-              ← Back
-            </Button>
-
-            {step < totalSteps ? (
-              <Button
-                onClick={handleNext}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              >
-                Next →
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
-              >
-                {isLoading ? 'Creating Account...' : 'Start Healing Journey 🚀'}
-              </Button>
-            )}
-          </div>
-
-          {/* Sign In Link */}
-          <div className="text-center pt-4 border-t border-gray-700">
-            <p className="text-gray-400">
-              Already have an account?{' '}
-              <Link href="/sign-in" className="text-purple-400 hover:underline">
-                Sign in here
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+      
+      {/* Header matching homepage */}
+      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
+              <span>CTRL</span>
+              <span className="text-gray-400">+</span>
+              <span>ALT</span>
+              <span className="text-gray-400">+</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button variant="ghost" className="text-white hover:text-purple-400">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Home
+                </Button>
               </Link>
+              <Link href="/sign-in">
+                <Button variant="ghost" className="text-white hover:text-purple-400">
+                  Sign In
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      {/* Main Content */}
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
+        <Card className="w-full max-w-2xl bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl">
+          <CardHeader>
+            <div className="text-center">
+              <CardTitle className="text-3xl md:text-4xl font-black text-white mb-4">
+                Join CTRL+ALT+BLOCK
+              </CardTitle>
+              <p className="text-xl text-gray-300">Start your healing journey today</p>
+            </div>
+            
+            {/* Progress Bar */}
+            <div className="mt-8">
+              <div className="flex justify-between text-sm text-gray-400 mb-2">
+                <span>Step {step} of {totalSteps}</span>
+                <span>{Math.round(progressPercentage)}% Complete</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2 bg-gray-700" />
+            </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {error && (
+              <Alert className="bg-red-500/10 border-red-500/50">
+                <AlertDescription className="text-red-400">
+                  {error}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {getStepContent()}
+
+            {/* Navigation */}
+            <div className="flex justify-between pt-6">
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                disabled={step === 1}
+                className="border-gray-600 text-gray-300 hover:bg-gray-700/50"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+
+              {step < totalSteps ? (
+                <Button
+                  onClick={handleNext}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0"
+                >
+                  Next
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                >
+                  {isLoading ? 'Creating Account...' : 'Start Healing Journey'}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              )}
+            </div>
+
+            {/* Sign In Link */}
+            <div className="text-center pt-6 border-t border-gray-600/50">
+              <p className="text-gray-400">
+                Already have an account?{' '}
+                <Link href="/sign-in" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
+                  Sign in here
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Footer matching homepage */}
+      <footer className="bg-gray-900/50 border-t border-gray-600/30 mt-auto">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 text-xl font-bold text-white mb-2">
+              <span>CTRL</span>
+              <span className="text-gray-400">+</span>
+              <span>ALT</span>
+              <span className="text-gray-400">+</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Transform your heartbreak into strength
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </footer>
+
     </div>
   );
 }
