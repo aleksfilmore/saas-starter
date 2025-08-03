@@ -186,7 +186,9 @@ export default function AttachmentQuizPage() {
       }
     });
 
-    return Object.entries(styles).reduce((a, b) => styles[a[1] as keyof typeof styles] > styles[b[1] as keyof typeof styles] ? a : b)[0] as keyof typeof attachmentStyles;
+    return Object.entries(styles).reduce((a, b) => 
+      styles[a[0] as keyof typeof styles] > styles[b[0] as keyof typeof styles] ? a : b
+    )[0] as keyof typeof attachmentStyles;
   };
 
   const handleSignUpFromResults = () => {
