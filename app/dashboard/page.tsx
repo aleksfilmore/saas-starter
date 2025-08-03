@@ -7,6 +7,7 @@ import { Bell, Calendar, Heart, Target, BookOpen, Phone, AlertTriangle,
          Flame, Star, ChevronRight, Shield, Play, Pause, BarChart3,
          Clock, Award, Sparkles, Menu, X } from 'lucide-react';
 import { PrescribedRitual, getRandomRitual, getCategoryColor, getCategoryIcon } from '../../lib/prescribed-rituals';
+import { QuickActions } from '../../components/quick-actions';
 
 interface UserStats {
   codename: string;
@@ -94,6 +95,45 @@ export default function DashboardPage() {
 
   const handleEmergencyText = () => {
     window.open('sms:741741', '_self');
+  };
+
+  const handleQuickActionComplete = (action: string, data: any) => {
+    // Handle different quick actions
+    switch (action) {
+      case 'mood-checkin':
+        console.log('Mood check-in completed:', data);
+        // Update user stats or send to backend
+        setUser(prev => ({
+          ...prev,
+          xp: prev.xp + 10,
+          bytes: prev.bytes + 5
+        }));
+        break;
+      case 'gratitude-journal':
+        console.log('Gratitude journal completed:', data);
+        setUser(prev => ({
+          ...prev,
+          xp: prev.xp + (data.length * 15),
+          bytes: prev.bytes + (data.length * 10)
+        }));
+        break;
+      case 'breathing-exercise':
+        console.log('Breathing exercise completed:', data);
+        setUser(prev => ({
+          ...prev,
+          xp: prev.xp + 25,
+          bytes: prev.bytes + 15
+        }));
+        break;
+      case 'mindfulness-moment':
+        console.log('Mindfulness moment completed:', data);
+        setUser(prev => ({
+          ...prev,
+          xp: prev.xp + (data.duration * 10),
+          bytes: prev.bytes + (data.duration * 5)
+        }));
+        break;
+    }
   };
 
   const navigateToSection = (section: string) => {
@@ -459,28 +499,8 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Quick Check-ins */}
-        <div className="bg-white/5 backdrop-blur-md rounded-lg p-8 border border-purple-500/10">
-          <h3 className="text-xl font-semibold text-white mb-6">Quick Actions</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button className="p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-purple-200 text-center text-sm">
-              <Heart className="w-6 h-6 mx-auto mb-2" />
-              Mood Check-in
-            </button>
-            <button className="p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-purple-200 text-center text-sm">
-              <BookOpen className="w-6 h-6 mx-auto mb-2" />
-              Gratitude Journal
-            </button>
-            <button className="p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-purple-200 text-center text-sm">
-              <Clock className="w-6 h-6 mx-auto mb-2" />
-              Breathing Exercise
-            </button>
-            <button className="p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-purple-200 text-center text-sm">
-              <Shield className="w-6 h-6 mx-auto mb-2" />
-              Mindfulness Moment
-            </button>
-          </div>
-        </div>
+        {/* Quick Actions - Fully Functional */}
+        <QuickActions onActionComplete={handleQuickActionComplete} />
       </div>
     </div>
   );
