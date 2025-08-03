@@ -1,5 +1,5 @@
 [build]
-  command = "echo 'Using pre-built files'"
+  command = "npm run build"
   publish = ".next"
 
 [build.environment]
