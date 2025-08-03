@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Bell, Calendar, Heart, Target, BookOpen, Phone, AlertTriangle, 
          Settings, User, LogOut, Home, MessageSquare, Zap, Coins, 
          Flame, Star, ChevronRight, Shield, Play, Pause, BarChart3,
@@ -25,6 +26,7 @@ interface UserStats {
   urgencyLevel?: 'immediate' | 'high' | 'moderate' | 'stable';
   lastActive: string;
   joinDate: string;
+  noContactDays: number;
 }
 
 export default function DashboardPage() {
@@ -45,7 +47,8 @@ export default function DashboardPage() {
     heartState: 'STABLE_PROCESSING',
     urgencyLevel: 'stable',
     lastActive: '2 hours ago',
-    joinDate: 'July 15, 2025'
+    joinDate: 'July 15, 2025',
+    noContactDays: 47
   });
 
   const [todaysRituals, setTodaysRituals] = useState<PrescribedRitual[]>([]);
@@ -68,19 +71,19 @@ export default function DashboardPage() {
     const rituals: PrescribedRitual[] = [];
     
     // Morning ritual - always include one for routine
-    rituals.push(getRandomRitual(['emotional_dump', 'timeline_sketch', 'future_you_broadcast']));
+    rituals.push(getRandomRitual('release'));
     
     // Midday ritual - based on current phase
     if (userStats.phase === 'kernel_wounded') {
-      rituals.push(getRandomRitual(['ugly_cry_countdown', 'text_never_send', 'scream_script']));
+      rituals.push(getRandomRitual('release'));
     } else if (userStats.phase === 'firewall_active') {
-      rituals.push(getRandomRitual(['emotion_scheduling', 'reframe_what_if', 'trigger_tracker']));
+      rituals.push(getRandomRitual('reflection'));
     } else {
-      rituals.push(getRandomRitual(['glow_up_checklist', 'curiosity_quest', 'compliment_hijack']));
+      rituals.push(getRandomRitual('reprogramming'));
     }
     
     // Evening ritual - always growth focused
-    rituals.push(getRandomRitual(['self_hype_letter', 'joy_repetition_drill', 'reconnect_platonic_love']));
+    rituals.push(getRandomRitual('reprogramming'));
     
     return rituals;
   };
@@ -153,34 +156,26 @@ export default function DashboardPage() {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              <button 
-                onClick={() => navigateToSection('dashboard')}
-                className="flex items-center space-x-2 text-white hover:text-purple-300 transition-colors"
-              >
+              <div className="flex items-center space-x-2 text-white">
                 <Home className="w-4 h-4" />
                 <span>Dashboard</span>
-              </button>
-              <button 
-                onClick={() => navigateToSection('daily-rituals')}
-                className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors"
-              >
+              </div>
+              <Link href="/no-contact" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors">
+                <Shield className="w-4 h-4" />
+                <span>No-Contact</span>
+              </Link>
+              <Link href="/daily-rituals" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors">
                 <Calendar className="w-4 h-4" />
                 <span>Daily Rituals</span>
-              </button>
-              <button 
-                onClick={() => navigateToSection('wall')}
-                className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors"
-              >
+              </Link>
+              <Link href="/wall" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors">
                 <MessageSquare className="w-4 h-4" />
                 <span>Wall of Wounds</span>
-              </button>
-              <button 
-                onClick={() => navigateToSection('ai-therapy')}
-                className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors"
-              >
+              </Link>
+              <Link href="/ai-therapy" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors">
                 <Sparkles className="w-4 h-4" />
                 <span>AI Therapy</span>
-              </button>
+              </Link>
             </nav>
 
             {/* User Menu */}
@@ -212,27 +207,22 @@ export default function DashboardPage() {
           {isMobileMenuOpen && (
             <div className="md:hidden border-t border-purple-500/20 py-4">
               <nav className="flex flex-col space-y-3">
-                <button 
-                  onClick={() => navigateToSection('daily-rituals')}
-                  className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2"
-                >
+                <Link href="/no-contact" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2">
+                  <Shield className="w-4 h-4" />
+                  <span>No-Contact</span>
+                </Link>
+                <Link href="/daily-rituals" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2">
                   <Calendar className="w-4 h-4" />
                   <span>Daily Rituals</span>
-                </button>
-                <button 
-                  onClick={() => navigateToSection('wall')}
-                  className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2"
-                >
+                </Link>
+                <Link href="/wall" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2">
                   <MessageSquare className="w-4 h-4" />
                   <span>Wall of Wounds</span>
-                </button>
-                <button 
-                  onClick={() => navigateToSection('ai-therapy')}
-                  className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2"
-                >
+                </Link>
+                <Link href="/ai-therapy" className="flex items-center space-x-2 text-purple-300 hover:text-white transition-colors py-2">
                   <Sparkles className="w-4 h-4" />
                   <span>AI Therapy</span>
-                </button>
+                </Link>
                 <div className="flex items-center justify-between pt-3 border-t border-purple-500/20">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-1 text-yellow-400">
@@ -330,13 +320,10 @@ export default function DashboardPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white">Today's Healing Protocol</h2>
-            <button 
-              onClick={() => navigateToSection('daily-rituals')}
-              className="text-purple-300 hover:text-white transition-colors flex items-center space-x-1"
-            >
+            <Link href="/daily-rituals" className="text-purple-300 hover:text-white transition-colors flex items-center space-x-1">
               <span className="text-sm">View All</span>
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -346,12 +333,14 @@ export default function DashboardPage() {
                 className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-purple-500/20 hover:border-purple-400/40 transition-all cursor-pointer group"
               >
                 <div className="flex items-center space-x-3 mb-4">
-                  <span className="text-2xl">{getCategoryIcon(ritual.category)}</span>
+                  <div className={`p-2 rounded-lg ${getCategoryColor(ritual.category)}`}>
+                    {getCategoryIcon(ritual.category)}
+                  </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white group-hover:text-purple-300 transition-colors">
                       {ritual.title}
                     </h3>
-                    <p className={`text-xs uppercase tracking-wider ${getCategoryColor(ritual.category)}`}>
+                    <p className="text-xs text-gray-400 uppercase tracking-wide">
                       {ritual.category.replace('_', ' ')} • Intensity {ritual.intensity}/5
                     </p>
                   </div>
@@ -372,73 +361,102 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
-          {/* AI Therapy Session */}
-          <div className="bg-white/10 backdrop-blur-md rounded-lg p-8 border border-purple-500/20 hover:border-purple-400/40 transition-colors">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
-                <Sparkles className="w-8 h-8 text-white" />
+        {/* Quick Actions Grid - THE 5-CARD VERSION WITH NO-CONTACT */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
+          {/* No-Contact Tracker */}
+          <Link href="/no-contact" className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-blue-500/30 hover:border-blue-400/50 transition-all group">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg">
+                <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-white">AI Therapy</h3>
-                <p className="text-sm text-gray-400">25 Bytes per session</p>
+                <h3 className="text-lg font-semibold text-white">No-Contact</h3>
+                <p className="text-xs text-gray-400">{user.noContactDays} days strong</p>
               </div>
             </div>
-            <p className="text-purple-200 mb-6 text-sm">
-              Connect with your AI therapeutic companion for personalized guidance and emotional support.
+            <p className="text-purple-200 mb-4 text-xs">
+              Track your no-contact journey. Build strength and reclaim your power.
             </p>
-            <button 
-              onClick={() => navigateToSection('ai-therapy')}
-              className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-700 hover:to-teal-700 transition-all"
-            >
+            <div className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2 px-4 rounded-lg font-semibold text-center text-sm group-hover:from-blue-700 group-hover:to-cyan-700 transition-all">
+              Track Progress
+            </div>
+          </Link>
+
+          {/* Daily Rituals */}
+          <Link href="/daily-rituals" className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-purple-500/20 hover:border-purple-400/40 transition-all group">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+                <Calendar className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Daily Rituals</h3>
+                <p className="text-xs text-gray-400">Today's healing protocol</p>
+              </div>
+            </div>
+            <p className="text-purple-200 mb-4 text-xs">
+              Personalized daily healing rituals based on your emotional state.
+            </p>
+            <div className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-lg font-semibold text-center text-sm group-hover:from-purple-700 group-hover:to-pink-700 transition-all">
+              View Rituals
+            </div>
+          </Link>
+
+          {/* AI Therapy Session */}
+          <Link href="/ai-therapy" className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-green-500/20 hover:border-green-400/40 transition-all group">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">AI Therapy</h3>
+                <p className="text-xs text-gray-400">25 Bytes per session</p>
+              </div>
+            </div>
+            <p className="text-purple-200 mb-4 text-xs">
+              Connect with your AI therapeutic companion for personalized guidance.
+            </p>
+            <div className="w-full bg-gradient-to-r from-green-600 to-teal-600 text-white py-2 px-4 rounded-lg font-semibold text-center text-sm group-hover:from-green-700 group-hover:to-teal-700 transition-all">
               Start Session
-            </button>
-          </div>
+            </div>
+          </Link>
 
           {/* Wall of Wounds */}
-          <div className="bg-white/10 backdrop-blur-md rounded-lg p-8 border border-purple-500/20 hover:border-purple-400/40 transition-colors">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
-                <MessageSquare className="w-8 h-8 text-white" />
+          <Link href="/wall" className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-orange-500/20 hover:border-orange-400/40 transition-all group">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg">
+                <MessageSquare className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-white">Wall of Wounds</h3>
-                <p className="text-sm text-gray-400">{user.wallPosts} posts shared</p>
+                <h3 className="text-lg font-semibold text-white">Wall of Wounds</h3>
+                <p className="text-xs text-gray-400">{user.wallPosts} posts shared</p>
               </div>
             </div>
-            <p className="text-purple-200 mb-6 text-sm">
-              Share your journey anonymously with the community. Find support, offer wisdom, connect with others.
+            <p className="text-purple-200 mb-4 text-xs">
+              Share your journey anonymously with the community.
             </p>
-            <button 
-              onClick={() => navigateToSection('wall')}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all"
-            >
+            <div className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-4 rounded-lg font-semibold text-center text-sm group-hover:from-orange-700 group-hover:to-red-700 transition-all">
               Visit Wall
-            </button>
-          </div>
+            </div>
+          </Link>
 
           {/* Progress Analytics */}
-          <div className="bg-white/10 backdrop-blur-md rounded-lg p-8 border border-purple-500/20 hover:border-purple-400/40 transition-colors">
-            <div className="flex items-center space-x-3 mb-6">
+          <Link href="/status" className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-yellow-500/20 hover:border-yellow-400/40 transition-all group">
+            <div className="flex items-center space-x-3 mb-4">
               <div className="p-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg">
-                <BarChart3 className="w-8 h-8 text-white" />
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-white">Your Progress</h3>
-                <p className="text-sm text-gray-400">{user.ritualsCompleted} rituals completed</p>
+                <h3 className="text-lg font-semibold text-white">Your Progress</h3>
+                <p className="text-xs text-gray-400">{user.ritualsCompleted} rituals completed</p>
               </div>
             </div>
-            <p className="text-purple-200 mb-6 text-sm">
-              Visualize your healing journey with detailed analytics, mood tracking, and milestone celebrations.
+            <p className="text-purple-200 mb-4 text-xs">
+              Visualize your healing journey with detailed analytics.
             </p>
-            <button 
-              onClick={() => navigateToSection('progress')}
-              className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-yellow-700 hover:to-orange-700 transition-all"
-            >
+            <div className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 text-white py-2 px-4 rounded-lg font-semibold text-center text-sm group-hover:from-yellow-700 group-hover:to-orange-700 transition-all">
               View Analytics
-            </button>
-          </div>
+            </div>
+          </Link>
         </div>
 
         {/* Quick Check-ins */}
