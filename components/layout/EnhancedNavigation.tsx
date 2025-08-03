@@ -17,7 +17,8 @@ import {
   Sparkles,
   Menu,
   X,
-  Flame
+  Flame,
+  Heart
 } from 'lucide-react';
 
 interface NavigationProps {
