@@ -90,9 +90,9 @@ const navigationItems = [
         badge: '📱'
       },
       {
-        id: 'wall-enhanced',
+        id: 'wall',
         label: 'Confession Cards',
-        href: '/wall-enhanced',
+        href: '/wall',
         icon: Heart,
         description: 'Viral confession card system',
         badge: '💔'
