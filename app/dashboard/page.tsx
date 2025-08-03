@@ -8,6 +8,10 @@ import { Bell, Calendar, Heart, Target, BookOpen, Phone, AlertTriangle,
          Clock, Award, Sparkles, Menu, X } from 'lucide-react';
 import { PrescribedRitual, getRandomRitual, getCategoryColor, getCategoryIcon } from '../../lib/prescribed-rituals';
 import { QuickActions } from '../../components/quick-actions';
+import { CrisisSupport } from '../../components/crisis/CrisisSupport';
+import { UserProfileManager } from '../../components/profile/UserProfileManager';
+import { ProgressTracker } from '../../components/progress/ProgressTracker';
+import { LiveActivityFeed } from '../../components/wall/LiveActivityFeed';
 
 interface UserStats {
   codename: string;
@@ -230,6 +234,22 @@ export default function DashboardPage() {
                   <span>{user.streak}</span>
                 </div>
               </div>
+              
+              {/* New Advanced Components */}
+              <div className="flex items-center space-x-2">
+                <CrisisSupport 
+                  isEmergency={user.urgencyLevel === 'immediate'} 
+                  onResourceUsed={(resource) => console.log('Crisis resource used:', resource)}
+                />
+                <ProgressTracker 
+                  onGoalUpdate={(goalId, progress) => console.log('Goal updated:', goalId, progress)}
+                  onMilestoneAchieved={(milestoneId) => console.log('Milestone achieved:', milestoneId)}
+                />
+                <UserProfileManager 
+                  onProfileUpdate={(profile) => console.log('Profile updated:', profile)}
+                />
+              </div>
+              
               <Bell className="w-5 h-5 text-purple-300 hover:text-white cursor-pointer transition-colors" />
               <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-lg">
                 {user.avatar}
@@ -501,6 +521,43 @@ export default function DashboardPage() {
 
         {/* Quick Actions - Fully Functional */}
         <QuickActions onActionComplete={handleQuickActionComplete} />
+
+        {/* Live Community Feed */}
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white">Community Activity</h2>
+            <Link href="/wall" className="text-purple-300 hover:text-white transition-colors flex items-center space-x-1">
+              <span className="text-sm">Visit Wall</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <LiveActivityFeed />
+        </div>
+
+        {/* Support Resources Footer */}
+        <div className="mt-12 pt-8 border-t border-purple-500/20">
+          <div className="text-center space-y-4">
+            <h3 className="text-lg font-semibold text-white">Remember, Warrior</h3>
+            <p className="text-purple-200 max-w-2xl mx-auto">
+              Your healing journey is unique and valid. Every day you're here is a victory. 
+              You have the strength to overcome anything, and this community believes in you.
+            </p>
+            <div className="flex justify-center space-x-4 text-sm">
+              <div className="flex items-center space-x-1 text-green-400">
+                <Heart className="w-4 h-4" />
+                <span>You matter</span>
+              </div>
+              <div className="flex items-center space-x-1 text-blue-400">
+                <Shield className="w-4 h-4" />
+                <span>You're protected</span>
+              </div>
+              <div className="flex items-center space-x-1 text-purple-400">
+                <Star className="w-4 h-4" />
+                <span>You're valued</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
