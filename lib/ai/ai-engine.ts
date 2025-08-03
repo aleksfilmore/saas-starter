@@ -1,9 +1,11 @@
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI client with fallback for build time
+const openai = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim() !== '' 
+  ? new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    })
+  : null;
 
 export interface TherapyContext {
   userProfile: {
@@ -143,6 +145,16 @@ Be direct, compassionate, and action-oriented. This is not the time for humor or
     context: TherapyContext
   ): Promise<AIResponse> {
     try {
+      // Fallback if OpenAI is not available (e.g., during build)
+      if (!openai) {
+        return {
+          message: "AI service is currently unavailable. Please try again later or use crisis resources if you need immediate support.",
+          emotionalTone: 'supportive',
+          xpReward: 5,
+          byteReward: 3,
+        };
+      }
+
       const systemPrompt = context.sessionType === 'crisis' 
         ? this.getCrisisPrompt() 
         : this.getSystemPrompt(context);
