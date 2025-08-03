@@ -71,19 +71,19 @@ export default function DashboardPage() {
     const rituals: PrescribedRitual[] = [];
     
     // Morning ritual - always include one for routine
-    rituals.push(getRandomRitual('release'));
+    rituals.push(getRandomRitual());
     
     // Midday ritual - based on current phase
     if (userStats.phase === 'kernel_wounded') {
-      rituals.push(getRandomRitual('release'));
+      rituals.push(getRandomRitual());
     } else if (userStats.phase === 'firewall_active') {
-      rituals.push(getRandomRitual('reflection'));
+      rituals.push(getRandomRitual());
     } else {
-      rituals.push(getRandomRitual('reprogramming'));
+      rituals.push(getRandomRitual());
     }
     
-    // Evening ritual - always growth focused
-    rituals.push(getRandomRitual('reprogramming'));
+    // Evening ritual - for healing and closure
+    rituals.push(getRandomRitual());
     
     return rituals;
   };
