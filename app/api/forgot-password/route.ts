@@ -1,33 +1,19 @@
-// Login API route - Proxies to standalone auth server
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
 
-export interface LoginResponse {
-  error?: string | null;
-  success: boolean;
-  message?: string;
-  token?: string;
-  data?: {
-    userId?: string;
-    email?: string;
-    role?: string;
-    quizResult?: any;
-  };
-}
-
-export async function POST(request: NextRequest): Promise<NextResponse<LoginResponse>> {
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
     
     // Forward request to standalone auth server
-    const response = await fetch('http://localhost:3002/api/login', {
+    const response = await fetch('http://localhost:3002/api/forgot-password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     return NextResponse.json(data, { 
       status: response.status,
@@ -36,13 +22,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       }
-    });
+    })
   } catch (error) {
-    console.error('Login API error:', error);
+    console.error('Forgot password API error:', error)
     return NextResponse.json(
       { success: false, message: 'Network error. Please try again.' },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -54,5 +40,5 @@ export async function OPTIONS() {
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
-  });
+  })
 }
