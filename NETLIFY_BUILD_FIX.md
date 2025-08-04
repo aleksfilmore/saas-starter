@@ -29,6 +29,21 @@
 - `@types/bcryptjs`: ^2.4.3 (existing version)
 - `@types/bcrypt`: ^5.0.0 (stable version)
 
+### **Issue 6**: Duplicate Pages (RESOLVED ✅)
+**Error**: Parallel pages resolving to same paths `/privacy` and `/terms`
+**Root Cause**: Pages exist in both `app/(marketing)/` and `app/` directories
+**Fix**: Removed duplicate pages from marketing layout:
+- Deleted `app/(marketing)/privacy/page.tsx`
+- Deleted `app/(marketing)/terms/page.tsx`
+
+### **Issue 7**: Babel/SWC Conflict (RESOLVED ✅)
+**Error**: "next/font" requires SWC but Babel config forces Babel usage
+**Root Cause**: Custom `babel.config.js` conflicts with Next.js 15 SWC compiler
+**Fix**: 
+- Removed `babel.config.js` file
+- Removed Babel dependencies from package.json
+- Let Next.js 15 use default SWC compiler
+
 ---
 
 ## 🔧 Final Dependencies Added
@@ -46,10 +61,15 @@
 - `@radix-ui/react-label`: ^2.1.7  
 - `@radix-ui/react-progress`: ^1.1.7
 
-### **Build Tools (Babel)**:
-- `@babel/core`: ^7.26.0
-- `@babel/preset-env`: ^7.26.0
-- `@babel/preset-react`: ^7.26.3
+### **Build Tools (Removed - Using SWC)**:
+- **REMOVED**: All Babel dependencies (conflicted with SWC)
+- **DEFAULT**: Next.js 15 SWC compiler (faster, better compatibility)
+- **RESOLVED**: next/font now works properly with SWC
+
+### **Pages Structure (Fixed)**:
+- **REMOVED**: Duplicate marketing layout pages
+- **MAINTAINED**: Main app routes for privacy/terms
+- **RESOLVED**: No more parallel page conflicts
 
 ---
 
@@ -95,17 +115,21 @@ Total: 68 pages compiled successfully
 ### **Ready for Netlify**:
 ✅ All syntax errors resolved
 ✅ All missing dependencies added
-✅ Babel configuration complete
+✅ **Duplicate pages removed**
+✅ **Babel/SWC conflict resolved** 
 ✅ bcrypt/bcryptjs compatibility ensured
-✅ Build compiles successfully  
+✅ Build compiles with SWC (faster)
 ✅ All mobile header fixes preserved
 ✅ External packages properly configured
 
 ### **Configuration Files Updated**:
-1. **`package.json`** - Added all missing dependencies
+1. **`package.json`** - Added missing dependencies, removed Babel packages
 2. **`next.config.ts`** - Updated external packages list  
-3. **`.babelrc`** - Basic Babel configuration for Next.js
-4. **`app/admin/page.tsx`** - Fixed syntax errors
+3. **~~`babel.config.js`~~** - **REMOVED** (was causing SWC conflict)
+4. **`app/privacy/page.tsx`** - Main page maintained
+5. **`app/terms/page.tsx`** - Main page maintained
+6. **~~`app/(marketing)/privacy/page.tsx`~~** - **REMOVED** (duplicate)
+7. **~~`app/(marketing)/terms/page.tsx`~~** - **REMOVED** (duplicate)
 
 ---
 
