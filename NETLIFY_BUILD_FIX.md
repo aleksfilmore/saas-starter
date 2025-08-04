@@ -22,6 +22,13 @@
 **Root Cause**: Some dependency expecting `bcrypt` while we use `bcryptjs`
 **Fix**: Added `bcrypt` package for compatibility
 
+### **Issue 5**: Invalid Package Versions (RESOLVED ✅)
+**Error**: No matching version found for @types/bcryptjs@^2.4.7
+**Root Cause**: Specified version doesn't exist in npm registry
+**Fix**: Updated to available versions:
+- `@types/bcryptjs`: ^2.4.3 (existing version)
+- `@types/bcrypt`: ^5.0.0 (stable version)
+
 ---
 
 ## 🔧 Final Dependencies Added
@@ -31,8 +38,8 @@
 - `bcrypt`: ^5.1.1 (password hashing compatibility)
 - `bcryptjs`: ^3.0.2 (primary password hashing)
 - `nanoid`: ^5.0.7 (ID generation)
-- `@types/bcrypt`: ^5.0.2
-- `@types/bcryptjs`: ^2.4.7
+- `@types/bcrypt`: ^5.0.0 (TypeScript types)
+- `@types/bcryptjs`: ^2.4.3 (TypeScript types - corrected version)
 
 ### **UI Components (Radix)**:
 - `@radix-ui/react-checkbox`: ^1.1.12
