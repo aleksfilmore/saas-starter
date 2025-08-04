@@ -59,8 +59,30 @@ export default function DashboardPage() {
   const [todaysRituals, setTodaysRituals] = useState<PrescribedRitual[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showCrisisSupport, setShowCrisisSupport] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // Check if user is admin
+    const userRole = localStorage.getItem('user-role');
+    const userEmail = localStorage.getItem('user-email');
+    
+    if (userRole === 'admin' || userEmail === 'admin@ctrlaltblock.com') {
+      setIsAdmin(true);
+      // Update user for admin with special data
+      setUser(prev => ({
+        ...prev,
+        codename: 'SYSTEM_ADMIN',
+        level: 99,
+        xp: 999999,
+        nextLevelXP: 999999,
+        progressToNext: 100,
+        bytes: 999999,
+        avatar: '⚡',
+        phase: 'system_admin',
+        heartState: 'ADMIN_ACCESS'
+      }));
+    }
+
     // Generate today's personalized rituals based on user's phase and progress
     const personalizedRituals = generateDailyRituals(user);
     setTodaysRituals(personalizedRituals);
@@ -69,7 +91,7 @@ export default function DashboardPage() {
     if (user.urgencyLevel === 'immediate' || user.heartState?.includes('CRISIS')) {
       setShowCrisisSupport(true);
     }
-  }, [user]);
+  }, [user.urgencyLevel, user.heartState]);
 
   const generateDailyRituals = (userStats: UserStats): PrescribedRitual[] => {
     // AI-weighted ritual selection based on user phase and streak
@@ -375,6 +397,114 @@ export default function DashboardPage() {
             <p className="text-xs text-gray-400 mt-2">Achievements unlocked</p>
           </div>
         </div>
+
+        {/* Admin Panel - Only visible to admins */}
+        {isAdmin && (
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-red-900/50 to-purple-900/50 rounded-lg p-6 border border-red-500/30">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="p-2 bg-red-600 rounded-lg">
+                  <Settings className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">⚡ System Administrator Panel</h2>
+                  <p className="text-red-300">Full platform access & debugging tools</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Link href="/api/users" target="_blank" className="bg-red-600/20 border border-red-500/30 rounded-lg p-4 hover:bg-red-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <User className="w-5 h-5 text-red-400" />
+                    <span className="text-white font-medium">User Database</span>
+                  </div>
+                  <p className="text-red-200 text-sm">View all registered users</p>
+                </Link>
+
+                <Link href="/wall" className="bg-orange-600/20 border border-orange-500/30 rounded-lg p-4 hover:bg-orange-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <MessageSquare className="w-5 h-5 text-orange-400" />
+                    <span className="text-white font-medium">Wall of Wounds</span>
+                  </div>
+                  <p className="text-orange-200 text-sm">Community feed & posts</p>
+                </Link>
+
+                <Link href="/ai-therapy" className="bg-green-600/20 border border-green-500/30 rounded-lg p-4 hover:bg-green-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Sparkles className="w-5 h-5 text-green-400" />
+                    <span className="text-white font-medium">AI Therapy</span>
+                  </div>
+                  <p className="text-green-200 text-sm">Full AI therapy access</p>
+                </Link>
+
+                <Link href="/no-contact" className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-4 hover:bg-blue-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Shield className="w-5 h-5 text-blue-400" />
+                    <span className="text-white font-medium">No-Contact</span>
+                  </div>
+                  <p className="text-blue-200 text-sm">Tracking & support tools</p>
+                </Link>
+
+                <Link href="/daily-rituals" className="bg-purple-600/20 border border-purple-500/30 rounded-lg p-4 hover:bg-purple-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Calendar className="w-5 h-5 text-purple-400" />
+                    <span className="text-white font-medium">Daily Rituals</span>
+                  </div>
+                  <p className="text-purple-200 text-sm">Healing protocols</p>
+                </Link>
+
+                <Link href="/quiz" className="bg-cyan-600/20 border border-cyan-500/30 rounded-lg p-4 hover:bg-cyan-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Target className="w-5 h-5 text-cyan-400" />
+                    <span className="text-white font-medium">System Scan</span>
+                  </div>
+                  <p className="text-cyan-200 text-sm">Attachment assessment</p>
+                </Link>
+
+                <Link href="/status" className="bg-yellow-600/20 border border-yellow-500/30 rounded-lg p-4 hover:bg-yellow-600/30 transition-all">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <BarChart3 className="w-5 h-5 text-yellow-400" />
+                    <span className="text-white font-medium">Analytics</span>
+                  </div>
+                  <p className="text-yellow-200 text-sm">Platform metrics</p>
+                </Link>
+
+                <button 
+                  onClick={() => window.open('http://localhost:3002', '_blank')}
+                  className="bg-pink-600/20 border border-pink-500/30 rounded-lg p-4 hover:bg-pink-600/30 transition-all"
+                >
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Settings className="w-5 h-5 text-pink-400" />
+                    <span className="text-white font-medium">Auth Server</span>
+                  </div>
+                  <p className="text-pink-200 text-sm">Backend API debug</p>
+                </button>
+              </div>
+
+              <div className="mt-4 p-4 bg-black/30 rounded-lg">
+                <h3 className="text-white font-semibold mb-2">Admin Credentials</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-400">Email: </span>
+                    <span className="text-white font-mono">admin@ctrlaltblock.com</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Password: </span>
+                    <span className="text-white font-mono">Admin123!@#</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Role: </span>
+                    <span className="text-red-400 font-semibold">System Administrator</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Access: </span>
+                    <span className="text-green-400 font-semibold">Full Platform</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Today's Personalized Rituals */}
         <div className="mb-8">
