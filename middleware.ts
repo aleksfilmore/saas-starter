@@ -1,4 +1,3 @@
-Users\iamal\OneDrive\Documents\GitHub\saas-starter\middleware.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
