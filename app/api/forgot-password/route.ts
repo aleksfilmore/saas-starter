@@ -3,10 +3,8 @@ import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { emailService } from '@/lib/email'
+import { resetTokenStore } from '@/lib/auth/reset-tokens'
 import crypto from 'crypto'
-
-// Store reset tokens temporarily (in production, use Redis or database)
-const resetTokens = new Map<string, { email: string; expires: number }>()
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,18 +39,11 @@ export async function POST(request: NextRequest) {
     const resetToken = crypto.randomBytes(32).toString('hex')
     const expires = Date.now() + (60 * 60 * 1000) // 1 hour from now
 
-    // Store token temporarily
-    resetTokens.set(resetToken, { 
+    // Store token
+    resetTokenStore.set(resetToken, { 
       email: email.toLowerCase(), 
       expires 
     })
-
-    // Clean up expired tokens
-    for (const [token, data] of resetTokens.entries()) {
-      if (data.expires < Date.now()) {
-        resetTokens.delete(token)
-      }
-    }
 
     // Send password reset email
     const emailResult = await emailService.sendPasswordResetEmail(email, resetToken)
@@ -79,9 +70,6 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
-// Export the resetTokens for use in reset-password API
-export { resetTokens }
 
 export async function OPTIONS() {
   return new NextResponse(null, {

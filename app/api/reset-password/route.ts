@@ -2,16 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { resetTokenStore } from '@/lib/auth/reset-tokens'
 import bcrypt from 'bcryptjs'
-
-// Import the resetTokens from forgot-password API
-// In production, this should be in a shared store like Redis
-let resetTokens: Map<string, { email: string; expires: number }>
-
-// Initialize resetTokens if not already imported
-if (typeof resetTokens === 'undefined') {
-  resetTokens = new Map()
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,19 +38,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if token exists and is valid
-    const tokenData = resetTokens.get(token)
+    const tokenData = resetTokenStore.get(token)
     if (!tokenData) {
       return NextResponse.json(
         { success: false, error: 'Invalid or expired reset token' },
-        { status: 400 }
-      )
-    }
-
-    // Check if token has expired
-    if (tokenData.expires < Date.now()) {
-      resetTokens.delete(token)
-      return NextResponse.json(
-        { success: false, error: 'Reset token has expired' },
         { status: 400 }
       )
     }
@@ -90,7 +73,7 @@ export async function POST(request: NextRequest) {
       .where(eq(users.email, tokenData.email))
 
     // Remove the used token
-    resetTokens.delete(token)
+    resetTokenStore.delete(token)
 
     console.log(`Password reset successful for: ${tokenData.email}`)
     
