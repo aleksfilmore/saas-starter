@@ -21,7 +21,7 @@ export async function runRitualMigration() {
         await db.execute(sql.raw(statement));
         console.log('✅ Executed statement');
       } catch (error) {
-        console.log(`⚠️ Statement might already exist: ${error.message.substring(0, 100)}...`);
+        console.log(`⚠️ Statement might already exist: ${error instanceof Error ? error.message.substring(0, 100) : 'Unknown error'}...`);
       }
     }
     
