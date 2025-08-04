@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Sparkles, CheckCircle, Heart, Target, User, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Sparkles, CheckCircle, Heart, Target, Mail, Lock, ArrowRight } from 'lucide-react';
 
 interface QuizResult {
   attachmentStyle: string;
@@ -40,7 +40,6 @@ export default function SignUpFromQuizPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    alias: '',
     termsAccepted: false
   });
   
@@ -94,10 +93,6 @@ export default function SignUpFromQuizPage() {
   };
 
   const handleSignUp = async () => {
-    if (!formData.alias) {
-      setError('Please choose an alias');
-      return;
-    }
     if (!formData.termsAccepted) {
       setError('Please accept the terms and conditions');
       return;
@@ -108,7 +103,8 @@ export default function SignUpFromQuizPage() {
 
     try {
       const signupData = {
-        ...formData,
+        email: formData.email,
+        password: formData.password,
         quizResult,
         source: 'quiz-conversion'
       };
@@ -317,29 +313,20 @@ export default function SignUpFromQuizPage() {
                 </div>
               )}
 
-              {/* Step 3: Final Details */}
+              {/* Step 3: Final Confirmation */}
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div className="text-center mb-6">
-                    <User className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-white">Choose your healing alias</h3>
-                    <p className="text-gray-400">This is how you'll appear in the community (anonymous & safe)</p>
+                    <CheckCircle className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-white">Ready to begin your journey?</h3>
+                    <p className="text-gray-400">Your personalized healing plan is waiting for you</p>
                   </div>
 
-                  <div>
-                    <Label htmlFor="alias" className="text-gray-300 text-lg font-medium">
-                      Your Alias
-                    </Label>
-                    <Input
-                      id="alias"
-                      type="text"
-                      placeholder="e.g., HealingPhoenix, DigitalWarrior"
-                      value={formData.alias}
-                      onChange={(e) => handleInputChange('alias', e.target.value)}
-                      className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 mt-2 text-lg p-4"
-                      disabled={isLoading}
-                      required
-                    />
+                  <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                    <h4 className="text-white font-medium mb-2">Privacy-First Platform</h4>
+                    <p className="text-gray-300 text-sm">
+                      We maintain your anonymity throughout your healing journey. No personal names or identifying information required.
+                    </p>
                   </div>
 
                   {/* Terms */}

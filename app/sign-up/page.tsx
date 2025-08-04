@@ -9,12 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Heart, Shield, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, Heart, Shield, CheckCircle } from 'lucide-react'
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -33,8 +31,6 @@ export default function SignUpPage() {
   }
 
   const validateForm = () => {
-    if (!formData.firstName.trim()) return 'First name is required'
-    if (!formData.lastName.trim()) return 'Last name is required'
     if (!formData.email.trim()) return 'Email is required'
     if (!formData.email.includes('@')) return 'Please enter a valid email'
     if (formData.password.length < 8) return 'Password must be at least 8 characters'
@@ -62,8 +58,6 @@ export default function SignUpPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
           wantsNewsletter
@@ -125,7 +119,7 @@ export default function SignUpPage() {
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-2xl font-bold text-center text-white">Create Account</CardTitle>
             <CardDescription className="text-center text-gray-300">
-              Join thousands on their path to emotional wellness
+              Join thousands on their path to emotional wellness - no personal details required
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -137,40 +131,6 @@ export default function SignUpPage() {
                   </AlertDescription>
                 </Alert>
               )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-gray-300 font-medium">
-                    First Name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="firstName"
-                      type="text"
-                      placeholder="First name"
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-gray-300 font-medium">
-                    Last Name
-                  </Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    placeholder="Last name"
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400"
-                    required
-                  />
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-300 font-medium">
@@ -188,6 +148,9 @@ export default function SignUpPage() {
                     required
                   />
                 </div>
+                <p className="text-xs text-gray-400">
+                  Your email is only used for secure access and platform updates
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -331,10 +294,10 @@ export default function SignUpPage() {
             <div className="mt-6 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
               <div className="flex items-center space-x-2 text-purple-400">
                 <Shield className="h-4 w-4" />
-                <span className="text-sm font-medium">Your data is secure</span>
+                <span className="text-sm font-medium">Privacy-First Platform</span>
               </div>
               <p className="text-xs text-purple-300 mt-1">
-                We use enterprise-grade encryption and never share your personal information.
+                We don't collect personal names or identifying information. Only your email for secure access.
               </p>
             </div>
           </CardContent>
