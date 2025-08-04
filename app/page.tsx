@@ -375,8 +375,10 @@ export default function ComingSoonPage() {
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-r from-purple-900/95 to-pink-900/95 backdrop-blur-sm border-t border-purple-500/30 z-50 md:hidden">
           <Button
             onClick={() => {
-              const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
-              emailInput?.focus();
+              const emailInput = document.querySelector('input[type="email"]');
+              if (emailInput && 'focus' in emailInput) {
+                (emailInput as HTMLInputElement).focus();
+              }
             }}
             className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3"
           >
