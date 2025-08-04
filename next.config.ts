@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   // Force ES modules resolution 
   experimental: {
     esmExternals: true,
-    serverComponentsExternalPackages: ['lucia', 'bcryptjs', 'postgres', 'nanoid'],
+    serverComponentsExternalPackages: ['lucia', 'bcrypt', 'bcryptjs', 'postgres', 'nanoid'],
   },
   // Webpack optimizations for bundler stability
   webpack: (config, { dev, isServer }) => {
