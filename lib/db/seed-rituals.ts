@@ -116,7 +116,7 @@ export async function seedRituals() {
     
     console.log('\n📊 Ritual Library Summary:');
     for (const row of summary) {
-      console.log(`  ${row.category}: ${row.count} rituals (${row.tiers.join(', ')}) - ${row.archetypes.join(', ')}`);
+      console.log(`  ${row.category}: ${row.count} rituals (${(row.tiers as string[]).join(', ')}) - ${(row.archetypes as string[]).join(', ')}`);
     }
     
     return true;
