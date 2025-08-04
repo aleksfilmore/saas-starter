@@ -588,7 +588,7 @@ export async function seedNoContactMessages() {
       console.log(`  Day ${milestone.day}: ${milestone.bytes_reward} bytes`);
     }
     
-    const totalBytes = milestones.reduce((sum, m) => sum + m.bytes_reward, 0);
+    const totalBytes = milestones.reduce((sum, m) => sum + (m.bytes_reward as number), 0);
     console.log(`\n💎 Total milestone bytes available: ${totalBytes}`);
     
     return true;
