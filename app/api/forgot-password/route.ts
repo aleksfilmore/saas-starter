@@ -3,26 +3,24 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    const { email } = body
+
+    if (!email) {
+      return NextResponse.json(
+        { success: false, message: 'Email is required' },
+        { status: 400 }
+      )
+    }
+
+    // For development: simulate password reset
+    const resetToken = Math.random().toString(36).substring(2, 15)
     
-    // Forward request to standalone auth server
-    const response = await fetch('http://localhost:3002/api/forgot-password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+    return NextResponse.json({
+      success: true,
+      message: 'If that email exists, a password reset link has been sent.',
+      debug: `Reset token for ${email}: ${resetToken}`
     })
 
-    const data = await response.json()
-
-    return NextResponse.json(data, { 
-      status: response.status,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
-    })
   } catch (error) {
     console.error('Forgot password API error:', error)
     return NextResponse.json(
