@@ -285,7 +285,7 @@ export default function AttachmentQuizPage() {
             <Button 
               onClick={() => setQuizStarted(true)}
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-xl border-0"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-6 px-10 text-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Brain className="h-6 w-6 mr-3" />
               Start Your Discovery
@@ -380,7 +380,7 @@ export default function AttachmentQuizPage() {
                 <Button 
                   onClick={handleSignUpFromResults}
                   size="lg"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-xl border-0 mr-4"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-xl border-0 mr-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
                   Start My Healing Journey
                   <ArrowRight className="h-5 w-5 ml-2" />
@@ -389,7 +389,7 @@ export default function AttachmentQuizPage() {
                   onClick={() => router.push('/')}
                   variant="outline"
                   size="lg"
-                  className="border-gray-500 text-gray-300 hover:bg-gray-700"
+                  className="border-gray-500/50 bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:border-gray-400 hover:text-white transition-all duration-200 backdrop-blur-sm"
                 >
                   Learn More First
                 </Button>
@@ -436,9 +436,16 @@ export default function AttachmentQuizPage() {
                 key={index}
                 onClick={() => handleAnswer(question.id, option.value)}
                 variant="outline"
-                className="w-full p-6 text-left h-auto border-gray-600 hover:border-purple-500 hover:bg-purple-500/10 text-white justify-start"
+                className="w-full p-6 text-left h-auto bg-gray-800/40 border-gray-600/50 hover:border-purple-400 hover:bg-purple-500/20 text-white justify-start transition-all duration-200 group backdrop-blur-sm"
               >
-                <span className="text-lg">{option.text}</span>
+                <div className="flex items-center w-full">
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-500 group-hover:border-purple-400 flex items-center justify-center mr-4 transition-colors">
+                    <span className="text-sm font-bold text-gray-400 group-hover:text-purple-400">
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                  </div>
+                  <span className="text-lg leading-relaxed flex-1">{option.text}</span>
+                </div>
               </Button>
             ))}
           </CardContent>
@@ -455,7 +462,7 @@ export default function AttachmentQuizPage() {
                 setQuizStarted(false);
               }
             }}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white hover:bg-gray-800/50 px-6 py-3 transition-all duration-200"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {currentQuestion > 0 ? 'Previous Question' : 'Back to Start'}
