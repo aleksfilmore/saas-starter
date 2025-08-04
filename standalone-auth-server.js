@@ -9,21 +9,32 @@ const users = new Map();
 // Pre-register some test users for convenience
 const preRegisterTestUsers = () => {
   const testUsers = [
+    { email: 'admin@ctrlaltblock.com', password: 'Admin123!@#', role: 'admin' },
     { email: 'test@example.com', password: 'password123' },
     { email: 'user@example.com', password: 'password123' },
     { email: 'demo@example.com', password: 'password123' }
   ];
   
-  testUsers.forEach(({ email, password }) => {
+  testUsers.forEach(({ email, password, role }) => {
     if (!users.has(email.toLowerCase())) {
       const user = {
         id: Date.now() + Math.random(),
         email: email.toLowerCase(),
         password,
-        createdAt: new Date().toISOString()
+        role: role || 'user',
+        createdAt: new Date().toISOString(),
+        // Add admin-specific data
+        ...(role === 'admin' && {
+          quizResult: {
+            attachmentStyle: 'secure',
+            traits: ['System administrator access', 'Full platform visibility', 'Advanced debugging capabilities'],
+            healingPath: ['Platform management', 'User support', 'System optimization'],
+            completedAt: new Date().toISOString()
+          }
+        })
       };
       users.set(email.toLowerCase(), user);
-      console.log(`Pre-registered test user: ${email}`);
+      console.log(`Pre-registered ${role || 'user'}: ${email}`);
     }
   });
 };
