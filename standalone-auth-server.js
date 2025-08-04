@@ -160,7 +160,13 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ 
         success: true, 
         message: 'Login successful',
-        data: { email: user.email, userId: user.id }
+        token: `mock-jwt-token-${user.id}`,
+        data: { 
+          email: user.email, 
+          userId: user.id,
+          role: user.role || 'user',
+          quizResult: user.quizResult
+        }
       }));
       
     } else if (path === '/api/users' && req.method === 'GET') {

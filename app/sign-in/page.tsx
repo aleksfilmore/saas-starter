@@ -24,7 +24,7 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/auth/signin', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,6 +37,16 @@ export default function SignInPage() {
       if (response.ok) {
         if (data.token) {
           localStorage.setItem('auth-token', data.token)
+        }
+        // Store user data
+        if (data.data) {
+          localStorage.setItem('user-email', data.data.email)
+          localStorage.setItem('user-id', data.data.userId)
+          localStorage.setItem('user-role', data.data.role || 'user')
+          if (data.data.quizResult) {
+            localStorage.setItem('quizResult', JSON.stringify(data.data.quizResult))
+            localStorage.setItem('attachmentStyle', data.data.quizResult.attachmentStyle)
+          }
         }
         router.push('/dashboard')
       } else {
