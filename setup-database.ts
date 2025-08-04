@@ -26,8 +26,8 @@ async function runSqlFile(filePath: string) {
         await db.execute(sql.raw(statement));
       } catch (error) {
         // Ignore table already exists errors
-        if (!error.message.includes('already exists')) {
-          console.error(`❌ SQL Error in ${filePath}:`, error.message);
+        if (!(error instanceof Error) || !error.message.includes('already exists')) {
+          console.error(`❌ SQL Error in ${filePath}:`, error instanceof Error ? error.message : 'Unknown error');
           throw error;
         }
       }
