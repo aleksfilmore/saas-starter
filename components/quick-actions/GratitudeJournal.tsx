@@ -206,10 +206,13 @@ export function GratitudeJournal({ onComplete }: GratitudeJournalProps) {
                       {GRATITUDE_PROMPTS.find(p => p.category === selectedCategory)?.prompts.map((prompt, index) => (
                         <button
                           key={index}
-                          onClick={() => usePrompt(prompt)}
+                          onClick={() => {
+                            setCurrentEntry(currentEntry + (currentEntry ? '\n\n' : '') + prompt + '\n');
+                            setShowPrompts(false);
+                          }}
                           className="w-full text-left p-2 rounded bg-gray-700 hover:bg-gray-600 text-sm text-gray-300 transition-colors"
                         >
-                          "{prompt}"
+                          &quot;{prompt}&quot;
                         </button>
                       ))}
                     </div>

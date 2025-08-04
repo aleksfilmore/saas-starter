@@ -148,7 +148,7 @@ export default function ConfessionCards() {
   }
 
   const getFilteredConfessions = () => {
-    let filtered = [...confessions]
+    const filtered = [...confessions]
     
     switch (activeFilter) {
       case 'trending':
