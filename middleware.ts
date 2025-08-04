@@ -1,34 +1,37 @@
-// File: middleware.ts - Compatible with Next.js 15
+Users\iamal\OneDrive\Documents\GitHub\saas-starter\middleware.ts
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-
-// Future-proof middleware for authentication and CSRF protection
-export async function middleware(request: NextRequest): Promise<NextResponse> {
-  // CSRF protection for non-GET requests
-  if (request.method !== 'GET') {
-    const originHeader = request.headers.get('Origin');
-    const hostHeader = request.headers.get('Host');
-    
-    // Simple origin verification for security
-    if (!originHeader || !hostHeader) {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
-    
-    const origin = new URL(originHeader);
-    if (origin.host !== hostHeader) {
-      return new NextResponse('Forbidden', { status: 403 });
-    }
+export function middleware(request: NextRequest) {
+  // Security headers
+  const response = NextResponse.next()
+  
+  // HTTPS redirect in production
+  if (process.env.NODE_ENV === 'production' && !request.url.startsWith('https://')) {
+    return NextResponse.redirect(request.url.replace('http://', 'https://'))
   }
 
-  // Allow the request to continue
-  return NextResponse.next();
+  // Rate limiting for auth endpoints
+  if (request.nextUrl.pathname.startsWith('/api/auth') || 
+      request.nextUrl.pathname.startsWith('/api/login') ||
+      request.nextUrl.pathname.startsWith('/api/signup')) {
+    
+    // Add security headers for auth routes
+    response.headers.set('X-RateLimit-Limit', '10')
+    response.headers.set('X-RateLimit-Window', '60')
+  }
+
+  return response
 }
 
-// Configure which routes the middleware runs on
 export const config = {
   matcher: [
-    // Match all routes except static files and API routes
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.svg).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
-};
+}
