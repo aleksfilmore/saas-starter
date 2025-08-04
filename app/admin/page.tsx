@@ -159,13 +159,6 @@ export default function HomePage() {
           </div>
         </nav>
       </header>
-                  Start Healing
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </nav>
-      </header>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden">
