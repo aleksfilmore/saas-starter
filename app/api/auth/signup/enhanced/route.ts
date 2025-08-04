@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lucia } from '@/lib/auth';
 import { generateId } from 'lucia';
-import { Argon2id } from 'oslo/password';
+import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
 interface EnhancedSignUpRequest {
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Hash password
-    const hashedPassword = await new Argon2id().hash(password);
+    const hashedPassword = await bcrypt.hash(password, 12);
     
     // Create user (mock implementation)
     const userId = generateId(15);
