@@ -8,6 +8,20 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '475px',
+        'safe-mobile': { 'raw': '(max-width: 390px)' },
+      },
+      spacing: {
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+      },
+      maxWidth: {
+        'screen-safe': 'calc(100vw - 2rem)',
+        'mobile-safe': 'calc(100vw - 1rem)',
+      },
       colors: {
         background: "rgb(8 15 32)", // Deeper dark blue
         foreground: "rgb(248 250 252)",

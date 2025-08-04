@@ -37,7 +37,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  maximumScale: 1
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover'
 };
 
 const manrope = Manrope({ subsets: ['latin'] });
@@ -49,7 +53,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`dark bg-background text-foreground ${manrope.className}`}>
-      <body className="min-h-screen bg-background text-foreground">
+      <body className="min-h-screen bg-background text-foreground overflow-x-hidden">
         {children}
       </body>
     </html>

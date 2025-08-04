@@ -207,13 +207,13 @@ export default function EnhancedNavigation({ user }: NavigationProps) {
       </Button>
 
       {/* Navigation Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-80 bg-gray-900/95 border-r border-gray-700 backdrop-blur-sm z-40 transform transition-transform duration-300 ${
+      <div className={`fixed left-0 top-0 h-full w-full sm:w-80 max-w-sm bg-gray-900/95 border-r border-gray-700 backdrop-blur-sm z-40 transform transition-transform duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:translate-x-0`}>
+      } md:translate-x-0 md:w-80`}>
         
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
-          <div className="text-2xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
+        <div className="p-4 sm:p-6 border-b border-gray-700">
+          <div className="text-xl sm:text-2xl font-black text-white mb-2" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
             CTRL+ALT+BLOCK™
           </div>
           <p className="text-sm text-purple-400">Enhanced Digital Healing</p>
@@ -221,16 +221,16 @@ export default function EnhancedNavigation({ user }: NavigationProps) {
           {user && (
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-gray-300">Welcome back, {user.alias}</span>
+                <span className="text-gray-300 text-sm">Welcome back, {user.alias}</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
+              <div className="flex items-center space-x-2 flex-wrap">
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
                   {user.xp.toLocaleString()} XP
                 </Badge>
-                <Badge className={getTierColor(user.tier)}>
+                <Badge className={`${getTierColor(user.tier)} text-xs`}>
                   {user.tier.toUpperCase()}
                 </Badge>
-                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50">
+                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 text-xs">
                   {user.streakDays}🔥
                 </Badge>
               </div>
@@ -239,7 +239,7 @@ export default function EnhancedNavigation({ user }: NavigationProps) {
         </div>
 
         {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
           {navigationItems.map((section) => (
             <div key={section.section}>
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
@@ -252,22 +252,22 @@ export default function EnhancedNavigation({ user }: NavigationProps) {
                   
                   return (
                     <Link key={item.id} href={item.href}>
-                      <div className={`group flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
+                      <div className={`group flex items-center space-x-3 p-2 sm:p-3 rounded-lg transition-all duration-200 ${
                         active 
                           ? 'bg-purple-500/20 border border-purple-500/50 text-white' 
                           : 'hover:bg-gray-800/50 text-gray-300 hover:text-white'
                       }`}>
-                        <div className={`p-2 rounded-md ${
+                        <div className={`p-1.5 sm:p-2 rounded-md ${
                           active 
                             ? 'bg-purple-500/30' 
                             : 'bg-gray-700/50 group-hover:bg-gray-600/50'
                         }`}>
-                          <Icon className="w-4 h-4" />
+                          <Icon className="w-3 h-3 sm:w-4 sm:h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-2">
-                            <span className="font-medium">{item.label}</span>
-                            <span className="text-sm">{item.badge}</span>
+                            <span className="font-medium text-sm sm:text-base">{item.label}</span>
+                            <span className="text-xs sm:text-sm">{item.badge}</span>
                           </div>
                           <p className="text-xs text-gray-400 truncate">
                             {item.description}
@@ -286,7 +286,7 @@ export default function EnhancedNavigation({ user }: NavigationProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-700">
+        <div className="p-3 sm:p-4 border-t border-gray-700">
           <div className="text-xs text-gray-400 text-center">
             <p>Enhanced Platform v2.0</p>
             <p className="mt-1">🚀 Next-gen healing technology</p>
