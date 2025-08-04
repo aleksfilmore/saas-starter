@@ -21,139 +21,189 @@ interface Question {
 const questions: Question[] = [
   {
     id: "conflict_response",
-    question: "When there's conflict in your relationship, you usually:",
+    question: "When tension spikes in your relationship:",
     options: [
-      { text: "Need immediate reassurance and fear they'll leave", value: "A", style: "anxious" },
-      { text: "Shut down and withdraw to protect yourself", value: "B", style: "avoidant" },
-      { text: "Try to talk it through calmly and find solutions", value: "C", style: "secure" },
-      { text: "Feel overwhelmed and react unpredictably", value: "D", style: "disorganized" }
+      { text: "Flood all channels with messages until they respond", value: "A", style: "anxious" },
+      { text: "Execute instant emotional shutdown protocols", value: "B", style: "avoidant" },
+      { text: "Deploy calm debugging conversation", value: "C", style: "secure" },
+      { text: "Crash between attack mode and retreat mode", value: "D", style: "disorganized" }
     ]
   },
   {
     id: "breakup_response",
-    question: "After a breakup, your first instinct is to:",
+    question: "Post-breakup, your system defaults to:",
     options: [
-      { text: "Desperately try to get them back or seek closure", value: "A", style: "anxious" },
-      { text: "Act like you're fine and avoid all reminders", value: "B", style: "avoidant" },
-      { text: "Process the emotions and focus on healing", value: "C", style: "secure" },
-      { text: "Alternate between chasing and running away", value: "D", style: "disorganized" }
+      { text: "Emergency reconnection attempts and data recovery", value: "A", style: "anxious" },
+      { text: "Total memory wipe and ghost protocol activation", value: "B", style: "avoidant" },
+      { text: "Controlled restart with self-repair sequences", value: "C", style: "secure" },
+      { text: "Random switching between pursuit and deletion", value: "D", style: "disorganized" }
     ]
   },
   {
     id: "intimacy_comfort",
-    question: "When someone gets really close to you emotionally:",
+    question: "When someone tries to access your emotional core:",
     options: [
-      { text: "You crave it but worry they'll abandon you", value: "A", style: "anxious" },
-      { text: "You feel suffocated and need space", value: "B", style: "avoidant" },
-      { text: "You enjoy the connection while maintaining independence", value: "C", style: "secure" },
-      { text: "You want it but also fear losing yourself", value: "D", style: "disorganized" }
+      { text: "Grant full permissions but panic about logout", value: "A", style: "anxious" },
+      { text: "Firewall blocks most connection attempts", value: "B", style: "avoidant" },
+      { text: "Allow secure access with healthy boundaries", value: "C", style: "secure" },
+      { text: "Permissions constantly flip between allow/deny", value: "D", style: "disorganized" }
     ]
   },
   {
     id: "communication_style",
-    question: "In relationships, your communication style is:",
+    question: "Your communication protocol tends to:",
     options: [
-      { text: "Emotional and seeking constant validation", value: "A", style: "anxious" },
-      { text: "Logical and keeping things surface-level", value: "B", style: "avoidant" },
-      { text: "Open, honest, and emotionally balanced", value: "C", style: "secure" },
-      { text: "Inconsistent - sometimes too much, sometimes nothing", value: "D", style: "disorganized" }
+      { text: "Broadcast emotions on all frequencies seeking ACK", value: "A", style: "anxious" },
+      { text: "Transmit only surface-level data packets", value: "B", style: "avoidant" },
+      { text: "Send clear, authentic signals both ways", value: "C", style: "secure" },
+      { text: "Switch randomly between overflow and silence", value: "D", style: "disorganized" }
     ]
   },
   {
     id: "self_worth",
-    question: "Your sense of self-worth in relationships comes from:",
+    question: "Your self-value algorithm calculates based on:",
     options: [
-      { text: "How much your partner needs and validates you", value: "A", style: "anxious" },
-      { text: "Your independence and self-sufficiency", value: "B", style: "avoidant" },
-      { text: "A balance of self-love and healthy connection", value: "C", style: "secure" },
-      { text: "It changes drastically based on the relationship", value: "D", style: "disorganized" }
+      { text: "External validation servers and dependency metrics", value: "A", style: "anxious" },
+      { text: "Solo performance stats and independence uptime", value: "B", style: "avoidant" },
+      { text: "Balanced internal/external data with stable baseline", value: "C", style: "secure" },
+      { text: "Highly volatile inputs causing constant recalculation", value: "D", style: "disorganized" }
+    ]
+  },
+  {
+    id: "past_patterns",
+    question: "Looking at your relationship history logs:",
+    options: [
+      { text: "Repeated cycles of over-attachment and abandonment fears", value: "A", style: "anxious" },
+      { text: "Pattern of emotional distance and exit strategies", value: "B", style: "avoidant" },
+      { text: "Generally healthy connections with room for growth", value: "C", style: "secure" },
+      { text: "Chaotic mix of intensity and withdrawal", value: "D", style: "disorganized" }
+    ]
+  },
+  {
+    id: "stress_response",
+    question: "Under emotional pressure, you typically:",
+    options: [
+      { text: "Escalate contact attempts and seek constant reassurance", value: "A", style: "anxious" },
+      { text: "Activate shutdown mode and isolate completely", value: "B", style: "avoidant" },
+      { text: "Implement stress management and communicate needs", value: "C", style: "secure" },
+      { text: "Flip unpredictably between panic and numbness", value: "D", style: "disorganized" }
+    ]
+  },
+  {
+    id: "recovery_approach",
+    question: "When processing emotional pain, you:",
+    options: [
+      { text: "Analyze every detail obsessively seeking closure", value: "A", style: "anxious" },
+      { text: "Minimize feelings and focus on moving forward", value: "B", style: "avoidant" },
+      { text: "Feel it fully while maintaining self-care routines", value: "C", style: "secure" },
+      { text: "Swing between emotional flooding and total numbness", value: "D", style: "disorganized" }
     ]
   }
 ];
 
 const attachmentStyles = {
   anxious: {
-    title: "Anxious Attachment",
-    emoji: "💔",
-    description: "You crave deep connection but fear abandonment. You give your all but often feel insecure.",
+    title: "Data Flooder",
+    subtitle: "(aka 'Anxious-Preoccupied' in therapist-speak)",
+    emoji: "💥",
+    description: "You broadcast love on every frequency and panic when the signal drops.",
+    coreGlitch: "Over-messaging, over-thinking, zero chill",
+    primaryFix: "Throttle outreach, amplify self-soothe circuits", 
+    firstRitual: "Breathe the Panic Packet Out",
+    archColor: "#00E0FF",
     traits: [
-      "Fear of abandonment",
-      "Need for constant reassurance", 
-      "Emotional intensity",
-      "Difficulty with boundaries",
-      "Overthinking behaviors"
+      "Emergency reconnection attempts when disconnected",
+      "Flood all channels seeking validation", 
+      "Panic mode activation on read-without-reply",
+      "Over-analysis of every micro-signal",
+      "Emotional overflow in high-stress situations"
     ],
     healing: [
-      "Self-soothing techniques",
-      "Building self-worth independently",
-      "Learning secure communication",
-      "Emotional regulation skills",
-      "Boundary setting practice"
+      "4-7-8 breathing protocol with calming mantras",
+      "Message throttling and pause-before-send training",
+      "Self-validation circuit building",
+      "Panic packet dissolution techniques",
+      "Secure attachment pattern reprogramming"
     ],
-    color: "from-red-500 to-pink-500",
-    borderColor: "border-red-500/50"
+    color: "from-cyan-400 to-blue-500",
+    borderColor: "border-cyan-500/50"
   },
   avoidant: {
-    title: "Avoidant Attachment", 
+    title: "Firewall Builder", 
+    subtitle: "(aka 'Dismissive-Avoidant' in therapist-speak)",
     emoji: "🛡️",
-    description: "You value independence and often struggle with emotional intimacy and vulnerability.",
+    description: "You build emotional firewalls faster than you build trust.",
+    coreGlitch: "Shutdown reflex, intimacy lag",
+    primaryFix: "Controlled port-opening, boundary articulation",
+    firstRitual: "Heartbeat Handshake",
+    archColor: "#FF5E5E",
     traits: [
-      "Fear of losing independence",
-      "Difficulty with emotional expression",
-      "Tendency to withdraw under stress",
-      "Discomfort with neediness",
-      "Self-reliance as protection"
+      "Instant emotional shutdown protocols",
+      "Firewall blocks most connection attempts",
+      "Surface-level data transmission only",
+      "Independence metrics over connection stats",
+      "Exit strategy preloaded in every interaction"
     ],
     healing: [
-      "Vulnerability practice",
-      "Emotional awareness building",
-      "Learning to receive support",
-      "Intimacy skill development",
-      "Communication enhancement"
+      "Body-scan with single vulnerability prompt",
+      "Controlled emotional port-opening exercises",
+      "Trust protocol gradual implementation", 
+      "Intimacy lag reduction training",
+      "Healthy boundary vs. wall distinction practice"
     ],
-    color: "from-blue-500 to-cyan-500",
-    borderColor: "border-blue-500/50"
+    color: "from-red-400 to-pink-500",
+    borderColor: "border-red-500/50"
   },
   secure: {
-    title: "Secure Attachment",
-    emoji: "🌟",
-    description: "You have a healthy balance of independence and intimacy. You're the relationship goals!",
+    title: "Secure Node",
+    subtitle: "(aka 'Secure' in therapist-speak)", 
+    emoji: "🔒",
+    description: "Congrats, you're the rare bug-free build—mostly.",
+    coreGlitch: "Minor update anxiety",
+    primaryFix: "Growth tasks, mentor role in community",
+    firstRitual: "Glow-Up Blueprint",
+    archColor: "#00E88B",
     traits: [
-      "Comfortable with intimacy",
-      "Healthy boundaries",
-      "Good communication skills", 
-      "Emotional stability",
-      "Secure sense of self"
+      "Stable baseline with balanced inputs",
+      "Secure access protocols with healthy boundaries",
+      "Clear authentic signal transmission",
+      "Effective stress management subroutines",
+      "Growth-oriented rather than survival-focused"
     ],
     healing: [
-      "Maintaining your strengths",
-      "Supporting others' growth",
-      "Deepening emotional intelligence",
-      "Relationship mentoring",
-      "Continued self-development"
+      "Future-self visualization and goal mapping",
+      "Advanced emotional intelligence upgrades",
+      "Community mentoring and wisdom sharing",
+      "Relationship skill enhancement modules",
+      "Leadership development in healing spaces"
     ],
-    color: "from-green-500 to-emerald-500",
+    color: "from-green-400 to-emerald-500",
     borderColor: "border-green-500/50"
   },
   disorganized: {
-    title: "Disorganized Attachment",
-    emoji: "🌪️", 
-    description: "You experience intense but inconsistent patterns. You want love but relationships feel chaotic.",
+    title: "Ghost in the Shell",
+    subtitle: "(aka 'Fearful-Avoidant' in therapist-speak)",
+    emoji: "👻", 
+    description: "\"Come closer / begone.\" You're push-pull personified.",
+    coreGlitch: "Approach-avoid whiplash",
+    primaryFix: "Stabilize threat detector, practice steady contact",
+    firstRitual: "Anchored in Ambivalence",
+    archColor: "#BF6BF7",
     traits: [
-      "Conflicting relationship desires",
-      "Emotional intensity swings",
-      "Push-pull dynamics",
-      "Difficulty trusting patterns",
-      "Complex trauma responses"
+      "Random switching between pursuit and deletion",
+      "Permissions flip constantly between allow/deny",
+      "Volatile inputs causing system instability",
+      "Chaotic mix of intensity and withdrawal",
+      "Unpredictable emotional state changes"
     ],
     healing: [
-      "Trauma-informed therapy",
-      "Emotional regulation training",
-      "Consistent self-care routines",
-      "Safe relationship practices",
-      "Inner child healing work"
+      "Grounding techniques with cognitive-dual writing",
+      "Threat detection system recalibration",
+      "Steady contact protocol development",
+      "Ambivalence acceptance and management",
+      "Trauma-informed system stabilization"
     ],
-    color: "from-purple-500 to-indigo-500",
+    color: "from-purple-400 to-indigo-500", 
     borderColor: "border-purple-500/50"
   }
 };
@@ -234,13 +284,13 @@ export default function AttachmentQuizPage() {
             
             <div className="mb-8">
               <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
-                🧠 Discover Your Attachment Style
+                <span className="glitch" data-text="SYSTEM SCAN">SYSTEM SCAN</span> v1.0
               </h1>
               <p className="text-xl text-gray-300 mb-6">
-                Understand your relationship patterns and unlock your personalized healing path
+                Answer 8 lightning-round prompts. We'll calibrate your daily rituals.
               </p>
               <p className="text-lg text-purple-400">
-                Free • 2 minutes • Get instant insights
+                No real names. No spam. Just data-driven healing.
               </p>
             </div>
 
@@ -248,35 +298,35 @@ export default function AttachmentQuizPage() {
               <CardContent className="p-8">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                   <div className="text-center">
-                    <div className="text-3xl mb-2">💔</div>
-                    <div className="text-sm text-purple-400 font-medium">Anxious</div>
+                    <div className="text-3xl mb-2">�</div>
+                    <div className="text-sm text-cyan-400 font-medium">Data Flooder</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl mb-2">🛡️</div>
-                    <div className="text-sm text-blue-400 font-medium">Avoidant</div>
+                    <div className="text-sm text-red-400 font-medium">Firewall Builder</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">🌟</div>
-                    <div className="text-sm text-green-400 font-medium">Secure</div>
+                    <div className="text-3xl mb-2">👻</div>
+                    <div className="text-sm text-purple-400 font-medium">Ghost in Shell</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">🌪️</div>
-                    <div className="text-sm text-indigo-400 font-medium">Disorganized</div>
+                    <div className="text-3xl mb-2">🔒</div>
+                    <div className="text-sm text-green-400 font-medium">Secure Node</div>
                   </div>
                 </div>
 
                 <div className="space-y-4 text-left">
                   <div className="flex items-start space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
-                    <p className="text-gray-300">Identify your core relationship patterns</p>
+                    <p className="text-gray-300">Scan your emotional operating system</p>
                   </div>
                   <div className="flex items-start space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
-                    <p className="text-gray-300">Get personalized healing strategies</p>
+                    <p className="text-gray-300">Get your personalized breakup protocol</p>
                   </div>
                   <div className="flex items-start space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-400 mt-1 flex-shrink-0" />
-                    <p className="text-gray-300">Unlock your emotional transformation roadmap</p>
+                    <p className="text-gray-300">Unlock daily ritual queue</p>
                   </div>
                 </div>
               </CardContent>
@@ -288,11 +338,11 @@ export default function AttachmentQuizPage() {
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-6 px-10 text-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Brain className="h-6 w-6 mr-3" />
-              Start Your Discovery
+              Start Free Scan →
             </Button>
 
             <p className="text-sm text-gray-400 mt-4">
-              No email required • Completely free • Join 50,000+ people who've discovered their style
+              Not therapy. Pure optimization. • No real names required • Already scanned? <Link href="/sign-in" className="text-purple-400 hover:text-purple-300 underline font-medium">Log in</Link>
             </p>
 
           </div>
@@ -314,10 +364,10 @@ export default function AttachmentQuizPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
-              Your Results Are In! {result.emoji}
+              SYSTEM SCAN COMPLETE
             </h1>
             <p className="text-xl text-purple-400">
-              Based on your responses, here's your attachment style and healing path
+              Your archetype profile has been generated
             </p>
           </div>
 
@@ -325,19 +375,38 @@ export default function AttachmentQuizPage() {
           <Card className={`bg-gray-800/90 border ${result.borderColor} backdrop-blur-xl mb-8`}>
             <CardHeader>
               <CardTitle className={`text-white text-3xl flex items-center bg-gradient-to-r ${result.color} bg-clip-text text-transparent`}>
-                {result.emoji} {result.title}
+                {result.emoji} Archetype: <span className="ml-2" style={{color: result.archColor}}>{result.title}</span>
               </CardTitle>
+              <p className="text-gray-400 text-lg italic">
+                {result.subtitle}
+              </p>
             </CardHeader>
             <CardContent className="space-y-6">
-              <p className="text-xl text-gray-300 leading-relaxed">
-                {result.description}
-              </p>
+              <div className="summary bg-gray-700/30 p-6 rounded-lg border border-gray-600/30">
+                <p className="text-xl text-gray-300 leading-relaxed mb-4">
+                  {result.description}
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="text-red-400 mr-3 font-bold">⚡ Core glitch:</span>
+                    <span className="text-gray-300">{result.coreGlitch}</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-400 mr-3 font-bold">💡 Primary fix:</span>
+                    <span className="text-gray-300">{result.primaryFix}</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-purple-400 mr-3 font-bold">🎯 First ritual queued:</span>
+                    <span className="text-gray-300">"{result.firstRitual}"</span>
+                  </li>
+                </ul>
+              </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                     <Target className="h-5 w-5 mr-2 text-red-400" />
-                    Your Patterns
+                    System Patterns
                   </h3>
                   <ul className="space-y-2">
                     {result.traits.map((trait, index) => (
@@ -352,7 +421,7 @@ export default function AttachmentQuizPage() {
                 <div>
                   <h3 className="text-xl font-bold text-white mb-4 flex items-center">
                     <Heart className="h-5 w-5 mr-2 text-green-400" />
-                    Your Healing Path
+                    Optimization Protocol
                   </h3>
                   <ul className="space-y-2">
                     {result.healing.map((step, index) => (
@@ -372,18 +441,28 @@ export default function AttachmentQuizPage() {
             <Card className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50">
               <CardContent className="p-8">
                 <h2 className="text-3xl font-bold text-white mb-4">
-                  Ready to Transform These Patterns?
+                  Save your results to unlock rituals
                 </h2>
-                <p className="text-xl text-gray-300 mb-6">
-                  Get a personalized healing plan, AI therapy sessions, and join thousands on their journey
-                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-left">
+                  <div className="bg-gray-800/40 p-4 rounded-lg">
+                    <span className="text-purple-400 font-semibold">• Byte wallet</span>
+                    <p className="text-sm text-gray-400 mt-1">Track healing progress</p>
+                  </div>
+                  <div className="bg-gray-800/40 p-4 rounded-lg">
+                    <span className="text-purple-400 font-semibold">• No-contact tracker</span>
+                    <p className="text-sm text-gray-400 mt-1">Stay strong together</p>
+                  </div>
+                  <div className="bg-gray-800/40 p-4 rounded-lg">
+                    <span className="text-purple-400 font-semibold">• Voice oracle teaser</span>
+                    <p className="text-sm text-gray-400 mt-1">AI therapy preview</p>
+                  </div>
+                </div>
                 <Button 
                   onClick={handleSignUpFromResults}
                   size="lg"
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-xl border-0 mr-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
-                  Start My Healing Journey
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  Create Account & Reveal Archetype →
                 </Button>
                 <Button 
                   onClick={() => router.push('/')}
@@ -393,6 +472,53 @@ export default function AttachmentQuizPage() {
                 >
                   Learn More First
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* FAQ Section */}
+            <Card className="bg-gray-800/50 border border-gray-600/50 text-left" id="faq-attachment">
+              <CardHeader>
+                <CardTitle className="text-white text-2xl">
+                  FAQ: What does my archetype actually mean?
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <details className="group">
+                  <summary className="cursor-pointer text-white font-semibold py-2 hover:text-purple-400 transition-colors">
+                    Where do these labels come from?
+                  </summary>
+                  <p className="text-gray-300 mt-2 pl-4 border-l-2 border-purple-500/30">
+                    We mapped your answers onto the attachment-style model used in psychology research. 
+                    But dry clinical terms sounded boring, so we gave each type a glitch-core codename.
+                  </p>
+                </details>
+                
+                <details className="group">
+                  <summary className="cursor-pointer text-white font-semibold py-2 hover:text-purple-400 transition-colors">
+                    Is this a medical diagnosis?
+                  </summary>
+                  <p className="text-gray-300 mt-2 pl-4 border-l-2 border-purple-500/30">
+                    Nope. It's a self-reflection tool, not a clinical assessment. Use it to tailor rituals, not to label your forever identity.
+                  </p>
+                </details>
+                
+                <details className="group">
+                  <summary className="cursor-pointer text-white font-semibold py-2 hover:text-purple-400 transition-colors">
+                    Can my archetype change?
+                  </summary>
+                  <p className="text-gray-300 mt-2 pl-4 border-l-2 border-purple-500/30">
+                    Absolutely. Secure Node is a skill set, not a birthright. Stick with the program and you'll watch your code refactor itself.
+                  </p>
+                </details>
+                
+                <details className="group">
+                  <summary className="cursor-pointer text-white font-semibold py-2 hover:text-purple-400 transition-colors">
+                    Why didn't you tell me up front?
+                  </summary>
+                  <p className="text-gray-300 mt-2 pl-4 border-l-2 border-purple-500/30">
+                    We keep the quiz jargon-free so you answer honestly, not to chase a label. Transparency kicks in after the scan—right here.
+                  </p>
+                </details>
               </CardContent>
             </Card>
 
@@ -417,10 +543,11 @@ export default function AttachmentQuizPage() {
         {/* Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-white font-medium">Question {currentQuestion + 1} of {questions.length}</p>
-            <p className="text-gray-400">{Math.round(progress)}% complete</p>
+            <p className="text-white font-medium">Prompt {currentQuestion + 1} of {questions.length}</p>
+            <p className="text-gray-400">{Math.round(progress)}% → 100%</p>
           </div>
           <Progress value={progress} className="h-2 bg-gray-700" />
+          <p className="text-xs text-gray-400 mt-2 text-center">Not therapy. Pure optimization.</p>
         </div>
 
         {/* Question */}

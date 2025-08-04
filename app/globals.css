@@ -91,6 +91,75 @@
   animation: glitch-pulse 3s infinite;
 }
 
+/* Glitch text effect */
+@keyframes glitch {
+  0% { 
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+  20% { 
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% { 
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% { 
+    transform: translate(2px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% { 
+    transform: translate(2px, -2px);
+    filter: hue-rotate(360deg);
+  }
+  100% { 
+    transform: translate(0);
+    filter: hue-rotate(0deg);
+  }
+}
+
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  10% { transform: skew(-2deg); }
+  20% { transform: skew(0deg); }
+  30% { transform: skew(1deg); }
+  40% { transform: skew(0deg); }
+  50% { transform: skew(-1deg); }
+  60% { transform: skew(0deg); }
+  70% { transform: skew(2deg); }
+  80% { transform: skew(0deg); }
+  90% { transform: skew(-1deg); }
+  100% { transform: skew(0deg); }
+}
+
+.glitch {
+  position: relative;
+  animation: glitch 1s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.8;
+  animation: glitch-skew 1s infinite;
+}
+
+.glitch::before {
+  animation-delay: 0.2s;
+  color: #ff00ff;
+  z-index: -1;
+}
+
+.glitch::after {
+  animation-delay: 0.4s;
+  color: #00ffff;
+  z-index: -2;
+}
+
 /* Focus rings for accessibility */
 button:focus-visible,
 a:focus-visible,

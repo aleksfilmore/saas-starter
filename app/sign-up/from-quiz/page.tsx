@@ -18,17 +18,24 @@ interface QuizResult {
 }
 
 const styleEmojis = {
-  anxious: "💔",
+  anxious: "💥",
   avoidant: "🛡️", 
-  secure: "🌟",
-  disorganized: "🌪️"
+  secure: "🔒",
+  disorganized: "👻"
+};
+
+const styleNames = {
+  anxious: "Data Flooder",
+  avoidant: "Firewall Builder", 
+  secure: "Secure Node",
+  disorganized: "Ghost in the Shell"
 };
 
 const styleColors = {
-  anxious: "from-red-500 to-pink-500",
-  avoidant: "from-blue-500 to-cyan-500",
-  secure: "from-green-500 to-emerald-500", 
-  disorganized: "from-purple-500 to-indigo-500"
+  anxious: "from-cyan-400 to-blue-500",
+  avoidant: "from-red-400 to-pink-500",
+  secure: "from-green-400 to-emerald-500", 
+  disorganized: "from-purple-400 to-indigo-500"
 };
 
 export default function SignUpFromQuizPage() {
@@ -145,7 +152,8 @@ export default function SignUpFromQuizPage() {
   }
 
   const styleColor = styleColors[quizResult.attachmentStyle as keyof typeof styleColors] || "from-purple-500 to-pink-500";
-  const styleEmoji = styleEmojis[quizResult.attachmentStyle as keyof typeof styleEmojis] || "🌟";
+  const styleEmoji = styleEmojis[quizResult.attachmentStyle as keyof typeof styleEmojis] || "🔒";
+  const styleName = styleNames[quizResult.attachmentStyle as keyof typeof styleNames] || "Secure Node";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
@@ -182,7 +190,7 @@ export default function SignUpFromQuizPage() {
               <div className="text-center">
                 <div className="text-4xl mb-2">{styleEmoji}</div>
                 <h2 className="text-2xl font-bold text-white mb-2">
-                  Your {quizResult.attachmentStyle.charAt(0).toUpperCase() + quizResult.attachmentStyle.slice(1)} Style
+                  Archetype: {styleName}
                 </h2>
                 <p className="text-gray-300">
                   Ready to unlock your personalized healing journey?
@@ -393,7 +401,7 @@ export default function SignUpFromQuizPage() {
             <div className="text-center">
               <div className="bg-gray-800/50 rounded-lg p-4">
                 <Target className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <div className="text-sm text-gray-300">Personalized based on your {quizResult.attachmentStyle} style</div>
+                <div className="text-sm text-gray-300">Personalized based on your {styleName} archetype</div>
               </div>
             </div>
             <div className="text-center">
