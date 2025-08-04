@@ -136,12 +136,6 @@ export default function HomePage() {
               <span className="text-gray-400">+</span>
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
             </Link>
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </Link>
             <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
               <Link href="/sign-in">
                 <Button variant="ghost" className="text-white hover:text-purple-400 text-sm md:text-base px-3 sm:px-4 py-2 transition-colors">
