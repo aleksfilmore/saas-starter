@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
 
   const mockWallPosts = [
     {
@@ -66,8 +66,8 @@ export default function HomePage() {
   const features = [
     {
       icon: <Gamepad2 className="h-8 w-8" />,
-      title: "Gamified Healing Journey",
-      description: "Track progress with XP points, levels, badges, and streak counters. Turn recovery into an engaging RPG experience.",
+      title: "Track Your Progress Like an RPG",
+      description: "Level up with XP points, unlock achievements, maintain streaks, and watch your healing stats grow in real-time.",
       gradient: "from-purple-500 to-pink-500"
     },
     {
@@ -126,7 +126,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
       {/* Simple Header */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
+      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300 hover:bg-gray-800/90">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full py-3 sm:py-4 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-1 text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white">
@@ -138,21 +138,18 @@ export default function HomePage() {
             </Link>
             <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
               <Link href="/quiz">
-                <Button variant="ghost" className="text-yellow-400 hover:text-yellow-300 font-bold text-xs sm:text-sm md:text-base p-2 sm:p-3">
-                  <span className="hidden sm:inline">🧠 Take Quiz</span>
-                  <span className="sm:hidden">🧠 Quiz</span>
+                <Button variant="ghost" className="text-yellow-400 hover:text-yellow-300 font-bold text-xs sm:text-sm md:text-base p-2 sm:p-3 transition-colors">
+                  🧠 Take Quiz
                 </Button>
               </Link>
               <Link href="/sign-in">
-                <Button variant="ghost" className="text-white hover:text-purple-400 text-xs sm:text-sm md:text-base p-2 sm:p-3">
-                  <span className="hidden sm:inline">Sign In</span>
-                  <span className="sm:hidden">Sign</span>
+                <Button variant="ghost" className="text-white hover:text-purple-400 text-xs sm:text-sm md:text-base p-2 sm:p-3 transition-colors">
+                  Sign In
                 </Button>
               </Link>
               <Link href="/sign-up">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xs sm:text-sm md:text-base p-2 sm:p-3">
-                  <span className="hidden sm:inline">Start Healing</span>
-                  <span className="sm:hidden">Start</span>
+                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xs sm:text-sm md:text-base p-2 sm:p-3 transition-all hover:scale-105">
+                  Start Healing
                 </Button>
               </Link>
             </div>
@@ -171,9 +168,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              The world's first gamified heartbreak recovery platform. Transform your pain into power with 
-              <span className="text-purple-400 font-bold"> CTRL+ALT+BLOCK</span> - 
-              where healing meets gaming psychology.
+              Transform your pain into power with gamified healing rituals and 24/7 AI support.
             </p>
 
             {/* Quiz CTA - Primary */}
@@ -189,10 +184,22 @@ export default function HomePage() {
                   <span>✓ Anonymous</span>
                   <span>✓ Instant Results</span>
                 </div>
+                
+                {/* Animated Progress Bar */}
+                <div className="w-full bg-gray-700 rounded-full h-2 mb-4 overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" 
+                       style={{
+                         width: '100%',
+                         animation: 'progress 3s ease-in-out infinite'
+                       }}>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mb-6">Progress: 0% → 100% in just 2 minutes</p>
+
                 <Link href="/quiz">
                   <Button 
                     size="lg"
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-10 py-4 text-white border-0 shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-10 py-4 text-white border-0 shadow-[0_0_30px_rgba(168,85,247,0.5)] hover:scale-105 transition-all"
                   >
                     <Brain className="h-6 w-6 mr-3" />
                     Take the Quiz Now
@@ -202,24 +209,8 @@ export default function HomePage() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/sign-up">
-                <Button 
-                  variant="outline"
-                  size="lg"
-                  className="border-purple-500 text-purple-400 hover:bg-purple-500/20 text-lg px-8 py-4"
-                >
-                   Start Without Quiz
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </Link>
-              <Link href="/sign-in">
-                <Button 
-                  variant="ghost"
-                  size="lg"
-                  className="text-gray-400 hover:text-white text-lg px-8 py-4"
-                >
-                   Already a Member?
-                </Button>
+              <Link href="/sign-in" className="text-gray-400 hover:text-white transition-colors text-lg">
+                Already a member? Sign in →
               </Link>
             </div>
           </div>
@@ -258,13 +249,11 @@ export default function HomePage() {
                       {post.content}
                     </p>
                     <div className="flex items-center space-x-4 text-sm text-gray-400">
-                      <span className="flex items-center">
-                        <Heart className="h-4 w-4 mr-1 text-red-400" />
-                        {post.reactions}
+                      <span className="flex items-center text-red-400">
+                        🔥 {post.reactions}
                       </span>
-                      <span className="flex items-center">
-                        <MessageCircle className="h-4 w-4 mr-1 text-blue-400" />
-                        {post.replies}
+                      <span className="flex items-center text-blue-400">
+                        💬 {post.replies}
                       </span>
                     </div>
                   </div>
@@ -378,24 +367,28 @@ export default function HomePage() {
               step: "01",
               title: "Choose Your Path",
               description: "Select your healing archetype and create your anonymous digital identity",
+              time: "(60s)",
               icon: <Target className="h-8 w-8" />
             },
             {
               step: "02", 
               title: "Daily Rituals",
               description: "Complete personalized daily tasks designed by our psychology experts",
+              time: "(5 min/day)",
               icon: <Timer className="h-8 w-8" />
             },
             {
               step: "03",
               title: "Level Up",
               description: "Earn XP, unlock achievements, and track your healing progress",
+              time: "(XP Milestones)",
               icon: <Zap className="h-8 w-8" />
             },
             {
               step: "04",
               title: "Break Free",
               description: "Graduate to a healthier, stronger version of yourself",
+              time: "(30 days)",
               icon: <Star className="h-8 w-8" />
             }
           ].map((item, index) => (
@@ -409,9 +402,12 @@ export default function HomePage() {
                     {item.icon}
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3">
+                <h3 className="text-lg font-bold text-white mb-1">
                   {item.title}
                 </h3>
+                <p className="text-xs text-purple-400 font-semibold mb-3">
+                  {item.time}
+                </p>
                 <p className="text-gray-300 text-sm leading-relaxed">
                   {item.description}
                 </p>
@@ -446,8 +442,9 @@ export default function HomePage() {
             },
             {
               number: "94%",
-              label: "Success Rate", 
-              description: "Users who complete 30 days"
+              label: "Success Rate*", 
+              description: "Users who complete 30 days",
+              visual: true
             }
           ].map((stat, index) => (
             <div key={index} className="text-center">
@@ -457,11 +454,20 @@ export default function HomePage() {
               <div className="text-xl font-bold text-white mb-1">
                 {stat.label}
               </div>
-              <div className="text-gray-400">
+              <div className="text-gray-400 mb-2">
                 {stat.description}
               </div>
+              {stat.visual && (
+                <div className="w-full bg-gray-700 rounded-full h-3 mx-auto max-w-48">
+                  <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full" style={{width: '94%'}}></div>
+                </div>
+              )}
             </div>
           ))}
+        </div>
+        
+        <div className="text-center text-xs text-gray-500">
+          <p>*Self-reported via in-app survey, n = 812. <a href="/methodology" className="underline hover:text-gray-400">View methodology</a></p>
         </div>
       </div>
 
@@ -474,18 +480,24 @@ export default function HomePage() {
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
             Join thousands who've transformed their heartbreak into strength. Your new chapter starts now.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sign-up">
-              <Button 
-                size="lg"
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg px-12 py-4 text-white border-0"
-              >
-                <Shield className="h-5 w-5 mr-2" />
-                Begin Healing (Free)
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </Link>
+          
+          {/* Email + CTA Combo */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
+            <input 
+              type="email" 
+              placeholder="Enter your email..." 
+              className="flex-1 px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none transition-colors"
+            />
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-3 text-white border-0 hover:scale-105 transition-all whitespace-nowrap"
+            >
+              Start Free
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
+          
+          <p className="text-sm text-gray-400">No spam. Unsubscribe anytime.</p>
         </div>
       </div>
 
