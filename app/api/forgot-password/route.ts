@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { users } from '@/lib/db/schema'
+import { db } from '@/lib/db/drizzle'
+import { users } from '@/lib/db/minimal-schema'
 import { eq } from 'drizzle-orm'
 import { emailService } from '@/lib/email'
 import { resetTokenStore } from '@/lib/auth/reset-tokens'
