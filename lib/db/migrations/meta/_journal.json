@@ -43,13 +43,6 @@
       "when": 1753838626954,
       "tag": "0005_dashing_amazoness",
       "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1754327394038,
-      "tag": "0006_pale_radioactive_man",
-      "breakpoints": true
     }
   ]
 }
