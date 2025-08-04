@@ -157,26 +157,23 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">
           <div className="space-y-8">
             <h1 className="text-5xl md:text-7xl font-black text-white leading-tight">
-              TERMINATE. <br />
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent glitch" data-text="FORMAT.">
-                FORMAT.
+              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                UNINSTALL YOUR EX.
               </span><br />
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                GLOW-UP.
+                INSTALL YOUR NEW CODE.
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Run a 60-second system scan and let the mainframe build your breakup-recovery protocol.
+              60-second system scan → maps your attachment style,<br />
+              loads daily no-contact rituals, and unlocks AI therapy on demand.
             </p>
 
             {/* Quiz CTA - Primary */}
             <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-2xl p-8 max-w-2xl mx-auto mb-8">
               <div className="text-center space-y-4">
                 <div className="text-4xl mb-2">🧠</div>
-                <h3 className="text-2xl font-bold text-white">Discover Your Attachment Style</h3>
-                <p className="text-gray-300 text-lg">
-                  Take our 60-second system scan to understand your relationship patterns and unlock your personalized healing roadmap
-                </p>
+                <h3 className="text-2xl font-bold text-white">60-second system scan → maps your attachment style,<br />loads daily no-contact rituals, and unlocks AI therapy on demand.</h3>
                 <div className="flex items-center justify-center space-x-6 text-sm text-gray-400 mb-6">
                   <span>✓ Free</span>
                   <span>✓ Anonymous</span>
