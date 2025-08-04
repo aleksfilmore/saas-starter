@@ -209,8 +209,8 @@ export default function AttachmentQuizPage() {
         {/* Header */}
         <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
           <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="w-full py-4 flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
+            <div className="w-full py-3 sm:py-4 flex items-center justify-between">
+              <Link href="/" className="flex items-center gap-1 text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white">
                 <span>CTRL</span>
                 <span className="text-gray-400">+</span>
                 <span>ALT</span>
@@ -218,9 +218,10 @@ export default function AttachmentQuizPage() {
                 <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
               </Link>
               <Link href="/">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                <Button variant="ghost" className="text-white hover:text-purple-400 text-sm sm:text-base p-2 sm:p-3">
+                  <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               </Link>
             </div>

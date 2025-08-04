@@ -157,18 +157,19 @@ export default function SignUpFromQuizPage() {
       {/* Header */}
       <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-2xl font-extrabold tracking-tight text-white">
+          <div className="w-full py-3 sm:py-4 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-1 text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white">
               <span>CTRL</span>
               <span className="text-gray-400">+</span>
               <span>ALT</span>
               <span className="text-gray-400">+</span>
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
             </Link>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-400">Step {currentStep} of 3</span>
-              <Link href="/sign-in" className="text-purple-400 hover:text-purple-300">
-                Already have an account?
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="text-xs sm:text-sm text-gray-400">Step {currentStep} of 3</span>
+              <Link href="/sign-in" className="text-purple-400 hover:text-purple-300 text-xs sm:text-sm">
+                <span className="hidden sm:inline">Already have an account?</span>
+                <span className="sm:hidden">Sign In</span>
               </Link>
             </div>
           </div>
