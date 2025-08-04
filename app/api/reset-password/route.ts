@@ -1,32 +1,108 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { users } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import bcrypt from 'bcryptjs'
+
+// Import the resetTokens from forgot-password API
+// In production, this should be in a shared store like Redis
+let resetTokens: Map<string, { email: string; expires: number }>
+
+// Initialize resetTokens if not already imported
+if (typeof resetTokens === 'undefined') {
+  resetTokens = new Map()
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    const { token, newPassword } = body
+
+    // Validation
+    if (!token || !newPassword) {
+      return NextResponse.json(
+        { success: false, error: 'Token and new password are required' },
+        { status: 400 }
+      )
+    }
+
+    if (newPassword.length < 8) {
+      return NextResponse.json(
+        { success: false, error: 'Password must be at least 8 characters long' },
+        { status: 400 }
+      )
+    }
+
+    // Validate password complexity
+    const hasUpperCase = /[A-Z]/.test(newPassword)
+    const hasLowerCase = /[a-z]/.test(newPassword)
+    const hasNumbers = /\d/.test(newPassword)
     
-    // Forward request to standalone auth server
-    const response = await fetch('http://localhost:3002/api/reset-password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
+    if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
+      return NextResponse.json(
+        { success: false, error: 'Password must contain at least one uppercase letter, lowercase letter, and number' },
+        { status: 400 }
+      )
+    }
+
+    // Check if token exists and is valid
+    const tokenData = resetTokens.get(token)
+    if (!tokenData) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired reset token' },
+        { status: 400 }
+      )
+    }
+
+    // Check if token has expired
+    if (tokenData.expires < Date.now()) {
+      resetTokens.delete(token)
+      return NextResponse.json(
+        { success: false, error: 'Reset token has expired' },
+        { status: 400 }
+      )
+    }
+
+    // Find user in database
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, tokenData.email))
+      .limit(1)
+
+    if (existingUser.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12)
+
+    // Update user password in database
+    await db
+      .update(users)
+      .set({ 
+        password: hashedPassword,
+        updatedAt: new Date()
+      })
+      .where(eq(users.email, tokenData.email))
+
+    // Remove the used token
+    resetTokens.delete(token)
+
+    console.log(`Password reset successful for: ${tokenData.email}`)
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Your password has been reset successfully'
     })
 
-    const data = await response.json()
-
-    return NextResponse.json(data, { 
-      status: response.status,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
-    })
   } catch (error) {
     console.error('Reset password API error:', error)
     return NextResponse.json(
-      { success: false, message: 'Network error. Please try again.' },
+      { success: false, error: 'Network error. Please try again.' },
       { status: 500 }
     )
   }
