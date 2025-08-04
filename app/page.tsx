@@ -264,9 +264,6 @@ export default function ComingSoonPage() {
                   <p className="text-gray-300 text-sm mb-3">
                     Join the waitlist for early access to the most advanced heartbreak recovery platform
                   </p>
-                  <p className="text-cyan-400 text-xs">
-                    {waitlistCount.toLocaleString()} heartbreakers already on the waitlist
-                  </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
