@@ -1,6 +1,6 @@
 # 🔧 NETLIFY BUILD FIX - ALL ISSUES RESOLVED
 
-## 🚨 Issue History & Resolutions (11 Issues Fixed)
+## 🚨 Issue History & Resolutions (12 Issues Fixed)
 
 ### **Issue 1**: Syntax Error (RESOLVED ✅)
 **Error**: Unexpected token `div` at line 127 in `app/admin/page.tsx`
@@ -79,6 +79,15 @@
 - Added `react-datepicker: ^7.5.0` to package.json
 - Added `@types/react-datepicker: ^7.0.0` for TypeScript support
 - Installed packages to ensure build compatibility
+
+### **Issue 12**: Recurring Babel/SWC Conflict (RESOLVED ✅)
+**Error**: Same "next/font requires SWC but Babel is being used" error recurring
+**Root Cause**: babel.config.js file persisted despite previous deletion attempts (git/commit issue)
+**Fix**: 
+- Force removed `babel.config.js` file again with verbose deletion
+- Verified file is completely removed from file system
+- Cleared `.next` build cache
+- Confirmed this is the same Issue #7/#9 recurring due to uncommitted changes
 
 ---
 
