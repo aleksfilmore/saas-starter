@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     const cooldownHours = 24;
 
     if (lastReroll) {
-      const timeSinceReroll = now.getTime() - new Date(lastReroll).getTime();
+      const timeSinceReroll = now.getTime() - new Date(lastReroll as string | number | Date).getTime();
       const hoursLeft = cooldownHours - (timeSinceReroll / (1000 * 60 * 60));
       
       if (hoursLeft > 0) {
