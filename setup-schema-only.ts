@@ -57,7 +57,7 @@ async function setupDatabase() {
   const createUserRitualsTable = `
     CREATE TABLE IF NOT EXISTS user_rituals (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       ritual_id UUID NOT NULL REFERENCES rituals(id) ON DELETE CASCADE,
       completed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
       xp_earned INTEGER DEFAULT 0,
@@ -73,7 +73,7 @@ async function setupDatabase() {
   const createRitualAssignmentsTable = `
     CREATE TABLE IF NOT EXISTS ritual_assignments (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       ritual_id UUID NOT NULL REFERENCES rituals(id) ON DELETE CASCADE,
       assigned_date DATE NOT NULL DEFAULT CURRENT_DATE,
       reroll_count INTEGER DEFAULT 0,
@@ -103,7 +103,7 @@ async function setupDatabase() {
   const createNoContactStreaksTable = `
     CREATE TABLE IF NOT EXISTS no_contact_streaks (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       start_date DATE NOT NULL DEFAULT CURRENT_DATE,
       current_day INTEGER DEFAULT 1 CHECK (current_day >= 0 AND current_day <= 90),
       last_check_date DATE,
