@@ -173,7 +173,10 @@ export default function HomePage() {
             <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50 rounded-2xl p-8 max-w-2xl mx-auto mb-8">
               <div className="text-center space-y-4">
                 <div className="text-4xl mb-2">🧠</div>
-                <h3 className="text-2xl font-bold text-white">60-second system scan → maps your attachment style,<br />loads daily no-contact rituals, and unlocks AI therapy on demand.</h3>
+                <h3 className="text-2xl font-bold text-white">Start Your System Scan</h3>
+                <p className="text-gray-300 text-lg">
+                  Discover your attachment style and get your personalized healing protocol
+                </p>
                 <div className="flex items-center justify-center space-x-6 text-sm text-gray-400 mb-6">
                   <span>✓ Free</span>
                   <span>✓ Anonymous</span>
