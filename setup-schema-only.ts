@@ -12,11 +12,11 @@ async function executeSQL(sqlStatement: string, description: string) {
     console.log(`✅ ${description} - SUCCESS`);
     return true;
   } catch (error) {
-    if (error.message.includes('already exists')) {
+    if (error instanceof Error && error.message.includes('already exists')) {
       console.log(`⚠️ ${description} - ALREADY EXISTS`);
       return true;
     } else {
-      console.error(`❌ ${description} - FAILED:`, error.message);
+      console.error(`❌ ${description} - FAILED:`, error instanceof Error ? error.message : 'Unknown error');
       return false;
     }
   }
