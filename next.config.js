@@ -1,13 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['bcryptjs', 'drizzle-orm']
-  },
+  serverExternalPackages: ['bcryptjs', 'drizzle-orm'],
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
-  // Optimize for production
-  swcMinify: true,
+  // Production optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

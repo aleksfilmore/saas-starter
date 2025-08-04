@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@babel/plugin-syntax-jsx": "^7.27.1",
+    "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "eslint": "^9.32.0",
     "eslint-config-next": "15.4.5"
