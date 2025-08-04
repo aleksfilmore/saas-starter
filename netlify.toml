@@ -1,3 +1,4 @@
+# Netlify configuration for CTRL+ALT+BLOCK Therapy Platform
 [build]
 command = "npm run build"
 publish = ".next"
