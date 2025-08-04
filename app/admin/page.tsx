@@ -129,26 +129,27 @@ export default function HomePage() {
       <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300 hover:bg-gray-800/90">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full py-3 sm:py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-white">
+            <Link href="/" className="flex items-center gap-1 text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight text-white">
               <span>CTRL</span>
               <span className="text-gray-400">+</span>
               <span>ALT</span>
               <span className="text-gray-400">+</span>
               <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
             </Link>
-            <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
-              <Link href="/quiz">
-                <Button variant="ghost" className="text-yellow-400 hover:text-yellow-300 font-bold text-xs sm:text-sm md:text-base p-2 sm:p-3 transition-colors">
-                  🧠 Take Quiz
-                </Button>
-              </Link>
+              <span>CTRL</span>
+              <span className="text-gray-400">+</span>
+              <span>ALT</span>
+              <span className="text-gray-400">+</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            </Link>
+            <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
               <Link href="/sign-in">
-                <Button variant="ghost" className="text-white hover:text-purple-400 text-xs sm:text-sm md:text-base p-2 sm:p-3 transition-colors">
+                <Button variant="ghost" className="text-white hover:text-purple-400 text-sm md:text-base px-3 sm:px-4 py-2 transition-colors">
                   Sign In
                 </Button>
               </Link>
-              <Link href="/sign-up">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xs sm:text-sm md:text-base p-2 sm:p-3 transition-all hover:scale-105">
+              <Link href="/quiz">
+                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-sm md:text-base px-4 sm:px-6 py-2 transition-all hover:scale-105 font-semibold">
                   Start Healing
                 </Button>
               </Link>
@@ -202,7 +203,7 @@ export default function HomePage() {
                     className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-10 py-4 text-white border-0 shadow-[0_0_30px_rgba(168,85,247,0.5)] hover:scale-105 transition-all"
                   >
                     <Brain className="h-6 w-6 mr-3" />
-                    Take the Quiz Now
+                    Start Your Healing Journey
                   </Button>
                 </Link>
               </div>
