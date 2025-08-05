@@ -116,7 +116,7 @@ export default function SignUpFromQuizPage() {
         source: 'quiz-conversion'
       };
 
-      const response = await fetch('/api/signup', {
+      const response = await fetch('/api/signup-local', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

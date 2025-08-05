@@ -52,7 +52,7 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('/api/signup-local', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

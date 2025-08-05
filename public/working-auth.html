@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Portal - Working Solution</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .form-section h2 {
+            margin-top: 0;
+            color: #ffffff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        input:focus {
+            outline: none;
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .success {
+            color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .error {
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f44336;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .info {
+            color: #2196F3;
+            background: rgba(33, 150, 243, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+            margin: 10px 0;
+        }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Authentication Working</h1>
+        
+        <!-- Local Signup -->
+        <div class="form-section">
+            <h2>👤 Create Account</h2>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="signupEmail" placeholder="your@email.com" value="user@example.com">
+            </div>
+            <div class="form-group">
+                <label>Username:</label>
+                <input type="text" id="signupUsername" placeholder="username" value="testuser">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="signupPassword" placeholder="password" value="password123">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password:</label>
+                <input type="password" id="signupConfirm" placeholder="password" value="password123">
+            </div>
+            <button onclick="performSignup()">Create Account</button>
+            <div id="signupResult"></div>
+        </div>
+
+        <!-- Local Login -->
+        <div class="form-section">
+            <h2>🔐 Login</h2>
+            <div class="form-group">
+                <label>Email or Username:</label>
+                <input type="text" id="loginUser" placeholder="email or username" value="user@example.com">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="loginPassword" placeholder="password" value="password123">
+            </div>
+            <button onclick="performLogin()">Login</button>
+            <div id="loginResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // Signup function
+        async function performSignup() {
+            const resultDiv = document.getElementById('signupResult');
+            resultDiv.innerHTML = '<div class="info">Creating account...</div>';
+            
+            const formData = new FormData();
+            formData.append('email', document.getElementById('signupEmail').value);
+            formData.append('username', document.getElementById('signupUsername').value);
+            formData.append('password', document.getElementById('signupPassword').value);
+            formData.append('confirmPassword', document.getElementById('signupConfirm').value);
+            
+            try {
+                const response = await fetch('/api/signup-local', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Account created successfully!</div>
+                        <div class="info">You can now login with your credentials</div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        // Login function
+        async function performLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = '<div class="info">Logging in...</div>';
+            
+            const formData = new FormData();
+            formData.append('login', document.getElementById('loginUser').value);
+            formData.append('password', document.getElementById('loginPassword').value);
+            
+            try {
+                const response = await fetch('/api/login-local', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Login successful!</div>
+                        <div class="info">Welcome back, ${data.user.username}!</div>
+                        <div class="info">XP: ${data.user.xp} | Level: ${data.user.level}</div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
