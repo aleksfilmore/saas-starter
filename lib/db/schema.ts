@@ -25,6 +25,19 @@ export const users = pgTable('users', {
   byteBalance: integer('byte_balance').notNull().default(100),
   glowUpLevel: integer('glow_up_level').notNull().default(1),
   
+  // Dashboard 2.0 fields
+  xp: integer('xp').notNull().default(0), // Alias for xpPoints for consistency
+  level: integer('level').notNull().default(1), // Alias for glowUpLevel
+  bytes: integer('bytes').notNull().default(100), // Alias for byteBalance
+  streak: integer('streak').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  noContactDays: integer('no_contact_days').notNull().default(0),
+  uxStage: text('ux_stage').default('newcomer'), // newcomer, established, veteran, system_admin
+  
+  // AI Therapy quota system
+  aiQuotaUsed: integer('ai_quota_used').notNull().default(0),
+  aiQuotaResetAt: timestamp('ai_quota_reset_at', { withTimezone: true, mode: 'date' }),
+  
   // Admin & Status
   isAdmin: boolean('is_admin').notNull().default(false),
   isBanned: boolean('is_banned').notNull().default(false),
@@ -114,6 +127,23 @@ export const userDailyPrescriptions = pgTable('user_daily_prescriptions', {
   completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
   completionNotes: text('completion_notes'),
   completionMood: integer('completion_mood'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// Dashboard 2.0 Rituals Table
+export const rituals = pgTable('rituals', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  category: text('category').notNull(), // emotional_regulation, mindfulness, etc.
+  intensity: integer('intensity').notNull().default(1), // 1-5 scale
+  duration: integer('duration').notNull().default(10), // minutes
+  isCompleted: boolean('is_completed').notNull().default(false),
+  completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
+  isReroll: boolean('is_reroll').notNull().default(false), // true if generated via reroll
+  xpReward: integer('xp_reward').notNull().default(50),
+  bytesReward: integer('bytes_reward').notNull().default(25),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 });
 

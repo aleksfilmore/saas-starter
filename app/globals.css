@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dashboard 2.0 Design Tokens */
+@import '../styles/dashboard-tokens.css';
+
 @layer base {
   * {
     box-sizing: border-box;
