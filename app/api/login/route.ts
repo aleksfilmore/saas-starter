@@ -1,11 +1,9 @@
-// Production Login API route - Direct database connection with Lucia auth
+// Production Login API route - Direct database connection
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/minimal-schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-import { lucia } from '@/lib/auth';
-import { cookies } from 'next/headers';
 
 export interface LoginResponse {
   error?: string | null;
@@ -63,15 +61,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     ];
     const role = adminEmails.includes(email.toLowerCase()) ? 'admin' : 'user';
 
-    // Create Lucia session
-    const session = await lucia.createSession(user[0].id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    
-    // Set the session cookie
-    const cookieStore = await cookies();
-    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-
-    // Create fallback token for localStorage compatibility
+    // Create mock token (you may want to use JWT in real production)
     const token = `auth-token-${user[0].id}-${Date.now()}`;
 
     console.log('User logged in:', email);

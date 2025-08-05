@@ -24,33 +24,43 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Important for cookies
         body: JSON.stringify({ email, password }),
       })
 
       const data = await response.json()
 
-      if (response.ok) {
-        if (data.token) {
-          localStorage.setItem('auth-token', data.token)
-        }
-        // Store user data
-        if (data.data) {
-          localStorage.setItem('user-email', data.data.email)
-          localStorage.setItem('user-id', data.data.userId)
-          localStorage.setItem('user-role', data.data.role || 'user')
-          if (data.data.quizResult) {
-            localStorage.setItem('quizResult', JSON.stringify(data.data.quizResult))
-            localStorage.setItem('attachmentStyle', data.data.quizResult.attachmentStyle)
+      if (response.ok && data.success) {
+        // Store user data in localStorage for compatibility
+        if (data.user) {
+          localStorage.setItem('user-email', data.user.email)
+          localStorage.setItem('user-id', data.user.id)
+          
+          // Determine role based on email (consistent with old logic)
+          const adminEmails = ['system_admin@ctrlaltblock.com'];
+          const role = adminEmails.includes(data.user.email.toLowerCase()) ? 'admin' : 'user';
+          localStorage.setItem('user-role', role)
+          
+          // Set admin quiz result if admin
+          if (role === 'admin') {
+            const adminQuizResult = {
+              attachmentStyle: 'secure',
+              traits: ['System administrator access', 'Full platform visibility', 'Advanced debugging capabilities'],
+              healingPath: ['Platform management', 'User support', 'System optimization'],
+              completedAt: new Date().toISOString()
+            };
+            localStorage.setItem('quizResult', JSON.stringify(adminQuizResult))
+            localStorage.setItem('attachmentStyle', adminQuizResult.attachmentStyle)
           }
         }
         router.push('/dashboard')
       } else {
-        setError(data.message || 'Sign in failed. Please check your credentials.')
+        setError(data.error || 'Sign in failed. Please check your credentials.')
       }
     } catch (err) {
       setError('Network error. Please try again.')

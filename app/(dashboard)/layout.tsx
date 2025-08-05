@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { AuthWrapper } from '@/lib/hooks/useAuth'
 
 export default function DashboardLayout({
   children,
@@ -7,10 +6,8 @@ export default function DashboardLayout({
   children: ReactNode
 }) {
   return (
-    <AuthWrapper requireAuth={true}>
-      <div className="min-h-screen bg-background">
-        {children}
-      </div>
-    </AuthWrapper>
+    <div className="min-h-screen bg-background">
+      {children}
+    </div>
   )
 }
