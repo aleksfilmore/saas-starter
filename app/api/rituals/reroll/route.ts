@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         description: newRitual.description,
         category: newRitual.category,
         intensity: newRitual.intensity,
-        duration: newRitual.duration,
+        duration: 10, // Default 10 minutes for prescribed rituals
         isReroll: true,
         isCompleted: false,
         createdAt: new Date()
