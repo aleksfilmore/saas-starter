@@ -66,6 +66,12 @@ export const validateRequest = cache(
   }
 );
 
+// Helper function to get user ID from session
+export const getUserId = async (): Promise<string | null> => {
+  const { user } = await validateRequest();
+  return user?.id || null;
+};
+
 // This declaration merges our custom user attributes with the default Lucia user type.
 declare module 'lucia' {
   interface Register {

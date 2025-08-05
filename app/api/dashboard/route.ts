@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserId } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { users, dailyCheckIns, rituals, wallPosts } from '@/lib/db/schema'
+import { users, dailyCheckIns, rituals, anonymousPosts } from '@/lib/db/schema'
 import { eq, sql, desc, count } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
@@ -71,8 +71,8 @@ export async function GET(request: NextRequest) {
     // Get Wall post count for user
     const [wallCount] = await db
       .select({ count: count() })
-      .from(wallPosts)
-      .where(eq(wallPosts.userId, userId))
+      .from(anonymousPosts)
+      .where(eq(anonymousPosts.userId, userId))
 
     return NextResponse.json({
       user: {
