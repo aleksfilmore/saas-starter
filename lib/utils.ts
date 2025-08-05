@@ -7,6 +7,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Generate a unique ID for database records
+ */
+export function generateId(): string {
+  return crypto.randomUUID();
+}
+
+/**
  * Safely extracts a user ID from Lucia auth for database operations
  * @param user - The user object from Lucia auth
  * @returns The user ID as a string

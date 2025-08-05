@@ -1,84 +1,94 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserId } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { users, rituals } from '@/lib/db/schema'
-import { eq, sql } from 'drizzle-orm'
-import { getRandomRitual } from '@/lib/prescribed-rituals'
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { users, rituals } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { rerollRitual } from '@/lib/ritual/ritual-engine';
 
 export async function POST(request: NextRequest) {
   try {
-    const userId = await getUserId()
+    // Get user email from headers (temporary auth)
+    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com';
     
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!userEmail) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has already rerolled today
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    const existingReroll = await db
-      .select()
-      .from(rituals)
-      .where(
-        sql`${rituals.userId} = ${userId} 
-            AND ${rituals.isReroll} = true 
-            AND ${rituals.createdAt} >= ${today}`
-      )
-      .limit(1)
-
-    if (existingReroll.length > 0) {
-      return NextResponse.json(
-        { error: 'You can only reroll once per day' },
-        { status: 429 }
-      )
-    }
-
-    // Get user data for ritual personalization
-    const [user] = await db
+    // Get user data
+    const userData = await db
       .select()
       .from(users)
-      .where(eq(users.id, userId))
-      .limit(1)
+      .where(eq(users.email, userEmail))
+      .limit(1);
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!userData.length) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Generate new ritual
-    const newRitual = getRandomRitual()
+    const user = userData[0];
+
+    // Check reroll limits (1 per day for freemium, unlimited for paid)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     
-    // Create new ritual record
-    const [createdRitual] = await db
-      .insert(rituals)
-      .values({
-        id: crypto.randomUUID(),
-        userId,
+    const todaysRerolls = await db
+      .select()
+      .from(rituals)
+      .where(and(
+        eq(rituals.userId, user.id),
+        eq(rituals.isReroll, true)
+      ));
+
+    const todaysRerollCount = todaysRerolls.filter(r => 
+      r.createdAt >= today
+    ).length;
+
+    // Apply reroll limits based on tier
+    const dashboardType = user.dashboardType || 'freemium';
+    const maxRerolls = dashboardType === 'freemium' ? 1 : 3; // Freemium: 1/day, Paid: 3/day
+
+    if (todaysRerollCount >= maxRerolls) {
+      return NextResponse.json({
+        error: `Daily reroll limit reached (${maxRerolls}/day)`,
+        maxRerolls,
+        currentRerolls: todaysRerollCount,
+        tier: dashboardType
+      }, { status: 429 });
+    }
+
+    // Perform the reroll
+    const newRitual = await rerollRitual(user.id);
+
+    if (!newRitual) {
+      return NextResponse.json({
+        error: 'Failed to generate new ritual'
+      }, { status: 500 });
+    }
+
+    console.log('✅ New ritual generated via reroll:', newRitual.title);
+
+    return NextResponse.json({
+      success: true,
+      ritual: {
+        id: newRitual.id,
         title: newRitual.title,
         description: newRitual.description,
         category: newRitual.category,
         intensity: newRitual.intensity,
-        duration: 10, // Default 10 minutes for prescribed rituals
-        isReroll: true,
-        isCompleted: false,
-        createdAt: new Date()
-      })
-      .returning()
-
-    console.log('✅ New ritual generated via reroll:', createdRitual)
-
-    return NextResponse.json({
-      success: true,
-      ritual: createdRitual,
-      message: 'New ritual generated! You can reroll again tomorrow.'
-    })
+        duration: newRitual.duration,
+        xpReward: newRitual.xpReward,
+        bytesReward: newRitual.bytesReward
+      },
+      rerollsUsed: todaysRerollCount + 1,
+      rerollsRemaining: maxRerolls - (todaysRerollCount + 1),
+      message: `New ritual generated! ${maxRerolls - (todaysRerollCount + 1)} rerolls remaining today.`
+    });
 
   } catch (error) {
-    console.error('❌ Ritual reroll error:', error)
+    console.error('❌ Ritual reroll error:', error);
     return NextResponse.json(
       { error: 'Failed to generate new ritual' },
       { status: 500 }
-    )
+    );
   }
 }
 

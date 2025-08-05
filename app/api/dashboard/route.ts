@@ -1,106 +1,162 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { 
+  calculateDashboardType, 
+  getDashboardConfig, 
+  hasFeatureAccess,
+  DashboardType 
+} from '@/lib/user/user-tier-service';
+import { getTodaysRitual } from '@/lib/ritual/ritual-engine';
 
 export async function GET(request: NextRequest) {
   try {
-    // For now, let's get user data from localStorage/session 
-    // In a real implementation, you'd get userId from session/JWT
+    // Get user email from headers (temporary auth method)
+    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com';
     
-    // Since we don't have a proper session system yet, we'll create mock data
-    // based on the minimal database schema we actually have
-    
-    const sql = neon(process.env.POSTGRES_URL!)
-    
-    // Try to get user email from headers (sent by frontend)
-    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com'
-    
-    // Get basic user data from our minimal schema
-    const users = await sql`
-      SELECT id, email, archetype, last_reroll_at
-      FROM users 
-      WHERE email = ${userEmail} 
-      LIMIT 1
-    `
-    
-    const user = users[0]
-    
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!userEmail) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Create mock data that matches what the dashboard expects
-    // This is temporary until proper database migration is done
-    const mockUserData = {
+    // Get user data
+    const userData = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
+
+    if (!userData.length) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const user = userData[0];
+
+    // Calculate current dashboard type
+    const dashboardType = calculateDashboardType({
       id: user.id,
-      username: user.email.split('@')[0], // Use email prefix as username
-      email: user.email,
-      level: 1, // Starting level
-      xp: 100, // Starting XP
-      nextLevelXP: 1000,
-      progressToNext: 10, // 100/1000 * 100
-      bytes: 50, // Starting currency
-      streak: 1, // Starting streak
-      longestStreak: 1,
-      noContactDays: 1, // Starting no-contact days
-      avatar: '🔥', // Default avatar
-      uxStage: user.archetype || 'newcomer',
-      wallPosts: 0,
-      joinDate: new Date().toISOString(),
-      lastActive: user.last_reroll_at || new Date().toISOString()
+      tier: (user.tier as 'freemium' | 'paid') || 'freemium',
+      status: (user.status as 'active' | 'cancelled' | 'trialing') || 'active',
+      createdAt: user.createdAt,
+      protocolDay: user.protocolDay || 0
+    });
+
+    // Update dashboard type if it changed
+    if (user.dashboardType !== dashboardType) {
+      await db
+        .update(users)
+        .set({ dashboardType })
+        .where(eq(users.id, user.id));
     }
 
-    // Mock today's ritual
-    const todayRituals = [
-      {
-        id: 'daily-ritual-1',
-        title: 'Morning Mindfulness Check-in',
-        description: 'Take 5 minutes to center yourself and set intentions for the day.',
-        category: 'mindfulness',
-        intensity: 2,
-        duration: 5,
-        isCompleted: false,
-        completedAt: null
-      }
-    ]
+    // Get dashboard configuration
+    const dashboardConfig = getDashboardConfig(dashboardType);
 
-    // Feature gates based on minimal progression
+    // Get today's ritual
+    const todaysRitual = await getTodaysRitual(user.id);
+
+    // Calculate streak status
+    const today = new Date();
+    const lastRitual = user.lastRitualCompleted;
+    const isStreakActive = lastRitual && 
+      (today.getTime() - lastRitual.getTime()) < (24 * 60 * 60 * 1000);
+
+    // Build feature flags based on dashboard type
     const featureGates = {
-      noContactTracker: true, // Always available
-      dailyLogs: true, // Available for everyone
-      aiTherapy: true, // Available for everyone for now
-      wallRead: true, // Available for everyone
-      wallPost: true, // Available for everyone
-      progressAnalytics: true // Available for everyone
-    }
+      noContactTracker: hasFeatureAccess(dashboardType, 'no_contact_tracker'),
+      dailyLogs: hasFeatureAccess(dashboardType, 'emotional_dial'),
+      aiTherapy: hasFeatureAccess(dashboardType, 'ai_therapy_weekly'),
+      wallRead: true, // All users can read
+      wallPost: hasFeatureAccess(dashboardType, 'wall_write_access'),
+      progressAnalytics: dashboardType !== 'freemium',
+      byteShop: hasFeatureAccess(dashboardType, 'byte_shop_limited') || 
+                hasFeatureAccess(dashboardType, 'byte_shop_full'),
+      ritualBank: hasFeatureAccess(dashboardType, 'ritual_bank_limited') ||
+                  hasFeatureAccess(dashboardType, 'ritual_bank_full'),
+      ritualScheduler: hasFeatureAccess(dashboardType, 'ritual_scheduler'),
+      aiCompanion: hasFeatureAccess(dashboardType, 'ai_companion'),
+      missionLogs: hasFeatureAccess(dashboardType, 'mission_logs')
+    };
 
-    // Mock AI quota
+    // AI quota information
     const aiQuota = {
-      msgsLeft: 20,
-      totalQuota: 20,
-      resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      canPurchaseMore: true,
-      purchaseCost: 10
-    }
+      msgsLeft: Math.max(0, 20 - (user.aiQuotaUsed || 0)),
+      totalQuota: dashboardType === 'freemium' ? 0 : 20,
+      resetAt: user.aiQuotaResetAt?.toISOString() || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      canPurchaseMore: dashboardType !== 'freemium',
+      purchaseCost: dashboardType === 'freemium' ? 100 : 50
+    };
+
+    // User stats
+    const userStats = {
+      id: user.id,
+      username: user.codename || user.email.split('@')[0],
+      email: user.email,
+      level: user.level || 1,
+      xp: user.xp || 0,
+      nextLevelXP: ((user.level || 1) + 1) * 1000,
+      progressToNext: Math.floor(((user.xp || 0) % 1000) / 10),
+      bytes: user.bytes || 100,
+      streak: isStreakActive ? user.streakDays : 0,
+      longestStreak: user.longestStreak || 0,
+      noContactDays: user.noContactDays || 0,
+      avatar: user.avatarStyle || '🔥',
+      uxStage: user.uxStage || dashboardType,
+      tier: user.tier || 'freemium',
+      dashboardType,
+      emotionalArchetype: user.emotionalArchetype,
+      protocolDay: user.protocolDay || 0,
+      joinDate: user.createdAt.toISOString(),
+      lastActive: user.lastLogin?.toISOString() || user.createdAt.toISOString()
+    };
+
+    // Today's rituals array (for compatibility)
+    const todayRituals = todaysRitual ? [
+      {
+        id: todaysRitual.id,
+        title: todaysRitual.title,
+        description: todaysRitual.description,
+        category: todaysRitual.category,
+        intensity: todaysRitual.intensity,
+        duration: todaysRitual.duration,
+        isCompleted: false,
+        completedAt: null,
+        xpReward: todaysRitual.xpReward,
+        bytesReward: todaysRitual.bytesReward
+      }
+    ] : [];
 
     return NextResponse.json({
-      user: mockUserData,
+      user: userStats,
       todayRituals,
+      todaysRitual,
       featureGates,
       aiQuota,
+      dashboardConfig,
       stats: {
-        ritualsCompleted: 0,
-        totalRituals: 1,
-        streakActive: true,
-        canReroll: true
+        ritualsCompleted: 0, // TODO: Calculate from database
+        totalRituals: todayRituals.length,
+        streakActive: isStreakActive,
+        canReroll: true, // TODO: Implement reroll limitations
+        currentStreak: isStreakActive ? user.streakDays : 0,
+        longestStreak: user.longestStreak || 0,
+        totalXP: user.xp || 0,
+        currentBytes: user.bytes || 100,
+        level: user.level || 1,
+        noContactDays: user.noContactDays || 0,
+        protocolDay: user.protocolDay || 0,
+        tier: user.tier || 'freemium',
+        dashboardType,
+        uxStage: user.uxStage || 'newcomer'
       }
-    })
+    });
 
   } catch (error) {
-    console.error('Dashboard API error:', error)
+    console.error('Dashboard API error:', error);
     return NextResponse.json(
       { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
-    )
+    );
   }
 }
 

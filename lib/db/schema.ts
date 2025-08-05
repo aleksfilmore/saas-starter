@@ -19,24 +19,47 @@ export const users = pgTable('users', {
   resetToken: text('reset_token'),
   resetTokenExpiry: timestamp('reset_token_expiry', { withTimezone: true, mode: 'date' }),
   
-  // Subscription & Gamification
+  // User Tier System (Dev Brief Requirements)
+  tier: text('tier').notNull().default('freemium'), // freemium | paid
+  status: text('status').notNull().default('active'), // active | cancelled | trialing
+  currentProtocol: text('current_protocol'), // 30-day | 90-day | null
+  protocolDay: integer('protocol_day').notNull().default(0),
+  dashboardType: text('dashboard_type').notNull().default('freemium'), // freemium | paid_beginner | paid_advanced
+  
+  // Emotional Profile
+  emotionalArchetype: text('emotional_archetype'), // "Data Flooder", "Firewall Builder", etc.
+  codename: text('codename'),
+  avatarStyle: text('avatar_style'),
+  
+  // Gamification & Progress
+  xp: integer('xp').notNull().default(0),
+  bytes: integer('bytes').notNull().default(100),
+  level: integer('level').notNull().default(1),
+  streak: integer('streak').notNull().default(0),
+  streakDays: integer('streak_days').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  noContactDays: integer('no_contact_days').notNull().default(0),
+  
+  // Legacy fields (keeping for backward compatibility)
   subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'),
   xpPoints: integer('xp_points').notNull().default(0),
   byteBalance: integer('byte_balance').notNull().default(100),
   glowUpLevel: integer('glow_up_level').notNull().default(1),
-  
-  // Dashboard 2.0 fields
-  xp: integer('xp').notNull().default(0), // Alias for xpPoints for consistency
-  level: integer('level').notNull().default(1), // Alias for glowUpLevel
-  bytes: integer('bytes').notNull().default(100), // Alias for byteBalance
-  streak: integer('streak').notNull().default(0),
-  longestStreak: integer('longest_streak').notNull().default(0),
-  noContactDays: integer('no_contact_days').notNull().default(0),
   uxStage: text('ux_stage').default('newcomer'), // newcomer, established, veteran, system_admin
   
   // AI Therapy quota system
   aiQuotaUsed: integer('ai_quota_used').notNull().default(0),
   aiQuotaResetAt: timestamp('ai_quota_reset_at', { withTimezone: true, mode: 'date' }),
+  
+  // History tracking (JSON arrays)
+  ritualHistory: text('ritual_history').default('[]'), // JSON array of completed rituals
+  therapyHistory: text('therapy_history').default('[]'), // JSON array of therapy sessions
+  shopInventory: text('shop_inventory').default('[]'), // JSON array of purchased items
+  badges: text('badges').default('[]'), // JSON array of earned badge IDs
+  
+  // Timestamps
+  lastRitualCompleted: timestamp('last_ritual_completed', { withTimezone: true, mode: 'date' }),
+  lastLogin: timestamp('last_login', { withTimezone: true, mode: 'date' }),
   
   // Admin & Status
   isAdmin: boolean('is_admin').notNull().default(false),
