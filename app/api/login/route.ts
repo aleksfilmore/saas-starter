@@ -56,7 +56,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     }
 
     // Determine role based on email
-    const role = email.toLowerCase() === 'admin@ctrlaltblock.com' ? 'admin' : 'user';
+    const adminEmails = [
+      'system_admin@ctrlaltblock.com',
+    ];
+    const role = adminEmails.includes(email.toLowerCase()) ? 'admin' : 'user';
 
     // Create mock token (you may want to use JWT in real production)
     const token = `auth-token-${user[0].id}-${Date.now()}`;
