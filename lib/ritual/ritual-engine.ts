@@ -5,7 +5,7 @@
 
 import { db } from '@/lib/db';
 import { users, rituals } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { DashboardType } from '../user/user-tier-service';
 import { generateId } from '@/lib/utils';
 
@@ -373,10 +373,10 @@ export async function completeRitual(
     await db
       .update(users)
       .set({
-        xp: users.xp + xpEarned,
-        bytes: users.bytes + bytesEarned,
+        xp: sql`${users.xp} + ${xpEarned}`,
+        bytes: sql`${users.bytes} + ${bytesEarned}`,
         lastRitualCompleted: new Date(),
-        streakDays: users.streakDays + 1
+        streakDays: sql`${users.streakDays} + 1`
       })
       .where(eq(users.id, userId));
 
