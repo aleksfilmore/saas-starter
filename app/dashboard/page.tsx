@@ -66,7 +66,7 @@ export default function DashboardPage() {
     const userRole = localStorage.getItem('user-role');
     const userEmail = localStorage.getItem('user-email');
     
-    if (userRole === 'admin' || userEmail === 'admin@ctrlaltblock.com') {
+    if (userRole === 'admin' || userEmail === 'system_admin@ctrlaltblock.com') {
       setIsAdmin(true);
       // Update user for admin with special data
       setUser(prev => ({
@@ -469,16 +469,7 @@ export default function DashboardPage() {
                   <p className="text-yellow-200 text-sm">Platform metrics</p>
                 </Link>
 
-                <button 
-                  onClick={() => window.open('http://localhost:3002', '_blank')}
-                  className="bg-pink-600/20 border border-pink-500/30 rounded-lg p-4 hover:bg-pink-600/30 transition-all"
-                >
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Settings className="w-5 h-5 text-pink-400" />
-                    <span className="text-white font-medium">Auth Server</span>
-                  </div>
-                  <p className="text-pink-200 text-sm">Backend API debug</p>
-                </button>
+                {/* Removed old Auth Server button */}
               </div>
 
               <div className="mt-4 p-4 bg-black/30 rounded-lg">
