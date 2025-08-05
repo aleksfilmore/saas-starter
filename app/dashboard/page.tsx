@@ -108,7 +108,15 @@ export default function DashboardPage() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('/api/dashboard')
+      // Get user email from localStorage (set during login)
+      const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com'
+      
+      const response = await fetch('/api/dashboard', {
+        headers: {
+          'x-user-email': userEmail
+        }
+      })
+      
       if (response.ok) {
         const data = await response.json()
         setDashboardData(data)

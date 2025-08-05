@@ -1,102 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserId } from '@/lib/auth'
-import { db } from '@/lib/db'
-import { users, dailyCheckIns, rituals, anonymousPosts } from '@/lib/db/schema'
-import { eq, sql, desc, count } from 'drizzle-orm'
+import { neon } from '@neondatabase/serverless'
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await getUserId()
+    // For now, let's get user data from localStorage/session 
+    // In a real implementation, you'd get userId from session/JWT
     
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user data with aggregated stats
-    const [userResult] = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        email: users.email,
-        streak: users.streak,
-        longestStreak: users.longestStreak,
-        level: users.level,
-        xp: users.xp,
-        bytes: users.bytes,
-        avatar: users.avatar,
-        noContactDays: users.noContactDays,
-        uxStage: users.uxStage,
-        joinDate: users.createdAt,
-        lastActive: users.lastActiveAt
-      })
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1)
-
-    if (!userResult) {
+    // Since we don't have a proper session system yet, we'll create mock data
+    // based on the minimal database schema we actually have
+    
+    const sql = neon(process.env.POSTGRES_URL!)
+    
+    // Try to get user email from headers (sent by frontend)
+    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com'
+    
+    // Get basic user data from our minimal schema
+    const users = await sql`
+      SELECT id, email, archetype, last_reroll_at
+      FROM users 
+      WHERE email = ${userEmail} 
+      LIMIT 1
+    `
+    
+    const user = users[0]
+    
+    if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Calculate next level XP (basic progression: level * 1000)
-    const nextLevelXP = (userResult.level + 1) * 1000
-    const progressToNext = (userResult.xp / nextLevelXP) * 100
-
-    // Get today's ritual progress
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    const todayRituals = await db
-      .select({
-        id: rituals.id,
-        title: rituals.title,
-        category: rituals.category,
-        isCompleted: rituals.isCompleted,
-        completedAt: rituals.completedAt
-      })
-      .from(rituals)
-      .where(
-        sql`${rituals.userId} = ${userId} AND ${rituals.createdAt} >= ${today}`
-      )
-      .orderBy(desc(rituals.createdAt))
-
-    // Get feature gates based on user progress
-    const featureGates = getFeatureGates(userResult.uxStage, userResult.level, userResult.noContactDays)
-
-    // Get AI therapy quota (mock for now - would integrate with actual quota system)
-    const aiQuota = {
-      msgsLeft: Math.max(0, 20 - (userResult.level * 2)), // More messages as user progresses
-      resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    // Create mock data that matches what the dashboard expects
+    // This is temporary until proper database migration is done
+    const mockUserData = {
+      id: user.id,
+      username: user.email.split('@')[0], // Use email prefix as username
+      email: user.email,
+      level: 1, // Starting level
+      xp: 100, // Starting XP
+      nextLevelXP: 1000,
+      progressToNext: 10, // 100/1000 * 100
+      bytes: 50, // Starting currency
+      streak: 1, // Starting streak
+      longestStreak: 1,
+      noContactDays: 1, // Starting no-contact days
+      avatar: '🔥', // Default avatar
+      uxStage: user.archetype || 'newcomer',
+      wallPosts: 0,
+      joinDate: new Date().toISOString(),
+      lastActive: user.last_reroll_at || new Date().toISOString()
     }
 
-    // Get Wall post count for user
-    const [wallCount] = await db
-      .select({ count: count() })
-      .from(anonymousPosts)
-      .where(eq(anonymousPosts.userId, userId))
+    // Mock today's ritual
+    const todayRituals = [
+      {
+        id: 'daily-ritual-1',
+        title: 'Morning Mindfulness Check-in',
+        description: 'Take 5 minutes to center yourself and set intentions for the day.',
+        category: 'mindfulness',
+        intensity: 2,
+        duration: 5,
+        isCompleted: false,
+        completedAt: null
+      }
+    ]
+
+    // Feature gates based on minimal progression
+    const featureGates = {
+      noContactTracker: true, // Always available
+      dailyLogs: true, // Available for everyone
+      aiTherapy: true, // Available for everyone for now
+      wallRead: true, // Available for everyone
+      wallPost: true, // Available for everyone
+      progressAnalytics: true // Available for everyone
+    }
+
+    // Mock AI quota
+    const aiQuota = {
+      msgsLeft: 20,
+      totalQuota: 20,
+      resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      canPurchaseMore: true,
+      purchaseCost: 10
+    }
 
     return NextResponse.json({
-      user: {
-        ...userResult,
-        progressToNext: Math.round(progressToNext),
-        nextLevelXP,
-        wallPosts: wallCount?.count || 0
-      },
+      user: mockUserData,
       todayRituals,
       featureGates,
       aiQuota,
       stats: {
-        ritualsCompleted: todayRituals.filter(r => r.isCompleted).length,
-        totalRituals: todayRituals.length,
-        streakActive: userResult.streak > 0,
-        canReroll: !todayRituals.some(r => r.completedAt && 
-          new Date(r.completedAt).toDateString() === new Date().toDateString())
+        ritualsCompleted: 0,
+        totalRituals: 1,
+        streakActive: true,
+        canReroll: true
       }
     })
 
   } catch (error) {
     console.error('Dashboard API error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
