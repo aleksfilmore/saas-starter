@@ -1,71 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db/drizzle'
-import { users } from '@/lib/db/minimal-schema'
+import { sendPasswordResetEmail } from '@/lib/email/email-service'
+import { v4 as uuidv4 } from 'uuid'
+import { db } from '@/lib/db'
+import { users } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import { emailService } from '@/lib/email'
-import { resetTokenStore } from '@/lib/auth/reset-tokens'
-import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { email } = body
+    const { email } = await request.json()
 
-    // Validation
     if (!email) {
       return NextResponse.json(
-        { success: false, error: 'Email is required' },
+        { error: 'Email is required' },
         { status: 400 }
       )
     }
 
-    // Check if user exists in database
-    const existingUser = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email.toLowerCase()))
-      .limit(1)
-
-    // For security, always return success even if user doesn't exist
-    if (existingUser.length === 0) {
-      console.log(`Password reset requested for non-existent email: ${email}`)
-      return NextResponse.json({
-        success: true,
-        message: 'If that email exists, a password reset link has been sent.'
-      })
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email format' },
+        { status: 400 }
+      )
     }
 
-    // Generate secure reset token
-    const resetToken = crypto.randomBytes(32).toString('hex')
-    const expires = Date.now() + (60 * 60 * 1000) // 1 hour from now
+    console.log('🔧 Processing password reset for:', email)
 
-    // Store token
-    resetTokenStore.set(resetToken, { 
-      email: email.toLowerCase(), 
-      expires 
-    })
+    // Check if user exists in database
+    let user
+    try {
+      const userResult = await db.select().from(users).where(eq(users.email, email)).limit(1)
+      user = userResult[0]
+    } catch (dbError) {
+      console.error('Database error checking user:', dbError)
+      // Continue anyway for security (don't reveal if email exists)
+    }
 
-    // Send password reset email
-    const emailResult = await emailService.sendPasswordResetEmail(email, resetToken)
+    // Generate a secure reset token
+    const resetToken = uuidv4()
+    const tokenExpiry = new Date(Date.now() + 3600000) // 1 hour from now
+
+    // Store the reset token in database if user exists
+    if (user) {
+      try {
+        await db.update(users)
+          .set({ 
+            resetToken: resetToken,
+            resetTokenExpiry: tokenExpiry
+          })
+          .where(eq(users.email, email))
+        
+        console.log('✅ Reset token stored in database')
+      } catch (dbError) {
+        console.error('❌ Failed to store reset token:', dbError)
+        return NextResponse.json(
+          { error: 'Database error. Please try again later.' },
+          { status: 500 }
+        )
+      }
+    }
+
+    // Send the reset email (always send for security, even if user doesn't exist)
+    const emailResult = await sendPasswordResetEmail(email, resetToken, user?.username)
 
     if (!emailResult.success) {
-      console.error('Failed to send reset email:', emailResult.error)
+      console.error('❌ Email sending failed:', emailResult.error)
       return NextResponse.json(
-        { success: false, error: 'Failed to send reset email. Please try again.' },
+        { error: 'Failed to send reset email: ' + emailResult.error },
         { status: 500 }
       )
     }
 
-    console.log(`Password reset email sent to: ${email}`)
+    console.log('✅ Password reset email sent successfully')
+
     return NextResponse.json({
       success: true,
-      message: 'Password reset link has been sent to your email.'
+      message: 'If this email exists in our system, you will receive a password reset link shortly.'
     })
 
   } catch (error) {
-    console.error('Forgot password API error:', error)
+    console.error('❌ Password reset error:', error)
     return NextResponse.json(
-      { success: false, error: 'Network error. Please try again.' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

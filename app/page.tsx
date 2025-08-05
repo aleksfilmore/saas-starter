@@ -17,10 +17,10 @@ export default function ComingSoonPage() {
   const [showReferral, setShowReferral] = useState(false);
   const [confessionVisible, setConfessionVisible] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
-    days: 14,
-    hours: 11,
-    minutes: 23,
-    seconds: 45
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
   });
 
   // Animated confession card effect
@@ -31,22 +31,30 @@ export default function ComingSoonPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Countdown timer effect
+  // Countdown timer effect - counting to September 5th, 2025
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        } else if (prev.days > 0) {
-          return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-        }
-        return prev;
-      });
-    }, 1000);
+    const calculateTimeLeft = () => {
+      const launchDate = new Date('2025-09-05T00:00:00Z').getTime();
+      const now = new Date().getTime();
+      const difference = launchDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeLeft({ days, hours, minutes, seconds });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    // Calculate initial time
+    calculateTimeLeft();
+
+    // Update every second
+    const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
   }, []);
 

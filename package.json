@@ -35,7 +35,6 @@
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/typography": "^0.5.16",
     "@types/bcrypt": "^5.0.0",
-    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.15.18",
     "@types/react": "19.0.1",
     "@types/react-datepicker": "^7.0.0",
@@ -61,6 +60,7 @@
     "react": "19.0.0",
     "react-datepicker": "^7.5.0",
     "react-dom": "19.0.0",
+    "resend": "^4.8.0",
     "server-only": "^0.0.1",
     "sonner": "^2.0.6",
     "stripe": "^18.1.0",
@@ -71,12 +71,15 @@
     "tsx": "^4.19.2",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5.8.3",
+    "uuid": "^11.1.0",
     "zod": "^3.24.4"
   },
   "devDependencies": {
     "@babel/plugin-syntax-jsx": "^7.27.1",
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9.32.0",
     "eslint-config-next": "15.4.5"
   }

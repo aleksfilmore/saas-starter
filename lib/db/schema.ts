@@ -15,6 +15,10 @@ export const users = pgTable('users', {
   avatar: text('avatar'),
   onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
   
+  // Password Reset
+  resetToken: text('reset_token'),
+  resetTokenExpiry: timestamp('reset_token_expiry', { withTimezone: true, mode: 'date' }),
+  
   // Subscription & Gamification
   subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'),
   xpPoints: integer('xp_points').notNull().default(0),

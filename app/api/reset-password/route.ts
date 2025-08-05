@@ -1,90 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db/drizzle'
-import { users } from '@/lib/db/minimal-schema'
-import { eq } from 'drizzle-orm'
-import { resetTokenStore } from '@/lib/auth/reset-tokens'
+import { db } from '@/lib/db'
+import { users } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { token, newPassword } = body
+    const { token, newPassword } = await request.json()
 
-    // Validation
     if (!token || !newPassword) {
       return NextResponse.json(
-        { success: false, error: 'Token and new password are required' },
+        { error: 'Token and new password are required' },
         { status: 400 }
       )
     }
 
+    // Validate password strength
     if (newPassword.length < 8) {
       return NextResponse.json(
-        { success: false, error: 'Password must be at least 8 characters long' },
+        { error: 'Password must be at least 8 characters long' },
         { status: 400 }
       )
     }
 
-    // Validate password complexity
-    const hasUpperCase = /[A-Z]/.test(newPassword)
-    const hasLowerCase = /[a-z]/.test(newPassword)
-    const hasNumbers = /\d/.test(newPassword)
-    
-    if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
-      return NextResponse.json(
-        { success: false, error: 'Password must contain at least one uppercase letter, lowercase letter, and number' },
-        { status: 400 }
-      )
-    }
+    console.log('🔧 Processing password reset with token:', token.substring(0, 8) + '...')
 
-    // Check if token exists and is valid
-    const tokenData = resetTokenStore.get(token)
-    if (!tokenData) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid or expired reset token' },
-        { status: 400 }
-      )
-    }
-
-    // Find user in database
-    const existingUser = await db
-      .select()
+    // Find user with valid reset token
+    const userResult = await db.select()
       .from(users)
-      .where(eq(users.email, tokenData.email))
+      .where(
+        and(
+          eq(users.resetToken, token),
+          // Check if token hasn't expired (within 1 hour)
+        )
+      )
       .limit(1)
 
-    if (existingUser.length === 0) {
+    const user = userResult[0]
+
+    if (!user) {
       return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
+        { error: 'Invalid or expired reset token' },
+        { status: 400 }
+      )
+    }
+
+    // Check if token has expired
+    if (user.resetTokenExpiry && new Date() > user.resetTokenExpiry) {
+      return NextResponse.json(
+        { error: 'Reset token has expired. Please request a new one.' },
+        { status: 400 }
       )
     }
 
     // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 12)
+    const saltRounds = 12
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
 
-    // Update user password in database
-    await db
-      .update(users)
-      .set({ 
-        hashedPassword: hashedPassword
+    // Update user password and clear reset token
+    await db.update(users)
+      .set({
+        hashedPassword: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+        updatedAt: new Date()
       })
-      .where(eq(users.email, tokenData.email))
+      .where(eq(users.id, user.id))
 
-    // Remove the used token
-    resetTokenStore.delete(token)
+    console.log('✅ Password reset successfully for user:', user.email)
 
-    console.log(`Password reset successful for: ${tokenData.email}`)
-    
     return NextResponse.json({
       success: true,
-      message: 'Your password has been reset successfully'
+      message: 'Your password has been reset successfully. You can now sign in with your new password.'
     })
 
   } catch (error) {
-    console.error('Reset password API error:', error)
+    console.error('❌ Reset password error:', error)
     return NextResponse.json(
-      { success: false, error: 'Network error. Please try again.' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
