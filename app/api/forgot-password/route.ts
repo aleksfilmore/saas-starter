@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send the reset email (always send for security, even if user doesn't exist)
-    const emailResult = await sendPasswordResetEmail(email, resetToken, user?.username)
+    const emailResult = await sendPasswordResetEmail(email, resetToken, user?.username || undefined)
 
     if (!emailResult.success) {
       console.error('❌ Email sending failed:', emailResult.error)
