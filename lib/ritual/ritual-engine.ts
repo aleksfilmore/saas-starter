@@ -246,33 +246,8 @@ async function generatePersonalizedRitual(
   // Random selection from filtered rituals
   const selectedRitual = availableRituals[Math.floor(Math.random() * availableRituals.length)];
   
-  // Store the ritual assignment in database
-  await createRitualAssignment(user.id, selectedRitual);
-  
+  // Return the ritual template directly (no database storage needed)
   return selectedRitual;
-}
-
-/**
- * Create a ritual assignment in the database
- */
-async function createRitualAssignment(userId: string, ritual: RitualTemplate) {
-  try {
-    await db.insert(rituals).values({
-      id: generateId(),
-      userId,
-      title: ritual.id, // Store template ID for lookup
-      description: ritual.description,
-      category: ritual.category,
-      intensity: ritual.intensity,
-      duration: ritual.duration,
-      xpReward: ritual.xpReward,
-      bytesReward: ritual.bytesReward,
-      isCompleted: false,
-      createdAt: new Date()
-    });
-  } catch (error) {
-    console.error('Error creating ritual assignment:', error);
-  }
 }
 
 /**
