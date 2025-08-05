@@ -118,7 +118,13 @@ Security reminders:
 - Contact support if you notice suspicious activity
 
 CTRL+ALT+BLOCK™ Team
-      `
+      `,
+      // Disable Resend's click tracking to prevent URL wrapping
+      tags: [{ name: 'category', value: 'password_reset' }],
+      headers: {
+        'X-Resend-Track-Links': 'false',
+        'X-Resend-Track-Opens': 'false'
+      }
     });
 
     console.log('✅ Email sent successfully:', result);
