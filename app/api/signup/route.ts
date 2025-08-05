@@ -1,8 +1,6 @@
-// Signup API route - Direct database registration
+// Signup API route - Direct database registration with actual schema
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,13 +44,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
 
     console.log('🔧 Signup attempt for:', email);
 
-    // Check if user already exists
-    const existingUserResult = await db.select()
-      .from(users)
-      .where(eq(users.email, email.toLowerCase()))
-      .limit(1);
+    // Direct database connection using Neon
+    const sql = neon(process.env.POSTGRES_URL!);
 
-    if (existingUserResult.length > 0) {
+    // Check if user already exists - using actual column names
+    const existingUsers = await sql`
+      SELECT id FROM users WHERE email = ${email.toLowerCase()} LIMIT 1
+    `;
+
+    if (existingUsers.length > 0) {
       return NextResponse.json(
         { success: false, error: 'An account with this email already exists' },
         { status: 409 }
@@ -66,18 +66,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
     // Generate user ID
     const userId = uuidv4();
 
-    // Create user in database
-    const newUser = {
-      id: userId,
-      email: email.toLowerCase(),
-      hashedPassword: hashedPassword,
-      username: username || `user_${userId.substring(0, 8)}`,
-      onboardingCompleted: !!quizResult,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    // Determine archetype from quiz result or default
+    const archetype = quizResult?.archetype || 'balanced';
 
-    await db.insert(users).values(newUser);
+    // Create user in database - using only existing columns
+    await sql`
+      INSERT INTO users (id, email, password_hash, archetype) 
+      VALUES (${userId}, ${email.toLowerCase()}, ${hashedPassword}, ${archetype})
+    `;
 
     console.log('✅ User created successfully:', email);
 

@@ -1,8 +1,6 @@
-// Login API route - Direct database authentication
+// Login API route - Direct database authentication with actual schema
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,7 +13,7 @@ export interface LoginResponse {
     userId?: string;
     email?: string;
     role?: string;
-    username?: string;
+    archetype?: string;
   };
 }
 
@@ -32,13 +30,18 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
 
     console.log('🔧 Login attempt for:', email);
 
-    // Find user in database
-    const userResult = await db.select()
-      .from(users)
-      .where(eq(users.email, email.toLowerCase()))
-      .limit(1);
+    // Direct database connection using Neon
+    const sql = neon(process.env.POSTGRES_URL!);
 
-    const user = userResult[0];
+    // Find user in database - using actual column names
+    const users = await sql`
+      SELECT id, email, password_hash, archetype 
+      FROM users 
+      WHERE email = ${email.toLowerCase()} 
+      LIMIT 1
+    `;
+
+    const user = users[0];
 
     if (!user) {
       console.log('❌ User not found:', email);
@@ -48,8 +51,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       );
     }
 
-    // Verify password
-    const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
+    // Verify password using actual column name
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordMatch) {
       console.log('❌ Invalid password for user:', email);
@@ -59,10 +62,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       );
     }
 
-    // Update last active timestamp
-    await db.update(users)
-      .set({ lastActiveAt: new Date() })
-      .where(eq(users.id, user.id));
+    // Update last_reroll_at since it's the only timestamp field we have
+    await sql`
+      UPDATE users 
+      SET last_reroll_at = NOW() 
+      WHERE id = ${user.id}
+    `;
 
     console.log('✅ Login successful for:', email);
 
@@ -76,8 +81,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       data: {
         userId: user.id,
         email: user.email,
-        username: user.username,
-        role: user.isAdmin ? 'admin' : 'user'
+        archetype: user.archetype,
+        role: email.includes('admin') ? 'admin' : 'user' // Simple admin detection
       }
     });
 
