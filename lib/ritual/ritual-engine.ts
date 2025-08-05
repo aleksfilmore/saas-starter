@@ -175,23 +175,7 @@ export async function getTodaysRitual(userId: string): Promise<RitualTemplate | 
     const userData = user[0];
     const dashboardType = userData.dashboardType as DashboardType;
     
-    // Check if user already has a ritual for today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const existingRitual = await db
-      .select()
-      .from(rituals)
-      .where(eq(rituals.userId, userId))
-      .limit(1);
-
-    // If ritual exists and is from today, return it
-    if (existingRitual.length && existingRitual[0].createdAt >= today) {
-      const template = RITUAL_POOL.find(r => r.id === existingRitual[0].title);
-      return template || null;
-    }
-
-    // Generate new ritual based on user tier and profile
+    // Generate ritual based on user tier and profile (no database storage needed)
     return await generatePersonalizedRitual(userData, dashboardType);
 
   } catch (error) {
@@ -344,31 +328,16 @@ export async function completeRitual(
   mood?: number
 ): Promise<{ success: boolean; xpEarned: number; bytesEarned: number }> {
   try {
-    // Get the ritual
-    const ritual = await db
-      .select()
-      .from(rituals)
-      .where(eq(rituals.id, ritualId))
-      .limit(1);
-
-    if (!ritual.length || ritual[0].userId !== userId) {
+    // Find the ritual template
+    const ritualTemplate = RITUAL_POOL.find(r => r.id === ritualId);
+    
+    if (!ritualTemplate) {
       return { success: false, xpEarned: 0, bytesEarned: 0 };
     }
 
-    const ritualData = ritual[0];
-    
-    // Mark as completed
-    await db
-      .update(rituals)
-      .set({
-        isCompleted: true,
-        completedAt: new Date()
-      })
-      .where(eq(rituals.id, ritualId));
-
-    // Award XP and Bytes
-    const xpEarned = ritualData.xpReward;
-    const bytesEarned = ritualData.bytesReward;
+    // Award XP and Bytes based on template
+    const xpEarned = ritualTemplate.xpReward;
+    const bytesEarned = ritualTemplate.bytesReward;
 
     await db
       .update(users)
