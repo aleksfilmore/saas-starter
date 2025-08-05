@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
     const [createdRitual] = await db
       .insert(rituals)
       .values({
+        id: crypto.randomUUID(),
         userId,
         title: newRitual.title,
         description: newRitual.description,
