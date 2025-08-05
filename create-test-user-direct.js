@@ -1,4 +1,4 @@
-// Create a test user directly in the database
+// Create a test user directly in the database with existing schema
 const { neon } = require('@neondatabase/serverless');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
@@ -29,26 +29,16 @@ async function createTestUser() {
       await sql`DELETE FROM users WHERE email = ${email}`;
     }
     
-    // Create test user with direct SQL
+    // Create test user with only existing columns
     await sql`
-      INSERT INTO users (
-        id, email, password_hash, username, is_admin, onboarding_completed,
-        xp_points, byte_balance, glow_up_level, xp, level, bytes, 
-        streak, longest_streak, no_contact_days, ux_stage,
-        created_at, updated_at
-      ) VALUES (
-        ${userId}, ${email}, ${hashedPassword}, 'admin_user', true, true,
-        1000, 500, 5, 1000, 5, 500,
-        10, 10, 30, 'system_admin',
-        NOW(), NOW()
-      )
+      INSERT INTO users (id, email, password_hash, archetype) 
+      VALUES (${userId}, ${email}, ${hashedPassword}, 'secure')
     `;
     
-    console.log('✅ Test user created successfully!');
+    console.log('✅ Admin test user created successfully!');
     console.log('📧 Email:', email);
     console.log('🔑 Password:', password);
     console.log('🆔 User ID:', userId);
-    console.log('\n🚀 You can now log in with these credentials!');
     
     // Also create a regular test user
     const regularUserId = uuidv4();
@@ -65,23 +55,17 @@ async function createTestUser() {
     }
     
     await sql`
-      INSERT INTO users (
-        id, email, password_hash, username, is_admin, onboarding_completed,
-        xp_points, byte_balance, glow_up_level, xp, level, bytes, 
-        streak, longest_streak, no_contact_days, ux_stage,
-        created_at, updated_at
-      ) VALUES (
-        ${regularUserId}, ${regularEmail}, ${regularHashedPassword}, 'test_user', false, false,
-        100, 50, 1, 100, 1, 50,
-        1, 1, 3, 'newcomer',
-        NOW(), NOW()
-      )
+      INSERT INTO users (id, email, password_hash, archetype) 
+      VALUES (${regularUserId}, ${regularEmail}, ${regularHashedPassword}, 'anxious')
     `;
     
     console.log('\n✅ Regular test user also created!');
     console.log('📧 Email:', regularEmail);
     console.log('🔑 Password:', regularPassword);
     console.log('🆔 User ID:', regularUserId);
+    
+    console.log('\n🚀 You can now log in with either set of credentials!');
+    console.log('\n📝 Note: The database schema is minimal. You may need to run migrations for full functionality.');
     
   } catch (error) {
     console.error('❌ Error creating test user:', error);
