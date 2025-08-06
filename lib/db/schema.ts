@@ -40,6 +40,10 @@ export const users = pgTable('users', {
   longestStreak: integer('longest_streak').notNull().default(0),
   noContactDays: integer('no_contact_days').notNull().default(0),
   
+  // No-Contact Check-In Tracking
+  lastNoContactCheckin: timestamp('last_no_contact_checkin', { withTimezone: true, mode: 'date' }),
+  noContactStreakThreatened: boolean('no_contact_streak_threatened').notNull().default(false),
+  
   // Legacy fields (keeping for backward compatibility)
   subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'),
   xpPoints: integer('xp_points').notNull().default(0),

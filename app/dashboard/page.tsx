@@ -37,6 +37,7 @@ import { useFeatureGates } from '@/hooks/useFeatureGates'
 import { MoodCheckIn } from '@/components/quick-actions/MoodCheckIn'
 import { BreathingExercise } from '@/components/quick-actions/BreathingExercise'
 import { GratitudeJournal } from '@/components/quick-actions/GratitudeJournal'
+import { NoContactCheckinModal } from '@/components/dashboard/NoContactCheckinModal'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -92,10 +93,13 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [timeUntilReset, setTimeUntilReset] = useState(0)
+  const [noContactStatus, setNoContactStatus] = useState<any>(null)
+  const [showCheckinModal, setShowCheckinModal] = useState(false)
   const { useFeatureGate } = useFeatureGates()
 
   useEffect(() => {
     fetchDashboardData()
+    fetchNoContactStatus()
     
     // Update timer every minute
     const timer = setInterval(() => {
@@ -130,6 +134,25 @@ export default function DashboardPage() {
       console.error('Dashboard fetch error:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchNoContactStatus = async () => {
+    try {
+      const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com'
+      
+      const response = await fetch('/api/no-contact/checkin', {
+        headers: {
+          'x-user-email': userEmail
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setNoContactStatus(data)
+      }
+    } catch (error) {
+      console.error('No-contact status fetch error:', error)
     }
   }
 
@@ -304,11 +327,37 @@ export default function DashboardPage() {
           </div>
         </div>
         
-        <div className="dashboard-card p-4 flex items-center gap-3">
-          <Shield className="w-6 h-6 text-blue-400" />
+        {/* No-Contact Check-in Pill */}
+        <div 
+          className={`dashboard-card p-4 flex items-center gap-3 cursor-pointer transition-all hover:scale-105 ${
+            noContactStatus?.status === 'need_check' ? 'bg-yellow-500/20 border-yellow-500/50' :
+            noContactStatus?.status === 'threatened' ? 'bg-red-500/20 border-red-500/50' :
+            'bg-blue-500/20 border-blue-500/50'
+          }`}
+          onClick={() => {
+            if (noContactStatus?.canCheckIn) {
+              setShowCheckinModal(true);
+            }
+          }}
+        >
+          <Shield className={`w-6 h-6 ${
+            noContactStatus?.status === 'need_check' ? 'text-yellow-400' :
+            noContactStatus?.status === 'threatened' ? 'text-red-400' :
+            'text-blue-400'
+          }`} />
           <div>
-            <p className="text-sm text-gray-400">No-Contact</p>
-            <p className="text-lg font-bold text-blue-400">{user.noContactDays} days</p>
+            <p className="text-sm text-gray-400">
+              {noContactStatus?.status === 'need_check' ? 'Check-in Needed' :
+               noContactStatus?.status === 'threatened' ? 'Streak Threatened' :
+               'No-Contact'}
+            </p>
+            <p className={`text-lg font-bold ${
+              noContactStatus?.status === 'need_check' ? 'text-yellow-400' :
+              noContactStatus?.status === 'threatened' ? 'text-red-400' :
+              'text-blue-400'
+            }`}>
+              {user.noContactDays} days
+            </p>
           </div>
         </div>
         
@@ -561,6 +610,17 @@ export default function DashboardPage() {
           </div>
         </Card>
       </CommunityFeed>
+
+      {/* No-Contact Check-in Modal */}
+      <NoContactCheckinModal
+        isOpen={showCheckinModal}
+        onClose={() => setShowCheckinModal(false)}
+        currentStreak={user.noContactDays}
+        onCheckinComplete={() => {
+          fetchDashboardData();
+          fetchNoContactStatus();
+        }}
+      />
     </DashboardLayout>
   )
 }
