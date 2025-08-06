@@ -158,31 +158,26 @@ export default function ComingSoonPage() {
           </div>
         </div>
 
-        {/* Countdown Timer */}
+        {/* Launch Status */}
         <div className="mb-6">
-          <Card className="bg-red-900/20 border border-red-500/50 backdrop-blur-sm">
+          <Card className="bg-green-900/20 border border-green-500/50 backdrop-blur-sm">
             <CardContent className="p-4">
               <div className="text-center">
-                <div className="text-sm text-red-300 mb-2">🚨 BETA DOORS OPEN IN</div>
+                <div className="text-sm text-green-300 mb-2">🚀 PLATFORM NOW LIVE</div>
                 <div className="flex justify-center space-x-4 text-white font-mono">
                   <div className="text-center">
-                    <div className="text-2xl font-bold">{timeLeft.days.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400">DAYS</div>
+                    <div className="text-2xl font-bold text-green-400">READY</div>
+                    <div className="text-xs text-gray-400">TO HEAL</div>
                   </div>
-                  <div className="text-2xl text-red-400">:</div>
+                  <div className="text-2xl text-green-400">|</div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400">HRS</div>
+                    <div className="text-2xl font-bold text-green-400">START</div>
+                    <div className="text-xs text-gray-400">TODAY</div>
                   </div>
-                  <div className="text-2xl text-red-400">:</div>
+                  <div className="text-2xl text-green-400">|</div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400">MIN</div>
-                  </div>
-                  <div className="text-2xl text-red-400">:</div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                    <div className="text-xs text-gray-400">SEC</div>
+                    <div className="text-2xl font-bold text-green-400">FREE</div>
+                    <div className="text-xs text-gray-400">TRIAL</div>
                   </div>
                 </div>
               </div>
