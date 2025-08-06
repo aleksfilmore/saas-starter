@@ -218,7 +218,8 @@ export default function SimplifiedWallPage() {
             streak: 34,
             bytes: 730,
             level: 3,
-            noContactDays: 12
+            noContactDays: 12,
+            subscriptionTier: user?.subscriptionTier || 'free'
           }}
           hasShield={true}
           onCheckin={() => console.log('Check-in clicked')}
