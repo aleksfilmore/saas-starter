@@ -4,6 +4,10 @@
  */
 
 import { getRitualsByArchetype, getRandomRitual, Ritual } from '@/lib/rituals/database';
+import type { DashboardType } from '@/lib/user/user-tier-service';
+import { db } from '@/lib/db/drizzle';
+import { users, rituals } from '@/lib/db/schema';
+import { eq, sql } from 'drizzle-orm';
 
 // Global storage reference
 declare global {
