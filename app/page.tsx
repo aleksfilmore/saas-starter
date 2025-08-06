@@ -272,6 +272,15 @@ export default function ComingSoonPage() {
                   <p className="text-gray-300 text-sm mb-3">
                     Join the waitlist for early access to the most advanced heartbreak recovery platform
                   </p>
+                  <div className="mb-4">
+                    <Button
+                      onClick={() => window.location.href = '/scan'}
+                      variant="outline"
+                      className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 text-sm"
+                    >
+                      🧪 Try Beta Scan Now
+                    </Button>
+                  </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">

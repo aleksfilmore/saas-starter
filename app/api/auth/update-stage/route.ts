@@ -6,12 +6,8 @@ declare global {
   var localSessions: Map<string, any>;
 }
 
-// Force Node.js runtime for database operations
-export const runtime = 'nodejs';
-
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    // Check for token in Authorization header or cookie
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '') || request.cookies.get('session')?.value;
     
@@ -40,16 +36,32 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Return user data (exclude sensitive info)
-    const { hashedPassword, ...safeUser } = user;
+    const { ux_stage } = await request.json();
+    
+    if (!ux_stage || !['welcome', 'starter', 'core', 'power'].includes(ux_stage)) {
+      return NextResponse.json(
+        { error: 'Invalid UX stage' },
+        { status: 400 }
+      );
+    }
+    
+    // Update user's UX stage
+    user.ux_stage = ux_stage;
+    user.updatedAt = new Date().toISOString();
+    
+    global.localUsers.set(session.userId, user);
     
     return NextResponse.json({
       success: true,
-      user: safeUser
+      message: 'UX stage updated successfully',
+      ux_stage
     });
-
+    
   } catch (error) {
-    console.error('Auth me error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Update stage error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

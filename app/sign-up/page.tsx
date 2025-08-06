@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -24,6 +24,9 @@ export default function SignUpPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  const fromScan = searchParams.get('from') === 'scan'
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -52,6 +55,15 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
+      // Get scan answers from localStorage if coming from scan
+      let scanAnswers = null
+      if (fromScan) {
+        const savedAnswers = localStorage.getItem('scan_answers')
+        if (savedAnswers) {
+          scanAnswers = JSON.parse(savedAnswers)
+        }
+      }
+
       const response = await fetch('/api/signup-local', {
         method: 'POST',
         headers: {
@@ -60,7 +72,8 @@ export default function SignUpPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          wantsNewsletter
+          wantsNewsletter,
+          scanAnswers // Include scan data if available
         }),
       })
 
@@ -70,7 +83,15 @@ export default function SignUpPage() {
         if (data.token) {
           localStorage.setItem('auth-token', data.token)
         }
-        router.push('/dashboard?welcome=true')
+        
+        // Clear scan answers from localStorage
+        if (fromScan) {
+          localStorage.removeItem('scan_answers')
+        }
+        
+        // Redirect to welcome page if from scan, otherwise dashboard
+        const redirectTo = fromScan ? '/welcome' : '/dashboard?welcome=true'
+        router.push(redirectTo)
       } else {
         setError(data.message || 'Account creation failed. Please try again.')
       }
@@ -119,7 +140,10 @@ export default function SignUpPage() {
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-2xl font-bold text-center text-white">Create Account</CardTitle>
             <CardDescription className="text-center text-gray-300">
-              Join thousands on their path to emotional wellness - no personal details required
+              {fromScan 
+                ? "Your scan is complete! Create your account to see your personalized results"
+                : "Join thousands on their path to emotional wellness - no personal details required"
+              }
             </CardDescription>
           </CardHeader>
           <CardContent>

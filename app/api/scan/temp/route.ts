@@ -1,144 +1,94 @@
-// Alternative authentication system using local storage for development
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 
-// Simple ID generator
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-// Global storage for persistence across requests
-declare global {
-  var localUsers: Map<string, any>;
-  var localSessions: Map<string, any>;
-}
-
-// Initialize global storage if not exists
-if (!global.localUsers) {
-  global.localUsers = new Map();
-}
-if (!global.localSessions) {
-  global.localSessions = new Map();
-}
+// Temporary storage for scan answers before user signup
+// In production, you might want to use Redis or a similar solution
+const tempStorage = new Map<string, any>();
 
 export async function POST(request: NextRequest) {
-  console.log('=== Local Signup API Called ===');
-  
   try {
-    const body = await request.json();
-    const { email, password, wantsNewsletter, scanAnswers } = body;
+    const { answers } = await request.json();
     
-    console.log('Signup attempt:', { email, hasScanAnswers: !!scanAnswers });
-    
-    // Validation
-    if (!email || !password) {
-      return NextResponse.json({
-        success: false,
-        message: 'Email and password are required'
-      }, { status: 400 });
+    if (!answers || typeof answers !== 'object') {
+      return NextResponse.json(
+        { error: 'Invalid answers format' },
+        { status: 400 }
+      );
     }
     
-    if (password.length < 8) {
-      return NextResponse.json({
-        success: false,
-        message: 'Password must be at least 8 characters'
-      }, { status: 400 });
-    }
+    // Generate a temporary ID for this scan session
+    const sessionId = crypto.randomUUID();
     
-    // Check if user already exists
-    for (const [id, user] of global.localUsers) {
-      if (user.email === email) {
-        return NextResponse.json({
-          success: false,
-          message: 'An account with this email already exists'
-        }, { status: 400 });
-      }
-    }
+    // Calculate archetype based on answers
+    const archetype = calculateArchetype(answers);
     
-    // Calculate archetype if scan answers provided
-    let archetype = null;
-    if (scanAnswers) {
-      archetype = calculateArchetype(scanAnswers);
-    }
-    
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-    
-    // Create user
-    const userId = generateId();
-    const newUser = {
-      id: userId,
-      email,
-      hashedPassword,
-      createdAt: new Date().toISOString(),
-      emailVerified: false,
-      tier: 'freemium',
-      tier_start_date: new Date().toISOString(),
-      auto_tier_upgrade: true,
-      xp: 0,
-      bytes: 0,
-      level: 1,
-      last_no_contact_checkin: null,
-      no_contact_streak_threatened: false,
-      wantsNewsletter: wantsNewsletter || false,
-      archetype: archetype?.type || null,
-      archetype_details: archetype || null,
-      scan_answers: scanAnswers || null,
-      ux_stage: scanAnswers ? 'welcome' : 'starter' // welcome if from scan, starter if direct signup
-    };
-    
-    global.localUsers.set(userId, newUser);
-    
-    // Create session
-    const sessionId = generateId();
-    const session = {
-      id: sessionId,
-      userId,
-      expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 days
-    };
-    
-    global.localSessions.set(sessionId, session);
-    
-    console.log('✅ User created successfully:', { 
-      userId, 
-      email, 
-      archetype: archetype?.type || 'none',
-      ux_stage: newUser.ux_stage
+    // Store temporarily (expires in 30 minutes)
+    tempStorage.set(sessionId, {
+      answers,
+      archetype,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + (30 * 60 * 1000) // 30 minutes
     });
-    console.log('Total users:', global.localUsers.size);
     
-    // Set session cookie
-    const response = NextResponse.json({
+    // Clean up expired entries
+    cleanupExpiredEntries();
+    
+    return NextResponse.json({
       success: true,
-      message: 'Account created successfully!',
-      token: sessionId,
-      user: {
-        id: userId,
-        email,
-        tier: 'freemium',
-        xp: 0,
-        bytes: 0,
-        level: 1,
-        archetype: archetype?.type || null,
-        ux_stage: newUser.ux_stage
-      }
+      sessionId,
+      archetype: archetype.type // Don't reveal full details until signup
     });
-    
-    response.cookies.set('session', sessionId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 // 7 days
-    });
-    
-    return response;
     
   } catch (error) {
-    console.error('❌ Signup error:', error);
+    console.error('Error storing scan answers:', error);
+    return NextResponse.json(
+      { error: 'Failed to store scan results' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const sessionId = searchParams.get('sessionId');
+    
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: 'Session ID required' },
+        { status: 400 }
+      );
+    }
+    
+    const data = tempStorage.get(sessionId);
+    
+    if (!data) {
+      return NextResponse.json(
+        { error: 'Session not found or expired' },
+        { status: 404 }
+      );
+    }
+    
+    // Check if expired
+    if (Date.now() > data.expiresAt) {
+      tempStorage.delete(sessionId);
+      return NextResponse.json(
+        { error: 'Session expired' },
+        { status: 404 }
+      );
+    }
+    
     return NextResponse.json({
-      success: false,
-      message: error instanceof Error ? error.message : 'Internal server error'
-    }, { status: 500 });
+      success: true,
+      archetype: data.archetype,
+      answers: data.answers
+    });
+    
+  } catch (error) {
+    console.error('Error retrieving scan results:', error);
+    return NextResponse.json(
+      { error: 'Failed to retrieve scan results' },
+      { status: 500 }
+    );
   }
 }
 
@@ -151,7 +101,7 @@ function calculateArchetype(answers: Record<string, string>) {
     disorganized: 0
   };
   
-  // Mapping of answer IDs to weights
+  // Mapping of answer IDs to weights (from the questions in scan page)
   const answerWeights: Record<string, keyof typeof weights> = {
     // Question 1
     '1a': 'anxious', '1b': 'avoidant', '1c': 'secure', '1d': 'disorganized',
@@ -241,4 +191,13 @@ function calculateArchetype(answers: Record<string, string>) {
   };
   
   return archetypes[dominantStyle];
+}
+
+function cleanupExpiredEntries() {
+  const now = Date.now();
+  for (const [key, value] of tempStorage.entries()) {
+    if (now > value.expiresAt) {
+      tempStorage.delete(key);
+    }
+  }
 }
