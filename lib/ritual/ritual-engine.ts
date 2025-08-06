@@ -3,11 +3,19 @@
  * Handles ritual generation and assignment based on user tier and progress
  */
 
-import { db } from '@/lib/db';
-import { users, rituals } from '@/lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
-import { DashboardType } from '../user/user-tier-service';
-import { generateId } from '@/lib/utils';
+import { getRitualsByArchetype, getRandomRitual, Ritual } from '@/lib/rituals/database';
+
+// Global storage reference
+declare global {
+  var localUsers: Map<string, any>;
+  var localSessions: Map<string, any>;
+  var dailyRitualAssignments: Map<string, any>;
+}
+
+// Initialize daily ritual assignments storage
+if (!global.dailyRitualAssignments) {
+  global.dailyRitualAssignments = new Map();
+}
 
 export interface RitualTemplate {
   id: string;
@@ -18,7 +26,7 @@ export interface RitualTemplate {
   duration: number; // minutes
   xpReward: number;
   bytesReward: number;
-  tierAccess: DashboardType[];
+  tierAccess: string[];
   archetypeMatch?: string[]; // emotional archetypes this works best for
   dayRange?: { min: number; max: number }; // protocol day range
 }
@@ -164,24 +172,71 @@ const RITUAL_POOL: RitualTemplate[] = [
 ];
 
 /**
- * Get today's ritual for a user based on their tier and profile
+ * Get today's ritual for a user based on their tier and archetype
  */
 export async function getTodaysRitual(userId: string): Promise<RitualTemplate | null> {
   try {
-    // Get user data
-    const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    if (!user.length) return null;
-
-    const userData = user[0];
-    const dashboardType = userData.dashboardType as DashboardType;
+    const today = new Date().toDateString();
+    const assignmentKey = `${userId}-${today}`;
     
-    // Generate ritual based on user tier and profile (no database storage needed)
-    return await generatePersonalizedRitual(userData, dashboardType);
+    // Check if we already assigned a ritual today
+    if (global.dailyRitualAssignments.has(assignmentKey)) {
+      const assignment = global.dailyRitualAssignments.get(assignmentKey);
+      return convertRitualToTemplate(assignment.ritual);
+    }
+    
+    // Get user data from local storage
+    const user = global.localUsers?.get(userId);
+    if (!user) return null;
+    
+    const userTier = user.tier || 'freemium';
+    const userArchetype = user.archetype || 'PANIC PROTOCOL'; // fallback
+    
+    // Get a random ritual for this archetype and tier
+    const ritual = getRandomRitual(userArchetype, userTier);
+    if (!ritual) return null;
+    
+    // Store the assignment for today
+    global.dailyRitualAssignments.set(assignmentKey, {
+      userId,
+      ritual,
+      assignedAt: new Date().toISOString(),
+      completed: false
+    });
+    
+    console.log(`📜 Assigned ritual "${ritual.title}" to user ${userId} (${userArchetype})`);
+    
+    return convertRitualToTemplate(ritual);
 
   } catch (error) {
     console.error('Error getting today\'s ritual:', error);
     return null;
   }
+}
+
+/**
+ * Convert our new Ritual format to the legacy RitualTemplate format
+ */
+function convertRitualToTemplate(ritual: Ritual): RitualTemplate {
+  const intensityMap = {
+    'beginner': 2,
+    'intermediate': 3,
+    'advanced': 5
+  };
+  
+  return {
+    id: ritual.id,
+    title: ritual.title,
+    description: ritual.description,
+    category: ritual.category,
+    intensity: intensityMap[ritual.difficulty],
+    duration: ritual.duration_minutes,
+    xpReward: ritual.xp_reward,
+    bytesReward: ritual.bytes_reward,
+    tierAccess: [ritual.user_tier],
+    archetypeMatch: ritual.archetype,
+    dayRange: undefined
+  };
 }
 
 /**

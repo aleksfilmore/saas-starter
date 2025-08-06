@@ -49,16 +49,8 @@ export function HeroRitualCard({
   const handleComplete = async () => {
     if (!ritual || ritual.isCompleted) return
     
-    setIsCompleting(true)
-    try {
-      await onComplete(ritual.id)
-      setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), 3000)
-    } catch (error) {
-      console.error('Failed to complete ritual:', error)
-    } finally {
-      setIsCompleting(false)
-    }
+    // Navigate to ritual detail page instead of completing inline
+    window.location.href = `/ritual/${ritual.id}`;
   }
 
   const handleReroll = async () => {
@@ -242,7 +234,7 @@ export function HeroRitualCard({
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Complete Ritual
+                    Start Ritual
                   </>
                 )}
               </Button>
