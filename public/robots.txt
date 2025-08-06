@@ -1,0 +1,44 @@
+# Robots.txt for Uninstall Your Ex Platform
+# Allow search engines to crawl public marketing pages
+User-agent: *
+
+# Allow crawling of main marketing pages
+Allow: /
+Allow: /how-it-works
+Allow: /pricing
+Allow: /wall
+Allow: /privacy
+Allow: /terms
+Allow: /crisis-support
+
+# Disallow crawling of private/user areas
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /settings
+Disallow: /settings/*
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /api
+Disallow: /api/*
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /welcome/*
+Disallow: /daily-rituals/*
+Disallow: /ritual/*
+Disallow: /achievements/*
+Disallow: /ai-therapy/*
+Disallow: /no-contact/*
+Disallow: /quiz/*
+Disallow: /scan/*
+Disallow: /status/*
+
+# Disallow build artifacts and development files
+Disallow: /_next
+Disallow: /_next/*
+Disallow: /logs
+Disallow: /logs/*
+
+# Sitemap location (you may want to create this later)
+# Sitemap: https://yourdomain.com/sitemap.xml

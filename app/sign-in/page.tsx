@@ -39,6 +39,11 @@ export default function SignInPage() {
         // Lucia handles sessions via cookies, no need for localStorage tokens
         console.log('✅ Login successful:', data.user)
         
+        // Set email in localStorage for dashboard compatibility
+        if (data.user && data.user.email) {
+          localStorage.setItem('user-email', data.user.email);
+        }
+        
         // Redirect to dashboard
         router.push('/dashboard')
       } else {

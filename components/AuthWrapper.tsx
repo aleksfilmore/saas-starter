@@ -21,9 +21,11 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
         });
         
         if (response.ok) {
-          const user = await response.json();
-          if (user && user.email) {
+          const data = await response.json();
+          if (data.success && data.user && data.user.email) {
             setIsAuthenticated(true);
+            // Set email in localStorage for dashboard compatibility
+            localStorage.setItem('user-email', data.user.email);
           } else {
             router.push('/sign-in');
           }
