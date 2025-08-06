@@ -67,7 +67,8 @@ export async function POST(request: NextRequest) {
       })
       .where(eq(users.id, user.id))
 
-    console.log('✅ Password reset successfully for user:', user.email)
+    const dbUser = user as any;
+    console.log('✅ Password reset successfully for user:', dbUser.email)
 
     return NextResponse.json({
       success: true,

@@ -75,6 +75,9 @@ export async function POST(request: Request) {
     const detectedCategory = detectGlitchCategory(content);
     const finalCategory = category || detectedCategory;
 
+    // Cast user to include database attributes
+    const dbUser = user as any;
+
     // Create post
     const postId = crypto.randomUUID();
     const glitchTitle = generateGlitchTitle(finalCategory);
@@ -87,8 +90,8 @@ export async function POST(request: Request) {
       isAnonymous,
       createdAt: new Date(),
       authorId: isAnonymous ? null : session.userId,
-      authorEmail: isAnonymous ? null : user.email,
-      authorLevel: isAnonymous ? null : user.level,
+      authorEmail: isAnonymous ? null : dbUser.email,
+      authorLevel: isAnonymous ? null : dbUser.level,
       resonateCount: 0,
       sameLoopCount: 0,
       draggedMeTooCount: 0,

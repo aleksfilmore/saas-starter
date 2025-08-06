@@ -38,10 +38,12 @@ export async function GET(request: NextRequest) {
     try {
       const { user } = await validateRequest();
       if (user) {
+        // Cast user to include database attributes
+        const dbUser = user as any;
         authStatus = 'AUTHENTICATED';
         currentUser = {
           id: user.id,
-          email: user.email,
+          email: dbUser.email,
           level: 1, // Default level for minimal schema
           xp: 0, // Default XP for minimal schema
           bytes: 0, // Default bytes for minimal schema
