@@ -29,30 +29,23 @@ export default function SignInPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies for session management
         body: JSON.stringify({ email, password }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        if (data.token) {
-          localStorage.setItem('auth-token', data.token)
-        }
-        // Store user data
-        if (data.data) {
-          localStorage.setItem('user-email', data.data.email)
-          localStorage.setItem('user-id', data.data.userId)
-          localStorage.setItem('user-role', data.data.role || 'user')
-          if (data.data.quizResult) {
-            localStorage.setItem('quizResult', JSON.stringify(data.data.quizResult))
-            localStorage.setItem('attachmentStyle', data.data.quizResult.attachmentStyle)
-          }
-        }
+        // Lucia handles sessions via cookies, no need for localStorage tokens
+        console.log('✅ Login successful:', data.user)
+        
+        // Redirect to dashboard
         router.push('/dashboard')
       } else {
-        setError(data.message || 'Sign in failed. Please check your credentials.')
+        setError(data.error || 'Login failed')
       }
     } catch (err) {
+      console.error('Login error:', err)
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)

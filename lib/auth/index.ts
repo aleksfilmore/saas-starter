@@ -15,6 +15,8 @@ export const lucia = new Lucia(adapter, {
     attributes: {
       // Use secure cookies in production
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Allow cross-site requests
+      httpOnly: true,
     },
   },
   getUserAttributes: (attributes) => {

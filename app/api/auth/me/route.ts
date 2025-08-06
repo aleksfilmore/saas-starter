@@ -1,51 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
+import { cookies } from 'next/headers';
 
-// Global storage reference
-declare global {
-  var localUsers: Map<string, any>;
-  var localSessions: Map<string, any>;
-}
-
-// Force Node.js runtime for database operations
-export const runtime = 'nodejs';
-
+// Production Lucia-based authentication
 export async function GET(request: NextRequest) {
   try {
-    // Check for token in Authorization header or cookie
-    const authHeader = request.headers.get('authorization');
-    const token = authHeader?.replace('Bearer ', '') || request.cookies.get('session')?.value;
+    console.log('🔍 Auth/me called');
     
-    if (!token) {
+    // Check what cookies we have
+    const cookieStore = await cookies();
+    const allCookies = cookieStore.getAll();
+    console.log('🍪 Available cookies:', allCookies.map(c => `${c.name}=${c.value.substring(0, 10)}...`));
+    
+    // Validate session using Lucia
+    const { user, session } = await validateRequest();
+    
+    console.log('👤 Session validation result:', { 
+      hasUser: !!user, 
+      hasSession: !!session,
+      userId: user?.id,
+      sessionId: session?.id 
+    });
+    
+    if (!user || !session) {
       return NextResponse.json(
-        { error: 'No token provided' },
+        { error: 'Not authenticated' },
         { status: 401 }
       );
     }
     
-    // Check session
-    const session = global.localSessions?.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      return NextResponse.json(
-        { error: 'Invalid or expired token' },
-        { status: 401 }
-      );
-    }
-    
-    // Get user
-    const user = global.localUsers?.get(session.userId);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-    
-    // Return user data (exclude sensitive info)
-    const { hashedPassword, ...safeUser } = user;
-    
+    // Return user data
     return NextResponse.json({
       success: true,
-      user: safeUser
+      user: {
+        id: user.id,
+        email: user.email,
+        tier: user.tier,
+        archetype: user.archetype,
+        xp: user.xp,
+        bytes: user.bytes,
+        level: user.level,
+        ritual_streak: user.ritual_streak,
+        no_contact_streak: user.no_contact_streak,
+        is_verified: user.is_verified,
+        subscription_status: user.subscription_status
+      }
     });
 
   } catch (error) {
