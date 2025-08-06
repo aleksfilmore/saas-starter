@@ -1,16 +1,44 @@
-// Wall of Wounds API - FEED (Mock Version)
+// Wall of Wounds API - FEED 
 import { NextRequest, NextResponse } from 'next/server';
-import { validateRequest } from '@/lib/auth';
+
+// Global storage reference
+declare global {
+  var localUsers: Map<string, any>;
+  var localSessions: Map<string, any>;
+  var wallPosts: Map<string, any>;
+  var wallReactions: Map<string, any>;
+}
+
+// Initialize wall storage if not exists
+if (!global.wallPosts) {
+  global.wallPosts = new Map();
+}
+if (!global.wallReactions) {
+  global.wallReactions = new Map();
+}
 
 // Force Node.js runtime
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
-    const { user } = await validateRequest();
-    
-    if (!user) {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    // Check session
+    const session = global.localSessions?.get(token);
+    if (!session || Date.now() > session.expiresAt) {
+      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+    }
+    
+    // Get user
+    const user = global.localUsers?.get(session.userId);
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -19,10 +47,17 @@ export async function GET(request: NextRequest) {
     const filter = searchParams.get('filter') || 'recent';
     const category = searchParams.get('category');
 
-    // Mock data - replace with real database queries once database is properly set up
+    // Get real posts from storage
+    const realPosts = Array.from(global.wallPosts.values()).map(post => ({
+      ...post,
+      timeAgo: formatTimeAgo(post.createdAt),
+      userReaction: getUserReaction(session.userId, post.id)
+    }));
+
+    // Mock data for demonstration
     const mockPosts = [
       {
-        id: '1',
+        id: 'mock-1',
         content: 'Just realized my ex was basically a human form of Windows Vista - looked promising at first but crashed constantly and made everything slower. At least Vista eventually got replaced...',
         glitchCategory: 'system_error',
         glitchTitle: '5Y5T3M_3RR0R_D3T3CT3D',
@@ -45,7 +80,7 @@ export async function GET(request: NextRequest) {
         displayTitle: '5Y5T3M_3RR0R_D3T3CT3D'
       },
       {
-        id: '2',
+        id: 'mock-2',
         content: 'My therapist said "you need to process your emotions" but honestly I feel like a computer trying to run Crysis on a calculator. System requirements not met, please try again in 5-10 years.',
         glitchCategory: 'buffer_overflow',
         glitchTitle: 'BUFF3R_0V3RFL0W_W4RN1NG',
@@ -68,7 +103,7 @@ export async function GET(request: NextRequest) {
         displayTitle: 'BUFF3R_0V3RFL0W_W4RN1NG'
       },
       {
-        id: '3',
+        id: 'mock-3',
         content: 'Every time I see a couples post on social media, my brain does this thing where it immediately calculates how long until they break up. Current accuracy rate: disturbingly high.',
         glitchCategory: 'loop_detected',
         glitchTitle: 'L00P_1NF1N1T3_D3T3CT3D',
@@ -89,57 +124,14 @@ export async function GET(request: NextRequest) {
         totalReactions: 77,
         timeAgo: '1d_ago',
         displayTitle: 'L00P_1NF1N1T3_D3T3CT3D'
-      },
-      {
-        id: '4',
-        content: 'Update: Blocked my ex on everything. Phone, social media, email, even blocked their number on my smart fridge. Can\'t be too careful - they might try to manipulate my ice dispenser.',
-        glitchCategory: 'access_denied',
-        glitchTitle: '4CC355_D3N13D_3RR0R_403',
-        isAnonymous: true,
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-        resonateCount: 45,
-        sameLoopCount: 8,
-        draggedMeTooCount: 1,
-        stoneColdCount: 33,
-        cleansedCount: 28,
-        commentCount: 22,
-        isOraclePost: false,
-        isFeatured: true,
-        authorId: null,
-        authorEmail: null,
-        authorLevel: null,
-        userReaction: 'cleansed',
-        totalReactions: 115,
-        timeAgo: '3d_ago',
-        displayTitle: '4CC355_D3N13D_3RR0R_403'
-      },
-      {
-        id: '5',
-        content: 'Pro tip: If you\'re wondering whether to text your ex, ask yourself "Would I download Internet Explorer in 2024?" If the answer is no, don\'t text them.',
-        glitchCategory: 'syntax_error',
-        glitchTitle: '5YNT4X_3RR0R_L1N3_0',
-        isAnonymous: true,
-        createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
-        resonateCount: 67,
-        sameLoopCount: 12,
-        draggedMeTooCount: 2,
-        stoneColdCount: 41,
-        cleansedCount: 18,
-        commentCount: 8,
-        isOraclePost: true,
-        isFeatured: false,
-        authorId: null,
-        authorEmail: null,
-        authorLevel: null,
-        userReaction: null,
-        totalReactions: 140,
-        timeAgo: '6d_ago',
-        displayTitle: '5YNT4X_3RR0R_L1N3_0'
       }
     ];
 
+    // Combine real and mock posts
+    const allPosts = [...realPosts, ...mockPosts];
+
     // Apply filtering
-    let filteredPosts = [...mockPosts];
+    let filteredPosts = [...allPosts];
     
     if (category) {
       filteredPosts = filteredPosts.filter(post => post.glitchCategory === category);
@@ -184,6 +176,12 @@ export async function GET(request: NextRequest) {
       error: 'Failed to load emotional data from the void' 
     }, { status: 500 });
   }
+}
+
+function getUserReaction(userId: string, postId: string): string | null {
+  const reactionKey = `${userId}-${postId}`;
+  const reaction = global.wallReactions?.get(reactionKey);
+  return reaction ? reaction.reactionType : null;
 }
 
 function formatTimeAgo(date: Date): string {
