@@ -230,8 +230,8 @@ export default function DashboardPage() {
           noContactDays: authUser.noContactDays,
           subscriptionTier: authUser.subscriptionTier
         }}
-        showShield={hasShield}
-        onQuickMood={handleQuickMood}
+        hasShield={hasShield}
+        onCheckin={handleQuickMood}
         onBreathing={handleBreathing}
         onCrisis={handleCrisis}
       />
