@@ -3,6 +3,8 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
+import { LumoProvider } from '@/components/lumo/LumoProvider';
+import Lumo from '@/components/lumo/LumoBubble';
 
 export const metadata: Metadata = {
   title: 'CTRL+ALT+BLOCK™ | Enhanced Digital Healing Platform',
@@ -54,7 +56,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark bg-background text-foreground ${manrope.className}`}>
       <body className="min-h-screen bg-background text-foreground overflow-x-hidden">
-        {children}
+        <LumoProvider>
+          {children}
+          <Lumo />
+        </LumoProvider>
       </body>
     </html>
   );

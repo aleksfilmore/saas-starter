@@ -1,192 +1,166 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { 
-  calculateDashboardType, 
-  getDashboardConfig, 
-  hasFeatureAccess,
-  DashboardType 
-} from '@/lib/user/user-tier-service';
-import { getTodaysRitual } from '@/lib/ritual/ritual-engine';
+
+interface DashboardPayload {
+  ux_stage: 'starter' | 'core' | 'power';
+  ritual: {
+    id: string;
+    name: string;
+    difficulty: number;
+    xpReward: number;
+    emoji: string;
+    description: string;
+    canReroll: boolean;
+    cooldownHours: number;
+  } | null;
+  streak: {
+    days: number;
+    shieldAvailable: boolean;
+    checkinNeeded: boolean;
+  };
+  bytes: number;
+  xp: number;
+  level: number;
+  quota: number;
+  wallPreview?: Array<{
+    id: string;
+    content: string;
+    hearts: number;
+    replies: number;
+    timestamp: string;
+    anonymous: boolean;
+  }>;
+  stats?: {
+    bytesChart: Array<{ date: string; bytes: number }>;
+    xpChart: Array<{ date: string; xp: number }>;
+  };
+  user: {
+    alias: string;
+    signupDate: string;
+    tier: 'ghost' | 'firewall' | 'cult_leader';
+    hasSubscription: boolean;
+    lastActivity: string;
+  };
+}
+
+function determineUserStage(user: any): 'starter' | 'core' | 'power' {
+  const signupDate = new Date(user.signupDate);
+  const daysSinceSignup = Math.floor((Date.now() - signupDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // Power stage: Day 14+ OR has subscription
+  if (daysSinceSignup >= 14 || user.hasSubscription) {
+    return 'power';
+  }
+  
+  // Core stage: Day 5+ OR XP >= 50
+  if (daysSinceSignup >= 5 || user.xp >= 50) {
+    return 'core';
+  }
+  
+  // Starter stage: Day 0-4
+  return 'starter';
+}
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user email from headers (temporary auth method)
-    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com';
+    const url = new URL(request.url);
+    const forceStage = url.searchParams.get('stage') as 'starter' | 'core' | 'power' | null;
     
-    if (!userEmail) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Get user data
-    const userData = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, userEmail))
-      .limit(1);
-
-    if (!userData.length) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const user = userData[0];
-
-    // Calculate current dashboard type
-    const dashboardType = calculateDashboardType({
-      id: user.id,
-      tier: (user.tier as 'freemium' | 'paid') || 'freemium',
-      status: (user.status as 'active' | 'cancelled' | 'trialing') || 'active',
-      createdAt: user.createdAt,
-      protocolDay: user.protocolDay || 0
-    });
-
-    // Update dashboard type if it changed
-    if (user.dashboardType !== dashboardType) {
-      await db
-        .update(users)
-        .set({ dashboardType })
-        .where(eq(users.id, user.id));
-    }
-
-    // Get dashboard configuration
-    const dashboardConfig = getDashboardConfig(dashboardType);
-
-    // Get today's ritual
-    const todaysRitual = await getTodaysRitual(user.id);
-
-    // Calculate streak status
-    const today = new Date();
-    const lastRitual = user.lastRitualCompleted;
-    const isStreakActive = lastRitual && 
-      (today.getTime() - lastRitual.getTime()) < (24 * 60 * 60 * 1000);
-
-    // Build feature flags based on dashboard type
-    const featureGates = {
-      noContactTracker: hasFeatureAccess(dashboardType, 'no_contact_tracker'),
-      dailyLogs: hasFeatureAccess(dashboardType, 'emotional_dial'),
-      aiTherapy: hasFeatureAccess(dashboardType, 'ai_therapy_weekly'),
-      wallRead: true, // All users can read
-      wallPost: hasFeatureAccess(dashboardType, 'wall_write_access'),
-      progressAnalytics: dashboardType !== 'freemium',
-      byteShop: hasFeatureAccess(dashboardType, 'byte_shop_limited') || 
-                hasFeatureAccess(dashboardType, 'byte_shop_full'),
-      ritualBank: hasFeatureAccess(dashboardType, 'ritual_bank_limited') ||
-                  hasFeatureAccess(dashboardType, 'ritual_bank_full'),
-      ritualScheduler: hasFeatureAccess(dashboardType, 'ritual_scheduler'),
-      aiCompanion: hasFeatureAccess(dashboardType, 'ai_companion'),
-      missionLogs: hasFeatureAccess(dashboardType, 'mission_logs')
+    // Mock user data - replace with actual user lookup
+    const mockUser = {
+      alias: 'HealingWarrior',
+      signupDate: '2025-08-01T00:00:00Z', // 5 days ago
+      tier: 'ghost' as const,
+      hasSubscription: false,
+      lastActivity: new Date().toISOString(),
+      xp: 75,
+      bytes: 120,
+      level: 2
     };
 
-    // AI quota information
-    const aiQuota = {
-      msgsLeft: Math.max(0, 20 - (user.aiQuotaUsed || 0)),
-      totalQuota: dashboardType === 'freemium' ? 0 : 20,
-      resetAt: user.aiQuotaResetAt?.toISOString() || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      canPurchaseMore: dashboardType !== 'freemium',
-      purchaseCost: dashboardType === 'freemium' ? 100 : 50
+    const ux_stage = forceStage || determineUserStage(mockUser);
+
+    // Mock ritual data
+    const currentRitual = {
+      id: 'ritual_breath_firewall',
+      name: 'Breath Firewall',
+      difficulty: 2,
+      xpReward: 20,
+      emoji: '🔥',
+      description: 'Build emotional barriers through controlled breathing',
+      canReroll: true,
+      cooldownHours: 0
     };
 
-    // User stats
-    const userStats = {
-      id: user.id,
-      username: user.codename || user.email.split('@')[0],
-      email: user.email,
-      level: user.level || 1,
-      xp: user.xp || 0,
-      nextLevelXP: ((user.level || 1) + 1) * 1000,
-      progressToNext: Math.floor(((user.xp || 0) % 1000) / 10),
-      bytes: user.bytes || 100,
-      streak: isStreakActive ? user.streakDays : 0,
-      longestStreak: user.longestStreak || 0,
-      noContactDays: user.noContactDays || 0,
-      avatar: user.avatarStyle || '🔥',
-      uxStage: user.uxStage || dashboardType,
-      tier: user.tier || 'freemium',
-      dashboardType,
-      emotionalArchetype: user.emotionalArchetype,
-      protocolDay: user.protocolDay || 0,
-      joinDate: user.createdAt.toISOString(),
-      lastActive: user.lastLogin?.toISOString() || user.createdAt.toISOString()
+    // Mock streak data
+    const streak = {
+      days: 3,
+      shieldAvailable: true,
+      checkinNeeded: false
     };
 
-    // Today's rituals array (for compatibility)
-    const todayRituals = todaysRitual ? [
-      {
-        id: todaysRitual.id,
-        title: todaysRitual.title,
-        description: todaysRitual.description,
-        category: todaysRitual.category,
-        intensity: todaysRitual.intensity,
-        duration: todaysRitual.duration,
-        isCompleted: false,
-        completedAt: null,
-        xpReward: todaysRitual.xpReward,
-        bytesReward: todaysRitual.bytesReward
-      }
-    ] : [];
+    // Base payload for all stages
+    const basePayload: DashboardPayload = {
+      ux_stage,
+      ritual: currentRitual,
+      streak,
+      bytes: mockUser.bytes,
+      xp: mockUser.xp,
+      level: mockUser.level,
+      quota: ux_stage === 'starter' ? 5 : (ux_stage === 'core' ? 180 : 1000),
+      user: mockUser
+    };
 
-    return NextResponse.json({
-      user: userStats,
-      todayRituals,
-      todaysRitual,
-      featureGates,
-      aiQuota,
-      dashboardConfig,
-      stats: {
-        ritualsCompleted: 0, // TODO: Calculate from database
-        totalRituals: todayRituals.length,
-        streakActive: isStreakActive,
-        canReroll: true, // TODO: Implement reroll limitations
-        currentStreak: isStreakActive ? user.streakDays : 0,
-        longestStreak: user.longestStreak || 0,
-        totalXP: user.xp || 0,
-        currentBytes: user.bytes || 100,
-        level: user.level || 1,
-        noContactDays: user.noContactDays || 0,
-        protocolDay: user.protocolDay || 0,
-        tier: user.tier || 'freemium',
-        dashboardType,
-        uxStage: user.uxStage || 'newcomer'
-      }
-    });
+    // Stage-specific data
+    if (ux_stage === 'core' || ux_stage === 'power') {
+      // Add wall preview for core+ stages
+      basePayload.wallPreview = [
+        {
+          id: 'post_1',
+          content: 'Day 12 no contact. Finally feeling like myself again. The urge to text is fading...',
+          hearts: 23,
+          replies: 5,
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          anonymous: true
+        },
+        {
+          id: 'post_2',
+          content: 'Panic attack at 3am thinking about them. Used the breath ritual and it actually worked.',
+          hearts: 18,
+          replies: 3,
+          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          anonymous: true
+        },
+        {
+          id: 'post_3',
+          content: 'Anyone else struggling with mutual friends? They keep bringing up my ex...',
+          hearts: 31,
+          replies: 12,
+          timestamp: new Date(Date.now() - 10800000).toISOString(),
+          anonymous: true
+        }
+      ];
+    }
 
+    if (ux_stage === 'power') {
+      // Add analytics data for power stage
+      basePayload.stats = {
+        bytesChart: Array.from({ length: 14 }, (_, i) => ({
+          date: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          bytes: Math.floor(Math.random() * 50) + 20
+        })),
+        xpChart: Array.from({ length: 14 }, (_, i) => ({
+          date: new Date(Date.now() - (13 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          xp: Math.floor(Math.random() * 100) + 50
+        }))
+      };
+    }
+
+    return NextResponse.json(basePayload);
   } catch (error) {
     console.error('Dashboard API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to fetch dashboard data' },
       { status: 500 }
     );
   }
-}
-
-function getFeatureGates(uxStage: string | null, level: number, noContactDays: number) {
-  const gates = {
-    noContactTracker: true, // Always available
-    dailyLogs: level >= 1, // After first ritual
-    aiTherapy: level >= 3 || noContactDays >= 3, // Day 3 or level 3
-    wallRead: level >= 5 || noContactDays >= 5, // Day 5 or level 5
-    wallPost: level >= 7 || noContactDays >= 7, // Day 7 or level 7
-    progressAnalytics: level >= 14 || noContactDays >= 14 // Day 14 or level 14
-  }
-
-  // Override based on ux_stage if set
-  if (uxStage === 'system_admin') {
-    Object.keys(gates).forEach(key => {
-      gates[key as keyof typeof gates] = true
-    })
-  }
-
-  return gates
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  })
 }
