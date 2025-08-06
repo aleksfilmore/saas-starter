@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import AuthWrapper from '@/components/AuthWrapper';
-import Link from 'next/link';
+import { SimplifiedHeader } from '@/components/dashboard/SimplifiedHeader';
 import { 
-  ArrowLeft, 
-  Sparkles, 
-  Heart, 
+  Send, 
   MessageCircle, 
   Users,
-  Send,
-  AlertTriangle,
-  Filter,
-  TrendingUp,
-  Clock,
+  Heart,
   Zap,
   Shield,
-  RefreshCw
+  RefreshCw,
+  ChevronDown,
+  ChevronUp,
+  MoreHorizontal,
+  Flame,
+  Sparkles
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Post {
   id: string;
@@ -46,27 +46,51 @@ interface Post {
   userReaction?: string | null;
 }
 
-interface WallStats {
-  activeHealers: number;
-  heartsGiven: number;
-  supportMessages: number;
-}
+const EMOJI_TAGS = [
+  { emoji: '💔', label: 'Heartbreak', category: 'heartbreak' },
+  { emoji: '😢', label: 'Sadness', category: 'sadness' },
+  { emoji: '😤', label: 'Anger', category: 'anger' },
+  { emoji: '😰', label: 'Anxiety', category: 'anxiety' },
+  { emoji: '🔥', label: 'Rage', category: 'rage' },
+  { emoji: '💭', label: 'Confusion', category: 'confusion' },
+  { emoji: '🌟', label: 'Hope', category: 'hope' },
+  { emoji: '⚡', label: 'Breakthrough', category: 'breakthrough' },
+  { emoji: '🎭', label: 'Identity', category: 'identity' },
+  { emoji: '🔮', label: 'Future', category: 'future' }
+];
 
-export default function WallEnhancedPage() {
+export default function SimplifiedWallPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [postContent, setPostContent] = useState('');
   const [posting, setPosting] = useState(false);
+  const [selectedTag, setSelectedTag] = useState<typeof EMOJI_TAGS[0] | null>(null);
+  const [showTagDropdown, setShowTagDropdown] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState('recent');
-  const [wallStats, setWallStats] = useState<WallStats>({
-    activeHealers: 1247,
-    heartsGiven: 89423,
-    supportMessages: 12891
-  });
+  const [user, setUser] = useState<any>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    fetchUserData();
     fetchPosts();
   }, [filter]);
+
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem('auth-token');
+      const response = await fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -89,7 +113,7 @@ export default function WallEnhancedPage() {
   };
 
   const submitPost = async () => {
-    if (!postContent.trim() || posting) return;
+    if (!postContent.trim() || posting || !selectedTag) return;
 
     setPosting(true);
     try {
@@ -101,23 +125,22 @@ export default function WallEnhancedPage() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          content: postContent.trim(),
+          content: postContent,
+          glitchCategory: selectedTag.category,
+          glitchTitle: selectedTag.label,
           isAnonymous: true
         })
       });
 
       if (response.ok) {
-        const data = await response.json();
         setPostContent('');
-        // Add new post to top of feed
-        setPosts(prev => [data.post, ...prev]);
+        setSelectedTag(null);
+        await fetchPosts();
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to post confession');
+        console.error('Failed to submit post');
       }
     } catch (error) {
-      console.error('Failed to post:', error);
-      alert('Failed to post confession. Please try again.');
+      console.error('Error submitting post:', error);
     } finally {
       setPosting(false);
     }
@@ -139,190 +162,231 @@ export default function WallEnhancedPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        
-        // Update post in state
-        setPosts(prev => prev.map(post => {
-          if (post.id === postId) {
-            return {
-              ...post,
-              ...data.updatedCounts,
-              userReaction: data.userReaction
-            };
-          }
-          return post;
-        }));
+        await fetchPosts();
       }
     } catch (error) {
-      console.error('Failed to react:', error);
+      console.error('Error reacting to post:', error);
     }
   };
 
   const getReactionIcon = (type: string) => {
-    const icons = {
-      resonate: '🔄',
-      same_loop: '🤝', 
-      dragged_me_too: '😭',
+    const icons: Record<string, string> = {
+      resonate: '💫',
+      same_loop: '🔄',
+      dragged_me_too: '😔',
       stone_cold: '🗿',
       cleansed: '✨'
     };
-    return icons[type as keyof typeof icons] || '❓';
-  };
-
-  const getReactionLabel = (type: string) => {
-    const labels = {
-      resonate: 'Resonate',
-      same_loop: 'Same Loop',
-      dragged_me_too: 'Dragged Me Too',
-      stone_cold: 'Stone Cold',
-      cleansed: 'Cleansed'
-    };
-    return labels[type as keyof typeof labels] || type;
+    return icons[type] || '👍';
   };
 
   const getCategoryColor = (category: string) => {
-    const colors = {
-      system_error: 'border-red-500/30 bg-red-500/5',
-      loop_detected: 'border-yellow-500/30 bg-yellow-500/5',
-      memory_leak: 'border-blue-500/30 bg-blue-500/5',
-      buffer_overflow: 'border-purple-500/30 bg-purple-500/5',
-      syntax_error: 'border-green-500/30 bg-green-500/5',
-      access_denied: 'border-orange-500/30 bg-orange-500/5',
-      null_pointer: 'border-gray-500/30 bg-gray-500/5',
-      stack_overflow: 'border-pink-500/30 bg-pink-500/5'
+    const colors: Record<string, string> = {
+      heartbreak: 'border-red-500/30',
+      sadness: 'border-blue-500/30',
+      anger: 'border-orange-500/30',
+      anxiety: 'border-yellow-500/30',
+      rage: 'border-red-600/30',
+      confusion: 'border-purple-500/30',
+      hope: 'border-green-500/30',
+      breakthrough: 'border-cyan-500/30',
+      identity: 'border-pink-500/30',
+      future: 'border-indigo-500/30'
     };
-    return colors[category as keyof typeof colors] || 'border-gray-500/30 bg-gray-500/5';
+    return colors[category] || 'border-gray-500/30';
   };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      submitPost();
+    }
+  };
+
+  const placeholderText = selectedTag 
+    ? `${selectedTag.emoji} Share your ${selectedTag.label.toLowerCase()} healing journey anonymously...`
+    : 'Click to choose an emotion tag, then share your healing journey...';
 
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         
-        {/* Header */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="flex items-center space-x-4 mb-6">
-            <Link href="/dashboard">
-              <Button variant="ghost" className="text-white hover:text-purple-400">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </Link>
-          </div>
+        {/* SimplifiedHeader */}
+        <SimplifiedHeader 
+          user={{
+            username: user?.username || 'User',
+            streak: 34,
+            bytes: 730,
+            level: 3,
+            noContactDays: 12
+          }}
+          hasShield={true}
+          onCheckin={() => console.log('Check-in clicked')}
+          onBreathing={() => window.location.href = '/breathing'}
+          onCrisis={() => window.location.href = '/crisis-support'}
+        />
+        
+        {/* Main Container */}
+        <div className="max-w-3xl mx-auto px-4 pb-4">
           
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
-              ✨ Wall of Wounds™
+          {/* Page Title */}
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-white flex items-center">
+              ✨ Wall of Wounds
             </h1>
-            <p className="text-xl text-red-400">
-              Anonymous healing confessions
-            </p>
+            <div className="flex items-center text-sm text-purple-300">
+              <Users className="h-4 w-4 mr-1" />
+              1.2k healers
+            </div>
           </div>
-        </div>
 
-        <div className="max-w-4xl mx-auto space-y-6">
-          
-          {/* Share Section */}
-          <Card className={`bg-gray-800/80 border border-red-500/30`}>
-            <CardHeader>
-              <CardTitle className="text-white text-2xl flex items-center">
-                <Sparkles className="h-6 w-6 mr-2 text-red-400" />
-                Share Your Healing
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+          {/* Unified Compose Area */}
+          <Card className="bg-gray-800/80 border border-red-500/30 mb-6">
+            <CardContent className="p-6">
+              
+              {/* Emoji Tag Selector */}
+              <div className="mb-4">
+                <div className="relative">
+                  <button
+                    onClick={() => setShowTagDropdown(!showTagDropdown)}
+                    className="flex items-center justify-between w-full p-3 bg-gray-700/50 hover:bg-gray-700/70 border border-gray-600 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center space-x-2">
+                      {selectedTag ? (
+                        <>
+                          <span className="text-lg">{selectedTag.emoji}</span>
+                          <span className="text-white">{selectedTag.label}</span>
+                        </>
+                      ) : (
+                        <span className="text-gray-400">Choose an emotion tag</span>
+                      )}
+                    </div>
+                    {showTagDropdown ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showTagDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto"
+                      >
+                        {EMOJI_TAGS.map((tag) => (
+                          <button
+                            key={tag.category}
+                            onClick={() => {
+                              setSelectedTag(tag);
+                              setShowTagDropdown(false);
+                              textareaRef.current?.focus();
+                            }}
+                            className="flex items-center space-x-3 w-full p-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
+                          >
+                            <span className="text-lg">{tag.emoji}</span>
+                            <span className="text-white">{tag.label}</span>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Textarea */}
+              <div className="space-y-3">
                 <Textarea
+                  ref={textareaRef}
                   value={postContent}
                   onChange={(e) => setPostContent(e.target.value)}
-                  placeholder="Share your healing journey anonymously... What wound are you transforming today?"
-                  className="bg-gray-700/50 border border-gray-600 text-white placeholder-gray-400 min-h-[120px] resize-none"
+                  onKeyDown={handleKeyPress}
+                  placeholder={placeholderText}
+                  className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 min-h-[120px] resize-none focus:border-red-500/50 focus:ring-red-500/20"
                   maxLength={500}
+                  disabled={!selectedTag}
                 />
+                
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-4">
-                    <p className="text-sm text-gray-400">
-                      <Shield className="h-4 w-4 inline mr-1" />
+                    <div className="flex items-center text-xs text-gray-400">
+                      <Shield className="h-3 w-3 mr-1" />
                       Anonymous & encrypted
-                    </p>
-                    <p className="text-xs text-gray-500">
+                    </div>
+                    <div className="text-xs text-gray-500">
                       {postContent.length}/500
-                    </p>
+                    </div>
                   </div>
-                  <Button 
-                    onClick={submitPost}
-                    disabled={!postContent.trim() || posting}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    {posting ? (
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4 mr-2" />
-                    )}
-                    Share Confession
-                  </Button>
+                  
+                  <div className="flex items-center space-x-2">
+                    <div className="text-xs text-gray-500">
+                      Ctrl+Enter to post
+                    </div>
+                    <Button 
+                      onClick={submitPost}
+                      disabled={!postContent.trim() || posting || !selectedTag}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                      size="sm"
+                    >
+                      {posting ? (
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4 mr-2" />
+                      )}
+                      Share
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Filter Bar */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Filter className="h-5 w-5 text-gray-400" />
-              <div className="flex space-x-2">
-                {[
-                  { key: 'recent', label: 'Recent', icon: Clock },
-                  { key: 'viral', label: 'Viral', icon: TrendingUp },
-                  { key: 'oracle', label: 'Oracle', icon: Zap },
-                  { key: 'pulse', label: 'Pulse', icon: Heart }
-                ].map(({ key, label, icon: Icon }) => (
-                  <Button
-                    key={key}
-                    variant={filter === key ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setFilter(key)}
-                    className={filter === key ? "bg-purple-600" : "text-gray-400 hover:text-white"}
-                  >
-                    <Icon className="h-4 w-4 mr-1" />
-                    {label}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={fetchPosts}
-              className="text-gray-400 hover:text-white"
+          {/* Collapsible Filters */}
+          <div className="mb-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center justify-between w-full p-3 bg-gray-800/50 hover:bg-gray-800/70 rounded-lg border border-gray-600/30 transition-colors"
             >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gray-800/50 border border-gray-600/50 text-center">
-              <CardContent className="p-4">
-                <Users className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{wallStats.activeHealers.toLocaleString()}</div>
-                <div className="text-sm text-gray-400">Active Healers</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-800/50 border border-gray-600/50 text-center">
-              <CardContent className="p-4">
-                <Heart className="h-8 w-8 text-red-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{wallStats.heartsGiven.toLocaleString()}</div>
-                <div className="text-sm text-gray-400">Hearts Given</div>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-800/50 border border-gray-600/50 text-center">
-              <CardContent className="p-4">
-                <MessageCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">{wallStats.supportMessages.toLocaleString()}</div>
-                <div className="text-sm text-gray-400">Support Messages</div>
-              </CardContent>
-            </Card>
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-4 w-4 text-purple-400" />
+                <span className="text-sm font-medium text-white">View Options</span>
+                <Badge variant="secondary" className="bg-purple-600/20 text-purple-300 text-xs">
+                  {filter}
+                </Badge>
+              </div>
+              {showFilters ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+            </button>
+            
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-2 p-4 bg-gray-800/30 rounded-lg border border-gray-600/20"
+                >
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { key: 'recent', label: 'Recent', icon: '🕒' },
+                      { key: 'viral', label: 'Viral', icon: '🔥' },
+                      { key: 'oracle', label: 'Oracle', icon: '⚡' },
+                      { key: 'pulse', label: 'Pulse', icon: '💖' }
+                    ].map(({ key, label, icon }) => (
+                      <Button
+                        key={key}
+                        variant={filter === key ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setFilter(key)}
+                        className={`${filter === key ? "bg-purple-600" : "text-gray-400 hover:text-white"} justify-start`}
+                      >
+                        <span className="mr-2">{icon}</span>
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Posts Feed */}
@@ -335,62 +399,63 @@ export default function WallEnhancedPage() {
             <div className="space-y-4">
               {posts.map((post) => (
                 <Card key={post.id} className={`bg-gray-800/80 border ${getCategoryColor(post.glitchCategory)}`}>
-                  <CardContent className="p-6">
+                  <CardContent className="p-4">
+                    
                     {/* Post Header */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
-                        <Badge variant="secondary" className="bg-gray-700 text-gray-300 font-mono text-xs">
-                          {post.glitchTitle}
+                        <Badge variant="secondary" className="bg-gray-700/50 text-gray-300 text-xs px-2 py-1">
+                          {EMOJI_TAGS.find(tag => tag.category === post.glitchCategory)?.emoji} {post.glitchTitle}
                         </Badge>
                         {post.isOraclePost && (
-                          <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                          <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
                             <Zap className="h-3 w-3 mr-1" />
                             Oracle
                           </Badge>
                         )}
                         {post.isFeatured && (
-                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">
                             Featured
                           </Badge>
                         )}
                       </div>
-                      <span className="text-sm text-gray-400">{post.timeAgo}</span>
+                      <span className="text-xs text-gray-400">{post.timeAgo}</span>
                     </div>
 
                     {/* Post Content */}
-                    <p className="text-white text-lg leading-relaxed mb-4">{post.content}</p>
+                    <p className="text-white leading-relaxed mb-4">{post.content}</p>
 
-                    {/* Reactions */}
+                    {/* Simplified Reactions */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4 flex-wrap gap-2">
+                      <div className="flex items-center space-x-3">
                         {[
                           { type: 'resonate', count: post.resonateCount },
                           { type: 'same_loop', count: post.sameLoopCount },
-                          { type: 'dragged_me_too', count: post.draggedMeTooCount },
-                          { type: 'stone_cold', count: post.stoneColdCount },
                           { type: 'cleansed', count: post.cleansedCount }
                         ].map(({ type, count }) => (
                           <button
                             key={type}
                             onClick={() => reactToPost(post.id, type)}
-                            className={`flex items-center space-x-1 px-2 py-1 rounded transition-colors ${
+                            className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
                               post.userReaction === type 
                                 ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50' 
                                 : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
                             }`}
                           >
-                            <span className="text-sm">{getReactionIcon(type)}</span>
-                            <span className="text-xs">{count}</span>
+                            <span>{getReactionIcon(type)}</span>
+                            <span>{count}</span>
                           </button>
                         ))}
                       </div>
                       
-                      <div className="flex items-center space-x-4 text-gray-400">
+                      <div className="flex items-center space-x-3 text-gray-400">
                         <div className="flex items-center space-x-1">
-                          <MessageCircle className="h-4 w-4" />
-                          <span className="text-sm">{post.commentCount}</span>
+                          <MessageCircle className="h-3 w-3" />
+                          <span className="text-xs">{post.commentCount}</span>
                         </div>
-                        <div className="text-sm">{post.totalReactions} reactions</div>
+                        <button className="text-gray-400 hover:text-white">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
                   </CardContent>
@@ -399,8 +464,8 @@ export default function WallEnhancedPage() {
 
               {posts.length === 0 && !loading && (
                 <div className="text-center py-12">
-                  <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-400 text-lg">No confessions found in the void</p>
+                  <div className="text-4xl mb-4">✨</div>
+                  <p className="text-gray-400 text-lg">No confessions found</p>
                   <p className="text-gray-500 text-sm mt-2">Be the first to share your healing journey</p>
                 </div>
               )}
@@ -409,7 +474,7 @@ export default function WallEnhancedPage() {
 
           {/* Load More */}
           {posts.length > 0 && (
-            <div className="text-center">
+            <div className="text-center mt-6">
               <Button variant="outline" className="border-gray-600 text-gray-400 hover:bg-gray-700">
                 Load More Confessions
               </Button>
@@ -417,7 +482,6 @@ export default function WallEnhancedPage() {
           )}
 
         </div>
-
       </div>
     </AuthWrapper>
   );

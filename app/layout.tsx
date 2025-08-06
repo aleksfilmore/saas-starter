@@ -3,6 +3,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Manrope } from 'next/font/google';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
   title: 'CTRL+ALT+BLOCK™ | Enhanced Digital Healing Platform',
@@ -54,7 +55,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark bg-background text-foreground ${manrope.className}`}>
       <body className="min-h-screen bg-background text-foreground overflow-x-hidden">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

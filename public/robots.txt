@@ -6,7 +6,6 @@ User-agent: *
 Allow: /
 Allow: /how-it-works
 Allow: /pricing
-Allow: /wall
 Allow: /privacy
 Allow: /terms
 Allow: /crisis-support
@@ -14,6 +13,7 @@ Allow: /crisis-support
 # Disallow crawling of private/user areas
 Disallow: /dashboard
 Disallow: /dashboard/*
+Disallow: /wall
 Disallow: /settings
 Disallow: /settings/*
 Disallow: /admin

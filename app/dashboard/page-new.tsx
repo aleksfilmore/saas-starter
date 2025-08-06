@@ -12,7 +12,6 @@ import { MoodCheckIn } from '@/components/quick-actions/MoodCheckIn'
 import { BreathingExercise } from '@/components/quick-actions/BreathingExercise'
 import { LumoOnboarding } from '@/components/onboarding/LumoOnboarding'
 import { DualRituals } from '@/components/dashboard/DualRituals'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useAuth } from '@/contexts/AuthContext'
 
 // Types
@@ -134,51 +133,6 @@ export default function DashboardPage() {
     }
   }, [authUser, isAuthenticated, authLoading])
 
-  // Handle hero ritual completion
-  const handleHeroRitualComplete = async (ritualId: string) => {
-    await handleRitualComplete(ritualId, 'medium') // Default to medium for hero ritual
-  }
-
-  const handleReroll = async () => {
-    // TODO: Implement reroll functionality
-    console.log('Reroll requested')
-  }
-  const handleDualRitualComplete = async (ritualId: string, xpGained: number, bytesGained: number) => {
-    try {
-      // Map xp to difficulty - rough approximation
-      let difficulty: 'easy' | 'medium' | 'hard' = 'easy'
-      if (xpGained >= 100) difficulty = 'hard'
-      else if (xpGained >= 50) difficulty = 'medium'
-      
-      const response = await fetch('/api/rituals/complete', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ritualId, difficulty })
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        
-        // Update local state
-        const today = new Date().toDateString()
-        const newCompleted = [...completedRituals, ritualId]
-        setCompletedRituals(newCompleted)
-        localStorage.setItem(`completed-rituals-${today}`, JSON.stringify(newCompleted))
-        
-        // Update user data
-        if (result.user) {
-          await updateUser(result.user)
-        }
-        
-        console.log('Ritual completed!', result)
-      }
-    } catch (error) {
-      console.error('Error completing ritual:', error)
-    }
-  }
-
   // Handle ritual completion
   const handleRitualComplete = async (ritualId: string, difficulty: 'easy' | 'medium' | 'hard') => {
     try {
@@ -276,8 +230,8 @@ export default function DashboardPage() {
           noContactDays: authUser.noContactDays,
           subscriptionTier: authUser.subscriptionTier
         }}
-        hasShield={hasShield}
-        onCheckin={() => setShowCheckinModal(true)}
+        showShield={hasShield}
+        onQuickMood={handleQuickMood}
         onBreathing={handleBreathing}
         onCrisis={handleCrisis}
       />
@@ -287,38 +241,34 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-8">
             <SimplifiedHeroRitualCard
               ritual={todayRitual}
-              onComplete={handleHeroRitualComplete}
-              onReroll={handleReroll}
+              user={authUser}
+              onComplete={handleRitualComplete}
+              isCompleted={todayRitual ? completedRituals.includes(todayRitual.id) : false}
             />
 
-            {/* Conditional Ritual Display */}
-            {authUser.subscriptionTier === 'premium' ? (
-              <DualRituals
-                userSubscription={authUser.subscriptionTier}
-                onRitualComplete={handleDualRitualComplete}
-                completedRituals={completedRituals}
-              />
-            ) : (
-              /* Free users get simplified ritual experience within FreeDashboardTiles */
-              null
-            )}
+            <DualRituals
+              user={authUser}
+              onComplete={handleRitualComplete}
+              completedRituals={completedRituals}
+            />
 
             {authUser.subscriptionTier === 'free' ? (
               <FreeDashboardTiles
-                user={{
-                  noContactDays: authUser.noContactDays,
-                  wallPosts: 0
-                }}
+                user={authUser}
                 featureGates={featureGates}
+                aiQuota={aiQuota}
+                stats={stats}
+                noContactStatus={noContactStatus}
+                onNoContactCheckin={() => setShowCheckinModal(true)}
               />
             ) : (
               <SimplifiedTiles
-                user={{
-                  noContactDays: authUser.noContactDays,
-                  wallPosts: 0
-                }}
+                user={authUser}
                 featureGates={featureGates}
                 aiQuota={aiQuota}
+                stats={stats}
+                noContactStatus={noContactStatus}
+                onNoContactCheckin={() => setShowCheckinModal(true)}
               />
             )}
           </div>
@@ -334,51 +284,26 @@ export default function DashboardPage() {
         <NoContactCheckinModal
           isOpen={showCheckinModal}
           onClose={() => setShowCheckinModal(false)}
-          currentStreak={authUser.noContactDays}
-          onCheckinComplete={async () => {
-            await handleNoContactCheckin()
-          }}
+          onCheckin={handleNoContactCheckin}
+          currentDays={authUser.noContactDays}
         />
       )}
 
       {showMoodModal && (
-        <Dialog open={showMoodModal} onOpenChange={() => setShowMoodModal(false)}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>How are you feeling?</DialogTitle>
-            </DialogHeader>
-            <MoodCheckIn
-              onComplete={(mood) => {
-                console.log('Mood selected:', mood)
-                setShowMoodModal(false)
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        <MoodCheckIn
+          isOpen={showMoodModal}
+          onClose={() => setShowMoodModal(false)}
+        />
       )}
 
       {showBreathingModal && (
-        <Dialog open={showBreathingModal} onOpenChange={() => setShowBreathingModal(false)}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Breathing Exercise</DialogTitle>
-            </DialogHeader>
-            <BreathingExercise
-              onComplete={(pattern, cycles) => {
-                console.log('Breathing exercise completed:', pattern, cycles)
-                setShowBreathingModal(false)
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        <BreathingExercise
+          isOpen={showBreathingModal}
+          onClose={() => setShowBreathingModal(false)}
+        />
       )}
 
-      <LumoOnboarding
-        isFirstTimeUser={false}
-        onDismiss={() => console.log('Onboarding dismissed')}
-        onStartNoContact={() => window.location.href = '/no-contact'}
-        onViewRituals={() => window.location.href = '/ritual'}
-      />
+      <LumoOnboarding />
     </div>
   )
 }

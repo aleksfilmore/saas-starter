@@ -7,22 +7,24 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import AuthWrapper from '@/components/AuthWrapper';
-import Link from 'next/link';
+import { SimplifiedHeader } from '@/components/dashboard/SimplifiedHeader';
 import { 
-  MessageCircle, 
   Send, 
   Bot, 
   User, 
   Mic,
   ShoppingCart,
-  Clock,
   AlertTriangle,
   Heart,
   Sparkles,
-  ArrowLeft,
   Crown,
-  Shield
+  Shield,
+  MoreHorizontal,
+  ChevronDown,
+  ChevronUp,
+  Zap
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
   id: string;
@@ -41,25 +43,21 @@ interface QuotaInfo {
   tier: string;
 }
 
-export default function AITherapyPage() {
+export default function SimplifiedAITherapyPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [quotaInfo, setQuotaInfo] = useState<QuotaInfo | null>(null);
   const [user, setUser] = useState<any>(null);
-  const [showChat, setShowChat] = useState(false);
+  const [showVoiceBanner, setShowVoiceBanner] = useState(false);
+  const [showCapabilities, setShowCapabilities] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchUserData();
     fetchQuotaInfo();
+    initializeChat();
   }, []);
-
-  useEffect(() => {
-    if (showChat && messages.length === 0) {
-      initializeChat();
-    }
-  }, [showChat]);
 
   useEffect(() => {
     scrollToBottom();
@@ -101,28 +99,40 @@ export default function AITherapyPage() {
     }
   };
 
-  const initializeChat = () => {
-    const welcomeMessage: Message = {
-      id: crypto.randomUUID(),
-      content: "Hey there 👋 I'm your AI therapy companion, trained specifically for heartbreak recovery. I understand attachment styles and can help you work through your healing journey. What's on your mind today?",
-      role: 'assistant',
-      timestamp: new Date()
-    };
-    setMessages([welcomeMessage]);
+  const initializeChat = async () => {
+    try {
+      const token = localStorage.getItem('auth-token');
+      const response = await fetch('/api/ai-therapy/initialize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.initialMessage) {
+          setMessages([{
+            id: 'init',
+            content: data.initialMessage,
+            role: 'assistant',
+            timestamp: new Date()
+          }]);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to initialize chat:', error);
+    }
   };
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
-    
-    // Check quota
-    if (quotaInfo && quotaInfo.used >= quotaInfo.total) {
-      alert('You\'ve reached your message limit. Upgrade or wait for reset to continue.');
-      return;
-    }
+    if (quotaInfo && quotaInfo.used >= quotaInfo.total) return;
 
     const userMessage: Message = {
-      id: crypto.randomUUID(),
-      content: inputMessage.trim(),
+      id: Date.now().toString(),
+      content: inputMessage,
       role: 'user',
       timestamp: new Date()
     };
@@ -140,49 +150,31 @@ export default function AITherapyPage() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          message: inputMessage.trim(),
-          conversationHistory: messages.slice(-10)
+          message: inputMessage,
+          conversationHistory: messages
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        
-        const aiMessage: Message = {
-          id: crypto.randomUUID(),
+        const assistantMessage: Message = {
+          id: Date.now().toString() + '_ai',
           content: data.response,
           role: 'assistant',
           timestamp: new Date(),
-          archetype: user?.archetype
+          archetype: data.archetype
         };
-
-        setMessages(prev => [...prev, aiMessage]);
         
-        // Update quota
-        if (quotaInfo) {
-          setQuotaInfo(prev => prev ? {
-            ...prev,
-            used: prev.used + 1
-          } : null);
-        }
+        setMessages(prev => [...prev, assistantMessage]);
+        await fetchQuotaInfo();
       } else {
-        const error = await response.json();
-        console.error('AI response error:', error);
-        
-        const errorMessage: Message = {
-          id: crypto.randomUUID(),
-          content: "I'm having trouble responding right now. Please try again in a moment.",
-          role: 'assistant',
-          timestamp: new Date()
-        };
-        setMessages(prev => [...prev, errorMessage]);
+        throw new Error('Failed to get AI response');
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
-      
+      console.error('Error sending message:', error);
       const errorMessage: Message = {
-        id: crypto.randomUUID(),
-        content: "Connection error. Please check your internet and try again.",
+        id: Date.now().toString() + '_error',
+        content: 'Sorry, I had trouble processing that. Please try again.',
         role: 'assistant',
         timestamp: new Date()
       };
@@ -245,241 +237,118 @@ export default function AITherapyPage() {
   const quotaPercentage = quotaInfo ? (quotaInfo.used / quotaInfo.total) * 100 : 0;
   const messagesLeft = quotaInfo ? quotaInfo.total - quotaInfo.used : 0;
 
-  // Show landing page if user hasn't started chat yet
-  if (!showChat) {
-    return (
-      <AuthWrapper>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
-          
-          {/* Header */}
-          <div className="max-w-6xl mx-auto mb-8">
-            <div className="flex items-center space-x-4 mb-6">
-              <Link href="/dashboard">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="text-center">
-              <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
-                🧠 AI Therapy
-              </h1>
-              <p className="text-xl text-purple-400">
-                Your personal healing companion powered by AI
-              </p>
-            </div>
-          </div>
-
-          {/* Current Plan Status */}
-          {quotaInfo && (
-            <div className="max-w-6xl mx-auto mb-8">
-              <Card className="bg-gray-800/80 border border-gray-600/50">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
-                        {quotaInfo.tier.toUpperCase()}
-                      </Badge>
-                      <div>
-                        <h3 className="text-xl font-bold text-white">Current Plan</h3>
-                        <p className="text-gray-400">{messagesLeft} messages remaining</p>
-                      </div>
-                    </div>
-                    <Button 
-                      onClick={() => setShowChat(true)}
-                      className="bg-purple-600 hover:bg-purple-700"
-                    >
-                      Start Chat Session
-                    </Button>
-                  </div>
-                  
-                  {/* Daily Quota Progress */}
-                  <div className="mb-4">
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-gray-300">Daily Messages</span>
-                      <span className="text-gray-300">{quotaInfo.used} / {quotaInfo.total}</span>
-                    </div>
-                    <Progress value={quotaPercentage} className="h-2" />
-                    {quotaPercentage >= 80 && (
-                      <p className="text-orange-400 text-sm mt-2">⚠️ Approaching daily limit</p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Chat Interface Preview */}
-          <div className="max-w-6xl mx-auto mb-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Text Chat */}
-              <Card className="bg-gray-800/80 border border-green-500/30">
-                <CardHeader>
-                  <CardTitle className="text-white text-xl flex items-center">
-                    <MessageCircle className="h-5 w-5 mr-2 text-green-400" />
-                    Text Chat Oracle
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-gray-700/50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-300 text-sm">Status</span>
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                        Ready
-                      </Badge>
-                    </div>
-                    <p className="text-gray-400 text-sm">
-                      Chat with your AI therapist using text messages. Get instant responses tailored to your archetype.
-                    </p>
-                  </div>
-                  
-                  <Button 
-                    onClick={() => setShowChat(true)}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    Start Chat Session
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Voice Oracle */}
-              <Card className="bg-gray-800/80 border border-blue-500/30">
-                <CardHeader>
-                  <CardTitle className="text-white text-xl flex items-center">
-                    <Mic className="h-5 w-5 mr-2 text-blue-400" />
-                    Voice Oracle
-                    <Crown className="h-4 w-4 ml-2 text-yellow-400" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-gray-700/50 p-4 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-300 text-sm">Real-time Voice AI</span>
-                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                        Premium
-                      </Badge>
-                    </div>
-                    <p className="text-gray-400 text-sm">
-                      15-minute voice sessions with real-time AI therapy. Natural conversation flow.
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Button disabled className="w-full bg-gray-700 text-gray-400 cursor-not-allowed">
-                      Coming Soon
-                    </Button>
-                    <p className="text-xs text-gray-500 text-center">
-                      Voice feature in development
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Safety & Legal */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="bg-gray-800/80 border border-gray-600/50">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-3">
-                  <Shield className="h-6 w-6 text-purple-400 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-white font-bold mb-2">Important Safety Information</h3>
-                    <div className="space-y-2 text-gray-300 text-sm">
-                      <p className="bg-orange-500/10 border border-orange-500/30 p-3 rounded-lg">
-                        <strong className="text-orange-400">⚠️ AI companion, not licensed therapy.</strong> If in crisis click Dashboard → Crisis Support.
-                      </p>
-                      <p>• Conversations are personalized to your attachment style</p>
-                      <p>• Self-harm detection → automatic crisis resource recommendations</p>
-                      <p>• All conversations are private and encrypted</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-        </div>
-      </AuthWrapper>
-    );
-  }
-
-  // Show chat interface
   return (
     <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 py-4">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Button 
-                variant="ghost" 
-                onClick={() => setShowChat(false)}
-                className="mr-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <Bot className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">AI Therapy</h1>
-                <p className="text-sm text-gray-600">Your personal healing companion</p>
-              </div>
-            </div>
-            
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+        
+        {/* SimplifiedHeader */}
+        <SimplifiedHeader 
+          user={{
+            username: user?.username || 'User',
+            streak: 34,
+            bytes: 730,
+            level: 3,
+            noContactDays: 12
+          }}
+          hasShield={true}
+          onCheckin={() => console.log('Check-in clicked')}
+          onBreathing={() => window.location.href = '/breathing'}
+          onCrisis={() => window.location.href = '/crisis-support'}
+        />
+        
+        {/* Main Chat Container */}
+        <div className="max-w-4xl mx-auto px-4 pb-4">
+          
+          {/* Page Title with Quota */}
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold text-white flex items-center">
+              🧠 AI Therapy
+            </h1>
             {quotaInfo && (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <div className="text-right">
-                  <div className="text-sm font-medium text-gray-900">
-                    {messagesLeft} / {quotaInfo.total}
-                  </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-sm text-purple-300">{messagesLeft} left</div>
+                  <div className="text-xs text-gray-400">
                     Reset in {formatTimeUntilReset(quotaInfo.resetAt)}
                   </div>
                 </div>
-                <div className="w-24">
-                  <Progress 
-                    value={quotaPercentage} 
-                    className={`h-2 ${quotaPercentage > 80 ? 'text-red-500' : 'text-green-500'}`}
-                  />
+                <div className="w-16">
+                  <Progress value={quotaPercentage} className="h-2" />
                 </div>
               </div>
             )}
           </div>
-        </div>
 
-        <div className="max-w-6xl mx-auto p-4 h-[calc(100vh-80px)] flex">
-          {/* Main Chat Area */}
-          <div className="flex-1 flex flex-col">
-            <Card className="flex-1 flex flex-col">
-              <CardHeader className="pb-4">
+          {/* Voice Oracle Banner - Collapsed */}
+          <motion.div 
+            className="mb-4"
+            animate={{ opacity: showVoiceBanner ? 1 : 0.8 }}
+          >
+            <Card 
+              className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-purple-500/30 cursor-pointer hover:border-purple-400/50 transition-colors"
+              onClick={() => setShowVoiceBanner(!showVoiceBanner)}
+            >
+              <CardContent className="p-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Chat Session</CardTitle>
-                  {user?.archetype && (
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                      {user.archetype} Mode
+                  <div className="flex items-center space-x-3">
+                    <Mic className="h-5 w-5 text-purple-400" />
+                    <div>
+                      <span className="text-sm font-medium text-white">Voice Oracle</span>
+                      <Crown className="h-3 w-3 ml-1 text-yellow-400 inline" />
+                      <div className="text-xs text-purple-300">Premium voice sessions coming soon</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                      Soon
                     </Badge>
-                  )}
+                    {showVoiceBanner ? <ChevronUp className="h-4 w-4 text-purple-400" /> : <ChevronDown className="h-4 w-4 text-purple-400" />}
+                  </div>
                 </div>
-              </CardHeader>
-              
-              <CardContent className="flex-1 flex flex-col">
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-4 bg-gray-50 rounded-lg">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                
+                <AnimatePresence>
+                  {showVoiceBanner && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-3 pt-3 border-t border-purple-500/20"
                     >
+                      <p className="text-sm text-purple-200 mb-3">
+                        Experience 15-minute guided voice therapy sessions with natural conversation flow.
+                      </p>
+                      <Button 
+                        disabled 
+                        size="sm"
+                        className="bg-gray-700 text-gray-400 cursor-not-allowed"
+                      >
+                        Notify When Ready
+                      </Button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Chat Interface */}
+          <Card className="bg-gray-800/80 border border-gray-600/50">
+            <CardContent className="p-6">
+              
+              {/* Messages */}
+              <div className="h-96 overflow-y-auto space-y-4 mb-4 pr-2">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[80%] ${message.role === 'user' ? 'order-2' : ''}`}>
                       <div
-                        className={`max-w-[80%] p-3 rounded-lg ${
+                        className={`p-3 rounded-lg ${
                           message.role === 'user'
                             ? 'bg-purple-600 text-white'
-                            : 'bg-white border border-gray-200 text-gray-800'
+                            : 'bg-white border border-gray-200 text-gray-900'
                         }`}
                       >
                         <div className="flex items-start space-x-2">
@@ -487,12 +356,10 @@ export default function AITherapyPage() {
                             <Bot className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />
                           )}
                           {message.role === 'user' && (
-                            <User className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />
+                            <User className="h-5 w-5 text-purple-100 mt-0.5 flex-shrink-0" />
                           )}
                           <div className="flex-1">
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                              {message.content}
-                            </p>
+                            <p className="whitespace-pre-wrap">{message.content}</p>
                             <p className={`text-xs mt-1 ${
                               message.role === 'user' ? 'text-purple-200' : 'text-gray-500'
                             }`}>
@@ -505,27 +372,29 @@ export default function AITherapyPage() {
                         </div>
                       </div>
                     </div>
-                  ))}
-                  
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="bg-white border border-gray-200 p-3 rounded-lg">
-                        <div className="flex items-center space-x-2">
-                          <Bot className="h-5 w-5 text-purple-600" />
-                          <div className="flex space-x-1">
-                            <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-100"></div>
-                            <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-200"></div>
-                          </div>
+                  </div>
+                ))}
+                
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-white border border-gray-200 p-3 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Bot className="h-5 w-5 text-purple-600" />
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-100"></div>
+                          <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce delay-200"></div>
                         </div>
                       </div>
                     </div>
-                  )}
-                  
-                  <div ref={messagesEndRef} />
-                </div>
+                  </div>
+                )}
+                
+                <div ref={messagesEndRef} />
+              </div>
 
-                {/* Input Area */}
+              {/* Input Area */}
+              <div className="space-y-3">
                 <div className="flex space-x-2">
                   <Input
                     value={inputMessage}
@@ -533,7 +402,7 @@ export default function AITherapyPage() {
                     onKeyPress={handleKeyPress}
                     placeholder="Share what's on your mind..."
                     disabled={isLoading || Boolean(quotaInfo && quotaInfo.used >= quotaInfo.total)}
-                    className="flex-1"
+                    className="flex-1 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400"
                   />
                   <Button
                     onClick={sendMessage}
@@ -546,115 +415,93 @@ export default function AITherapyPage() {
 
                 {/* Quota Warning */}
                 {quotaInfo && quotaInfo.used >= quotaInfo.total && (
-                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-center space-x-2 text-red-700">
-                      <AlertTriangle className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        Message limit reached. Resets in {formatTimeUntilReset(quotaInfo.resetAt)}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="w-80 ml-4 space-y-4">
-            {/* Buy Extra Messages */}
-            {quotaInfo && quotaInfo.canPurchaseMore && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center">
-                    <ShoppingCart className="h-5 w-5 mr-2" />
-                    Extra Messages
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">20 Messages</span>
-                      <Badge className="bg-yellow-100 text-yellow-800">
-                        50 Bytes
-                      </Badge>
-                    </div>
-                    <Button 
-                      onClick={purchaseExtraMessages}
-                      className="w-full bg-green-600 hover:bg-green-700"
-                      size="sm"
-                    >
-                      Purchase Now
-                    </Button>
-                    <p className="text-xs text-gray-500">
-                      Extra messages expire with your quota reset
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Voice Oracle Banner */}
-            <Card className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <Mic className="h-8 w-8 mx-auto mb-2" />
-                  <h3 className="font-semibold mb-1">Voice Oracle</h3>
-                  <p className="text-sm text-purple-100 mb-3">
-                    Experience guided voice therapy sessions
-                  </p>
-                  <Button 
-                    variant="secondary" 
-                    size="sm"
-                    disabled
-                    className="bg-white text-purple-600 opacity-50"
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg"
                   >
-                    Coming Soon
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-red-400">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span className="text-sm font-medium">
+                          Message limit reached. Resets in {formatTimeUntilReset(quotaInfo.resetAt)}
+                        </span>
+                      </div>
+                      {quotaInfo.canPurchaseMore && (
+                        <Button 
+                          onClick={purchaseExtraMessages}
+                          size="sm"
+                          className="bg-yellow-600 hover:bg-yellow-700 text-black"
+                        >
+                          <Zap className="h-3 w-3 mr-1" />
+                          +20 for 50 Bytes
+                        </Button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* AI Capabilities */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center">
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  What I Can Help With
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <Heart className="h-4 w-4 text-red-500" />
-                    <span>Process emotions about your ex</span>
+          {/* Collapsible AI Capabilities */}
+          <div className="mt-4">
+            <button
+              onClick={() => setShowCapabilities(!showCapabilities)}
+              className="flex items-center justify-between w-full p-3 bg-gray-800/50 hover:bg-gray-800/70 rounded-lg border border-gray-600/30 transition-colors"
+            >
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-4 w-4 text-purple-400" />
+                <span className="text-sm font-medium text-white">What I Can Help With</span>
+              </div>
+              {showCapabilities ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+            </button>
+            
+            <AnimatePresence>
+              {showCapabilities && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-2 p-4 bg-gray-800/30 rounded-lg border border-gray-600/20"
+                >
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <Heart className="h-4 w-4 text-red-400" />
+                      <span className="text-gray-300">Process emotions about your ex</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Bot className="h-4 w-4 text-blue-400" />
+                      <span className="text-gray-300">Understand attachment patterns</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Shield className="h-4 w-4 text-green-400" />
+                      <span className="text-gray-300">Build healthy coping strategies</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="h-4 w-4 text-purple-400" />
+                      <span className="text-gray-300">Plan your healing journey</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <MessageCircle className="h-4 w-4 text-blue-500" />
-                    <span>Understand attachment patterns</span>
+                  
+                  <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <Shield className="h-4 w-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs text-yellow-300 font-medium mb-1">Important Safety Information</p>
+                        <p className="text-xs text-yellow-200 leading-relaxed">
+                          This AI is trained for emotional support but isn't a replacement for professional therapy. 
+                          If experiencing severe depression or crisis thoughts, use Dashboard → Crisis Support.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-green-500" />
-                    <span>Build healthy coping strategies</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="h-4 w-4 text-purple-500" />
-                    <span>Plan your healing journey</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Disclaimer */}
-            <Card className="bg-yellow-50 border-yellow-200">
-              <CardContent className="p-4">
-                <h4 className="font-medium text-yellow-800 mb-2">Important</h4>
-                <p className="text-xs text-yellow-700 leading-relaxed">
-                  This AI is trained for emotional support but isn't a replacement for professional therapy. 
-                  If you're experiencing severe depression or suicidal thoughts, please contact a crisis hotline immediately.
-                </p>
-              </CardContent>
-            </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+
         </div>
       </div>
     </AuthWrapper>

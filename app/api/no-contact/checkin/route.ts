@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export async function PATCH(request: NextRequest) {
   try {
-    // Get user email from headers (temporary auth method)
-    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com';
-    
-    if (!userEmail) {
+    // Use session-based authentication
+    const { user: sessionUser } = await validateRequest();
+    if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -16,7 +16,7 @@ export async function PATCH(request: NextRequest) {
     const userData = await db
       .select()
       .from(users)
-      .where(eq(users.email, userEmail))
+      .where(eq(users.id, sessionUser.id))
       .limit(1);
 
     if (!userData.length) {
@@ -35,7 +35,8 @@ export async function PATCH(request: NextRequest) {
       if (hoursSince < 24) {
         return NextResponse.json({ 
           error: 'Already checked in today', 
-          message: 'You can check in again tomorrow' 
+          message: 'You can check in again tomorrow',
+          hoursUntilNext: 24 - hoursSince
         }, { status: 409 });
       }
     }
@@ -77,10 +78,9 @@ export async function PATCH(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user email from headers
-    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com';
-    
-    if (!userEmail) {
+    // Use session-based authentication
+    const { user: sessionUser } = await validateRequest();
+    if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     const userData = await db
       .select()
       .from(users)
-      .where(eq(users.email, userEmail))
+      .where(eq(users.id, sessionUser.id))
       .limit(1);
 
     if (!userData.length) {
