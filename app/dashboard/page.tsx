@@ -19,7 +19,10 @@ import {
   Lock,
   AlertTriangle,
   ChevronRight,
-  Users
+  Users,
+  ArrowRight,
+  TrendingUp,
+  Star
 } from 'lucide-react'
 
 // Components
@@ -41,6 +44,7 @@ import { NoContactCheckinModal } from '@/components/dashboard/NoContactCheckinMo
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import AuthWrapper from '@/components/AuthWrapper'
 
 // Types
 interface UserData {
@@ -255,7 +259,37 @@ export default function DashboardPage() {
   const todayRitual = todayRituals[0] || null
 
   return (
-    <DashboardLayout>
+    <AuthWrapper>
+      <DashboardLayout>
+        {/* Enhanced Header with Navigation to Advanced Console */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
+                Healing Dashboard
+              </h1>
+              <p className="text-purple-300">Your personalized recovery command center</p>
+            </div>
+            
+            {/* Quick Access to Advanced Features */}
+            <div className="flex items-center space-x-3">
+              <Link href="/dashboard/glow-up-console">
+                <Button className="bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-600 hover:to-pink-600 text-white font-semibold px-4 py-2">
+                  <Star className="h-4 w-4 mr-2" />
+                  GLOW-UP CONSOLE
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </Link>
+              
+              <Link href="/ai-therapy">
+                <Button variant="outline" className="border-purple-500 text-purple-400 hover:bg-purple-500/20">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  AI Therapy
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       {/* Welcome + Level Bar */}
       <WelcomeSection>
         <div className="text-center mb-6">
@@ -621,7 +655,8 @@ export default function DashboardPage() {
           fetchNoContactStatus();
         }}
       />
-    </DashboardLayout>
+      </DashboardLayout>
+    </AuthWrapper>
   )
 }
 
