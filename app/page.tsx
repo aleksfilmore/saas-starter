@@ -455,7 +455,7 @@ export default function ComingSoonPage() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button
-              onClick={() => window.location.href = '/scan'}
+              onClick={() => window.location.href = '/quiz'}
               size="lg"
               variant="outline"
               className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 px-8 py-4 text-lg"
@@ -882,7 +882,7 @@ export default function ComingSoonPage() {
                     </p>
                     <div className="mb-6">
                       <Button
-                        onClick={() => window.location.href = '/scan'}
+                        onClick={() => window.location.href = '/quiz'}
                         variant="outline"
                         className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 mb-4"
                       >

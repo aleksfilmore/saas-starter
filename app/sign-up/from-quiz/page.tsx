@@ -129,7 +129,7 @@ export default function SignUpFromQuizPage() {
       if (data.success) {
         localStorage.setItem('onboardingCompleted', 'true');
         localStorage.setItem('attachmentStyle', quizResult?.attachmentStyle || '');
-        router.push('/dashboard');
+        router.push('/username');
       } else {
         setError(data.error || 'Signup failed. Please try again.');
       }

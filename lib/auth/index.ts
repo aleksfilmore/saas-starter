@@ -3,7 +3,7 @@
 import { Lucia, Session, User as LuciaUser } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { db } from '@/lib/db/drizzle';
-import { sessions, users, User as DbUser } from '@/lib/db/minimal-schema';
+import { sessions, users, User as DbUser } from '@/lib/db/schema';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 
@@ -21,6 +21,7 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
+      username: attributes.username,
       tier: attributes.tier,
       archetype: attributes.archetype,
       archetype_details: attributes.archetype_details,
@@ -98,6 +99,7 @@ declare module 'lucia' {
 
 interface DatabaseUserAttributes {
   email: string;
+  username: string | null;
   tier: string;
   archetype: string | null;
   archetype_details: any;
