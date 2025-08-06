@@ -532,12 +532,12 @@ export default function AITherapyPage() {
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Share what's on your mind..."
-                    disabled={isLoading || (quotaInfo && quotaInfo.used >= quotaInfo.total)}
+                    disabled={isLoading || Boolean(quotaInfo && quotaInfo.used >= quotaInfo.total)}
                     className="flex-1"
                   />
                   <Button
                     onClick={sendMessage}
-                    disabled={!inputMessage.trim() || isLoading || (quotaInfo && quotaInfo.used >= quotaInfo.total)}
+                    disabled={!inputMessage.trim() || isLoading || Boolean(quotaInfo && quotaInfo.used >= quotaInfo.total)}
                     className="bg-purple-600 hover:bg-purple-700"
                   >
                     <Send className="h-4 w-4" />

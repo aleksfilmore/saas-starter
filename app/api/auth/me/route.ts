@@ -29,21 +29,24 @@ export async function GET(request: NextRequest) {
       );
     }
     
+    // Cast user to include database attributes
+    const dbUser = user as any;
+    
     // Return user data
     return NextResponse.json({
       success: true,
       user: {
         id: user.id,
-        email: user.email,
-        tier: user.tier,
-        archetype: user.archetype,
-        xp: user.xp,
-        bytes: user.bytes,
-        level: user.level,
-        ritual_streak: user.ritual_streak,
-        no_contact_streak: user.no_contact_streak,
-        is_verified: user.is_verified,
-        subscription_status: user.subscription_status
+        email: dbUser.email,
+        tier: dbUser.tier,
+        archetype: dbUser.archetype,
+        xp: dbUser.xp,
+        bytes: dbUser.bytes,
+        level: dbUser.level,
+        ritual_streak: dbUser.ritual_streak,
+        no_contact_streak: dbUser.no_contact_streak,
+        is_verified: dbUser.is_verified,
+        subscription_status: dbUser.subscription_status
       }
     });
 
