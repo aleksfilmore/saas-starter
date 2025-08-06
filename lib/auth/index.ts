@@ -20,6 +20,21 @@ export const lucia = new Lucia(adapter, {
   getUserAttributes: (attributes) => {
     return {
       email: attributes.email,
+      tier: attributes.tier,
+      archetype: attributes.archetype,
+      archetype_details: attributes.archetype_details,
+      xp: attributes.xp,
+      bytes: attributes.bytes,
+      level: attributes.level,
+      ritual_streak: attributes.ritual_streak,
+      no_contact_streak: attributes.no_contact_streak,
+      last_checkin: attributes.last_checkin,
+      last_ritual: attributes.last_ritual,
+      is_verified: attributes.is_verified,
+      subscription_status: attributes.subscription_status,
+      subscription_expires: attributes.subscription_expires,
+      created_at: attributes.created_at,
+      updated_at: attributes.updated_at,
     };
   },
 });
@@ -82,4 +97,19 @@ declare module 'lucia' {
 
 interface DatabaseUserAttributes {
   email: string;
+  tier: string;
+  archetype: string | null;
+  archetype_details: any;
+  xp: number;
+  bytes: number;
+  level: number;
+  ritual_streak: number;
+  no_contact_streak: number;
+  last_checkin: Date | null;
+  last_ritual: Date | null;
+  is_verified: boolean;
+  subscription_status: string | null;
+  subscription_expires: Date | null;
+  created_at: Date;
+  updated_at: Date;
 }
