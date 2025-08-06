@@ -34,6 +34,9 @@ import {
 } from '@/components/dashboard/DashboardLayout'
 import { HeroRitualCard } from '@/components/dashboard/HeroRitualCard'
 import { useFeatureGates } from '@/hooks/useFeatureGates'
+import { MoodCheckIn } from '@/components/quick-actions/MoodCheckIn'
+import { BreathingExercise } from '@/components/quick-actions/BreathingExercise'
+import { GratitudeJournal } from '@/components/quick-actions/GratitudeJournal'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -375,21 +378,66 @@ export default function DashboardPage() {
 
       {/* Quick Action Row (Icon Chips) */}
       <QuickActionRow>
-        <QuickActionChip
-          icon={Heart}
-          label="Mood Check"
-          onClick={() => console.log('Mood check')}
-        />
-        <QuickActionChip
-          icon={Target}
-          label="Set Goal"
-          onClick={() => console.log('Set goal')}
-        />
-        <QuickActionChip
-          icon={Play}
-          label="Breathing"
-          onClick={() => console.log('Breathing exercise')}
-        />
+        <MoodCheckIn onComplete={async (mood) => {
+          try {
+            const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com';
+            const response = await fetch('/api/mood', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-user-email': userEmail
+              },
+              body: JSON.stringify({ mood: mood.value, notes: '' })
+            });
+            
+            if (response.ok) {
+              await fetchDashboardData(); // Refresh to show updated XP/Bytes
+            }
+          } catch (error) {
+            console.error('Failed to log mood:', error);
+          }
+        }} />
+        
+        <BreathingExercise onComplete={async (pattern, cycles) => {
+          try {
+            const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com';
+            const response = await fetch('/api/breathing', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-user-email': userEmail
+              },
+              body: JSON.stringify({ pattern, completedCycles: cycles })
+            });
+            
+            if (response.ok) {
+              await fetchDashboardData(); // Refresh to show updated XP/Bytes
+            }
+          } catch (error) {
+            console.error('Failed to log breathing exercise:', error);
+          }
+        }} />
+        
+        <GratitudeJournal onComplete={async (entries) => {
+          try {
+            const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com';
+            const response = await fetch('/api/gratitude', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-user-email': userEmail
+              },
+              body: JSON.stringify({ entries })
+            });
+            
+            if (response.ok) {
+              await fetchDashboardData(); // Refresh to show updated XP/Bytes
+            }
+          } catch (error) {
+            console.error('Failed to save gratitude entries:', error);
+          }
+        }} />
+        
         <QuickActionChip
           icon={Shield}
           label="Use Shield"
@@ -402,6 +450,90 @@ export default function DashboardPage() {
           onClick={() => window.location.href = '/wall'}
         />
       </QuickActionRow>
+
+      {/* Resources Section */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold text-white">Healing Resources</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Crisis Support */}
+          <Card className="dashboard-card p-4 hover:scale-105 transition-all">
+            <CardContent className="p-0">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-red-500/20">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">Crisis Support</h3>
+                  <p className="text-xs text-gray-400">24/7 Emergency Help</p>
+                </div>
+              </div>
+              <p className="text-sm text-purple-200 mb-3">
+                Immediate support when you need it most
+              </p>
+              <Button 
+                size="sm" 
+                className="w-full bg-red-500 hover:bg-red-600"
+                onClick={() => window.location.href = '/crisis-support'}
+              >
+                Get Help Now
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Healing Library */}
+          <Card className="dashboard-card p-4 hover:scale-105 transition-all">
+            <CardContent className="p-0">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-blue-500/20">
+                  <Target className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">Ritual Library</h3>
+                  <p className="text-xs text-gray-400">Browse All Exercises</p>
+                </div>
+              </div>
+              <p className="text-sm text-purple-200 mb-3">
+                Explore healing protocols and exercises
+              </p>
+              <Button 
+                size="sm" 
+                className="w-full bg-blue-500 hover:bg-blue-600"
+                onClick={() => window.location.href = '/daily-rituals'}
+              >
+                Browse Library
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Progress Analytics */}
+          <Card className="dashboard-card p-4 hover:scale-105 transition-all">
+            <CardContent className="p-0">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 rounded-lg bg-green-500/20">
+                  <BarChart3 className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">Progress Analytics</h3>
+                  <p className="text-xs text-gray-400">Track Your Growth</p>
+                </div>
+              </div>
+              <p className="text-sm text-purple-200 mb-3">
+                Visualize your healing journey
+              </p>
+              <Button 
+                size="sm" 
+                className={`w-full ${featureGates.progressAnalytics 
+                  ? 'bg-green-500 hover:bg-green-600' 
+                  : 'bg-gray-600 cursor-not-allowed'}`}
+                disabled={!featureGates.progressAnalytics}
+                onClick={() => featureGates.progressAnalytics && (window.location.href = '/progress')}
+              >
+                {featureGates.progressAnalytics ? 'View Analytics' : 'Upgrade to Unlock'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       {/* Community Feed Preview */}
       <CommunityFeed>
