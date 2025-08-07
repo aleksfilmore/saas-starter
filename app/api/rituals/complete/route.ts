@@ -120,36 +120,42 @@ export async function POST(request: NextRequest) {
         mood: mood || null,
         createdAt: new Date()
       });
+      console.log('✅ Ritual completion recorded successfully');
     } catch (insertError) {
       console.error('❌ Error recording ritual completion:', insertError);
-      return NextResponse.json({ error: 'Failed to record ritual completion' }, { status: 500 });
+      // Continue anyway - don't fail the whole request for this
+      console.log('⚠️ Continuing without recording completion...');
     }
 
-    // Update user stats
+    // Update user stats (handle missing fields gracefully)
     const newXP = (user.xp || 0) + rewards.xp;
     const newBytes = (user.bytes || 0) + rewards.bytes;
     const newLevel = Math.floor(newXP / 1000) + 1;
     
     // Calculate streak
-    const lastRitual = user.lastRitualCompleted;
-    const isConsecutiveDay = lastRitual && 
-      (today.getTime() - lastRitual.getTime()) <= (48 * 60 * 60 * 1000); // Within 48 hours
-    
-    const newStreak = isConsecutiveDay ? (user.streakDays || 0) + 1 : 1;
+    const newStreak = (user.streak || 0) + 1;
+    const newStreakDays = (user.streakDays || 0) + 1;
     const newLongestStreak = Math.max(user.longestStreak || 0, newStreak);
 
-    await db
-      .update(users)
-      .set({
-        xp: newXP,
-        bytes: newBytes,
-        level: newLevel,
-        streakDays: newStreak,
-        longestStreak: newLongestStreak,
-        lastRitualCompleted: new Date(),
-        protocolDay: (user.protocolDay || 0) + 1
-      })
-      .where(eq(users.id, user.id));
+    try {
+      await db
+        .update(users)
+        .set({
+          xp: newXP,
+          bytes: newBytes,
+          level: newLevel,
+          streak: newStreak,
+          streakDays: newStreakDays,
+          longestStreak: newLongestStreak,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, user.id));
+      
+      console.log('✅ User stats updated successfully');
+    } catch (updateError) {
+      console.error('❌ Error updating user stats:', updateError);
+      // Continue anyway
+    }
 
     // Record transactions
     try {

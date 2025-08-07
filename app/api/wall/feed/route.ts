@@ -1,10 +1,9 @@
 // Wall of Wounds API - FEED 
 import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
 
 // Global storage reference
 declare global {
-  var localUsers: Map<string, any>;
-  var localSessions: Map<string, any>;
   var wallPosts: Map<string, any>;
   var wallReactions: Map<string, any>;
 }
@@ -22,23 +21,11 @@ export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    // Use Lucia authentication
+    const { user, session } = await validateRequest();
+    
+    if (!user || !session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.split(' ')[1];
-    
-    // Check session
-    const session = global.localSessions?.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
-    }
-    
-    // Get user
-    const user = global.localUsers?.get(session.userId);
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const { searchParams } = new URL(request.url);

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -52,13 +52,7 @@ export default function SimplifiedNoContactPage() {
   const [hoursUntilNext, setHoursUntilNext] = useState(0)
 
   // All hooks must be called before any conditional logic
-  useEffect(() => {
-    if (authUser) {
-      fetchNoContactData()
-    }
-  }, [authUser])
-
-  const fetchNoContactData = async () => {
+  const fetchNoContactData = useCallback(async () => {
     if (!authUser) return
     
     try {
@@ -102,7 +96,13 @@ export default function SimplifiedNoContactPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [authUser]);
+
+  useEffect(() => {
+    if (authUser) {
+      fetchNoContactData()
+    }
+  }, [authUser, fetchNoContactData]);
 
   // Conditional rendering logic comes after all hooks
   if (authLoading) {

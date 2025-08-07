@@ -21,6 +21,11 @@ interface Message {
   content: string;
 }
 
+interface ConversationMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -127,7 +132,7 @@ User's profile: ${user.archetype} archetype, ${user.tier} tier member.`;
 
     // Add recent conversation history
     if (conversationHistory && Array.isArray(conversationHistory)) {
-      conversationHistory.slice(-10).forEach((msg: any) => {
+      conversationHistory.slice(-10).forEach((msg: ConversationMessage) => {
         if (msg.role === 'user' || msg.role === 'assistant') {
           messages.push({
             role: msg.role,

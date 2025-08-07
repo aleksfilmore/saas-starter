@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Shield, MessageSquare, Brain, Lock, ChevronRight, Crown, Zap } from 'lucide-react'
+import { Shield, MessageSquare, Brain, Lock, ChevronRight, Crown, Zap, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { getNoContactMessage } from '@/lib/no-contact-messages'
 
@@ -19,6 +19,37 @@ interface FreeDashboardTilesProps {
 }
 
 export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesProps) {
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  
+  const handleAITherapyPurchase = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if (isProcessingPayment) return
+    
+    setIsProcessingPayment(true)
+    
+    try {
+      const response = await fetch('/api/ai-therapy/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      const data = await response.json()
+      
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('Failed to create checkout session')
+      }
+    } catch (error) {
+      console.error('Payment error:', error)
+    } finally {
+      setIsProcessingPayment(false)
+    }
+  }
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       
@@ -77,43 +108,73 @@ export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesPro
         </Card>
       </Link>
 
-      {/* AI Therapy - Pay-per-use */}
-      <Card className="dashboard-card p-6 h-full transition-all hover:scale-105 border-violet-500/30 relative">
-        <CardContent className="p-0 h-full flex flex-col">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500">
-              <Brain className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-white">AI Therapy</h3>
-                <Lock className="w-4 h-4 text-violet-400" />
+      {/* AI Therapy - Pay per 300 messages */}
+      <div className="block h-full">
+        <Card className="dashboard-card p-6 h-full transition-all hover:scale-105 border-violet-500/30">
+          <CardContent className="p-0 h-full flex flex-col">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500">
+                <Brain className="w-6 h-6 text-white" />
               </div>
-              <p className="text-xs text-gray-400">Instant break-up advice</p>
-            </div>
-          </div>
-          
-          <div className="flex-1 mb-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-violet-300 text-sm font-medium">First chat</span>
-                <span className="text-white text-lg font-bold">$3.99</span>
-              </div>
-              <div className="bg-violet-900/30 rounded-lg p-3 border border-violet-500/30">
-                <p className="text-xs text-violet-300">
-                  💬 Chat with AI co-pilot when you need it most
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-white">AI Therapy</h3>
+                  {!featureGates.aiTherapy && <Lock className="w-4 h-4 text-gray-400" />}
+                </div>
+                <p className="text-xs text-gray-400">
+                  {featureGates.aiTherapy 
+                    ? 'Instant break-up advice'
+                    : 'Complete ritual to unlock'
+                  }
                 </p>
               </div>
             </div>
-          </div>
-          
-          <Link href="/ai-therapy" className="w-full">
-            <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white border-violet-500 hover:bg-gradient-to-r hover:from-violet-600 hover:to-purple-600">
-              First chat $3.99 →
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+            
+            <div className="flex-1 mb-4">
+              {featureGates.aiTherapy ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-violet-300 text-sm font-medium">300 Messages</span>
+                    <span className="text-white text-lg font-bold">$3.99</span>
+                  </div>
+                  <div className="bg-violet-900/30 rounded-lg p-3 border border-violet-500/30">
+                    <p className="text-xs text-violet-300">
+                      💬 Chat with AI co-pilot when you need it most
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-violet-200 text-sm">
+                  Unlock AI-powered therapy sessions and emotional support
+                </p>
+              )}
+            </div>
+            
+            {featureGates.aiTherapy ? (
+              <Button 
+                onClick={handleAITherapyPurchase}
+                disabled={isProcessingPayment}
+                className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white border-violet-500 hover:bg-gradient-to-r hover:from-violet-600 hover:to-purple-600 disabled:opacity-50"
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  'Get 300 messages $3.99 →'
+                )}
+              </Button>
+            ) : (
+              <Link href="/ai-therapy" className="block">
+                <div className="bg-gray-600 text-gray-300 py-2 px-4 rounded-lg text-sm text-center hover:bg-gray-500 transition-colors">
+                  Complete ritual to unlock
+                </div>
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Community Wall - Read Only for Free */}
       <Link href="/wall" className="block h-full">
@@ -138,12 +199,12 @@ export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesPro
             
             <div className="flex-1 mb-4">
               <p className="text-indigo-200 text-sm">
-                Read others' stories and healing journeys. Connect without compromising privacy.
+                Read others' stories, react with empathy, and find healing through shared experiences.
               </p>
               
               <div className="mt-3 p-2 bg-indigo-900/30 rounded border border-indigo-500/30">
                 <p className="text-xs text-indigo-300">
-                  💡 Premium users can post + react + send DMs
+                  ✅ Read & React ⚫ Premium: Post & DM
                 </p>
               </div>
             </div>

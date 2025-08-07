@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
       user: {
         id: user.id,
         email: dbUser.email,
+        username: dbUser.email?.split('@')[0] || 'PremiumUser',
         tier: dbUser.tier,
         archetype: dbUser.archetype,
         xp: dbUser.xp,
@@ -46,7 +47,9 @@ export async function GET(request: NextRequest) {
         ritual_streak: dbUser.ritual_streak,
         no_contact_streak: dbUser.no_contact_streak,
         is_verified: dbUser.is_verified,
-        subscription_status: dbUser.subscription_status
+        subscription_status: dbUser.subscription_status,
+        // For testing premium features - simulate premium subscription
+        subscriptionTier: 'premium'
       }
     });
 

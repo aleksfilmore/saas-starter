@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import AuthWrapper from '@/components/AuthWrapper';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +36,24 @@ interface SystemStatus {
 }
 
 export default function StatusPage() {
+  const { user, isLoading, isAuthenticated } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading system status...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-white text-xl">Please log in to view system status.</div>
+      </div>
+    );
+  }
+
   const systemFeatures: SystemStatus[] = [
     // Core Features
     {
@@ -193,7 +211,6 @@ export default function StatusPage() {
   };
 
   return (
-    <AuthWrapper>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
@@ -363,6 +380,5 @@ export default function StatusPage() {
 
         </div>
       </div>
-    </AuthWrapper>
   );
 }

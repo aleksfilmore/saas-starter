@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
 
 // Global storage reference
 declare global {
-  var localUsers: Map<string, any>;
-  var localSessions: Map<string, any>;
   var wallPosts: Map<string, any>;
   var wallReactions: Map<string, any>;
 }
@@ -24,23 +23,22 @@ const SENSITIVE_KEYWORDS = [
 
 export async function POST(request: Request) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    // Use Lucia authentication
+    const { user, session } = await validateRequest();
+    
+    if (!user || !session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const token = authHeader.split(' ')[1];
+    // Check if user has premium subscription (only premium users can post)
+    const userTier = (user as any).tier || 'ghost';
+    const subscriptionStatus = (user as any).subscription_status;
     
-    // Check session
-    const session = global.localSessions?.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
-    }
-    
-    // Get user
-    const user = global.localUsers?.get(session.userId);
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (userTier === 'ghost' || subscriptionStatus !== 'active') {
+      return NextResponse.json({ 
+        error: 'Premium subscription required to create posts',
+        requiresUpgrade: true 
+      }, { status: 403 });
     }
 
     const { content, isAnonymous = true, category } = await request.json();

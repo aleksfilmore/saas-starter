@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mock achievements data - in production this would come from your database
-const generateAchievementData = (userEmail: string) => {
+const generateAchievementData = (_userEmail: string) => {
   return {
     user: {
       username: 'Healing Warrior',

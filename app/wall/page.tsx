@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import AuthWrapper from '@/components/AuthWrapper';
 import { SimplifiedHeader } from '@/components/dashboard/SimplifiedHeader';
 import { 
   Send, 
@@ -60,6 +60,7 @@ const EMOJI_TAGS = [
 ];
 
 export default function SimplifiedWallPage() {
+  const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [postContent, setPostContent] = useState('');
@@ -68,31 +69,28 @@ export default function SimplifiedWallPage() {
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState('recent');
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{username: string; subscriptionTier: string; streak: number; bytes: number; level: number; noContactDays: number} | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    fetchUserData();
-    fetchPosts();
-  }, [filter]);
-
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
+    if (!authUser || !isAuthenticated) return;
+    
     try {
-      const token = localStorage.getItem('auth-token');
-      const response = await fetch('/api/auth/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
+      // Use authUser data directly
+      setUser({
+        username: authUser.username,
+        subscriptionTier: authUser.subscriptionTier,
+        streak: authUser.streak,
+        bytes: authUser.bytes,
+        level: authUser.level,
+        noContactDays: authUser.noContactDays
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-      }
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      console.error('Failed to set user data:', error);
     }
-  };
+  }, [authUser, isAuthenticated]);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const token = localStorage.getItem('auth-token');
       const response = await fetch(`/api/wall/feed?filter=${filter}`, {
@@ -110,7 +108,14 @@ export default function SimplifiedWallPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    if (authUser && isAuthenticated && !authLoading) {
+      fetchUserData();
+      fetchPosts();
+    }
+  }, [authUser, isAuthenticated, authLoading, fetchUserData, fetchPosts]);
 
   const submitPost = async () => {
     if (!postContent.trim() || posting || !selectedTag) return;
@@ -207,9 +212,29 @@ export default function SimplifiedWallPage() {
     ? `${selectedTag.emoji} Share your ${selectedTag.label.toLowerCase()} healing journey anonymously...`
     : 'Click to choose an emotion tag, then share your healing journey...';
 
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-purple-200">Loading the Wall...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !authUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400">Please sign in to access the Wall</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         
         {/* SimplifiedHeader */}
         <SimplifiedHeader 
@@ -219,7 +244,7 @@ export default function SimplifiedWallPage() {
             bytes: 730,
             level: 3,
             noContactDays: 12,
-            subscriptionTier: user?.subscriptionTier || 'free'
+            subscriptionTier: (user?.subscriptionTier || 'free') as 'free' | 'premium'
           }}
           hasShield={true}
           onCheckin={() => console.log('Check-in clicked')}
@@ -484,6 +509,5 @@ export default function SimplifiedWallPage() {
 
         </div>
       </div>
-    </AuthWrapper>
   );
 }

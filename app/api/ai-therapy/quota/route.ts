@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server';
-
-// Global storage reference
-declare global {
-  var localUsers: Map<string, any>;
-  var localSessions: Map<string, any>;
-}
+import { validateRequest } from '@/lib/auth';
 
 // In-memory storage for demo purposes
 const userQuotas = new Map();
@@ -21,23 +16,11 @@ interface QuotaInfo {
 
 export async function GET(request: Request) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+    // Use Lucia authentication
+    const { user, session } = await validateRequest();
+    
+    if (!user || !session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.split(' ')[1];
-    
-    // Check session
-    const session = global.localSessions?.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
-    }
-    
-    // Get user
-    const user = global.localUsers?.get(session.userId);
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Get or create quota for user
@@ -46,26 +29,36 @@ export async function GET(request: Request) {
     if (!quota) {
       // Initialize quota based on user tier
       const tierLimits = {
-        freemium: { total: 5, purchaseCost: 25 },
-        paid_beginner: { total: 200, purchaseCost: 15 },
-        paid_advanced: { total: 999999, purchaseCost: 10 } // "Unlimited"
+        ghost: { total: 0, purchaseCost: 3.99 }, // Free users start with 0, pay $3.99 for 300 messages
+        firewall: { total: 999999, purchaseCost: 0 }, // Premium unlimited (fair-usage)
+        cult_leader: { total: 999999, purchaseCost: 0 } // Premium unlimited (fair-usage)
       };
       
-      const limits = tierLimits[user.tier as keyof typeof tierLimits] || tierLimits.freemium;
+      const userTier = (user as any).tier || 'ghost'; // Default to ghost for free users
+      const limits = tierLimits[userTier as keyof typeof tierLimits] || tierLimits.ghost;
       
-      // Reset time is next day at midnight
+      // For free users, no automatic reset - they buy 300 messages when needed
+      // For premium users, daily reset for fair-usage tracking
       const resetAt = new Date();
-      resetAt.setDate(resetAt.getDate() + 1);
-      resetAt.setHours(0, 0, 0, 0);
+      if (userTier !== 'ghost') {
+        resetAt.setDate(resetAt.getDate() + 1);
+        resetAt.setHours(0, 0, 0, 0);
+      } else {
+        // Free users don't have automatic resets
+        resetAt.setFullYear(resetAt.getFullYear() + 1); // Far future date
+      }
       
       quota = {
         used: 0,
         total: limits.total,
         resetAt: resetAt.toISOString(),
-        canPurchaseMore: user.tier !== 'paid_advanced',
+        canPurchaseMore: userTier === 'ghost', // Only free users can purchase more
         purchaseCost: limits.purchaseCost,
-        tier: user.tier,
-        extraMessages: 0
+        tier: userTier,
+        extraMessages: 0,
+        remaining: limits.total,
+        isUnlimited: userTier !== 'ghost',
+        messagesPerPurchase: userTier === 'ghost' ? 300 : 0
       };
       
       userQuotas.set(user.id, quota);
@@ -76,28 +69,35 @@ export async function GET(request: Request) {
     const resetTime = new Date(quota.resetAt);
     
     if (now >= resetTime) {
-      // Reset quota
+      // Reset quota only for premium users (fair-usage tracking)
       const tierLimits = {
-        freemium: { total: 5, purchaseCost: 25 },
-        paid_beginner: { total: 200, purchaseCost: 15 },
-        paid_advanced: { total: 999999, purchaseCost: 10 }
+        ghost: { total: 0, purchaseCost: 3.99 }, // Free users pay per 300 messages
+        firewall: { total: 999999, purchaseCost: 0 }, // Premium unlimited
+        cult_leader: { total: 999999, purchaseCost: 0 } // Premium unlimited
       };
       
-      const limits = tierLimits[user.tier as keyof typeof tierLimits] || tierLimits.freemium;
+      const userTier = (user as any).tier || 'ghost';
+      const limits = tierLimits[userTier as keyof typeof tierLimits] || tierLimits.ghost;
       
-      const newResetAt = new Date(now);
-      newResetAt.setDate(newResetAt.getDate() + 1);
-      newResetAt.setHours(0, 0, 0, 0);
-      
-      quota = {
-        ...quota,
-        used: 0,
-        total: limits.total,
-        resetAt: newResetAt.toISOString(),
-        extraMessages: 0
-      };
-      
-      userQuotas.set(user.id, quota);
+      if (userTier !== 'ghost') {
+        // Only reset for premium users (daily fair-usage tracking)
+        const newResetAt = new Date(now);
+        newResetAt.setDate(newResetAt.getDate() + 1);
+        newResetAt.setHours(0, 0, 0, 0);
+        
+        quota = {
+          ...quota,
+          used: 0, // Reset usage for premium users
+          total: limits.total,
+          resetAt: newResetAt.toISOString(),
+          extraMessages: 0,
+          remaining: 999999,
+          isUnlimited: true
+        };
+        
+        userQuotas.set(user.id, quota);
+      }
+      // Free users don't get automatic resets - they purchase messages as needed
     }
 
     return NextResponse.json({ quota });

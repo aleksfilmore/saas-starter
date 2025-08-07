@@ -3,14 +3,36 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import AuthWrapper from '@/components/AuthWrapper';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { ArrowLeft, Settings, User, Bell, Shield, Palette, Database } from 'lucide-react';
 
 export default function SettingsPage() {
+  const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-xl">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !authUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400">Please sign in to access settings</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
         
         {/* Header */}
         <div className="max-w-4xl mx-auto mb-8">
@@ -148,8 +170,6 @@ export default function SettingsPage() {
           </Card>
 
         </div>
-
       </div>
-    </AuthWrapper>
   );
 }

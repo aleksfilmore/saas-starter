@@ -52,7 +52,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                   className="text-white hover:text-orange-300 transition-colors"
                   title="Click to check-in (once per day)"
                 >
-                  {user.noContactDays}
+                  {user.streak}
                 </button>
               </div>
               
@@ -136,6 +136,15 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                       </button>
                       
                       <div className="border-t border-gray-600 my-2"></div>
+                      
+                      <Link
+                        href="/progress"
+                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        <Settings className="h-4 w-4" />
+                        📊 Progress & Stats
+                      </Link>
                       
                       <Link
                         href="/settings"

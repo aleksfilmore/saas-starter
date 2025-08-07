@@ -15,7 +15,6 @@ import {
   Heart,
   Brain,
   Zap,
-  Shield,
   Star,
   CheckCircle2,
   XCircle,

@@ -554,7 +554,7 @@ export default function ComingSoonPage() {
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">AI Therapy</h4>
-                    <p className="text-sm text-gray-300 ml-4">On-demand • $3.99/session (cap 50 msgs)</p>
+                    <p className="text-sm text-gray-300 ml-4">On-demand • $3.99/session (cap 300 msgs)</p>
                   </div>
 
                   <div>

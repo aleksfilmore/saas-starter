@@ -2,24 +2,22 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import AuthWrapper from '@/components/AuthWrapper';
+import { useAuth } from '@/contexts/AuthContext';
 import { SimplifiedHeader } from '@/components/dashboard/SimplifiedHeader';
 import { 
   Send, 
   Bot, 
   User, 
   Mic,
-  ShoppingCart,
   AlertTriangle,
   Heart,
   Sparkles,
   Crown,
   Shield,
-  MoreHorizontal,
   ChevronDown,
   ChevronUp,
   Zap
@@ -44,6 +42,7 @@ interface QuotaInfo {
 }
 
 export default function SimplifiedAITherapyPage() {
+  const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -237,9 +236,29 @@ export default function SimplifiedAITherapyPage() {
   const quotaPercentage = quotaInfo ? (quotaInfo.used / quotaInfo.total) * 100 : 0;
   const messagesLeft = quotaInfo ? quotaInfo.total - quotaInfo.used : 0;
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-xl">Loading AI Therapy...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !authUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400">Please sign in to access AI Therapy</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         
         {/* SimplifiedHeader */}
         <SimplifiedHeader 
@@ -505,6 +524,5 @@ export default function SimplifiedAITherapyPage() {
 
         </div>
       </div>
-    </AuthWrapper>
   );
 }

@@ -141,7 +141,16 @@ export async function POST(request: NextRequest) {
     };
 
     // Tier-specific response enhancements
-    const responseData: any = {
+    const responseData: {
+      success: boolean;
+      message: string;
+      session: any;
+      rewards: any;
+      achievements: any;
+      aiResponse: any;
+      analytics?: any;
+      exclusive?: any;
+    } = {
       success: true,
       message: 'Session completed successfully',
       session: sessionSummary,

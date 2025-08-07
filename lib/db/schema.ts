@@ -268,6 +268,71 @@ export const byteTransactions = pgTable('byte_transactions', {
 });
 
 // =====================================
+// ANALYTICS & TRACKING TABLES
+// =====================================
+
+export const analyticsEvents = pgTable('analytics_events', {
+  id: text('id').primaryKey(),
+  userId: text('user_id'),
+  sessionId: text('session_id'),
+  event: text('event').notNull(),
+  properties: text('properties'), // JSON string
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  userAgent: text('user_agent'),
+  ip: text('ip'),
+  referer: text('referer'),
+});
+
+export const userSessions = pgTable('user_sessions', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  sessionId: text('session_id').notNull().unique(),
+  startTime: timestamp('start_time', { withTimezone: true, mode: 'date' }).notNull(),
+  lastActivity: timestamp('last_activity', { withTimezone: true, mode: 'date' }).notNull(),
+  endTime: timestamp('end_time', { withTimezone: true, mode: 'date' }),
+  deviceType: text('device_type'),
+  browser: text('browser'),
+  os: text('os'),
+});
+
+export const conversionFunnels = pgTable('conversion_funnels', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  funnelName: text('funnel_name').notNull(),
+  stage: text('stage').notNull(),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  properties: text('properties'), // JSON string
+});
+
+export const referrals = pgTable('referrals', {
+  id: text('id').primaryKey(),
+  referrerId: text('referrer_id').notNull(),
+  refereeId: text('referee_id'),
+  referralCode: text('referral_code').notNull().unique(),
+  status: text('status').notNull().default('pending'), // pending | completed | rewarded
+  rewardType: text('reward_type'), // subscription_discount | bonus_credits
+  rewardAmount: integer('reward_amount').default(0),
+  clickedAt: timestamp('clicked_at', { withTimezone: true, mode: 'date' }),
+  signedUpAt: timestamp('signed_up_at', { withTimezone: true, mode: 'date' }),
+  completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const subscriptionEvents = pgTable('subscription_events', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  stripeCustomerId: text('stripe_customer_id'),
+  stripeSubscriptionId: text('stripe_subscription_id'),
+  eventType: text('event_type').notNull(), // created | updated | cancelled | payment_succeeded | payment_failed
+  planId: text('plan_id'),
+  amount: integer('amount'), // in cents
+  currency: text('currency').default('usd'),
+  status: text('status'),
+  timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  metadata: text('metadata'), // JSON string
+});
+
+// =====================================
 // TYPE EXPORTS
 // =====================================
 
@@ -301,3 +366,13 @@ export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type NewXpTransaction = typeof xpTransactions.$inferInsert;
 export type ByteTransaction = typeof byteTransactions.$inferSelect;
 export type NewByteTransaction = typeof byteTransactions.$inferInsert;
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+export type NewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
+export type UserSession = typeof userSessions.$inferSelect;
+export type NewUserSession = typeof userSessions.$inferInsert;
+export type ConversionFunnel = typeof conversionFunnels.$inferSelect;
+export type NewConversionFunnel = typeof conversionFunnels.$inferInsert;
+export type Referral = typeof referrals.$inferSelect;
+export type NewReferral = typeof referrals.$inferInsert;
+export type SubscriptionEvent = typeof subscriptionEvents.$inferSelect;
+export type NewSubscriptionEvent = typeof subscriptionEvents.$inferInsert;

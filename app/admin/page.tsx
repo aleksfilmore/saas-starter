@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { 
-  Shield, Brain, Zap, Users, ArrowRight, Timer, 
-  Star, Sparkles, MessageCircle, Heart, ChevronDown, 
+  Brain, Zap, Users, ArrowRight, Timer, 
+  Star, Sparkles, ChevronDown, 
   ChevronUp, Quote, Gamepad2, Target
 } from 'lucide-react';
 

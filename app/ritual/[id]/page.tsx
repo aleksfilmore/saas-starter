@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
@@ -49,20 +49,7 @@ export default function RitualDetailPage() {
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(Date.now());
 
-  useEffect(() => {
-    fetchRitual();
-    startTimeRef.current = Date.now();
-  }, [ritualId]);
-
-  useEffect(() => {
-    return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
-    };
-  }, [timerInterval]);
-
-  const fetchRitual = async () => {
+  const fetchRitual = useCallback(async () => {
     try {
       const response = await fetch(`/api/rituals/${ritualId}`);
       if (response.ok) {
@@ -77,7 +64,20 @@ export default function RitualDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [ritualId, router]);
+
+  useEffect(() => {
+    fetchRitual();
+    startTimeRef.current = Date.now();
+  }, [fetchRitual]);
+
+  useEffect(() => {
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [timerInterval]);
 
   const startTimer = (duration: number) => {
     setTimeLeft(duration);

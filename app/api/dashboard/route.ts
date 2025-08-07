@@ -82,53 +82,41 @@ export async function GET(request: NextRequest) {
       wallPosts: 3
     };
 
-    // Mock today's ritual
-    const todayRitual: Ritual = {
+    // Mock today's ritual - matching useDashboard hook expectations
+    const todayRitual = {
       id: 'ritual_breath_firewall',
-      title: 'Breath Firewall',
+      name: 'Breath Firewall',
+      difficulty: 2,
+      xpReward: 20,
+      emoji: '🔥',
       description: 'Build emotional barriers through controlled breathing exercises',
-      category: 'mindfulness',
-      intensity: 2,
-      duration: 15,
-      isCompleted: false
+      canReroll: true,
+      cooldownHours: 24
     };
 
-    // Feature gates based on level and progression
-    const featureGates = {
-      noContactTracker: true, // Always available
-      dailyLogs: mockUser.level >= 2,
-      aiTherapy: mockUser.level >= 3 || mockUser.noContactDays >= 3,
-      wallRead: mockUser.level >= 5 || mockUser.noContactDays >= 5,
-      wallWrite: mockUser.level >= 7 || mockUser.noContactDays >= 7,
-      progressAnalytics: mockUser.level >= 10
+    // Response structure matching useDashboard hook expectations
+    const response = {
+      ux_stage: mockUser.uxStage as 'starter' | 'core' | 'power',
+      ritual: todayRitual,
+      streak: {
+        days: mockUser.streak,
+        shieldAvailable: mockUser.streak >= 7,
+        checkinNeeded: false
+      },
+      bytes: mockUser.bytes,
+      xp: mockUser.xp,
+      level: mockUser.level,
+      quota: mockUser.uxStage === 'starter' ? 5 : (mockUser.uxStage === 'core' ? 20 : 50),
+      user: {
+        alias: mockUser.username,
+        signupDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
+        tier: 'ghost' as const,
+        hasSubscription: false,
+        lastActivity: new Date().toISOString()
+      }
     };
 
-    // AI quota based on stage
-    const aiQuota = {
-      msgsLeft: 18,
-      totalQuota: mockUser.uxStage === 'starter' ? 5 : (mockUser.uxStage === 'core' ? 20 : 50),
-      resetAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      canPurchaseMore: mockUser.bytes >= 50,
-      purchaseCost: 50
-    };
-
-    // Stats
-    const stats = {
-      ritualsCompleted: 6,
-      totalRituals: 10,
-      streakActive: true,
-      canReroll: true
-    };
-
-    const dashboardData: DashboardData = {
-      user: mockUser,
-      todayRituals: [todayRitual],
-      featureGates,
-      aiQuota,
-      stats
-    };
-
-    return NextResponse.json(dashboardData);
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Dashboard API error:', error);
     return NextResponse.json(

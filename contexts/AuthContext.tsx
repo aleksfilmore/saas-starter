@@ -55,8 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             level: data.user.level || 1,
             xp: data.user.xp || 0,
             bytes: data.user.bytes || 0,
-            noContactDays: data.user.noContactDays || 0,
-            streak: data.user.streak || 0
+            noContactDays: data.user.no_contact_streak || 0,
+            streak: data.user.ritual_streak || 0
           }
           
           setUser(userData)

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import AuthWrapper from '@/components/AuthWrapper';
+import { useAuth } from '@/contexts/AuthContext';
 import { MainNavigation } from '@/components/navigation/MainNavigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,55 +19,57 @@ interface UserStats {
 
 export default function NavigationPage() {
   const pathname = usePathname();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchUserStats();
-  }, []);
-
-  const fetchUserStats = async () => {
+  const fetchUserStats = useCallback(async () => {
+    if (!user) return;
+    
     try {
-      const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com';
-      
-      const response = await fetch('/api/dashboard', {
-        headers: {
-          'x-user-email': userEmail
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUserStats({
-          level: data.user.level || 1,
-          xp: data.user.xp || 0,
-          streak: data.user.streak || 0,
-          bytes: data.user.bytes || 0,
-          username: data.user.username || 'Warrior'
-        });
-      }
+      const statsData = {
+        level: user.level || 1,
+        xp: user.xp || 0,
+        streak: user.streak || 0,
+        bytes: user.bytes || 0,
+        username: user.email?.split('@')[0] || 'Warrior'
+      };
+      setUserStats(statsData);
     } catch (error) {
-      console.error('Failed to fetch user stats:', error);
+      console.error('Error fetching user stats:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  if (loading) {
+  useEffect(() => {
+    if (user) {
+      fetchUserStats();
+    } else if (!isLoading) {
+      setLoading(false);
+    }
+  }, [user, isLoading, fetchUserStats]);
+
+  if (isLoading || loading) {
     return (
-      <AuthWrapper>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
-            <p className="text-purple-200">Loading navigation...</p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-purple-200">Loading navigation...</p>
         </div>
-      </AuthWrapper>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-white text-xl">Please log in to access navigation.</div>
+      </div>
     );
   }
 
   return (
-    <AuthWrapper>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
@@ -155,6 +157,5 @@ export default function NavigationPage() {
 
         </div>
       </div>
-    </AuthWrapper>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import AuthWrapper from '@/components/AuthWrapper';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,8 +15,6 @@ import {
   Award, 
   BarChart3,
   Zap,
-  Coins,
-  Shield,
   Heart
 } from 'lucide-react';
 import Link from 'next/link';
@@ -58,21 +56,18 @@ interface ProgressData {
 }
 
 export default function ProgressPage() {
+  const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'all'>('month');
 
-  useEffect(() => {
-    fetchProgressData();
-  }, [timeRange]);
-
-  const fetchProgressData = async () => {
+  const fetchProgressData = useCallback(async () => {
+    if (!authUser || !isAuthenticated) return;
+    
     try {
-      const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com';
-      
       const response = await fetch(`/api/progress?range=${timeRange}`, {
         headers: {
-          'x-user-email': userEmail
+          'x-user-email': authUser.email
         }
       });
       
@@ -85,7 +80,13 @@ export default function ProgressPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [authUser, isAuthenticated, timeRange]);
+
+  useEffect(() => {
+    if (authUser && isAuthenticated && !authLoading) {
+      fetchProgressData();
+    }
+  }, [timeRange, authUser, isAuthenticated, authLoading, fetchProgressData]);
 
   const getStreakColor = (streak: number) => {
     if (streak >= 30) return 'text-purple-400';
@@ -103,31 +104,37 @@ export default function ProgressPage() {
     return { text: 'Starting', color: 'bg-gray-500' };
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
-      <AuthWrapper>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
-            <p className="text-purple-200">Loading progress analytics...</p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-purple-200">Loading progress analytics...</p>
         </div>
-      </AuthWrapper>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !authUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400">Please sign in to view progress</p>
+        </div>
+      </div>
     );
   }
 
   if (!progressData) {
     return (
-      <AuthWrapper>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-red-400">Failed to load progress data</p>
-            <Button onClick={() => window.location.reload()} className="mt-4">
-              Retry
-            </Button>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400">Failed to load progress data</p>
+          <Button onClick={() => window.location.reload()} className="mt-4">
+            Retry
+          </Button>
         </div>
-      </AuthWrapper>
+      </div>
     );
   }
 
@@ -135,8 +142,7 @@ export default function ProgressPage() {
   const improvementBadge = getImprovementBadge(stats.improvementScore);
 
   return (
-    <AuthWrapper>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
           {/* Header */}
@@ -397,6 +403,5 @@ export default function ProgressPage() {
 
         </div>
       </div>
-    </AuthWrapper>
   );
 }

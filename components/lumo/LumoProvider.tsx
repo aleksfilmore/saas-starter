@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 interface LumoNotification {
   id: string;
@@ -49,6 +49,25 @@ export function LumoProvider({
   const [isLoading, setIsLoading] = useState(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
+  const addWelcomeMessage = () => {
+    const userAlias = localStorage.getItem('user-alias') || 'Warrior';
+    setChatHistory([{
+      role: 'lumo',
+      content: `Welcome, ${userAlias}. I'm Lumo—your break-up co-pilot. Need a hand finishing setup?`,
+      timestamp: new Date().toISOString()
+    }]);
+  };
+
+  const checkForNudges = useCallback(() => {
+    // Mock nudge checks - replace with actual logic
+    const streakData = localStorage.getItem('user-streak');
+    const lastCheckin = localStorage.getItem('last-checkin');
+    
+    if (!lastCheckin || isStreakAtRisk()) {
+      notify('warning', "Don't lose your streak!");
+    }
+  }, []);
+
   // Check for first-time user
   useEffect(() => {
     const skipOnboard = localStorage.getItem('lumo.skipOnboard');
@@ -64,26 +83,7 @@ export function LumoProvider({
     
     // Check for contextual nudges
     checkForNudges();
-  }, []);
-
-  const addWelcomeMessage = () => {
-    const userAlias = localStorage.getItem('user-alias') || 'Warrior';
-    setChatHistory([{
-      role: 'lumo',
-      content: `Welcome, ${userAlias}. I'm Lumo—your break-up co-pilot. Need a hand finishing setup?`,
-      timestamp: new Date().toISOString()
-    }]);
-  };
-
-  const checkForNudges = () => {
-    // Mock nudge checks - replace with actual logic
-    const streakData = localStorage.getItem('user-streak');
-    const lastCheckin = localStorage.getItem('last-checkin');
-    
-    if (!lastCheckin || isStreakAtRisk()) {
-      notify('warning', "Don't lose your streak!");
-    }
-  };
+  }, [checkForNudges]);
 
   const isStreakAtRisk = () => {
     const lastCheckin = localStorage.getItem('last-checkin');

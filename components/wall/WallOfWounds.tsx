@@ -1,7 +1,7 @@
 // Wall of Wounds - Main Component
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,11 +54,7 @@ export default function WallOfWounds() {
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isPosting, setIsPosting] = useState(false);
 
-  useEffect(() => {
-    loadPosts();
-  }, [filter]);
-
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/wall/feed?filter=${filter}&limit=20`);
@@ -71,7 +67,11 @@ export default function WallOfWounds() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
 
   const createPost = async () => {
     if (!newPostContent.trim()) return;

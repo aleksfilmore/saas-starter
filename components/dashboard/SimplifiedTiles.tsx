@@ -112,7 +112,7 @@ export function SimplifiedTiles({ user, featureGates, aiQuota }: SimplifiedTiles
                 </div>
                 <p className="text-xs text-gray-400">
                   {featureGates.aiTherapy 
-                    ? 'Unlimited sessions'
+                    ? 'Unlimited sessions with fair-usage'
                     : 'Complete ritual to unlock'
                   }
                 </p>

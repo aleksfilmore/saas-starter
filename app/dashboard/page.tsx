@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useCallback } from 'react'
 import { SimplifiedHeader } from '@/components/dashboard/SimplifiedHeader'
 import { SimplifiedHeroRitualCard } from '@/components/dashboard/SimplifiedHeroRitualCard'
 import { SimplifiedTiles } from '@/components/dashboard/SimplifiedTiles'
@@ -14,6 +13,7 @@ import { LumoOnboarding } from '@/components/onboarding/LumoOnboarding'
 import { DualRituals } from '@/components/dashboard/DualRituals'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useAuth } from '@/contexts/AuthContext'
+import { useDashboard } from '@/hooks/useDashboard'
 
 // Types
 interface UserData {
@@ -44,37 +44,10 @@ interface Ritual {
   completedAt?: string
 }
 
-interface DashboardData {
-  user: UserData
-  todayRituals: Ritual[]
-  featureGates: {
-    noContactTracker: boolean
-    aiTherapy: boolean
-    wallRead: boolean
-    progressAnalytics: boolean
-    [key: string]: boolean
-  }
-  aiQuota: {
-    msgsLeft: number
-    totalQuota: number
-    resetAt: string
-    canPurchaseMore: boolean
-    purchaseCost: number
-  }
-  stats: {
-    ritualsCompleted: number
-    totalRituals: number
-    streakActive: boolean
-    canReroll: boolean
-    rerollsLeft: number
-  }
-}
-
 export default function DashboardPage() {
   const { user: authUser, isAuthenticated, isLoading: authLoading, updateUser, refetchUser } = useAuth()
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [noContactStatus, setNoContactStatus] = useState<any>(null)
+  const { data: dashboardData, isLoading: dashboardLoading, canAccessWallPreview, hasAIQuota, aiQuota } = useDashboard()
+  const [noContactStatus, setNoContactStatus] = useState<{isNoContact: boolean} | null>(null)
   const [showCheckinModal, setShowCheckinModal] = useState(false)
   const [showBreathingModal, setShowBreathingModal] = useState(false)
   const [showMoodModal, setShowMoodModal] = useState(false)
@@ -89,30 +62,8 @@ export default function DashboardPage() {
     }
   }, [])
 
-  // Fetch dashboard data
-  const fetchDashboardData = async () => {
-    if (!authUser) return
-    
-    try {
-      const response = await fetch('/api/dashboard', {
-        headers: {
-          'x-user-email': authUser.email
-        }
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setDashboardData(data)
-      }
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // Fetch no-contact status
-  const fetchNoContactStatus = async () => {
+  const fetchNoContactStatus = useCallback(async () => {
     if (!authUser) return
     
     try {
@@ -124,15 +75,14 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error fetching no-contact status:', error)
     }
-  }
+  }, [authUser]);
 
   // Initial data fetch
   useEffect(() => {
     if (authUser && isAuthenticated && !authLoading) {
-      fetchDashboardData()
       fetchNoContactStatus()
     }
-  }, [authUser, isAuthenticated, authLoading])
+  }, [authUser, isAuthenticated, authLoading, fetchNoContactStatus])
 
   // Handle hero ritual completion
   const handleHeroRitualComplete = async (ritualId: string) => {
@@ -143,7 +93,7 @@ export default function DashboardPage() {
     // TODO: Implement reroll functionality
     console.log('Reroll requested')
   }
-  const handleDualRitualComplete = async (ritualId: string, xpGained: number, bytesGained: number) => {
+  const handleDualRitualComplete = async (ritualId: string, xpGained: number) => {
     try {
       // Map xp to difficulty - rough approximation
       let difficulty: 'easy' | 'medium' | 'hard' = 'easy'
@@ -228,10 +178,6 @@ export default function DashboardPage() {
     }
   }
 
-  const handleQuickMood = () => {
-    setShowMoodModal(true)
-  }
-
   const handleBreathing = () => {
     setShowBreathingModal(true)
   }
@@ -240,7 +186,7 @@ export default function DashboardPage() {
     window.location.href = '/crisis-support'
   }
 
-  if (authLoading || loading || !authUser || !isAuthenticated) {
+  if (authLoading || dashboardLoading || !authUser || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
         <div className="text-center">
@@ -261,8 +207,19 @@ export default function DashboardPage() {
     )
   }
 
-  const { user: dashboardUser, todayRituals, featureGates, aiQuota, stats } = dashboardData
-  const todayRitual = todayRituals?.[0] || null
+  // Use helper methods from the hook instead of destructuring
+  const todayRitual = dashboardData?.ritual || null
+  
+  // Transform the dashboard ritual to match component interface
+  const transformedRitual = todayRitual ? {
+    id: todayRitual.id,
+    title: todayRitual.name,
+    description: todayRitual.description,
+    category: 'daily', // Default category
+    intensity: todayRitual.difficulty,
+    duration: 15, // Default duration
+    isCompleted: completedRituals.includes(todayRitual.id)
+  } : null
   const hasShield = authUser.streak >= 7
 
   return (
@@ -293,7 +250,7 @@ export default function DashboardPage() {
             </div>
             
             <SimplifiedHeroRitualCard
-              ritual={todayRitual}
+              ritual={transformedRitual}
               onComplete={handleHeroRitualComplete}
               onReroll={handleReroll}
             />
@@ -316,7 +273,7 @@ export default function DashboardPage() {
                   noContactDays: authUser.noContactDays,
                   wallPosts: 0
                 }}
-                featureGates={featureGates}
+                featureGates={{ noContactTracker: true, aiTherapy: hasAIQuota, wallRead: canAccessWallPreview }}
               />
             ) : (
               <SimplifiedTiles
@@ -324,8 +281,8 @@ export default function DashboardPage() {
                   noContactDays: authUser.noContactDays,
                   wallPosts: 0
                 }}
-                featureGates={featureGates}
-                aiQuota={aiQuota}
+                featureGates={{ noContactTracker: true, aiTherapy: hasAIQuota, wallRead: canAccessWallPreview }}
+                aiQuota={{ msgsLeft: aiQuota, totalQuota: aiQuota }}
               />
             )}
           </div>
