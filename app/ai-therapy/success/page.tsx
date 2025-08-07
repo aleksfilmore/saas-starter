@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, MessageCircle, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function AITherapySuccessPage() {
+function AITherapySuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
@@ -106,5 +106,24 @@ export default function AITherapySuccessPage() {
         </Card>
       </motion.div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-white text-xl">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function AITherapySuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <AITherapySuccessContent />
+    </Suspense>
   );
 }
