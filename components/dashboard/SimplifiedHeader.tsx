@@ -40,13 +40,12 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
           </Link>
 
-          {/* Right Side: Status + User Menu */}
+          {/* Right Side: Compact Stats Pill + User Menu */}
           <div className="flex items-center gap-4">
             
-            {/* Consolidated Status Bar */}
-            <div className="hidden sm:flex items-center gap-2 text-sm">
-              {/* No-Contact Streak with tooltip */}
-              <div className="flex items-center gap-1" title="No-Contact streak days">
+            {/* Consolidated Status Pill - Compact */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800/60 rounded-full border border-gray-600/50 text-sm">
+              <div className="flex items-center gap-1" title="No-Contact streak & XP">
                 <Flame className="h-4 w-4 text-orange-400" />
                 <button 
                   onClick={onCheckin}
@@ -57,34 +56,24 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                 </button>
               </div>
               
-              <span className="text-gray-400">•</span>
-              
-              {/* Bytes */}
-              <div className="flex items-center gap-1">
-                <span className="text-cyan-400">{user.bytes}</span>
-                <span className="text-gray-400 text-xs">Bytes</span>
-              </div>
-              
-              <span className="text-gray-400">•</span>
-              
-              {/* Level */}
-              <div className="flex items-center gap-1" title="User level">
-                <Crown className="h-4 w-4 text-yellow-400" />
-                <span className="text-white">Lvl {user.level}</span>
-              </div>
-              
               {/* Shield (only if ready) */}
               {hasShield && (
                 <>
-                  <span className="text-gray-400">•</span>
                   <div className="flex items-center gap-1">
                     <Shield className="h-4 w-4 text-green-400" />
-                    <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-300">
-                      READY
-                    </Badge>
+                    <span className="text-green-400 text-xs font-medium">Ready</span>
                   </div>
                 </>
               )}
+              
+              <div className="flex items-center gap-1">
+                <span className="text-white">{user.bytes}</span>
+                <span className="text-gray-400 text-xs">Bytes</span>
+              </div>
+              
+              <div className="flex items-center gap-1" title="User level">
+                <span className="text-white">Lvl {user.level}</span>
+              </div>
             </div>
 
             {/* User Dropdown Menu */}
@@ -133,7 +122,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                         className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
                       >
                         <Wind className="h-4 w-4" />
-                        Breathing Exercise
+                        Breathing
                       </button>
                       <button
                         onClick={() => {
@@ -143,7 +132,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                         className="w-full px-4 py-2 text-left text-red-300 hover:bg-gray-700 hover:text-red-200 transition-colors flex items-center gap-2"
                       >
                         <Shield className="h-4 w-4" />
-                        Crisis Support
+                        Crisis
                       </button>
                       
                       <div className="border-t border-gray-600 my-2"></div>
@@ -154,23 +143,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                         onClick={() => setShowUserDropdown(false)}
                       >
                         <Settings className="h-4 w-4" />
-                        Settings
-                      </Link>
-                      <Link
-                        href="/subscription"
-                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
-                        onClick={() => setShowUserDropdown(false)}
-                      >
-                        <CreditCard className="h-4 w-4" />
-                        Subscription Management
-                      </Link>
-                      <Link
-                        href="/account/delete"
-                        className="w-full px-4 py-2 text-left text-red-300 hover:bg-gray-700 hover:text-red-200 transition-colors flex items-center gap-2"
-                        onClick={() => setShowUserDropdown(false)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete Account
+                        ⚙️ Settings
                       </Link>
                     </div>
                   </motion.div>

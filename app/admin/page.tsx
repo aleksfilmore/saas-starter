@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,8 @@ import {
 
 export default function HomePage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
+  const [currentPostIndex, setCurrentPostIndex] = useState(0);
+  const [postReactions, setPostReactions] = useState<Record<string, number>>({});
 
   const mockWallPosts = [
     {
@@ -41,8 +43,59 @@ export default function HomePage() {
       replies: 34,
       timeAgo: '6h ago',
       archetype: 'secure'
+    },
+    {
+      id: '4',
+      content: "Trigger warning: saw my ex at the coffee shop today. My heart raced but I didn't approach. Used the breathing technique from the app and sat with the feeling. Small wins count.",
+      type: 'victory',
+      reactions: 34,
+      replies: 9,
+      timeAgo: '8h ago',
+      archetype: 'firewall'
+    },
+    {
+      id: '5',
+      content: "Month 3 update: I can finally listen to 'our song' without crying. The AI therapy sessions helped me reframe so many negative thought patterns. Healing isn't linear but it's happening.",
+      type: 'victory',
+      reactions: 73,
+      replies: 15,
+      timeAgo: '12h ago',
+      archetype: 'secure'
+    },
+    {
+      id: '6',
+      content: "PSA: Your ex texting you at 2am drunk is not a sign to get back together. It's a sign that they're still the same person who couldn't prioritize you when it mattered. Stay strong.",
+      type: 'confession',
+      reactions: 156,
+      replies: 31,
+      timeAgo: '1d ago',
+      archetype: 'firewall'
     }
   ];
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPostIndex((prev) => (prev + 1) % mockWallPosts.length);
+    }, 5000); // Change post every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [mockWallPosts.length]);
+
+  // Animated reactions
+  useEffect(() => {
+    const reactionInterval = setInterval(() => {
+      const currentPost = mockWallPosts[currentPostIndex];
+      if (currentPost) {
+        setPostReactions(prev => ({
+          ...prev,
+          [currentPost.id]: (prev[currentPost.id] || currentPost.reactions) + 1
+        }));
+      }
+    }, 5000); // Add reaction every 5 seconds
+
+    return () => clearInterval(reactionInterval);
+  }, [currentPostIndex, mockWallPosts]);
 
   const faqs = [
     {
@@ -72,8 +125,8 @@ export default function HomePage() {
     },
     {
       icon: <Brain className="h-8 w-8" />,
-      title: "AI-Powered Therapy Tools", 
-      description: "24/7 access to closure simulators, letter generators, reframing tools, and voice therapy sessions.",
+      title: "24/7 AI Therapy Tools", 
+      description: "Always-available closure simulators, letter generators, reframing tools, and voice therapy sessions.",
       gradient: "from-green-500 to-emerald-500"
     },
     {
@@ -83,22 +136,10 @@ export default function HomePage() {
       gradient: "from-blue-500 to-cyan-500"
     },
     {
-      icon: <Shield className="h-8 w-8" />,
-      title: "Anonymous & Secure",
-      description: "Digital aliases protect your identity while you heal. Share without fear, connect without exposure.",
-      gradient: "from-blue-500 to-purple-500"
-    },
-    {
       icon: <Zap className="h-8 w-8" />,
       title: "Instant Crisis Support",
       description: "Emergency protocols, breathing exercises, and crisis hotlines available 24/7 when you need them most.",
       gradient: "from-red-500 to-orange-500"
-    },
-    {
-      icon: <Star className="h-8 w-8" />,
-      title: "Proven Results",
-      description: "Evidence-based psychology meets modern technology. 94% of users report significant improvement in 30 days.",
-      gradient: "from-yellow-500 to-orange-500"
     }
   ];
 
@@ -156,17 +197,19 @@ export default function HomePage() {
       <div className="relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">
           <div className="space-y-8">
-            <h1 className="text-5xl md:text-7xl font-black text-white leading-tight">
-              <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+            {/* Main Motto */}
+            <div className="text-center mb-8">
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 bg-clip-text mb-4 tracking-wide">
                 UNINSTALL YOUR EX.
-              </span><br />
-              <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                INSTALL YOUR NEW CODE.
+              </div>
+            </div>
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 leading-tight">
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono">
+                INSTALL YOUR NEW SELF.
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              60-second system scan → maps your attachment style,<br />
-              loads daily no-contact rituals, and unlocks AI therapy on demand.
+              One scan → daily rituals, no-contact tracker, AI therapy.
             </p>
 
             {/* Quiz CTA - Primary */}
@@ -177,11 +220,6 @@ export default function HomePage() {
                 <p className="text-gray-300 text-lg">
                   Discover your attachment style and get your personalized healing protocol
                 </p>
-                <div className="flex items-center justify-center space-x-6 text-sm text-gray-400 mb-6">
-                  <span>✓ Free</span>
-                  <span>✓ Anonymous</span>
-                  <span>✓ Instant Results</span>
-                </div>
                 
                 {/* Animated Progress Bar */}
                 <div className="w-full bg-gray-700 rounded-full h-2 mb-4 overflow-hidden">
@@ -203,6 +241,15 @@ export default function HomePage() {
                     Start Free Scan →
                   </Button>
                 </Link>
+
+                {/* Badge Bar */}
+                <div className="flex items-center justify-center space-x-4 text-sm text-gray-400 mt-6">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">FREE</Badge>
+                  <span>•</span>
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">ANONYMOUS</Badge>
+                  <span>•</span>
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">60-SEC RESULTS</Badge>
+                </div>
               </div>
             </div>
             
@@ -215,7 +262,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Live Wall of Wounds Preview */}
+      {/* Live Wall of Wounds Preview - Auto-Scroll Carousel */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -227,38 +274,59 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {mockWallPosts.map((post) => (
-            <Card key={post.id} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-3 mb-4">
-                  <div className="text-2xl">
-                    {getArchetypeEmoji(post.archetype)}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Badge className={`text-xs ${getTypeColor(post.type)} border`}>
-                        {post.type.toUpperCase()}
-                      </Badge>
-                      <span className="text-xs text-gray-400">{post.timeAgo}</span>
+        {/* Auto-scroll carousel container */}
+        <div className="relative overflow-hidden mb-8">
+          <div className="flex transition-transform duration-1000 ease-in-out"
+               style={{ transform: `translateX(-${currentPostIndex * 100}%)` }}>
+            {mockWallPosts.map((post, index) => (
+              <div key={post.id} className="w-full flex-shrink-0 px-4">
+                <Card className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 max-w-2xl mx-auto">
+                  <CardContent className="p-6">
+                    <div className="flex items-start space-x-3 mb-4">
+                      <div className="text-2xl">
+                        {getArchetypeEmoji(post.archetype)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Badge className={`text-xs ${getTypeColor(post.type)} border`}>
+                            {post.type.toUpperCase()}
+                          </Badge>
+                          <span className="text-xs text-gray-400">{post.timeAgo}</span>
+                        </div>
+                        <Quote className="h-4 w-4 text-gray-400 mb-2" />
+                        <p className="text-gray-300 leading-relaxed mb-4">
+                          {post.content}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-400">
+                          <span className="flex items-center text-red-400 transition-all duration-300">
+                            🔥 {postReactions[post.id] || post.reactions}
+                            {postReactions[post.id] > post.reactions && (
+                              <span className="ml-1 text-green-400 animate-pulse">+1</span>
+                            )}
+                          </span>
+                          <span className="flex items-center text-blue-400">
+                            💬 {post.replies}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <Quote className="h-4 w-4 text-gray-400 mb-2" />
-                    <p className="text-gray-300 leading-relaxed mb-4">
-                      {post.content}
-                    </p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-400">
-                      <span className="flex items-center text-red-400">
-                        🔥 {post.reactions}
-                      </span>
-                      <span className="flex items-center text-blue-400">
-                        💬 {post.replies}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+          
+          {/* Carousel indicators */}
+          <div className="flex justify-center mt-6 space-x-2">
+            {mockWallPosts.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentPostIndex ? 'bg-purple-500' : 'bg-gray-600'
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="text-center">
@@ -268,7 +336,7 @@ export default function HomePage() {
               className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border-0"
             >
               <Sparkles className="h-5 w-5 mr-2" />
-              Join the Wall of Wounds
+              Read more confessions
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>
@@ -286,7 +354,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {features.map((feature, index) => (
             <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group">
               <CardContent className="p-8 text-center">
@@ -304,6 +372,12 @@ export default function HomePage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        <div className="text-center">
+          <p className="text-gray-400 text-sm">
+            Powered by CBT, attachment theory & gamification
+          </p>
         </div>
       </div>
 
@@ -363,29 +437,29 @@ export default function HomePage() {
           {[
             {
               step: "01",
-              title: "Choose Your Path",
-              description: "Select your healing archetype and create your anonymous digital identity",
+              title: "SCAN",
+              description: "Map attachment pattern",
               time: "(60s)",
               icon: <Target className="h-8 w-8" />
             },
             {
               step: "02", 
-              title: "Daily Rituals",
-              description: "Complete personalized daily tasks designed by our psychology experts",
+              title: "RITUALS",
+              description: "Complete daily healing tasks",
               time: "(5 min/day)",
               icon: <Timer className="h-8 w-8" />
             },
             {
               step: "03",
-              title: "Level Up",
-              description: "Earn XP, unlock achievements, and track your healing progress",
+              title: "LEVEL UP",
+              description: "Earn XP and achievements",
               time: "(XP Milestones)",
               icon: <Zap className="h-8 w-8" />
             },
             {
               step: "04",
-              title: "Break Free",
-              description: "Graduate to a healthier, stronger version of yourself",
+              title: "BREAK FREE",
+              description: "Graduate healed and stronger",
               time: "(30 days)",
               icon: <Star className="h-8 w-8" />
             }
@@ -479,23 +553,20 @@ export default function HomePage() {
             Join thousands who've transformed their heartbreak into strength. Your new chapter starts now.
           </p>
           
-          {/* Email + CTA Combo */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
-            <input 
-              type="email" 
-              placeholder="Enter your email..." 
-              className="flex-1 px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-600 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none transition-colors"
-            />
-            <Button 
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-8 py-3 text-white border-0 hover:scale-105 transition-all whitespace-nowrap"
-            >
-              Start Free
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+          {/* Single Button CTA */}
+          <div className="mb-4">
+            <Link href="/quiz">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-12 py-4 text-lg text-white border-0 hover:scale-105 transition-all"
+              >
+                Start Healing
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </Link>
           </div>
           
-          <p className="text-sm text-gray-400">No spam. Unsubscribe anytime.</p>
+          <p className="text-sm text-gray-400">Start free. Upgrade anytime.</p>
         </div>
       </div>
 

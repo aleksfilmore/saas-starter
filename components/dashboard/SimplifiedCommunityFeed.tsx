@@ -81,16 +81,13 @@ export function SimplifiedCommunityFeed({ className }: SimplifiedCommunityFeedPr
   return (
     <section className={`mb-8 ${className}`}>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          <Users className="w-5 h-5" />
-          Community Feed
-        </h2>
         <Link 
           href="/wall" 
-          className="text-purple-300 hover:text-white transition-colors flex items-center gap-1 text-sm"
+          className="text-xl font-bold text-white flex items-center gap-2 hover:text-purple-300 transition-colors"
         >
-          <span>View Wall</span>
-          <ChevronRight className="w-4 h-4" />
+          <Users className="w-5 h-5" />
+          Community Feed
+          <span className="text-sm text-gray-400 font-normal">+1,412 live</span>
         </Link>
       </div>
       

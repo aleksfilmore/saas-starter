@@ -335,7 +335,7 @@ export function DualRituals({
             <Button
               onClick={() => selectedRitual && handleCompleteRitual(selectedRitual.id)}
               disabled={completingRitual === selectedRitual?.id || completedRituals.includes(selectedRitual?.id || '')}
-              className="bg-violet-600 hover:bg-violet-700"
+              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white border-0"
             >
               {completingRitual === selectedRitual?.id ? (
                 <motion.div

@@ -134,14 +134,62 @@ export function SimplifiedHeroRitualCard({
       </AnimatePresence>
 
       <Card 
-        className={`dashboard-card p-8 hover:scale-[1.02] transition-all duration-300 ${className}`}
+        className={`dashboard-card p-8 hover:scale-[1.02] transition-all duration-300 relative ${className}`}
         onMouseEnter={() => canReroll && rerollsLeft > 0 && setShowRerollButton(true)}
         onMouseLeave={() => setShowRerollButton(false)}
       >
+        {/* Progress Ring - Top Right */}
+        <div className="absolute top-4 right-4">
+          <div className="relative w-12 h-12">
+            <svg className="w-12 h-12 transform -rotate-90" viewBox="0 0 48 48">
+              <circle
+                cx="24"
+                cy="24"
+                r="20"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="none"
+                className="text-gray-600"
+              />
+              <circle
+                cx="24"
+                cy="24"
+                r="20"
+                stroke="currentColor"
+                strokeWidth="3"
+                fill="none"
+                strokeDasharray={`${0 * 2 * Math.PI * 20} ${2 * Math.PI * 20}`}
+                className="text-purple-400"
+                style={{
+                  transition: 'stroke-dasharray 0.3s ease'
+                }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-xs text-gray-300 font-medium">0%</span>
+            </div>
+          </div>
+        </div>
+
         {/* Ritual Content */}
-        <div className="text-center">
+        <div className="text-center pr-16">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">{ritual.title}</h2>
+            <h2 className="text-2xl font-bold text-white mb-3">{ritual.title}</h2>
+            
+            {/* Intensity dots under title - no label */}
+            <div className="flex items-center justify-center gap-1 mb-3">
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2 h-2 rounded-full ${
+                    i < ritual.intensity 
+                      ? 'bg-orange-400' 
+                      : 'bg-gray-600'
+                  }`}
+                />
+              ))}
+            </div>
+            
             <p className="text-purple-200">{ritual.description}</p>
           </div>
 
@@ -150,29 +198,13 @@ export function SimplifiedHeroRitualCard({
               <Clock className="w-4 h-4" />
               <span>{ritual.duration} min</span>
             </div>
-            <div className="flex items-center gap-1">
-              <span>Intensity:</span>
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 rounded-full ${
-                      i < ritual.intensity 
-                        ? 'bg-orange-400' 
-                        : 'bg-gray-600'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
 
-          {/* Primary Action */}
+          {/* Primary Action - Full width but slimmer */}
           <Button
             onClick={handleComplete}
             disabled={isCompleting}
-            size="lg"
-            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-lg border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+            className="w-full h-12 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold text-lg border-0 shadow-lg hover:shadow-xl transition-all duration-300 group"
           >
             {isCompleting ? (
               <div className="flex items-center gap-2">
@@ -180,9 +212,10 @@ export function SimplifiedHeroRitualCard({
                 <span>Starting...</span>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <Play className="w-5 h-5" />
                 <span>Start Ritual</span>
+                <span className="hidden group-hover:inline text-sm opacity-80 ml-2">+10 XP · +5 Bytes</span>
               </div>
             )}
           </Button>

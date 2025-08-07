@@ -285,6 +285,13 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
+            {/* Hero Section with Subtitle */}
+            <div className="text-center mb-6">
+              <p className="text-purple-200 text-lg font-medium">
+                Build your Firewall — one breath at a time.
+              </p>
+            </div>
+            
             <SimplifiedHeroRitualCard
               ritual={todayRitual}
               onComplete={handleHeroRitualComplete}
