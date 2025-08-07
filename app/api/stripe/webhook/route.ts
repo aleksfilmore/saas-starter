@@ -14,6 +14,11 @@ export async function POST(request: NextRequest) {
 
     let event: Stripe.Event;
     
+    if (!stripe) {
+      console.error('Stripe is not initialized');
+      return NextResponse.json({ error: 'Stripe configuration error' }, { status: 500 });
+    }
+    
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
@@ -126,6 +131,11 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   if (!subscriptionId) return;
 
   try {
+    if (!stripe) {
+      console.error('Stripe is not initialized');
+      return;
+    }
+    
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     await handleSubscriptionChange(subscription);
     console.log(`Payment succeeded for subscription ${subscriptionId}`);
