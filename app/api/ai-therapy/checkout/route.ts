@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil',
-});
+import { getStripe } from '@/lib/stripe/config';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Stripe is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json({ 
+        error: 'Payment system not configured. Please contact support.' 
+      }, { status: 503 });
+    }
+
     // Validate user authentication
     const { user, session } = await validateRequest();
     
     if (!user || !session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const stripe = getStripe();
 
     const userTier = (user as any).tier || 'ghost';
     

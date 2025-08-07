@@ -1,4 +1,4 @@
-import { stripe, SUBSCRIPTION_PLANS } from './config';
+import { getStripe, SUBSCRIPTION_PLANS } from './config';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -19,6 +19,8 @@ export async function createCheckoutSession({
   cancelUrl
 }: CreateCheckoutSessionParams) {
   try {
+    const stripe = getStripe();
+    
     // Create or retrieve Stripe customer
     let customer = await stripe.customers.list({
       email: userEmail,
@@ -72,6 +74,8 @@ export async function createCheckoutSession({
 
 export async function createCustomerPortalSession(customerId: string, returnUrl: string) {
   try {
+    const stripe = getStripe();
+    
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: returnUrl,
@@ -86,6 +90,8 @@ export async function createCustomerPortalSession(customerId: string, returnUrl:
 
 export async function getUserSubscription(userId: string) {
   try {
+    const stripe = getStripe();
+    
     // Get user from database
     const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
     
@@ -171,6 +177,8 @@ export async function getUserSubscription(userId: string) {
 
 export async function cancelSubscription(subscriptionId: string) {
   try {
+    const stripe = getStripe();
+    
     const subscription = await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,
     });
@@ -190,6 +198,8 @@ export async function cancelSubscription(subscriptionId: string) {
 
 export async function reactivateSubscription(subscriptionId: string) {
   try {
+    const stripe = getStripe();
+    
     const subscription = await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: false,
     });
