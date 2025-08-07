@@ -25,6 +25,50 @@ export default function ComingSoonPage() {
     seconds: 0
   });
 
+  // FAQ Data
+  const faqData = [
+    {
+      id: 'what-is-platform',
+      question: 'What exactly is CTRL+ALT+BLOCK?',
+      answer: 'CTRL+ALT+BLOCK is the world\'s first gamified heartbreak recovery platform. We combine evidence-based attachment therapy with gaming psychology to help you heal from toxic relationships. Think of it as your personal growth RPG - but for real life.'
+    },
+    {
+      id: 'how-does-ai-work',
+      question: 'How does the AI therapy work?',
+      answer: 'Our AI therapist uses advanced natural language processing trained on attachment theory and trauma-informed care. It\'s available 24/7 for personalized conversations, coping strategies, and emotional support. The AI adapts to your healing style and provides evidence-based interventions.'
+    },
+    {
+      id: 'is-it-anonymous',
+      question: 'Is my data really anonymous and secure?',
+      answer: 'Absolutely. We operate on a strict no-real-names policy. You create an anonymous codename, and all your data is encrypted end-to-end. We never store personal identifying information, and you can delete your account completely at any time.'
+    },
+    {
+      id: 'wall-of-wounds',
+      question: 'What is the Wall of Wounds?',
+      answer: 'The Wall of Wounds is our anonymous community space where users share their healing journey through coded confessions. It\'s like a digital support group where you can express your pain, celebrate victories, and connect with others who understand your experience.'
+    },
+    {
+      id: 'no-contact-tracker',
+      question: 'How does the no-contact tracker work?',
+      answer: 'Our no-contact tracker gamifies the healing process with streak counters, achievement badges, and protective "shields" you earn by maintaining boundaries. It includes emergency support features and distraction techniques for moments of weakness.'
+    },
+    {
+      id: 'science-backed',
+      question: 'Is this actually based on real psychology?',
+      answer: 'Yes! Our platform is built on evidence-based attachment theory, trauma-informed care, and cognitive behavioral therapy principles. We work with licensed therapists and psychologists to ensure all our interventions are clinically sound.'
+    },
+    {
+      id: 'free-vs-paid',
+      question: 'What\'s included in the free version?',
+      answer: 'The free version includes basic daily rituals, the no-contact tracker, community access, and limited AI therapy sessions. Paid plans add unlimited AI therapy, advanced analytics, personalized protocols, and priority support.'
+    },
+    {
+      id: 'launch-date',
+      question: 'When does the platform officially launch?',
+      answer: 'We\'re launching September 5th, 2025! Beta access is available now for the first 500 users who join our waitlist. Early users get exclusive avatar frames and lifetime discounts.'
+    }
+  ];
+
   // Animated confession card effect
   useEffect(() => {
     const interval = setInterval(() => {
@@ -178,34 +222,6 @@ export default function ComingSoonPage() {
     }
   ];
 
-  const faqData = [
-    {
-      id: "what-is",
-      question: "What exactly is CTRL+ALT+BLOCK?",
-      answer: "A revolutionary platform that gamifies heartbreak recovery using AI-powered therapy, daily healing rituals, and anonymous community support. Think of it as a combination of therapy, gaming, and social support designed specifically for attachment healing."
-    },
-    {
-      id: "how-anonymous",
-      question: "How anonymous is it really?",
-      answer: "Completely anonymous. We use archetypes instead of real names, encrypt all data, and never store personally identifiable information. You can share your deepest healing journey without any privacy concerns."
-    },
-    {
-      id: "pricing",
-      question: "How much does it cost?",
-      answer: "We offer a free tier with basic features, Pro at $19/month with unlimited AI therapy, and Elite at $49/month with 1-on-1 coaching. All plans include anonymous community access and core healing tools."
-    },
-    {
-      id: "ai-safe",
-      question: "Is AI therapy actually safe and effective?",
-      answer: "Our AI is trained specifically for attachment healing and heartbreak recovery, based on evidence-based psychology. While not a replacement for licensed therapy, it provides 24/7 support and has crisis detection built-in."
-    },
-    {
-      id: "launch-date",
-      question: "When does the platform officially launch?",
-      answer: "September 5th, 2025! We're currently in beta with limited access. Join the waitlist to get early access and exclusive benefits."
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white overflow-x-hidden relative">
       {/* Background Effects */}
@@ -327,20 +343,16 @@ export default function ComingSoonPage() {
           <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 bg-clip-text mb-4 tracking-wide">
             UNINSTALL YOUR EX.
           </div>
-          <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text">
-            INSTALL YOUR NEW SELF.
-          </div>
         </div>
-
         {/* Logo/Brand */}
         <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 leading-tight">
             <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono glitch-text">
-              CTRL+ALT+BLOCK
+               INSTALL YOUR NEW SELF.
             </span>
           </h1>
           <div className="text-lg sm:text-xl md:text-2xl font-mono text-gray-300 mb-6">
-            REFORMAT PROTOCOL™
+            Revolutionary healing through the psychology of gaming
           </div>
         </div>
 
@@ -438,7 +450,7 @@ export default function ComingSoonPage() {
                   ></div>
                 </div>
                 <p className="text-sm text-yellow-200">
-                  First 500 get exclusive avatar frame + lifetime discount
+                  First 500 users get an exclusive avatar frame + lifetime discount
                 </p>
               </CardContent>
             </Card>
@@ -639,7 +651,7 @@ export default function ComingSoonPage() {
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Start your recovery journey with our research-backed attachment therapy platform. 
-              All plans include anonymous support and personalized healing paths.
+              All plans include the no-contact tracker and daily healing rituals.
             </p>
           </div>
 
@@ -675,7 +687,7 @@ export default function ComingSoonPage() {
                   onClick={() => scrollToSection('waitlist')}
                   className="w-full bg-gray-700 hover:bg-gray-600 text-white"
                 >
-                  Get Started Free
+                  Start Your Healing Journey Free
                 </Button>
               </CardContent>
             </Card>
@@ -813,30 +825,34 @@ export default function ComingSoonPage() {
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             {faqData.map((faq) => (
-              <Card key={faq.id} className="bg-gray-800/60 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300">
+              <Card key={faq.id} className="bg-gray-800/60 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 backdrop-blur-sm">
                 <CardContent className="p-0">
                   <button
                     onClick={() => toggleFAQ(faq.id)}
-                    className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-700/30 transition-colors"
+                    className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-700/30 transition-colors group"
                   >
-                    <h3 className="text-lg font-semibold text-white pr-4">
+                    <h3 className="text-lg font-semibold text-white pr-4 group-hover:text-purple-300 transition-colors">
                       {faq.question}
                     </h3>
-                    <ChevronDown 
-                      className={`h-5 w-5 text-purple-400 transition-transform ${
-                        openFAQ === faq.id ? 'rotate-180' : ''
-                      }`} 
-                    />
-                  </button>
-                  {openFAQ === faq.id && (
-                    <div className="px-6 pb-6">
-                      <p className="text-gray-300 leading-relaxed">
-                        {faq.answer}
-                      </p>
+                    <div className={`flex-shrink-0 transition-all duration-300 ${
+                      openFAQ === faq.id ? 'rotate-180 text-purple-400' : 'text-gray-400 group-hover:text-purple-400'
+                    }`}>
+                      <ChevronDown className="h-5 w-5" />
                     </div>
-                  )}
+                  </button>
+                  <div className={`transition-all duration-300 overflow-hidden ${
+                    openFAQ === faq.id ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}>
+                    <div className="px-6 pb-6 border-t border-gray-700/50">
+                      <div className="pt-4">
+                        <p className="text-gray-300 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
