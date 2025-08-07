@@ -85,6 +85,8 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/lodash": "^4.17.20",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
     "eslint": "^9.32.0",
     "eslint-config-next": "15.4.5"
   }
