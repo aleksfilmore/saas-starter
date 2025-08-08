@@ -104,7 +104,7 @@ class EmailService {
 
   // Password reset email template
   async sendPasswordResetEmail(to: string, resetToken: string): Promise<EmailResponse> {
-    const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3001'}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3001'}/reset-password?token=${resetToken}`;
     
     const html = `
       <!DOCTYPE html>

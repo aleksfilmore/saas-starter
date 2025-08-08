@@ -324,7 +324,7 @@ export class ReferralService {
   /**
    * Get referral link for sharing
    */
-  static getReferralLink(code: string, baseUrl: string = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'): string {
+  static getReferralLink(code: string, baseUrl: string = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || 'http://localhost:3000'): string {
     return `${baseUrl}/sign-up?ref=${code}`;
   }
 }

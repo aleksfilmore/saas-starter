@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-    const host = request.headers.get('host') || 'localhost:3001';
+    const host = request.headers.get('host') || process.env.VERCEL_URL || 'localhost:3001';
     const baseUrl = `${protocol}://${host}`;
 
     const session = await createCheckoutSession({
