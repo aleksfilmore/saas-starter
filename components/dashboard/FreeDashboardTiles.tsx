@@ -50,8 +50,44 @@ export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesPro
       setIsProcessingPayment(false)
     }
   }
+  
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="space-y-6">
+      {/* Premium Upgrade Banner */}
+      <Card className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-purple-500/30 p-6">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-white mb-2">
+                🚀 Unlock Your Full Healing Journey
+              </h3>
+              <p className="text-purple-200 text-sm mb-3">
+                Get dual rituals, unlimited rerolls, AI therapy, community posting, and more premium features
+              </p>
+              <div className="flex items-center gap-4 text-xs text-purple-300">
+                <span className="flex items-center gap-1">
+                  ✨ Dual Daily Rituals
+                </span>
+                <span className="flex items-center gap-1">
+                  🔄 Unlimited Rerolls
+                </span>
+                <span className="flex items-center gap-1">
+                  💬 Post on Community Wall
+                </span>
+              </div>
+            </div>
+            <Link href="/pricing">
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:from-purple-600 hover:to-pink-600">
+                Upgrade Now
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Feature Tiles */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       
       {/* Streak Tracker - Free Access */}
       <Link href="/no-contact" className="block h-full">
@@ -215,6 +251,7 @@ export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesPro
           </CardContent>
         </Card>
       </Link>
+      </div>
     </div>
   )
 }

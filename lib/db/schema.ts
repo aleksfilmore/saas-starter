@@ -1,5 +1,6 @@
 // Complete Database Schema for SaaS Starter with Gamification
-import { pgTable, text, timestamp, integer, boolean, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, boolean, varchar, index } from 'drizzle-orm/pg-core';
+import { randomUUID } from 'crypto';
 
 // =====================================
 // AUTHENTICATION TABLES
@@ -173,6 +174,66 @@ export const rituals = pgTable('rituals', {
   bytesReward: integer('bytes_reward').notNull().default(25),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 });
+
+// =====================================
+// RITUAL JOURNAL ENTRIES
+// =====================================
+
+export const ritualEntries = pgTable('ritual_entries', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  ritualCode: varchar('ritual_code', { length: 64 }).notNull(), // 'breath_firewall', 'digital_detox', etc.
+  ritualTitle: varchar('ritual_title', { length: 128 }), // Store title for reference
+  performedAt: timestamp('performed_at', { withTimezone: true }).defaultNow(),
+  
+  // Journal data
+  mood: integer('mood'), // 1-7 scale
+  whatIDid: text('what_i_did'), // "What did you do?"
+  howIFeel: text('how_i_feel'), // "How do you feel now?"
+  tags: varchar('tags', { length: 256 }), // comma-separated tags for premium users
+  source: varchar('source', { length: 16 }).$type<'text'|'voice'>().default('text'),
+  
+  // Metadata
+  timeSpent: integer('time_spent_seconds'), // Track dwell time for XP validation
+  textLength: integer('text_length'), // Combined length for XP validation
+  xpAwarded: integer('xp_awarded').default(0), // Track XP given for this entry
+  bytesAwarded: integer('bytes_awarded').default(0), // Track Bytes given for this entry
+  
+  // AI & Analysis (for premium users)
+  tokensUsed: integer('tokens_used').default(0), // for AI digest accounting
+  summaryId: text('summary_id'), // link to weekly summary
+  sentiment: varchar('sentiment', { length: 16 }), // positive, neutral, negative
+  
+  // Audit
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  deletedAt: timestamp('deleted_at'), // soft delete
+}, (t) => ({
+  byUserDate: index().on(t.userId, t.performedAt),
+  byUserRitual: index().on(t.userId, t.ritualCode),
+  byUserCreated: index().on(t.userId, t.createdAt),
+}));
+
+// Weekly AI summaries for premium users
+export const weeklySummaries = pgTable('weekly_summaries', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  weekStart: timestamp('week_start').notNull(), // Monday of the week
+  weekEnd: timestamp('week_end').notNull(), // Sunday of the week
+  
+  // AI-generated content
+  bullets: text('bullets'), // JSON array of 3 key insights
+  sentimentAvg: integer('sentiment_avg'), // 1-7 average mood for the week
+  nextSuggestion: text('next_suggestion'), // AI suggested next ritual
+  entryCount: integer('entry_count').default(0), // Number of entries analyzed
+  
+  // Metadata
+  tokensUsed: integer('tokens_used').default(0),
+  generatedAt: timestamp('generated_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (t) => ({
+  byUserWeek: index().on(t.userId, t.weekStart),
+}));
 
 // =====================================
 // WALL OF WOUNDS TABLES
@@ -376,3 +437,9 @@ export type Referral = typeof referrals.$inferSelect;
 export type NewReferral = typeof referrals.$inferInsert;
 export type SubscriptionEvent = typeof subscriptionEvents.$inferSelect;
 export type NewSubscriptionEvent = typeof subscriptionEvents.$inferInsert;
+
+// Journal types
+export type RitualEntry = typeof ritualEntries.$inferSelect;
+export type NewRitualEntry = typeof ritualEntries.$inferInsert;
+export type WeeklySummary = typeof weeklySummaries.$inferSelect;
+export type NewWeeklySummary = typeof weeklySummaries.$inferInsert;

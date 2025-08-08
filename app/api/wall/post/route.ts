@@ -30,17 +30,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has premium subscription (only premium users can post)
-    const userTier = (user as any).tier || 'ghost';
-    const subscriptionStatus = (user as any).subscription_status;
-    
-    if (userTier === 'ghost' || subscriptionStatus !== 'active') {
-      return NextResponse.json({ 
-        error: 'Premium subscription required to create posts',
-        requiresUpgrade: true 
-      }, { status: 403 });
-    }
-
     const { content, isAnonymous = true, category } = await request.json();
 
     if (!content?.trim()) {

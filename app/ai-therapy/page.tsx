@@ -84,10 +84,7 @@ export default function SimplifiedAITherapyPage() {
 
   const fetchQuotaInfo = async () => {
     try {
-      const token = localStorage.getItem('auth-token');
-      const response = await fetch('/api/ai-therapy/quota', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await fetch('/api/ai-therapy/quota');
       
       if (response.ok) {
         const data = await response.json();
@@ -100,12 +97,10 @@ export default function SimplifiedAITherapyPage() {
 
   const initializeChat = async () => {
     try {
-      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/ai-therapy/initialize', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         }
       });
 
@@ -192,24 +187,23 @@ export default function SimplifiedAITherapyPage() {
 
   const purchaseExtraMessages = async () => {
     try {
-      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/ai-therapy/purchase', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          packageType: 'extra_20'
+          paymentMethod: 'bytes' // Using in-app currency
         })
       });
 
       if (response.ok) {
+        const result = await response.json();
         await fetchQuotaInfo();
-        alert('Successfully purchased 20 extra messages!');
+        alert(result.message || 'Successfully purchased 300 messages!');
       } else {
         const error = await response.json();
-        alert('Purchase failed: ' + error.message);
+        alert('Purchase failed: ' + (error.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Purchase error:', error);

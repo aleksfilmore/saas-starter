@@ -165,7 +165,10 @@ export default function DashboardPage() {
   const handleNoContactCheckin = async () => {
     try {
       const response = await fetch('/api/no-contact/checkin', {
-        method: 'POST'
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
       
       if (response.ok) {
@@ -220,7 +223,7 @@ export default function DashboardPage() {
     duration: 15, // Default duration
     isCompleted: completedRituals.includes(todayRitual.id)
   } : null
-  const hasShield = authUser.streak >= 7
+  const hasShield = authUser.noContactDays >= 7
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
@@ -240,8 +243,10 @@ export default function DashboardPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
+        {/* Enhanced Layout Based on User Tier */}
+        {authUser.subscriptionTier === 'premium' ? (
+          // Premium layout - Full width for dual rituals
+          <div className="space-y-8">
             {/* Hero Section with Subtitle */}
             <div className="text-center mb-6">
               <p className="text-purple-200 text-lg font-medium">
@@ -249,25 +254,52 @@ export default function DashboardPage() {
               </p>
             </div>
             
-            <SimplifiedHeroRitualCard
-              ritual={transformedRitual}
-              onComplete={handleHeroRitualComplete}
-              onReroll={handleReroll}
+            {/* Premium Dual Rituals - Full Width */}
+            <DualRituals
+              userSubscription="premium"
+              onRitualComplete={handleDualRitualComplete}
+              completedRituals={completedRituals}
             />
 
-            {/* Conditional Ritual Display */}
-            {authUser.subscriptionTier === 'premium' ? (
-              <DualRituals
-                userSubscription={authUser.subscriptionTier}
-                onRitualComplete={handleDualRitualComplete}
-                completedRituals={completedRituals}
+            {/* Premium Tiles - Two Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <SimplifiedTiles
+                  user={{
+                    noContactDays: authUser.noContactDays,
+                    wallPosts: 0
+                  }}
+                  featureGates={{ noContactTracker: true, aiTherapy: hasAIQuota, wallRead: canAccessWallPreview }}
+                  aiQuota={{ msgsLeft: aiQuota, totalQuota: aiQuota }}
+                />
+              </div>
+              <div>
+                <SimplifiedCommunityFeed />
+              </div>
+            </div>
+          </div>
+        ) : (
+          // Free user layout - Enhanced two-column layout
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {/* Main content - 3 columns */}
+            <div className="lg:col-span-3 space-y-8">
+              {/* Hero Section with Subtitle */}
+              <div className="text-center mb-6">
+                <p className="text-purple-200 text-lg font-medium">
+                  Build your Firewall — one breath at a time.
+                </p>
+              </div>
+              
+              {/* Free user single ritual - NO REROLL */}
+              <SimplifiedHeroRitualCard
+                ritual={transformedRitual}
+                onComplete={handleHeroRitualComplete}
+                onReroll={handleReroll}
+                canReroll={false}
+                rerollsLeft={0}
               />
-            ) : (
-              /* Free users get simplified ritual experience within FreeDashboardTiles */
-              null
-            )}
 
-            {authUser.subscriptionTier === 'free' ? (
+              {/* Free Dashboard Tiles */}
               <FreeDashboardTiles
                 user={{
                   noContactDays: authUser.noContactDays,
@@ -275,22 +307,14 @@ export default function DashboardPage() {
                 }}
                 featureGates={{ noContactTracker: true, aiTherapy: hasAIQuota, wallRead: canAccessWallPreview }}
               />
-            ) : (
-              <SimplifiedTiles
-                user={{
-                  noContactDays: authUser.noContactDays,
-                  wallPosts: 0
-                }}
-                featureGates={{ noContactTracker: true, aiTherapy: hasAIQuota, wallRead: canAccessWallPreview }}
-                aiQuota={{ msgsLeft: aiQuota, totalQuota: aiQuota }}
-              />
-            )}
-          </div>
+            </div>
 
-          <div className="lg:col-span-1">
-            <SimplifiedCommunityFeed />
+            {/* Sidebar - 2 columns */}
+            <div className="lg:col-span-2">
+              <SimplifiedCommunityFeed />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -299,6 +323,7 @@ export default function DashboardPage() {
           isOpen={showCheckinModal}
           onClose={() => setShowCheckinModal(false)}
           currentStreak={authUser.noContactDays}
+          refetchUser={refetchUser}
           onCheckinComplete={async () => {
             await handleNoContactCheckin()
           }}

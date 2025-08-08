@@ -11,13 +11,15 @@ interface NoContactCheckinModalProps {
   onClose: () => void;
   currentStreak: number;
   onCheckinComplete: () => void;
+  refetchUser?: () => Promise<void>;
 }
 
 export function NoContactCheckinModal({ 
   isOpen, 
   onClose, 
   currentStreak, 
-  onCheckinComplete 
+  onCheckinComplete,
+  refetchUser
 }: NoContactCheckinModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
@@ -26,11 +28,10 @@ export function NoContactCheckinModal({
   const handleCheckin = async () => {
     setIsLoading(true);
     try {
-      const userEmail = localStorage.getItem('user-email') || 'admin@ctrlaltblock.com';
       const response = await fetch('/api/no-contact/checkin', {
         method: 'PATCH',
         headers: {
-          'x-user-email': userEmail
+          'Content-Type': 'application/json'
         }
       });
 
@@ -39,6 +40,10 @@ export function NoContactCheckinModal({
       if (response.ok) {
         setResult(data);
         setIsComplete(true);
+        // Refresh user context if available
+        if (refetchUser) {
+          await refetchUser();
+        }
         onCheckinComplete();
       } else {
         throw new Error(data.error || 'Check-in failed');

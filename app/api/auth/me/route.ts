@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         bytes: dbUser.bytes,
         level: dbUser.level,
         ritual_streak: dbUser.ritual_streak,
-        no_contact_streak: dbUser.no_contact_streak,
+        no_contact_streak: dbUser.noContactDays,
         is_verified: dbUser.is_verified,
         subscription_status: dbUser.subscription_status,
         // For testing premium features - simulate premium subscription

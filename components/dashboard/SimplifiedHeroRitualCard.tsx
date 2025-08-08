@@ -7,9 +7,13 @@ import {
   Clock, 
   RotateCcw, 
   CheckCircle2, 
-  Play
+  Play,
+  BookOpen,
+  History
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { JournalModal } from '@/components/rituals/JournalModal'
+import { JournalHistory } from '@/components/rituals/JournalHistory'
 
 interface Ritual {
   id: string
@@ -43,6 +47,9 @@ export function SimplifiedHeroRitualCard({
   const [isRerolling, setIsRerolling] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [showRerollButton, setShowRerollButton] = useState(false)
+  const [showJournalModal, setShowJournalModal] = useState(false)
+  const [showJournalHistory, setShowJournalHistory] = useState(false)
+  const [justCompleted, setJustCompleted] = useState(false)
 
   const handleComplete = async () => {
     if (!ritual || ritual.isCompleted) return
@@ -50,7 +57,9 @@ export function SimplifiedHeroRitualCard({
     setIsCompleting(true)
     try {
       await onComplete(ritual.id)
+      setJustCompleted(true)
       setShowConfetti(true)
+      setShowJournalModal(true) // Show journal modal after completion
       setTimeout(() => setShowConfetti(false), 3000)
     } finally {
       setIsCompleting(false)
@@ -82,16 +91,63 @@ export function SimplifiedHeroRitualCard({
 
   if (ritual.isCompleted) {
     return (
-      <Card className="dashboard-card p-8 text-center border-green-500/50 bg-green-500/10">
-        <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-green-400" />
-        <h2 className="text-2xl font-bold text-white mb-2">Ritual Complete!</h2>
-        <p className="text-green-300">
-          {ritual.title} completed at {ritual.completedAt ? new Date(ritual.completedAt).toLocaleTimeString() : 'today'}
-        </p>
-        <p className="text-gray-400 mt-2 text-sm">
-          Your next ritual unlocks tomorrow
-        </p>
-      </Card>
+      <>
+        <Card className="dashboard-card p-8 text-center border-green-500/50 bg-green-500/10">
+          <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-green-400" />
+          <h2 className="text-2xl font-bold text-white mb-2">Ritual Complete!</h2>
+          <p className="text-green-300">
+            {ritual.title} completed {ritual.completedAt ? `at ${new Date(ritual.completedAt).toLocaleTimeString()}` : 'today'}
+          </p>
+          
+          {/* Journal Actions */}
+          <div className="flex gap-2 justify-center mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowJournalModal(true)}
+              className="border-green-500/50 text-green-400 hover:bg-green-500/20"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              {justCompleted ? 'Complete Journal' : 'Add Journal'}
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowJournalHistory(true)}
+              className="border-gray-600 text-gray-400 hover:text-white"
+            >
+              <History className="w-4 h-4 mr-2" />
+              History
+            </Button>
+          </div>
+          
+          <p className="text-gray-400 mt-2 text-sm">
+            Your next ritual unlocks tomorrow
+          </p>
+        </Card>
+
+        {/* Journal Modal */}
+        <JournalModal
+          isOpen={showJournalModal}
+          onClose={() => {
+            setShowJournalModal(false)
+            setJustCompleted(false)
+          }}
+          ritualCode={ritual.id}
+          ritualTitle={ritual.title}
+          onSaved={() => {
+            // Optional: Could refresh some state here
+          }}
+        />
+
+        {/* Journal History Modal */}
+        <JournalHistory
+          isOpen={showJournalHistory}
+          onClose={() => setShowJournalHistory(false)}
+          ritualCode={ritual.id}
+        />
+      </>
     )
   }
 
@@ -251,6 +307,27 @@ export function SimplifiedHeroRitualCard({
           )}
         </AnimatePresence>
       </Card>
+
+      {/* Journal Modal for non-completed rituals */}
+      <JournalModal
+        isOpen={showJournalModal}
+        onClose={() => {
+          setShowJournalModal(false)
+          setJustCompleted(false)
+        }}
+        ritualCode={ritual.id}
+        ritualTitle={ritual.title}
+        onSaved={() => {
+          // Could refresh state or show additional feedback
+        }}
+      />
+
+      {/* Journal History Modal */}
+      <JournalHistory
+        isOpen={showJournalHistory}
+        onClose={() => setShowJournalHistory(false)}
+        ritualCode={ritual.id}
+      />
     </div>
   )
 }

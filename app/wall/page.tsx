@@ -92,10 +92,7 @@ export default function SimplifiedWallPage() {
 
   const fetchPosts = useCallback(async () => {
     try {
-      const token = localStorage.getItem('auth-token');
-      const response = await fetch(`/api/wall/feed?filter=${filter}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await fetch(`/api/wall/feed?filter=${filter}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -122,12 +119,10 @@ export default function SimplifiedWallPage() {
 
     setPosting(true);
     try {
-      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/wall/post', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           content: postContent,
@@ -142,10 +137,13 @@ export default function SimplifiedWallPage() {
         setSelectedTag(null);
         await fetchPosts();
       } else {
-        console.error('Failed to submit post');
+        const errorData = await response.json();
+        console.error('Failed to submit post:', errorData);
+        alert(errorData.error || 'Failed to submit post');
       }
     } catch (error) {
       console.error('Error submitting post:', error);
+      alert('Network error occurred');
     } finally {
       setPosting(false);
     }
@@ -153,12 +151,10 @@ export default function SimplifiedWallPage() {
 
   const reactToPost = async (postId: string, reactionType: string) => {
     try {
-      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/wall/react', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           postId,

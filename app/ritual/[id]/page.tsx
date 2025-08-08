@@ -193,8 +193,7 @@ export default function RitualDetailPage() {
       const response = await fetch(`/api/rituals/${ritualId}/complete`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           completionData: {
@@ -221,10 +220,10 @@ export default function RitualDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading ritual...</p>
+          <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-300">Loading ritual...</p>
         </div>
       </div>
     );
@@ -232,10 +231,10 @@ export default function RitualDetailPage() {
 
   if (!ritual) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Ritual not found</p>
-          <Button onClick={() => router.push('/dashboard')}>
+          <p className="text-gray-300 mb-4">Ritual not found</p>
+          <Button onClick={() => router.push('/dashboard')} className="bg-purple-600 hover:bg-purple-700 text-white">
             Return to Dashboard
           </Button>
         </div>
@@ -249,10 +248,10 @@ export default function RitualDetailPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'text-green-600';
-      case 'intermediate': return 'text-yellow-600';
-      case 'advanced': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'beginner': return 'text-green-400';
+      case 'intermediate': return 'text-yellow-400';
+      case 'advanced': return 'text-red-400';
+      default: return 'text-gray-400';
     }
   };
 
@@ -266,25 +265,25 @@ export default function RitualDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
+      <div className="bg-gray-800/50 border-b border-gray-700 px-4 py-4 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Button 
             variant="ghost" 
             onClick={() => router.push('/dashboard')}
-            className="flex items-center text-gray-600 hover:text-gray-900"
+            className="flex items-center text-gray-300 hover:text-white hover:bg-gray-700"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
           
           <div className="flex items-center space-x-4">
-            <Badge variant="secondary" className="flex items-center">
+            <Badge variant="secondary" className="flex items-center bg-purple-600/20 text-purple-300 border-purple-500/30">
               <Clock className="h-3 w-3 mr-1" />
               {ritual.duration_minutes} min
             </Badge>
-            <Badge className={getDifficultyColor(ritual.difficulty)}>
+            <Badge className={`${getDifficultyColor(ritual.difficulty)} bg-gray-700/50 border-gray-600`}>
               {getDifficultyIcon(ritual.difficulty)} {ritual.difficulty}
             </Badge>
           </div>
@@ -294,30 +293,30 @@ export default function RitualDetailPage() {
       <div className="max-w-4xl mx-auto p-4 py-8">
         {/* Ritual Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-white mb-2">
             {ritual.title}
           </h1>
-          <p className="text-lg text-gray-600 mb-4">
+          <p className="text-lg text-gray-300 mb-4">
             {ritual.description}
           </p>
           
           {/* Progress */}
           <div className="mb-6">
-            <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <div className="flex justify-between text-sm text-gray-400 mb-2">
               <span>Step {currentStep + 1} of {ritual.steps.length}</span>
               <span>{Math.round(progress)}% Complete</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-2 bg-gray-700" />
           </div>
         </div>
 
         {/* Step Content */}
-        <Card className="mb-8">
+        <Card className="mb-8 bg-gray-800/50 border-gray-700 backdrop-blur-sm">
           <CardContent className="p-8">
             {/* Text Step */}
             {currentStepData.type === 'text' && (
               <div className="text-center">
-                <div className="text-lg text-gray-800 leading-relaxed">
+                <div className="text-lg text-gray-200 leading-relaxed">
                   {currentStepData.content}
                 </div>
               </div>
@@ -327,12 +326,12 @@ export default function RitualDetailPage() {
             {currentStepData.type === 'breathing' && (
               <div className="text-center">
                 <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-4">Breathing Exercise</h3>
-                  <p className="text-gray-600 mb-6">{currentStepData.content}</p>
+                  <h3 className="text-xl font-semibold mb-4 text-white">Breathing Exercise</h3>
+                  <p className="text-gray-300 mb-6">{currentStepData.content}</p>
                 </div>
                 
                 <div className="mb-6">
-                  <div className="text-4xl font-mono text-purple-600 mb-4">
+                  <div className="text-4xl font-mono text-purple-400 mb-4">
                     {formatTime(timeLeft)}
                   </div>
                   
@@ -351,6 +350,7 @@ export default function RitualDetailPage() {
                       <Button 
                         onClick={pauseTimer}
                         variant="outline"
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
                       >
                         <Pause className="h-4 w-4 mr-2" />
                         Pause
@@ -360,6 +360,7 @@ export default function RitualDetailPage() {
                     <Button 
                       onClick={() => resetTimer(currentStepData.duration || 0)}
                       variant="outline"
+                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
                     >
                       <RotateCcw className="h-4 w-4 mr-2" />
                       Reset
@@ -368,7 +369,7 @@ export default function RitualDetailPage() {
                 </div>
                 
                 {timeLeft === 0 && (
-                  <div className="text-green-600 font-semibold">
+                  <div className="text-green-400 font-semibold">
                     ✨ Breathing exercise complete! Take a moment to notice how you feel.
                   </div>
                 )}
@@ -379,11 +380,11 @@ export default function RitualDetailPage() {
             {currentStepData.type === 'timer' && (
               <div className="text-center">
                 <div className="mb-6">
-                  <p className="text-lg text-gray-800 mb-6">{currentStepData.content}</p>
+                  <p className="text-lg text-gray-200 mb-6">{currentStepData.content}</p>
                 </div>
                 
                 <div className="mb-6">
-                  <div className="text-4xl font-mono text-purple-600 mb-4">
+                  <div className="text-4xl font-mono text-purple-400 mb-4">
                     {formatTime(timeLeft)}
                   </div>
                   
@@ -402,6 +403,7 @@ export default function RitualDetailPage() {
                       <Button 
                         onClick={pauseTimer}
                         variant="outline"
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
                       >
                         <Pause className="h-4 w-4 mr-2" />
                         Pause
@@ -411,6 +413,7 @@ export default function RitualDetailPage() {
                     <Button 
                       onClick={() => resetTimer(currentStepData.duration || 0)}
                       variant="outline"
+                      className="border-gray-600 text-gray-300 hover:bg-gray-700"
                     >
                       <RotateCcw className="h-4 w-4 mr-2" />
                       Reset
@@ -419,7 +422,7 @@ export default function RitualDetailPage() {
                 </div>
                 
                 {timeLeft === 0 && (
-                  <div className="text-green-600 font-semibold">
+                  <div className="text-green-400 font-semibold">
                     ✨ Timer complete! How do you feel after this activity?
                   </div>
                 )}
@@ -429,14 +432,14 @@ export default function RitualDetailPage() {
             {/* Reflection Step */}
             {currentStepData.type === 'reflection' && (
               <div>
-                <h3 className="text-xl font-semibold mb-4">{currentStepData.content}</h3>
+                <h3 className="text-xl font-semibold mb-4 text-white">{currentStepData.content}</h3>
                 <Textarea
                   placeholder="Take your time to reflect and write your thoughts..."
                   value={completionData.reflections[currentStep] || ''}
                   onChange={(e) => updateReflection(currentStep, e.target.value)}
-                  className="min-h-[120px] text-lg"
+                  className="min-h-[120px] text-lg bg-gray-700/50 border-gray-600 text-gray-200 placeholder-gray-400"
                 />
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-gray-400 mt-2">
                   Your reflections are private and help track your healing journey.
                 </p>
               </div>
@@ -445,7 +448,7 @@ export default function RitualDetailPage() {
             {/* Checklist Step */}
             {currentStepData.type === 'checklist' && (
               <div>
-                <h3 className="text-xl font-semibold mb-6">{currentStepData.content}</h3>
+                <h3 className="text-xl font-semibold mb-6 text-white">{currentStepData.content}</h3>
                 <div className="space-y-4">
                   {currentStepData.options?.map((option, index) => (
                     <div key={index} className="flex items-start space-x-3">
@@ -453,18 +456,18 @@ export default function RitualDetailPage() {
                         id={`option-${index}`}
                         checked={(completionData.checklistItems[currentStep] || []).includes(option)}
                         onCheckedChange={(checked) => updateChecklist(currentStep, option, checked === true)}
-                        className="mt-1"
+                        className="mt-1 border-gray-600 data-[state=checked]:bg-purple-600"
                       />
                       <label 
                         htmlFor={`option-${index}`}
-                        className="text-gray-700 cursor-pointer leading-relaxed"
+                        className="text-gray-200 cursor-pointer leading-relaxed"
                       >
                         {option}
                       </label>
                     </div>
                   ))}
                 </div>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-sm text-gray-400 mt-4">
                   Complete as many items as feel right for you today.
                 </p>
               </div>
@@ -478,11 +481,12 @@ export default function RitualDetailPage() {
             variant="outline"
             onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
             disabled={currentStep === 0}
+            className="border-gray-600 text-gray-300 hover:bg-gray-700"
           >
             Previous Step
           </Button>
 
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center space-x-2 text-sm text-gray-400">
             <Sparkles className="h-4 w-4" />
             <span>+{ritual.xp_reward} XP</span>
             <span>•</span>
@@ -521,7 +525,7 @@ export default function RitualDetailPage() {
         {/* Reroll Option (if available) */}
         {ritual.user_tier === 'freemium' && (
           <div className="text-center mt-8">
-            <Button variant="ghost" className="text-purple-600 hover:text-purple-700">
+            <Button variant="ghost" className="text-purple-400 hover:text-purple-300 hover:bg-gray-700">
               Not feeling this ritual today? Reroll for different one →
             </Button>
           </div>

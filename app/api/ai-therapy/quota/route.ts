@@ -35,12 +35,16 @@ export async function GET(request: Request) {
       };
       
       const userTier = (user as any).tier || 'ghost'; // Default to ghost for free users
-      const limits = tierLimits[userTier as keyof typeof tierLimits] || tierLimits.ghost;
+      const subscriptionTier = (user as any).subscriptionTier || 'ghost_mode';
+      
+      // Check both tier and subscriptionTier for premium status
+      const isPremium = userTier !== 'ghost' || subscriptionTier === 'firewall_mode';
+      const limits = isPremium ? tierLimits.firewall : tierLimits.ghost;
       
       // For free users, no automatic reset - they buy 300 messages when needed
       // For premium users, daily reset for fair-usage tracking
       const resetAt = new Date();
-      if (userTier !== 'ghost') {
+      if (isPremium) {
         resetAt.setDate(resetAt.getDate() + 1);
         resetAt.setHours(0, 0, 0, 0);
       } else {
@@ -52,13 +56,13 @@ export async function GET(request: Request) {
         used: 0,
         total: limits.total,
         resetAt: resetAt.toISOString(),
-        canPurchaseMore: userTier === 'ghost', // Only free users can purchase more
+        canPurchaseMore: !isPremium, // Only free users can purchase more
         purchaseCost: limits.purchaseCost,
-        tier: userTier,
+        tier: isPremium ? 'firewall' : 'ghost',
         extraMessages: 0,
         remaining: limits.total,
-        isUnlimited: userTier !== 'ghost',
-        messagesPerPurchase: userTier === 'ghost' ? 300 : 0
+        isUnlimited: isPremium,
+        messagesPerPurchase: !isPremium ? 300 : 0
       };
       
       userQuotas.set(user.id, quota);

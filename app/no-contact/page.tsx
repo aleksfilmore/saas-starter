@@ -41,7 +41,7 @@ interface CheckInData {
 }
 
 export default function SimplifiedNoContactPage() {
-  const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth()
+  const { user: authUser, isAuthenticated, isLoading: authLoading, refetchUser } = useAuth()
   const [data, setData] = useState<NoContactData | null>(null)
   const [loading, setLoading] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
@@ -145,6 +145,9 @@ export default function SimplifiedNoContactPage() {
             progress: Math.round(((data.currentStreak + 1) / data.targetDays) * 100)
           })
         }
+        
+        // Refresh the user context to update header and dashboard
+        await refetchUser()
         
         // Refresh the status to get updated check-in availability
         fetchNoContactData()

@@ -52,7 +52,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                   className="text-white hover:text-orange-300 transition-colors"
                   title="Click to check-in (once per day)"
                 >
-                  {user.streak}
+                  {user.noContactDays}
                 </button>
               </div>
               
@@ -147,6 +147,15 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                       </Link>
                       
                       <Link
+                        href="/subscription"
+                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                        onClick={() => setShowUserDropdown(false)}
+                      >
+                        <CreditCard className="h-4 w-4" />
+                        💳 Subscription
+                      </Link>
+                      
+                      <Link
                         href="/settings"
                         className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
                         onClick={() => setShowUserDropdown(false)}
@@ -154,6 +163,35 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                         <Settings className="h-4 w-4" />
                         ⚙️ Settings
                       </Link>
+                      
+                      <div className="border-t border-gray-600 my-2"></div>
+                      
+                      <button
+                        onClick={async () => {
+                          try {
+                            const response = await fetch('/api/auth/logout', {
+                              method: 'POST',
+                              credentials: 'include'
+                            })
+                            
+                            if (response.ok) {
+                              // Clear any local storage
+                              localStorage.removeItem('user-email')
+                              // Redirect to home page
+                              window.location.href = '/'
+                            } else {
+                              console.error('Logout failed')
+                            }
+                          } catch (error) {
+                            console.error('Logout error:', error)
+                          }
+                          setShowUserDropdown(false)
+                        }}
+                        className="w-full px-4 py-2 text-left text-red-300 hover:bg-gray-700 hover:text-red-200 transition-colors flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        🚪 Sign Out
+                      </button>
                     </div>
                   </motion.div>
                 )}

@@ -15,25 +15,25 @@ export default function SecurityPage() {
     {
       icon: <Lock className="h-8 w-8" />,
       title: "AES-256 Encryption",
-      description: "Military-grade encryption protects your data at rest",
+      description: "Industry-standard encryption for data at rest (via database provider)",
       color: "from-green-500 to-emerald-500"
     },
     {
       icon: <Globe className="h-8 w-8" />,
-      title: "TLS 1.3 Everywhere",
-      description: "Latest encryption protocols for all data in transit",
+      title: "TLS 1.3 Transport",
+      description: "Modern encryption protocols for data in transit",
       color: "from-blue-500 to-cyan-500"
     },
     {
       icon: <Server className="h-8 w-8" />,
-      title: "EU Infrastructure", 
-      description: "Vercel + Supabase hosting in European data centers",
+      title: "Cloud Infrastructure", 
+      description: "Hosted on certified cloud providers with security compliance",
       color: "from-purple-500 to-pink-500"
     },
     {
       icon: <Database className="h-8 w-8" />,
-      title: "Nightly Backups",
-      description: "Automated off-site backups ensure data recovery",
+      title: "Automated Backups",
+      description: "Regular backups maintained by our database provider",
       color: "from-orange-500 to-red-500"
     }
   ];
@@ -46,10 +46,10 @@ export default function SecurityPage() {
   ];
 
   const aiSecurity = [
-    "🧠 Prompt + response storage",
-    "🔗 Salted user ID association", 
-    "⏰ 30-day automatic purge",
-    "🔒 Zero persistent AI memory"
+    "🧠 Conversation data temporarily stored",
+    "🔗 Associated with hashed user identifiers", 
+    "⏰ Automatic deletion after 90 days",
+    "🔒 No persistent cross-session AI memory"
   ];
 
   return (
@@ -92,11 +92,11 @@ export default function SecurityPage() {
           Security & Data Protection
         </h1>
         <p className="text-xl text-gray-300 leading-relaxed mb-8">
-          Your heartbreak is messy—your data security shouldn't be.
+          Your healing journey deserves secure, private protection.
         </p>
-        <div className="bg-green-900/30 border border-green-500/50 rounded-2xl p-6">
-          <p className="text-green-200 font-semibold">
-            🛡️ Bank-level security protecting your most vulnerable moments
+        <div className="bg-blue-900/30 border border-blue-500/50 rounded-2xl p-6">
+          <p className="text-blue-200 font-semibold">
+            🛡️ Industry-standard security practices protecting your personal data
           </p>
         </div>
       </div>
@@ -105,10 +105,10 @@ export default function SecurityPage() {
       <div className="max-w-6xl mx-auto px-6 pb-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            🔒 Core Security Features
+            🔒 Security Implementation
           </h2>
           <p className="text-gray-400 text-lg">
-            Multiple layers of protection for your data
+            Current security measures and ongoing improvements
           </p>
         </div>
 
@@ -177,8 +177,8 @@ export default function SecurityPage() {
               </ul>
               <div className="mt-6 p-4 bg-purple-800/20 rounded-lg">
                 <p className="text-purple-200 text-sm">
-                  <strong>Privacy-first AI:</strong> Your conversations are automatically 
-                  deleted after 30 days. No long-term AI memory of your personal details.
+                  <strong>Privacy-focused AI:</strong> Your conversations are automatically 
+                  deleted after 90 days as stated in our privacy policy. AI models don't retain memory between sessions.
                 </p>
               </div>
             </CardContent>
@@ -228,34 +228,40 @@ export default function SecurityPage() {
         </Card>
 
         {/* Audits & Compliance */}
-        <Card className="bg-green-900/20 border border-green-500/30 mb-12">
+        <Card className="bg-yellow-900/20 border border-yellow-500/30 mb-12">
           <CardContent className="p-8">
             <div className="flex items-center mb-6">
-              <Award className="h-8 w-8 text-green-400 mr-3" />
+              <Award className="h-8 w-8 text-yellow-400 mr-3" />
               <h2 className="text-2xl font-bold text-white">
-                🏆 Security Audits & Compliance
+                🏆 Security & Compliance Status
               </h2>
+            </div>
+            <div className="bg-yellow-900/30 border border-yellow-600 p-4 rounded-lg mb-6">
+              <p className="text-yellow-200 text-sm">
+                ⚠️ <strong>Implementation Status:</strong> We are currently implementing formal security audits 
+                and certifications. The measures below reflect our current capabilities and planned improvements.
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-3xl mb-3">🔍</div>
-                <h3 className="text-lg font-bold text-white mb-2">External Audits</h3>
+                <h3 className="text-lg font-bold text-white mb-2">Security Assessments</h3>
                 <p className="text-gray-300 text-sm">
-                  Independent security assessments twice yearly
+                  Planning independent security assessments as we scale
                 </p>
               </div>
               <div className="text-center">
                 <div className="text-3xl mb-3">📊</div>
-                <h3 className="text-lg font-bold text-white mb-2">Public Reports</h3>
+                <h3 className="text-lg font-bold text-white mb-2">Transparency Reports</h3>
                 <p className="text-gray-300 text-sm">
-                  Summary reports published for transparency
+                  Will publish security summaries as formal audits are completed
                 </p>
               </div>
               <div className="text-center">
                 <div className="text-3xl mb-3">🇪🇺</div>
-                <h3 className="text-lg font-bold text-white mb-2">GDPR Compliant</h3>
+                <h3 className="text-lg font-bold text-white mb-2">GDPR Compliance</h3>
                 <p className="text-gray-300 text-sm">
-                  Full compliance with EU data protection laws
+                  Actively implementing full compliance with EU data protection laws
                 </p>
               </div>
             </div>
@@ -272,19 +278,19 @@ export default function SecurityPage() {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Hosting Partners</h3>
                 <ul className="text-gray-300 space-y-2">
-                  <li>• <strong>Vercel:</strong> Edge computing and CDN</li>
-                  <li>• <strong>Supabase:</strong> Database and authentication</li>
-                  <li>• <strong>EU Region:</strong> GDPR-compliant hosting</li>
-                  <li>• <strong>SOC 2:</strong> Certified service providers</li>
+                  <li>• <strong>Netlify/Vercel:</strong> Frontend hosting and CDN</li>
+                  <li>• <strong>Neon Database:</strong> PostgreSQL database hosting</li>
+                  <li>• <strong>Regional Hosting:</strong> EU/US regions available</li>
+                  <li>• <strong>Certified Providers:</strong> SOC 2 and ISO certified partners</li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Operational Security</h3>
                 <ul className="text-gray-300 space-y-2">
-                  <li>• Zero-downtime deployments</li>
-                  <li>• Automated security patches</li>
-                  <li>• 24/7 infrastructure monitoring</li>
-                  <li>• DDoS protection and rate limiting</li>
+                  <li>• Continuous deployment with version control</li>
+                  <li>• Dependency security scanning</li>
+                  <li>• Infrastructure monitoring and logging</li>
+                  <li>• DDoS protection via hosting providers</li>
                 </ul>
               </div>
             </div>
