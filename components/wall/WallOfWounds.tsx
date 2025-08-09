@@ -26,6 +26,15 @@ interface WallPost {
   authorLevel?: number;
 }
 
+interface WallComment {
+  id: string;
+  postId: string;
+  content: string;
+  parentCommentId?: string | null;
+  createdAt?: string;
+  userId?: string;
+}
+
 const GLITCH_REACTIONS = {
   resonate: { emoji: '🌀', label: 'Resonates', description: 'This resonates with my core' },
   same_loop: { emoji: '🔄', label: 'Same Loop', description: 'Same infinite loop here' },
@@ -53,6 +62,10 @@ export default function WallOfWounds() {
   const [selectedCategory, setSelectedCategory] = useState('system_error');
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isPosting, setIsPosting] = useState(false);
+  const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
+  const [commentInputs, setCommentInputs] = useState<Record<string,string>>({});
+  const [comments, setComments] = useState<Record<string, WallComment[]>>({});
+  const [loadingComments, setLoadingComments] = useState<Record<string, boolean>>({});
 
   const loadPosts = useCallback(async () => {
     try {
@@ -78,7 +91,7 @@ export default function WallOfWounds() {
 
     try {
       setIsPosting(true);
-      const response = await fetch('/api/wall/create', {
+      const response = await fetch('/api/wall/post', { // updated path
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -116,6 +129,57 @@ export default function WallOfWounds() {
       }
     } catch (error) {
       console.error('Failed to react:', error);
+    }
+  };
+
+  const toggleComments = async (postId: string) => {
+    const next = expandedPostId === postId ? null : postId;
+    setExpandedPostId(next);
+    if (next && !comments[next]) {
+      // fire and forget view analytics
+      fetch('/api/analytics/track', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ event: 'wall_post_viewed', properties: { postId: next } }) }).catch(()=>{});
+      await loadComments(next);
+    }
+  };
+
+  const loadComments = async (postId: string) => {
+    try {
+      setLoadingComments(c => ({ ...c, [postId]: true }));
+      const res = await fetch(`/api/wall/comments?postId=${postId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setComments(c => ({ ...c, [postId]: data.comments || [] }));
+      }
+    } catch (e) {
+      console.error('Failed loading comments', e);
+    } finally {
+      setLoadingComments(c => ({ ...c, [postId]: false }));
+    }
+  };
+
+  const submitComment = async (postId: string) => {
+    const text = commentInputs[postId]?.trim();
+    if (!text) return;
+    // optimistic
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: WallComment = { id: tempId, postId, content: text, createdAt: new Date().toISOString() };
+    setComments(c => ({ ...c, [postId]: [...(c[postId]||[]), optimistic] }));
+    setCommentInputs(ci => ({ ...ci, [postId]: '' }));
+    setPosts(ps => ps.map(p => p.id === postId ? { ...p, commentCount: p.commentCount + 1 } : p));
+    try {
+      const res = await fetch('/api/wall/comments', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ postId, content: text }) });
+      if (res.ok) {
+        const data = await res.json();
+        setComments(c => ({ ...c, [postId]: (c[postId]||[]).map(cm => cm.id === tempId ? data.comment : cm) }));
+      } else {
+        // rollback
+        setComments(c => ({ ...c, [postId]: (c[postId]||[]).filter(cm => cm.id !== tempId) }));
+        setPosts(ps => ps.map(p => p.id === postId ? { ...p, commentCount: Math.max(0, p.commentCount - 1) } : p));
+      }
+    } catch (e) {
+      console.error('Comment failed', e);
+      setComments(c => ({ ...c, [postId]: (c[postId]||[]).filter(cm => cm.id !== tempId) }));
+      setPosts(ps => ps.map(p => p.id === postId ? { ...p, commentCount: Math.max(0, p.commentCount - 1) } : p));
     }
   };
 
@@ -279,9 +343,32 @@ export default function WallOfWounds() {
                       </Button>
                     ))}
                     <div className="text-xs text-green-300 flex items-center ml-4">
-                      💬 {post.commentCount} COMMENTS
+                      <button onClick={() => toggleComments(post.id)} className="hover:text-green-200 transition-colors">
+                        💬 {post.commentCount} COMMENTS
+                      </button>
                     </div>
                   </div>
+                  {expandedPostId === post.id && (
+                    <div className="mt-4 border-t border-green-700 pt-4 space-y-3">
+                      <div className="flex gap-2">
+                        <input value={commentInputs[post.id]||''} onChange={e=> setCommentInputs(ci=>({...ci, [post.id]: e.target.value}))} placeholder="Add supportive data..." className="flex-1 bg-black border border-green-600 rounded px-2 py-1 text-green-200 text-xs" />
+                        <Button size="sm" onClick={()=> submitComment(post.id)} disabled={!commentInputs[post.id]?.trim()} className="bg-green-600 hover:bg-green-500 text-black text-xs">SEND</Button>
+                      </div>
+                      {loadingComments[post.id] ? (
+                        <div className="text-green-400 text-xs">Loading comments...</div>
+                      ) : (
+                        <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                          {(comments[post.id]||[]).map(c => (
+                            <div key={c.id} className="text-green-300 text-xs border border-green-700 rounded p-2 bg-black/40">
+                              <div className="whitespace-pre-wrap">{c.content}</div>
+                              <div className="mt-1 opacity-60 text-[10px]">{c.createdAt ? new Date(c.createdAt).toLocaleTimeString() : 'pending...'}</div>
+                            </div>
+                          ))}
+                          {(!comments[post.id]||comments[post.id].length===0) && <div className="text-green-500 text-[11px]">No comments yet</div>}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))

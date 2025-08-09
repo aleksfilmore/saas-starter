@@ -1,23 +1,13 @@
 /**
- * CTRL+ALT+BLOCK™ v1.1 - J    const drafts = await db
-      .select()
-      .from(journalDrafts)
-      .where(
-        and(
-          eq(journalDrafts.userId, sessionUser.id),
-          eq(journalDrafts.ritualId, ritualId),
-          assignmentId ? eq(journalDrafts.assignmentId, assignmentId) : isNull(journalDrafts.assignmentId)
-        )
-      )
-      .limit(1);t API
- * Handles autosave and draft management per specification section 6
+ * Journal Draft API
+ * Handles autosave and draft management (save/update, list, delete)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { journalDrafts } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
 
 // POST - Save/update draft
 export async function POST(request: NextRequest) {
@@ -47,7 +37,7 @@ export async function POST(request: NextRequest) {
         and(
           eq(journalDrafts.userId, sessionUser.id),
           eq(journalDrafts.ritualId, ritualId),
-          assignmentId ? eq(journalDrafts.assignmentId, assignmentId) : eq(journalDrafts.assignmentId, null)
+          assignmentId ? eq(journalDrafts.assignmentId, assignmentId) : isNull(journalDrafts.assignmentId)
         )
       )
       .limit(1);
@@ -106,19 +96,18 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const ritualId = url.searchParams.get('ritualId');
 
-    let query = db
+    const drafts = await db
       .select()
       .from(journalDrafts)
-      .where(eq(journalDrafts.userId, sessionUser.id));
-
-    if (ritualId) {
-      query = query.where(and(
-        eq(journalDrafts.userId, sessionUser.id),
-        eq(journalDrafts.ritualId, ritualId)
-      ));
-    }
-
-    const drafts = await query.orderBy(journalDrafts.lastSaved);
+      .where(
+        ritualId
+          ? and(
+              eq(journalDrafts.userId, sessionUser.id),
+              eq(journalDrafts.ritualId, ritualId)
+            )
+          : eq(journalDrafts.userId, sessionUser.id)
+      )
+      .orderBy(journalDrafts.lastSaved);
 
     return NextResponse.json(drafts);
 

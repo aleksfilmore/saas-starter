@@ -59,6 +59,7 @@ export const AnalyticsEvents = {
   WALL_POST_CREATED: 'wall_post_created',
   WALL_POST_VIEWED: 'wall_post_viewed',
   WALL_POST_LIKED: 'wall_post_liked',
+  WALL_POST_COMMENTED: 'wall_post_commented',
   
   NO_CONTACT_SHIELD_ACTIVATED: 'no_contact_shield_activated',
   NO_CONTACT_CHECKIN_COMPLETED: 'no_contact_checkin_completed',
@@ -66,6 +67,8 @@ export const AnalyticsEvents = {
   // Engagement
   DAILY_LOGIN: 'daily_login',
   DASHBOARD_VIEWED: 'dashboard_viewed',
+  DASHBOARD_TILE_IMPRESSION: 'dashboard_tile_impression',
+  DASHBOARD_TILE_CLICK: 'dashboard_tile_click',
   PROFILE_UPDATED: 'profile_updated',
   SETTINGS_VIEWED: 'settings_viewed',
   

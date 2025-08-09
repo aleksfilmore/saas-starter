@@ -3,7 +3,7 @@
 // REFORMAT PROTOCOL™ - Adaptive Dashboard
 // Progressive disclosure with beginner/advanced modes
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,11 +14,7 @@ import {
   Target, 
   Calendar,
   Star,
-  Settings,
-  ChevronDown,
-  ChevronUp,
-  Eye,
-  EyeOff
+  Eye
 } from 'lucide-react';
 
 interface UserStats {
@@ -49,7 +45,7 @@ interface AdaptiveDashboardProps {
 
 export function AdaptiveDashboard({ userStats, onNavigate }: AdaptiveDashboardProps) {
   const [viewMode, setViewMode] = useState<'focus' | 'overview' | 'detailed'>('focus');
-  const [showAdvancedStats, setShowAdvancedStats] = useState(false);
+  // const [showAdvancedStats, setShowAdvancedStats] = useState(false); // removed (unused)
 
   // Heart State-based dashboard personalization
   const getDefaultViewMode = () => {
@@ -72,14 +68,7 @@ export function AdaptiveDashboard({ userStats, onNavigate }: AdaptiveDashboardPr
     }
   }, [userStats.heartState]);
 
-  const phaseColors: Record<string, string> = {
-    'kernel_wounded': 'bg-red-900/20 text-red-400 border-red-700',
-    'system_stabilizing': 'bg-yellow-900/20 text-yellow-400 border-yellow-700',
-    'firewall_active': 'bg-blue-900/20 text-blue-400 border-blue-700',
-    'protocol_loading': 'bg-purple-900/20 text-purple-400 border-purple-700',
-    'reformat_initialized': 'bg-green-900/20 text-green-400 border-green-700',
-    'glow_up_complete': 'bg-gradient-to-r from-pink-500 to-cyan-500 text-white border-transparent'
-  };
+  // phaseColors removed – not used in current rendering
 
   // Determine if user needs simplified interface
   const needsSimplified = userStats.level <= 5 || 

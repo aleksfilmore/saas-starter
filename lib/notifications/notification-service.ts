@@ -114,7 +114,7 @@ export class NotificationService {
       }
 
       // Log notification sent
-      await this.logNotificationSent(notification, success);
+  await this.logNotificationSent(notification, success);
       
       return success;
     } catch (error) {
@@ -444,7 +444,21 @@ export class NotificationService {
 
   // Persistence methods (would implement with actual database)
   private async storeNotification(notification: NotificationPayload): Promise<void> {
-    console.log('💾 Storing notification:', notification.id);
+    try {
+      const { NotificationRepository } = await import('./notification-repository');
+      await NotificationRepository.create({
+        userId: notification.userId,
+        type: notification.type,
+        title: notification.title,
+        body: notification.body,
+        priority: notification.priority,
+        channels: notification.channels,
+        metadata: notification.data || {},
+        deliveredAt: notification.scheduledFor ? undefined : new Date()
+      });
+    } catch (e) {
+      console.warn('Fallback store (repository unavailable):', e);
+    }
   }
 
   private async persistSchedule(schedule: NotificationSchedule): Promise<void> {
@@ -453,6 +467,17 @@ export class NotificationService {
 
   private async logNotificationSent(notification: NotificationPayload, success: boolean): Promise<void> {
     console.log(`📊 Notification ${notification.id} - Success: ${success}`);
+    try {
+      const { AnalyticsEventRepository } = await import('./notification-repository');
+      await AnalyticsEventRepository.track(notification.userId, 'notification_sent', {
+        type: notification.type,
+        success,
+        channels: notification.channels,
+        priority: notification.priority
+      });
+    } catch (e) {
+      // swallow to not block flow
+    }
   }
 }
 

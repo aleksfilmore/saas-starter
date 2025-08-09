@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { MessageSquare, ChevronLeft, ChevronRight, Users } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { MessageSquare, Users } from 'lucide-react'
 import Link from 'next/link'
+import clsx from 'clsx'
 
 interface CommunityPost {
   id: string
@@ -13,169 +13,135 @@ interface CommunityPost {
   timestamp: string
   reactionsCount: number
   category: string
+  userReaction?: string | null
+  commentCount?: number
 }
 
 interface SimplifiedCommunityFeedProps {
   className?: string
+  limit?: number
+  variant?: 'compact' | 'expanded'
 }
 
-// Mock community posts - in real app, fetch from API
-const mockPosts: CommunityPost[] = [
-  {
-    id: '1',
-    content: 'Day 30 no contact. The urge to text is still there but I am learning to sit with the discomfort instead of reaching for my phone.',
-    timestamp: '2 hours ago',
-    reactionsCount: 12,
-    category: 'Progress'
-  },
-  {
-    id: '2', 
-    content: 'Anyone else find that journaling before bed helps process the day? Started writing 3 things I am grateful for and it is shifting my perspective.',
-    timestamp: '4 hours ago',
-    reactionsCount: 8,
-    category: 'Insight'
-  },
-  {
-    id: '3',
-    content: 'Had a moment today where I realized I can love someone and still choose to protect my peace. Growth hits different.',
-    timestamp: '6 hours ago',
-    reactionsCount: 24,
-    category: 'Breakthrough'
-  },
-  {
-    id: '4',
-    content: 'To whoever needs to hear this: You are not healing wrong, you are healing at your own pace. Trust the process.',
-    timestamp: '8 hours ago',
-    reactionsCount: 31,
-    category: 'Support'
-  }
-]
+export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compact' }: SimplifiedCommunityFeedProps) {
+  const [posts, setPosts] = useState<CommunityPost[]>([])
+  const [visible, setVisible] = useState(limit)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [refreshIndex, setRefreshIndex] = useState(0)
 
-export function SimplifiedCommunityFeed({ className }: SimplifiedCommunityFeedProps) {
-  const [currentPostIndex, setCurrentPostIndex] = useState(0)
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/wall/preview?limit=${Math.max(visible, limit)}`, { cache: 'no-store' })
+      if (!res.ok) throw new Error('Failed preview fetch')
+      const data = await res.json()
+      setPosts(data.posts || [])
+    } catch (e:any) {
+      setError(e.message || 'Failed to load community')
+    } finally {
+      setLoading(false)
+    }
+  }, [visible, limit, refreshIndex])
 
-  // Auto-carousel effect
-  useEffect(() => {
-    if (!isAutoPlaying) return
+  useEffect(()=> { load() }, [load])
 
-    const interval = setInterval(() => {
-      setCurrentPostIndex(prev => (prev + 1) % mockPosts.length)
-    }, 5000) // Change every 5 seconds
+  // Auto refresh every 60s
+  useEffect(()=> {
+    const t = setInterval(()=> setRefreshIndex(i=> i+1), 60000)
+    return () => clearInterval(t)
+  }, [])
 
-    return () => clearInterval(interval)
-  }, [isAutoPlaying])
+  const lastTimestamp = posts[0]?.timestamp;
+  // Incremental poll every 25s for new posts (lighter than full refresh)
+  useEffect(()=> {
+    const t = setInterval(async ()=> {
+      try {
+        if(!lastTimestamp) return;
+        const res = await fetch(`/api/wall/preview?limit=${limit}&since=${encodeURIComponent(lastTimestamp)}`, { cache:'no-store' });
+        if(res.ok){
+          const data = await res.json();
+          if(data.posts?.length){
+            setPosts(curr => [...data.posts, ...curr]);
+          }
+        }
+      } catch { /* ignore */ }
+    }, 25000);
+    return ()=> clearInterval(t);
+  }, [lastTimestamp, limit]);
 
-  const currentPost = mockPosts[currentPostIndex]
-
-  const nextPost = () => {
-    setCurrentPostIndex(prev => (prev + 1) % mockPosts.length)
-    setIsAutoPlaying(false)
-  }
-
-  const prevPost = () => {
-    setCurrentPostIndex(prev => (prev - 1 + mockPosts.length) % mockPosts.length)
-    setIsAutoPlaying(false)
-  }
+  const sliced = posts.slice(0, visible)
+  const showLoadMore = visible < posts.length
 
   return (
-    <section className={`mb-8 ${className}`}>
-      <div className="flex items-center justify-between mb-6">
-        <Link 
-          href="/wall" 
-          className="text-xl font-bold text-white flex items-center gap-2 hover:text-purple-300 transition-colors"
-        >
-          <Users className="w-5 h-5" />
-          Community Feed
-          <span className="text-sm text-gray-400 font-normal">+1,412 live</span>
+    <section className={clsx('mb-8', className)}>
+      <div className="flex items-center justify-between mb-4">
+        <Link href="/wall" className="text-sm font-semibold text-white flex items-center gap-2 hover:text-purple-300 transition-colors">
+          <Users className="w-4 h-4" />
+          <span>Community Pulse</span>
+          <span className="text-xs text-gray-400 font-normal">live • inspiration</span>
         </Link>
-      </div>
-      
-      <div className="relative">
-        <Card className="dashboard-card p-6 min-h-[200px] relative overflow-hidden">
-          
-          {/* Navigation Controls */}
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-            <button
-              onClick={prevPost}
-              className="p-1.5 rounded-full bg-gray-800/80 backdrop-blur-sm hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={nextPost}
-              className="p-1.5 rounded-full bg-gray-800/80 backdrop-blur-sm hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Auto-play indicator */}
-          <div className="absolute top-4 left-4 z-10">
-            <div className={`w-2 h-2 rounded-full transition-colors ${
-              isAutoPlaying ? 'bg-green-400' : 'bg-gray-600'
-            }`} />
-          </div>
-
-          {/* Post Content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentPost.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="pr-16 pl-8 pt-2"
-            >
-              <div className="mb-4">
-                <div className="inline-block px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full mb-3">
-                  {currentPost.category}
-                </div>
-                <p className="text-gray-200 leading-relaxed text-sm">
-                  "{currentPost.content}"
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <span>{currentPost.timestamp}</span>
-                <div className="flex items-center gap-1">
-                  <span>❤️ {currentPost.reactionsCount}</span>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Progress Dots */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-            {mockPosts.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentPostIndex(index)
-                  setIsAutoPlaying(false)
-                }}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentPostIndex 
-                    ? 'bg-purple-400' 
-                    : 'bg-gray-600 hover:bg-gray-500'
-                }`}
-              />
-            ))}
-          </div>
-        </Card>
-
-        {/* CTA Button */}
-        <div className="text-center mt-4">
-          <Link href="/wall">
-            <Button 
-              variant="outline"
-              className="border-purple-500/50 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:border-purple-400"
-            >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Share Your Story
-            </Button>
-          </Link>
+        <div className="flex items-center gap-2">
+          <Button size="icon" variant="ghost" className="h-6 w-6 text-xs text-purple-300 hover:text-purple-200" onClick={()=> setRefreshIndex(i=> i+1)} title="Refresh">↻</Button>
+          <Link href="/wall" className="text-xs text-purple-300 hover:text-purple-200 transition-colors">View all →</Link>
         </div>
+      </div>
+      <div className={clsx(
+        'grid gap-3',
+        variant === 'compact' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+      )}>
+        {loading && Array.from({length: limit}).map((_,i)=>(
+          <Card key={i} className="bg-gray-800/40 border-gray-700 animate-pulse h-32" />
+        ))}
+        {!loading && error && (
+          <Card className="bg-red-900/40 border-red-700 col-span-full">
+            <CardContent className="p-4 text-xs text-red-300">{error}</CardContent>
+          </Card>
+        )}
+        {!loading && !error && sliced.map(p => (
+          <Card key={p.id} className="bg-gray-800/60 border-gray-700/60 hover:border-gray-600 transition-colors group">
+            <CardContent className="p-4 flex flex-col h-full">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 tracking-wide uppercase">
+                  {p.category}
+                </span>
+                <span className="text-[10px] text-gray-500">{p.timestamp ? new Date(p.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) : ''}</span>
+              </div>
+              <p className="text-xs text-gray-200 leading-relaxed line-clamp-4 flex-1">
+                “{p.content}”
+              </p>
+              <div className="mt-3 text-[10px] text-gray-400 flex items-center justify-between">
+                <span>❤️ {p.reactionsCount}</span>
+                <span className="opacity-60">💬 {p.commentCount || 0}</span>
+                <Link href="/wall" className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-300">Reply</Link>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      {showLoadMore && !loading && !error && (
+        <div className="mt-4 flex justify-center">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setVisible(v => v + limit)}
+            className="border-purple-500/40 text-purple-300 hover:bg-purple-500/10 hover:text-purple-200"
+          >
+            Load more
+          </Button>
+        </div>
+      )}
+      <div className="text-center mt-4">
+        <Link href="/wall">
+          <Button 
+            size="sm"
+            variant="ghost"
+            className="text-purple-300 hover:text-purple-200 hover:bg-purple-500/10"
+          >
+            <MessageSquare className="w-4 h-4 mr-1" /> Share Your Story
+          </Button>
+        </Link>
       </div>
     </section>
   )

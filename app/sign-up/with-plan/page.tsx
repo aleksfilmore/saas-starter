@@ -32,7 +32,8 @@ function SignUpWithPlanContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  const fromScan = searchParams.get('from') === 'scan'
+  // searchParams can be null during the very first render in some environments; guard it
+  const fromScan = searchParams?.get('from') === 'scan'
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))

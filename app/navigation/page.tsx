@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { MainNavigation } from '@/components/navigation/MainNavigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Menu, X, Compass } from 'lucide-react';
+import { ArrowLeft, Compass } from 'lucide-react';
 import Link from 'next/link';
 
 interface UserStats {
@@ -127,7 +127,7 @@ export default function NavigationPage() {
           </div>
 
           {/* Main Navigation */}
-          <MainNavigation currentPath={pathname} userStats={userStats || undefined} />
+          <MainNavigation currentPath={pathname ?? undefined} userStats={userStats ?? undefined} />
 
           {/* Footer */}
           <div className="mt-12 text-center">

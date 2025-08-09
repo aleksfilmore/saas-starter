@@ -5,7 +5,9 @@
 
 import { db } from '@/lib/db';
 import { eq, and, gte, desc, sql } from 'drizzle-orm';
-import { users, dailyRitualCompletions } from '@/lib/db/schema';
+// Import users from legacy schema (has emotionalArchetype field) and dailyRitualCompletions from unified/minimal schema
+import { users } from '@/lib/db/schema';
+import { dailyRitualCompletions } from '@/lib/db/minimal-schema';
 
 export interface DailyGuidance {
   day: number;

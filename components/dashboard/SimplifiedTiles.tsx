@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+// DEPRECATED: Use DashboardTiles instead.
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

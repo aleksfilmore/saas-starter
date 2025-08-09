@@ -1,10 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Flame, Shield, Crown, ChevronDown, User, Settings, CreditCard, Trash2, Wind } from 'lucide-react'
+import { Flame, Shield, Crown, ChevronDown, User, Wind, Settings, CreditCard, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { NotificationDisplay } from '@/components/notifications/NotificationDisplay'
@@ -45,7 +43,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
           <div className="flex items-center gap-4">
             
             {/* Consolidated Status Pill - Compact */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800/60 rounded-full border border-gray-600/50 text-sm">
+    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800/60 rounded-full border border-gray-600/50 text-sm">
               <div className="flex items-center gap-1" title="No-Contact streak & XP">
                 <Flame className="h-4 w-4 text-orange-400" />
                 <button 
@@ -53,7 +51,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                   className="text-white hover:text-orange-300 transition-colors"
                   title="Click to check-in (once per day)"
                 >
-                  {user.noContactDays}
+      {user.streak ?? user.noContactDays}
                 </button>
               </div>
               
@@ -67,15 +65,26 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                 </>
               )}
               
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1" title="Bytes earned">
                 <span className="text-white">{user.bytes}</span>
-                <span className="text-gray-400 text-xs">Bytes</span>
+                <span className="text-gray-500 text-[10px]">B</span>
               </div>
               
               <div className="flex items-center gap-1" title="User level">
                 <span className="text-white">Lvl {user.level}</span>
               </div>
             </div>
+
+            {/* Quick Breathing Action (always visible on desktop) */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBreathing}
+              className="hidden md:inline-flex text-teal-300 hover:text-teal-200 hover:bg-teal-500/10"
+              title="Open Breathing Exercise"
+            >
+              <Wind className="h-4 w-4" />
+            </Button>
 
             {/* Notification Display */}
             <NotificationDisplay />

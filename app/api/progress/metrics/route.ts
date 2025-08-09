@@ -8,6 +8,7 @@ import { db } from '@/lib/db';
 import { eq, and, gte, desc, sql, count } from 'drizzle-orm';
 import { users, ritualCompletions, journalDrafts } from '@/lib/db/schema';
 import { dailyGuidanceService } from '@/lib/guidance/daily-guidance-service-clean';
+import { getNextLevelXP } from '@/lib/gamification/leveling';
 
 export async function GET(request: NextRequest) {
   try {
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
       // Gamification
       xp: userData.xp || 0,
       level: userData.level || 1,
-      nextLevelXp: calculateNextLevelXp(userData.level || 1),
+  nextLevelXp: getNextLevelXP(userData.level || 1),
       achievements,
       
       // Therapy Integration (placeholder)
@@ -353,10 +354,4 @@ async function getUserAchievements(userId: string, ritualStats: { completed: num
   return achievements;
 }
 
-/**
- * Calculate XP needed for next level
- */
-function calculateNextLevelXp(currentLevel: number): number {
-  // Simple exponential growth: level^2 * 100
-  return (currentLevel + 1) ** 2 * 100;
-}
+// Level calculation logic moved to shared utility in lib/gamification/leveling.ts

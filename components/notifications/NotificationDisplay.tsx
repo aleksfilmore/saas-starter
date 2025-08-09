@@ -10,7 +10,7 @@ interface Notification {
   type: 'streak_reminder' | 'daily_checkin' | 'lumo_nudge' | 'milestone' | 'emergency_support' | 'ritual_suggestion';
   title: string;
   message: string;
-  timestamp: Date;
+  timestamp: string | Date; // API returns string (created_at)
   read: boolean;
   actionUrl?: string;
   actionText?: string;
@@ -24,6 +24,8 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchNotifications();
@@ -39,13 +41,23 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('/api/notifications/recent');
+      setLoading(true);
+      setLoadError(null);
+      const response = await fetch('/api/notifications/recent', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data.notifications || []);
+        setNotifications((data.notifications || []).map((n: any) => ({ ...n }))); // keep raw
+      } else if (response.status === 401) {
+        // Not authenticated silently
+        setNotifications([]);
+      } else {
+        setLoadError('Server error');
       }
-    } catch (error) {
+    } catch (error: any) {
+      setLoadError('Network error');
       console.error('Failed to fetch notifications:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,9 +106,11 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
     }
   };
 
-  const formatTimestamp = (timestamp: Date) => {
+  const formatTimestamp = (timestamp: string | Date) => {
+    const ts = new Date(timestamp);
+    if (isNaN(ts.getTime())) return '';
     const now = new Date();
-    const diff = now.getTime() - new Date(timestamp).getTime();
+    const diff = now.getTime() - ts.getTime();
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
@@ -140,12 +154,26 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                 </Button>
               </div>
 
-              {notifications.length === 0 ? (
+              {loading && (
+                <div className="text-center py-8">
+                  <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <p className="text-xs text-gray-400">Loading notifications...</p>
+                </div>
+              )}
+              {!loading && loadError && (
+                <div className="text-center py-6">
+                  <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                  <p className="text-xs text-red-300 mb-2">{loadError}</p>
+                  <Button size="sm" variant="outline" className="text-xs" onClick={fetchNotifications}>Retry</Button>
+                </div>
+              )}
+              {!loading && !loadError && notifications.length === 0 ? (
                 <div className="text-center py-8">
                   <Bell className="w-8 h-8 text-gray-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-400">No notifications yet</p>
                 </div>
-              ) : (
+              ) : null}
+              {!loading && !loadError && notifications.length > 0 && (
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {notifications.map((notification) => (
                     <div

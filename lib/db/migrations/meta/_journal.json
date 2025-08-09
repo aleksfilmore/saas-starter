@@ -64,6 +64,13 @@
       "when": 1754629237335,
       "tag": "0008_fuzzy_tusk",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1754741598516,
+      "tag": "0009_military_deathbird",
+      "breakpoints": true
     }
   ]
 }

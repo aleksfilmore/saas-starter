@@ -1,19 +1,8 @@
 import { NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
-
-// Global storage reference
-declare global {
-  var wallPosts: Map<string, any>;
-  var wallReactions: Map<string, any>;
-}
-
-// Initialize wall storage if not exists
-if (!global.wallPosts) {
-  global.wallPosts = new Map();
-}
-if (!global.wallReactions) {
-  global.wallReactions = new Map();
-}
+import { createWallPost } from '@/lib/wall/wall-service';
+import { AnalyticsService } from '@/lib/analytics/service';
+import { AnalyticsEvents } from '@/lib/analytics/events';
 
 // Content moderation keywords
 const SENSITIVE_KEYWORDS = [
@@ -62,47 +51,14 @@ export async function POST(request: Request) {
     const detectedCategory = detectGlitchCategory(content);
     const finalCategory = category || detectedCategory;
 
-    // Cast user to include database attributes
-    const dbUser = user as any;
-
-    // Create post
-    const postId = crypto.randomUUID();
-    const glitchTitle = generateGlitchTitle(finalCategory);
-    
-    const post = {
-      id: postId,
-      content: content.trim(),
-      glitchCategory: finalCategory,
-      glitchTitle,
-      isAnonymous,
-      createdAt: new Date(),
-      authorId: isAnonymous ? null : session.userId,
-      authorEmail: isAnonymous ? null : dbUser.email,
-      authorLevel: isAnonymous ? null : dbUser.level,
-      resonateCount: 0,
-      sameLoopCount: 0,
-      draggedMeTooCount: 0,
-      stoneColdCount: 0,
-      cleansedCount: 0,
-      commentCount: 0,
-      isOraclePost: false,
-      isFeatured: false,
-      totalReactions: 0,
-      timeAgo: 'just_transmitted'
-    };
-
-    // Store post
-    global.wallPosts.set(postId, post);
-
-    // Award XP for posting
-    user.xp = (user.xp || 0) + 10;
-    user.bytes = (user.bytes || 0) + 5;
-
-    return NextResponse.json({
-      success: true,
-      post,
-      message: 'Confession transmitted to the void'
+    const post = await createWallPost({ userId: session.userId, content: content.trim(), isAnonymous, category: finalCategory });
+    // Fire and forget analytics
+    AnalyticsService.track({
+      userId: session.userId,
+      event: AnalyticsEvents.WALL_POST_CREATED,
+      properties: { postId: post.id, category: finalCategory, anonymous: isAnonymous }
     });
+    return NextResponse.json({ success: true, post, message: 'Confession transmitted to the void' });
 
   } catch (error) {
     console.error('Wall post error:', error);
@@ -144,17 +100,4 @@ function detectGlitchCategory(content: string): string {
   return 'system_error'; // default
 }
 
-function generateGlitchTitle(category: string): string {
-  const titles = {
-    system_error: '5Y5T3M_3RR0R_D3T3CT3D',
-    loop_detected: 'L00P_1NF1N1T3_D3T3CT3D', 
-    memory_leak: 'M3M0RY_L34K_1D3NT1F13D',
-    buffer_overflow: 'BUFF3R_0V3RFL0W_W4RN1NG',
-    syntax_error: '5YNT4X_3RR0R_L1N3_0',
-    null_pointer: 'NULL_P01NT3R_3XC3PT10N',
-    stack_overflow: '5T4CK_0V3RFL0W_3XC3PT10N',
-    access_denied: '4CC355_D3N13D_3RR0R_403'
-  };
-  
-  return titles[category as keyof typeof titles] || 'UNK0WN_3RR0R';
-}
+// glitch title generation now handled inside service

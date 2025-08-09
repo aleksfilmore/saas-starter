@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
+import { NotificationRepository, AnalyticsEventRepository } from '@/lib/notifications/notification-repository';
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// Remove context param (causing Next.js 15 param type inference issues) and parse ID from URL.
+export async function PATCH(request: NextRequest) {
   try {
     const { user } = await validateRequest();
     
@@ -15,10 +14,15 @@ export async function PATCH(
       );
     }
 
-    const notificationId = params.id;
+    const url = new URL(request.url);
+    const segments = url.pathname.split('/').filter(Boolean);
+    const notifIndex = segments.lastIndexOf('notifications');
+    const notificationId = notifIndex !== -1 && segments.length > notifIndex + 1
+      ? segments[notifIndex + 1]
+      : '';
 
-    // In production, update the notification read status in the database
-    console.log(`Marking notification ${notificationId} as read for user ${user.id}`);
+  await NotificationRepository.markRead(user.id, notificationId);
+  await AnalyticsEventRepository.track(user.id, 'notification_read', { notificationId });
 
     return NextResponse.json({
       success: true,
@@ -34,10 +38,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
     const { user } = await validateRequest();
     
@@ -48,10 +49,15 @@ export async function DELETE(
       );
     }
 
-    const notificationId = params.id;
+    const url = new URL(request.url);
+    const segments = url.pathname.split('/').filter(Boolean);
+    const notifIndex = segments.lastIndexOf('notifications');
+    const notificationId = notifIndex !== -1 && segments.length > notifIndex + 1
+      ? segments[notifIndex + 1]
+      : '';
 
-    // In production, delete the notification from the database
-    console.log(`Dismissing notification ${notificationId} for user ${user.id}`);
+  // Soft delete could be implemented; for now we just record dismissal event
+  await AnalyticsEventRepository.track(user.id, 'notification_dismissed', { notificationId });
 
     return NextResponse.json({
       success: true,

@@ -23,7 +23,7 @@ function ResetPasswordForm() {
   const router = useRouter();
 
   useEffect(() => {
-    const tokenParam = searchParams.get('token');
+    const tokenParam = searchParams?.get?.('token');
     if (tokenParam) {
       setToken(tokenParam);
     } else {

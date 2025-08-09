@@ -11,13 +11,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { 
   ArrowLeft, 
   Clock, 
-  Star, 
   CheckCircle, 
   Play, 
   Pause, 
   RotateCcw,
-  Flame,
-  Heart,
   Sparkles
 } from 'lucide-react';
 import { Ritual, RitualStep } from '@/lib/rituals/database';
@@ -31,7 +28,7 @@ interface CompletionData {
 export default function RitualDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const ritualId = params.id as string;
+  const ritualId = (params as Record<string, string> | null)?.id || '';
   
   const [ritual, setRitual] = useState<Ritual | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -50,6 +47,10 @@ export default function RitualDetailPage() {
   const startTimeRef = useRef<number>(Date.now());
 
   const fetchRitual = useCallback(async () => {
+    if (!ritualId) {
+      setLoading(false);
+      return;
+    }
     try {
       const response = await fetch(`/api/rituals/${ritualId}`);
       if (response.ok) {
@@ -186,33 +187,32 @@ export default function RitualDetailPage() {
 
   const completeRitual = async () => {
     setCompleting(true);
-    
     try {
       const totalTimeSpent = Math.floor((Date.now() - startTimeRef.current) / 1000);
-      
-      const response = await fetch(`/api/rituals/${ritualId}/complete`, {
+      // Flatten reflections into a single notes string for unified API
+      const reflectionText = Object.values(completionData.reflections || {}).join('\n---\n');
+      const checklistSummary = Object.entries(completionData.checklistItems || {})
+        .map(([idx, items]) => `Step ${Number(idx)+1}: ${items.join(', ')}`)
+        .join('\n');
+      const notes = [reflectionText, checklistSummary].filter(Boolean).join('\n\n');
+      // Simple difficulty heuristic: number of steps & time
+      const stepCount = ritual?.steps.length || 1;
+      const difficulty: 'easy' | 'medium' | 'hard' = stepCount > 6 || totalTimeSpent > 900 ? 'hard' : stepCount > 3 || totalTimeSpent > 300 ? 'medium' : 'easy';
+      const mood = undefined; // Could derive later from reflections sentiment
+      const response = await fetch('/api/rituals/complete', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          completionData: {
-            ...completionData,
-            timeSpent: totalTimeSpent
-          }
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ritualId, difficulty, notes, mood })
       });
-      
       if (response.ok) {
         const result = await response.json();
-        
-        // Show success and redirect with confetti
-        router.push(`/dashboard?completed=${ritualId}&xp=${result.xpEarned}&bytes=${result.bytesEarned}`);
+        router.push(`/dashboard?completed=${ritualId}&xp=${result.rewards?.xp || result.xpEarned || 0}&bytes=${result.rewards?.bytes || result.bytesEarned || 0}`);
       } else {
-        console.error('Failed to complete ritual');
+        const err = await response.json().catch(()=>({}));
+        console.error('Failed to complete ritual', err);
       }
-    } catch (error) {
-      console.error('Error completing ritual:', error);
+    } catch (e) {
+      console.error('Error completing ritual:', e);
     } finally {
       setCompleting(false);
     }
@@ -224,6 +224,17 @@ export default function RitualDetailPage() {
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-300">Loading ritual...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!ritualId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 text-gray-300">
+        <div className="text-center space-y-4">
+          <p>Invalid ritual identifier.</p>
+          <Button onClick={() => router.push('/dashboard')} className="bg-purple-600 hover:bg-purple-700 text-white">Return to Dashboard</Button>
         </div>
       </div>
     );

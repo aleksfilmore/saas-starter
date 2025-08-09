@@ -1,6 +1,6 @@
 import { db } from '@/lib/db/drizzle';
-import { notifications, pushSubscriptions, analyticsEvents } from '@/lib/db/minimal-schema';
-import { eq, and } from 'drizzle-orm';
+import { notifications, pushSubscriptions, analyticsEvents, notificationSchedules } from '@/lib/db/unified-schema';
+import { eq, and, lte } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
 export interface CreateNotificationInput {
@@ -70,5 +70,29 @@ export class AnalyticsEventRepository {
       properties: properties as any,
       day_index: dayIndex,
     });
+  }
+}
+
+export class NotificationScheduleRepository {
+  static async upsert(schedule: { id?: string; userId: string; type: string; cron: string; isActive?: boolean; nextRunAt?: Date; dedupeWindowSeconds?: number; backoffSeconds?: number; }) {
+    // naive upsert by delete existing (userId+type) then insert
+  await db.delete(notificationSchedules).where(and(eq(notificationSchedules.user_id, schedule.userId), eq(notificationSchedules.type, schedule.type)) as any);
+    const id = schedule.id || crypto.randomUUID();
+    await db.insert(notificationSchedules).values({
+      id,
+      user_id: schedule.userId,
+      type: schedule.type,
+      cron_expression: schedule.cron,
+      is_active: schedule.isActive ?? true,
+      next_run_at: schedule.nextRunAt,
+      dedupe_window_seconds: schedule.dedupeWindowSeconds ?? 0,
+      backoff_seconds: schedule.backoffSeconds ?? 0,
+    });
+    return id;
+  }
+
+  static async findDue(limit = 50) {
+    const now = new Date();
+  return db.select().from(notificationSchedules as any).where(lte(notificationSchedules.next_run_at, now) as any).limit(limit);
   }
 }

@@ -123,33 +123,17 @@ export default function SettingsPage() {
         {/* Content */}
         <div className="max-w-4xl mx-auto space-y-6">
           
-          {/* Account Settings */}
+          {/* Account Settings (restricted – removed profile/customization per cleanup) */}
           <Card className="bg-gray-800/80 border border-gray-600/50">
             <CardHeader>
               <CardTitle className="text-white text-2xl flex items-center">
                 <User className="h-6 w-6 mr-2 text-blue-400" />
-                Account Settings
+                Account Security
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                <div>
-                  <h3 className="font-bold text-white">Profile Information</h3>
-                  <p className="text-sm text-gray-400">Update your alias and personal details</p>
-                </div>
-                <Button variant="outline" className="border-blue-500 text-blue-400">
-                  Edit Profile
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                <div>
-                  <h3 className="font-bold text-white">Change Password</h3>
-                  <p className="text-sm text-gray-400">Update your account security</p>
-                </div>
-                <Button variant="outline" className="border-blue-500 text-blue-400">
-                  Change
-                </Button>
-              </div>
+            <CardContent className="space-y-4 text-gray-300 text-sm">
+              <p>Profile editing & theme customization have been temporarily removed to streamline the settings experience.</p>
+              <p>Need changes? Contact support.</p>
             </CardContent>
           </Card>
 
@@ -215,26 +199,7 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Customization */}
-          <Card className="bg-gray-800/80 border border-gray-600/50">
-            <CardHeader>
-              <CardTitle className="text-white text-2xl flex items-center">
-                <Palette className="h-6 w-6 mr-2 text-purple-400" />
-                Customization
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                <div>
-                  <h3 className="font-bold text-white">Theme Settings</h3>
-                  <p className="text-sm text-gray-400">Customize your dashboard appearance</p>
-                </div>
-                <Button variant="outline" className="border-purple-500 text-purple-400">
-                  Customize
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Customization removed */}
 
           {/* Account Actions */}
           <Card className="bg-gray-800/80 border border-gray-600/50">
