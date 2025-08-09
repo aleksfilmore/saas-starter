@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import { NotificationDisplay } from '@/components/notifications/NotificationDisplay'
 
 interface SimplifiedHeaderProps {
   user: {
@@ -75,6 +76,9 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                 <span className="text-white">Lvl {user.level}</span>
               </div>
             </div>
+
+            {/* Notification Display */}
+            <NotificationDisplay />
 
             {/* User Dropdown Menu */}
             <div className="relative">

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { ArrowLeft, Settings, User, Bell, Shield, Palette, Database, Download, Trash2, LogOut } from 'lucide-react';
+import { NotificationSettings } from '@/components/notifications/NotificationSettings';
 
 export default function SettingsPage() {
   const { user: authUser, isAuthenticated, isLoading: authLoading, logout } = useAuth();
@@ -153,34 +154,7 @@ export default function SettingsPage() {
           </Card>
 
           {/* Notifications */}
-          <Card className="bg-gray-800/80 border border-gray-600/50">
-            <CardHeader>
-              <CardTitle className="text-white text-2xl flex items-center">
-                <Bell className="h-6 w-6 mr-2 text-yellow-400" />
-                Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                <div>
-                  <h3 className="font-bold text-white">Daily Ritual Reminders</h3>
-                  <p className="text-sm text-gray-400">Get notified when it's time for your healing rituals</p>
-                </div>
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
-                  Enabled
-                </Button>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                <div>
-                  <h3 className="font-bold text-white">Wall Activity</h3>
-                  <p className="text-sm text-gray-400">Notifications for hearts and replies on your confessions</p>
-                </div>
-                <Button variant="outline" className="border-gray-500 text-gray-400">
-                  Disabled
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <NotificationSettings />
 
           {/* Privacy */}
           <Card className="bg-gray-800/80 border border-gray-600/50">

@@ -20,83 +20,83 @@ interface Question {
 
 const questions: Question[] = [
   {
-    id: "conflict_response",
-    question: "When tension spikes in your relationship:",
+    id: "q1_no_text_back",
+    question: "When someone you're dating doesn't text back for hours, what's your first mental tab that opens?",
     options: [
-      { text: "Flood all channels with messages until they respond", value: "A", style: "anxious" },
-      { text: "Execute instant emotional shutdown protocols", value: "B", style: "avoidant" },
-      { text: "Deploy calm debugging conversation", value: "C", style: "secure" },
-      { text: "Crash between attack mode and retreat mode", value: "D", style: "disorganized" }
+      { text: "'They're probably losing interest, and I need to fix it now.'", value: "A", style: "anxious" },
+      { text: "'They must be busy. I'll focus on my own stuff until they reply.'", value: "B", style: "secure" },
+      { text: "'I should pull back before they pull away.'", value: "C", style: "avoidant" },
+      { text: "'It's fine… but I'm also drafting an exit plan just in case.'", value: "D", style: "disorganized" }
     ]
   },
   {
-    id: "breakup_response",
-    question: "Post-breakup, your system defaults to:",
+    id: "q2_cancelled_plans",
+    question: "Imagine your partner cancels plans last-minute. How do you process it?",
     options: [
-      { text: "Emergency reconnection attempts and data recovery", value: "A", style: "anxious" },
-      { text: "Total memory wipe and ghost protocol activation", value: "B", style: "avoidant" },
-      { text: "Controlled restart with self-repair sequences", value: "C", style: "secure" },
-      { text: "Random switching between pursuit and deletion", value: "D", style: "disorganized" }
+      { text: "'I feel hurt and start wondering what I did wrong.'", value: "A", style: "anxious" },
+      { text: "'I'm annoyed, but it's not the end of the world.'", value: "B", style: "secure" },
+      { text: "'That's why I keep my walls up.'", value: "C", style: "avoidant" },
+      { text: "'I act like it's fine, but deep down I'm bracing for a breakup.'", value: "D", style: "disorganized" }
     ]
   },
   {
-    id: "intimacy_comfort",
-    question: "When someone tries to access your emotional core:",
+    id: "q3_unstable_relationship", 
+    question: "If a relationship starts to feel unstable, what's your autopilot move?",
     options: [
-      { text: "Grant full permissions but panic about logout", value: "A", style: "anxious" },
-      { text: "Firewall blocks most connection attempts", value: "B", style: "avoidant" },
-      { text: "Allow secure access with healthy boundaries", value: "C", style: "secure" },
-      { text: "Permissions constantly flip between allow/deny", value: "D", style: "disorganized" }
+      { text: "Double down with extra closeness to try and save it.", value: "A", style: "anxious" },
+      { text: "Give space and hope it evens out on its own.", value: "B", style: "avoidant" },
+      { text: "Pull away before I get hurt.", value: "C", style: "avoidant" },
+      { text: "Stay open but check in with myself about my needs.", value: "D", style: "secure" }
     ]
   },
   {
-    id: "communication_style",
-    question: "Your communication protocol tends to:",
+    id: "q4_conflict_handling",
+    question: "How do you usually handle conflict?",
     options: [
-      { text: "Broadcast emotions on all frequencies seeking ACK", value: "A", style: "anxious" },
-      { text: "Transmit only surface-level data packets", value: "B", style: "avoidant" },
-      { text: "Send clear, authentic signals both ways", value: "C", style: "secure" },
-      { text: "Switch randomly between overflow and silence", value: "D", style: "disorganized" }
+      { text: "Over-explain and try to fix things immediately.", value: "A", style: "anxious" },
+      { text: "Shut down until I'm ready to talk.", value: "B", style: "avoidant" },
+      { text: "Get defensive, but secretly want reassurance.", value: "C", style: "disorganized" },
+      { text: "Discuss it calmly and look for solutions.", value: "D", style: "secure" }
     ]
   },
   {
-    id: "self_worth",
-    question: "Your self-value algorithm calculates based on:",
+    id: "q5_independence_request",
+    question: "Your partner asks for more independence. What's your gut response?",
     options: [
-      { text: "External validation servers and dependency metrics", value: "A", style: "anxious" },
-      { text: "Solo performance stats and independence uptime", value: "B", style: "avoidant" },
-      { text: "Balanced internal/external data with stable baseline", value: "C", style: "secure" },
-      { text: "Highly volatile inputs causing constant recalculation", value: "D", style: "disorganized" }
+      { text: "Worry they're slipping away.", value: "A", style: "anxious" },
+      { text: "Feel relieved — I like my space.", value: "B", style: "avoidant" },
+      { text: "Pretend it's fine, then overthink alone.", value: "C", style: "disorganized" },
+      { text: "Respect it and adjust while staying connected.", value: "D", style: "secure" }
     ]
   },
   {
-    id: "past_patterns",
-    question: "Looking at your relationship history logs:",
+    id: "q6_breakup_first_move",
+    question: "A breakup happens. First move?",
     options: [
-      { text: "Repeated cycles of over-attachment and abandonment fears", value: "A", style: "anxious" },
-      { text: "Pattern of emotional distance and exit strategies", value: "B", style: "avoidant" },
-      { text: "Generally healthy connections with room for growth", value: "C", style: "secure" },
-      { text: "Chaotic mix of intensity and withdrawal", value: "D", style: "disorganized" }
+      { text: "Text them 'just to talk.'", value: "A", style: "anxious" },
+      { text: "Delete their number and focus forward.", value: "B", style: "avoidant" },
+      { text: "Block them but stalk from a burner.", value: "C", style: "disorganized" },
+      { text: "Process it, talk to friends, and give myself space to heal.", value: "D", style: "secure" }
     ]
   },
   {
-    id: "stress_response",
-    question: "Under emotional pressure, you typically:",
+    id: "q7_relationship_superpower",
+    question: "What's your relationship superpower?",
     options: [
-      { text: "Escalate contact attempts and seek constant reassurance", value: "A", style: "anxious" },
-      { text: "Activate shutdown mode and isolate completely", value: "B", style: "avoidant" },
-      { text: "Implement stress management and communicate needs", value: "C", style: "secure" },
-      { text: "Flip unpredictably between panic and numbness", value: "D", style: "disorganized" }
+      { text: "Picking up on the tiniest shifts in mood.", value: "A", style: "anxious" },
+      { text: "Staying independent no matter what.", value: "B", style: "avoidant" },
+      { text: "Reading people's energy instantly (but sometimes misjudging it).", value: "C", style: "disorganized" },
+      { text: "Communicating needs clearly and kindly.", value: "D", style: "secure" }
     ]
   },
   {
-    id: "recovery_approach",
-    question: "When processing emotional pain, you:",
+    id: "q8_biggest_fear",
+    question: "What's your biggest relationship fear?",
     options: [
-      { text: "Analyze every detail obsessively seeking closure", value: "A", style: "anxious" },
-      { text: "Minimize feelings and focus on moving forward", value: "B", style: "avoidant" },
-      { text: "Feel it fully while maintaining self-care routines", value: "C", style: "secure" },
-      { text: "Swing between emotional flooding and total numbness", value: "D", style: "disorganized" }
+      { text: "Being abandoned.", value: "A", style: "anxious" },
+      { text: "Being trapped.", value: "B", style: "avoidant" },
+      { text: "Wanting closeness but feeling unsafe.", value: "C", style: "disorganized" },
+      { text: "Losing myself completely or losing the other person suddenly.", value: "D", style: "secure" }
     ]
   }
 ];
@@ -213,40 +213,66 @@ export default function AttachmentQuizPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
+  const [resultStyle, setResultStyle] = useState<keyof typeof attachmentStyles | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
   const router = useRouter();
 
-  const handleAnswer = (questionId: string, answer: string) => {
+  const handleAnswer = async (questionId: string, answer: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
     
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
+      setIsCalculating(true);
+      const result = await calculateResult();
+      setResultStyle(result);
+      setIsCalculating(false);
       setShowResults(true);
     }
   };
 
-  const calculateResult = () => {
-    const styles = { anxious: 0, avoidant: 0, secure: 0, disorganized: 0 };
-    
-    Object.entries(answers).forEach(([questionId, answer]) => {
-      const question = questions.find(q => q.id === questionId);
-      const option = question?.options.find(o => o.value === answer);
-      if (option) {
-        styles[option.style]++;
-      }
-    });
+  const calculateResult = async () => {
+    // Use the specification-compliant API scoring
+    try {
+      const quizAnswers = Object.entries(answers).map(([questionId, value]) => ({
+        questionId,
+        answer: value
+      }));
 
-    return Object.entries(styles).reduce((a, b) => 
-      styles[a[0] as keyof typeof styles] > styles[b[0] as keyof typeof styles] ? a : b
-    )[0] as keyof typeof attachmentStyles;
+      const response = await fetch('/api/onboarding/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers: quizAnswers })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Map archetype to attachment style for compatibility
+        const archetypeToStyle = {
+          'df': 'anxious',
+          'fb': 'avoidant', 
+          'gis': 'disorganized',
+          'sn': 'secure'
+        } as const;
+
+        return archetypeToStyle[result.archetype as keyof typeof archetypeToStyle] || 'secure';
+      }
+    } catch (error) {
+      console.error('Quiz scoring error:', error);
+    }
+    
+    // Fallback to secure if API fails
+    return 'secure' as keyof typeof attachmentStyles;
   };
 
-  const handleSignUpFromResults = () => {
-    const style = calculateResult();
+  const handleSignUpFromResults = async () => {
+    if (!resultStyle) return;
+    
     localStorage.setItem('quizResult', JSON.stringify({
-      attachmentStyle: style,
-      traits: attachmentStyles[style].traits,
-      healingPath: attachmentStyles[style].healing,
+      attachmentStyle: resultStyle,
+      traits: attachmentStyles[resultStyle].traits,
+      healingPath: attachmentStyles[resultStyle].healing,
       completedAt: new Date().toISOString()
     }));
     router.push('/sign-up/from-quiz');
@@ -352,8 +378,19 @@ export default function AttachmentQuizPage() {
     );
   }
 
-  if (showResults) {
-    const resultStyle = calculateResult();
+  if (isCalculating) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-white mb-2">Analyzing Your Profile...</h2>
+          <p className="text-purple-400">Using specification-compliant CBT scoring</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showResults && resultStyle) {
     const result = attachmentStyles[resultStyle];
 
     return (

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Shield, MessageSquare, Brain, Lock, ChevronRight, Crown, Zap, Loader2 } from 'lucide-react'
+import { Shield, MessageSquare, Brain, Lock, ChevronRight, Crown, Zap, Loader2, Calendar, Mic, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { getNoContactMessage } from '@/lib/no-contact-messages'
 
@@ -144,6 +144,91 @@ export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesPro
         </Card>
       </Link>
 
+      {/* Progress Dashboard - Free with limits */}
+      <Link href="/progress" className="block h-full">
+        <Card className="dashboard-card p-6 h-full transition-all hover:scale-105">
+          <CardContent className="p-0 h-full flex flex-col">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-white">Progress Insights</h3>
+                  <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 text-xs">
+                    FREE
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-400">Basic metrics tracking</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 mb-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-emerald-300 text-sm font-medium">Basic Access</span>
+                  <span className="text-emerald-400 text-sm font-bold">Limited</span>
+                </div>
+                <div className="bg-emerald-900/30 rounded-lg p-3 border border-emerald-500/30">
+                  <p className="text-xs text-emerald-300">
+                    📊 Weekly summaries, streak tracking, basic insights
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <Button className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0">
+              View Progress
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Community Wall - Read Only for Free */}
+      <Link href="/wall" className="block h-full">
+        <Card className="dashboard-card p-6 h-full transition-all hover:scale-105">
+          <CardContent className="p-0 h-full flex flex-col">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500">
+                <MessageSquare className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-white">Community Wall</h3>
+                  <Badge variant="secondary" className="bg-indigo-500/20 text-indigo-400 text-xs">
+                    READ
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Anonymous confessions
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex-1 mb-4">
+              <p className="text-indigo-200 text-sm">
+                Read others' stories, react with empathy, and find healing through shared experiences.
+              </p>
+              
+              <div className="mt-3 p-2 bg-indigo-900/30 rounded border border-indigo-500/30">
+                <p className="text-xs text-indigo-300">
+                  ✅ Read & React ⚫ Premium: Post & DM
+                </p>
+              </div>
+            </div>
+            
+            <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white border-0">
+              Browse Confessions →
+            </Button>
+          </CardContent>
+        </Card>
+      </Link>
+      </div>
+
+      {/* Second Row - Premium Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
       {/* AI Therapy - Pay per 300 messages */}
       <div className="block h-full">
         <Card className="dashboard-card p-6 h-full transition-all hover:scale-105 border-violet-500/30">
@@ -212,45 +297,88 @@ export function FreeDashboardTiles({ user, featureGates }: FreeDashboardTilesPro
         </Card>
       </div>
 
-      {/* Community Wall - Read Only for Free */}
-      <Link href="/wall" className="block h-full">
-        <Card className="dashboard-card p-6 h-full transition-all hover:scale-105">
+      {/* Daily Guidance - Premium Only */}
+      <div className="block h-full">
+        <Card className="dashboard-card p-6 h-full transition-all hover:scale-105 border-amber-500/30">
           <CardContent className="p-0 h-full flex flex-col">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500">
-                <MessageSquare className="w-6 h-6 text-white" />
+              <div className="p-3 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500">
+                <Calendar className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-white">Community Wall</h3>
-                  <Badge variant="secondary" className="bg-indigo-500/20 text-indigo-400 text-xs">
-                    READ
-                  </Badge>
+                  <h3 className="font-semibold text-white">Daily Guidance</h3>
+                  <Lock className="w-4 h-4 text-gray-400" />
                 </div>
-                <p className="text-xs text-gray-400">
-                  Anonymous confessions
-                </p>
+                <p className="text-xs text-gray-400">Premium feature</p>
               </div>
             </div>
             
             <div className="flex-1 mb-4">
-              <p className="text-indigo-200 text-sm">
-                Read others' stories, react with empathy, and find healing through shared experiences.
-              </p>
-              
-              <div className="mt-3 p-2 bg-indigo-900/30 rounded border border-indigo-500/30">
-                <p className="text-xs text-indigo-300">
-                  ✅ Read & React ⚫ Premium: Post & DM
-                </p>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-amber-300 text-sm font-medium">30-Day Framework</span>
+                  <Crown className="w-5 h-5 text-amber-400" />
+                </div>
+                <div className="bg-amber-900/30 rounded-lg p-3 border border-amber-500/30">
+                  <p className="text-xs text-amber-300">
+                    🎯 Personalized guidance tailored to your archetype and healing stage
+                  </p>
+                </div>
               </div>
             </div>
             
-            <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white border-0">
-              Browse Confessions →
-            </Button>
+            <Link href="/pricing">
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+                Upgrade for Guidance
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
           </CardContent>
         </Card>
-      </Link>
+      </div>
+
+      {/* Voice Therapy - Premium Only */}
+      <div className="block h-full">
+        <Card className="dashboard-card p-6 h-full transition-all hover:scale-105 border-violet-500/30">
+          <CardContent className="p-0 h-full flex flex-col">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-lg bg-gradient-to-r from-violet-500 to-purple-500">
+                <Mic className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-white">Voice Therapy</h3>
+                  <Lock className="w-4 h-4 text-gray-400" />
+                </div>
+                <p className="text-xs text-gray-400">Premium feature</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 mb-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-violet-300 text-sm font-medium">5 Personas</span>
+                  <Crown className="w-5 h-5 text-violet-400" />
+                </div>
+                <div className="bg-violet-900/30 rounded-lg p-3 border border-violet-500/30">
+                  <p className="text-xs text-violet-300">
+                    🎭 Analyst, Healer, Coach, Friend, Sage - matched to your unique healing needs
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <Link href="/pricing">
+              <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0">
+                Upgrade for Voices
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
       </div>
     </div>
   )

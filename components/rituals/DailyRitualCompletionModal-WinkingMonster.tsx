@@ -1,21 +1,19 @@
 /**
  * Daily Ritual Completion Modal
- * CTRL+ALT+BLOCK™ v1.1 - Enhanced with specification-compliant validation
+ * Handles the ritual completion flow with journaling and validation
  */
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Zap, Star, X, Save, AlertTriangle } from 'lucide-react';
+import { Clock, Zap, Star, X } from 'lucide-react';
 import { type PaidRitual, PAID_RITUAL_CATEGORIES } from '@/lib/rituals/paid-rituals-database';
 import { toast } from 'sonner';
-import { validateJournalEntry, type JournalValidationResult } from '@/lib/validation/journal-validator';
-import { JournalDraftManager } from '@/lib/validation/journal-draft-manager';
 
 interface DailyRitualCompletionModalProps {
   ritual: PaidRitual;
@@ -38,45 +36,9 @@ export function DailyRitualCompletionModal({
   const [moodRating, setMoodRating] = useState(5);
   const [dwellTimeSeconds, setDwellTimeSeconds] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationResult, setValidationResult] = useState<JournalValidationResult | null>(null);
-  const [lastEntry, setLastEntry] = useState<string>('');
   const [startTime] = useState(Date.now());
-  const [isDraftSaved, setIsDraftSaved] = useState(false);
-  
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const draftManagerRef = useRef<JournalDraftManager | null>(null);
 
-  // Initialize draft manager
-  useEffect(() => {
-    // Get user ID from session/auth (you'll need to implement this)
-    const userId = 'current-user'; // Replace with actual user ID
-    draftManagerRef.current = new JournalDraftManager(userId, ritual.id, assignmentId);
-    
-    // Restore draft if exists
-    const savedDraft = draftManagerRef.current.restoreDraft();
-    if (savedDraft && savedDraft.text.trim()) {
-      setJournalText(savedDraft.text);
-      setDwellTimeSeconds(savedDraft.timingSeconds);
-      toast.info('Draft restored from previous session');
-    }
-    
-    // Start autosave system
-    draftManagerRef.current.startAutosave((draft) => {
-      setIsDraftSaved(true);
-      setTimeout(() => setIsDraftSaved(false), 2000);
-    });
-    
-    // Fetch last journal entry for similarity check
-    fetchLastJournalEntry();
-    
-    return () => {
-      if (draftManagerRef.current) {
-        draftManagerRef.current.stopAutosave();
-      }
-    };
-  }, [ritual.id, assignmentId]);
-
-  // Track dwell time with active typing detection
+  // Track dwell time
   useEffect(() => {
     const interval = setInterval(() => {
       setDwellTimeSeconds(Math.floor((Date.now() - startTime) / 1000));
@@ -85,84 +47,37 @@ export function DailyRitualCompletionModal({
     return () => clearInterval(interval);
   }, [startTime]);
 
-  // Validate journal entry on text change
-  useEffect(() => {
-    if (journalText.trim().length > 0) {
-      validateEntry();
-    }
-  }, [journalText, dwellTimeSeconds]);
-
-  const fetchLastJournalEntry = async () => {
-    try {
-      const response = await fetch('/api/journal/last-entry');
-      if (response.ok) {
-        const data = await response.json();
-        setLastEntry(data.text || '');
-      }
-    } catch (error) {
-      console.error('Error fetching last entry:', error);
-    }
-  };
-
-  const validateEntry = async () => {
-    try {
-      const result = await validateJournalEntry(
-        {
-          text: journalText,
-          userId: 'current-user', // Replace with actual user ID
-          timingSeconds: dwellTimeSeconds
-        },
-        lastEntry
-      );
-      setValidationResult(result);
-    } catch (error) {
-      console.error('Validation error:', error);
-    }
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setJournalText(e.target.value);
-    
-    // Mark as typing for autosave
-    if (draftManagerRef.current) {
-      draftManagerRef.current.markTyping();
-    }
-  };
-
-  const handleBlur = () => {
-    // Save draft on blur
-    if (draftManagerRef.current) {
-      draftManagerRef.current.saveCurrentDraft(() => {
-        setIsDraftSaved(true);
-        setTimeout(() => setIsDraftSaved(false), 2000);
-      });
-    }
-  };
-
   const categoryInfo = PAID_RITUAL_CATEGORIES[ritual.category as keyof typeof PAID_RITUAL_CATEGORIES];
   
-  // Spec-compliant validation requirements
-  const canSubmit = validationResult?.isValid && !isSubmitting;
+  // Updated validation criteria per spec
+  const minChars = 120; // Updated from 140 to 120
+  const minDwellTime = 45; // Updated from 20 to 45 seconds
+  const minSentences = 2;
+  const minUniqueCharRatio = 0.6;
+  
   const wordCount = journalText.trim().split(/\s+/).filter(word => word.length > 0).length;
+  
+  // Calculate unique character ratio
+  const uniqueChars = new Set(journalText.toLowerCase().replace(/\s/g, '')).size;
+  const totalChars = journalText.replace(/\s/g, '').length;
+  const uniqueCharRatio = totalChars > 0 ? uniqueChars / totalChars : 0;
+  
+  // Count sentences (basic: split by . ! ?)
+  const sentenceCount = journalText.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+
+  const meetsCharRequirement = journalText.length >= minChars;
+  const meetsSentenceRequirement = sentenceCount >= minSentences;
+  const meetsDwellTimeRequirement = dwellTimeSeconds >= minDwellTime;
+  const meetsUniqueCharRequirement = uniqueCharRatio >= minUniqueCharRatio;
+  
+  const canSubmit = meetsCharRequirement && 
+                    meetsSentenceRequirement &&
+                    meetsDwellTimeRequirement && 
+                    meetsUniqueCharRequirement &&
+                    !isSubmitting;
 
   const handleSubmit = async () => {
-    if (!canSubmit || !validationResult?.isValid) {
-      toast.error('Please complete all requirements before submitting');
-      return;
-    }
-
-    // Check rate limiting
-    try {
-      const rateLimitResponse = await fetch('/api/journal/rate-limit-check');
-      const rateLimitData = await rateLimitResponse.json();
-      
-      if (!rateLimitData.allowed) {
-        toast.error('Please wait before completing another ritual (max 2 per 10 minutes)');
-        return;
-      }
-    } catch (error) {
-      console.error('Rate limit check failed:', error);
-    }
+    if (!canSubmit) return;
 
     setIsSubmitting(true);
     
@@ -266,49 +181,30 @@ export function DailyRitualCompletionModal({
             </div>
             
             <Textarea
-              ref={textareaRef}
-              id="journal-textarea"
+              id="journal"
               placeholder="Share your thoughts, feelings, and insights from this ritual. Be honest and authentic in your reflection..."
               value={journalText}
-              onChange={handleTextChange}
-              onBlur={handleBlur}
+              onChange={(e) => setJournalText(e.target.value)}
               className="min-h-[120px] resize-none"
             />
             
-            {/* Enhanced Validation Display */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
-                  <span className={`${(validationResult?.metrics?.charCount || 0) >= 120 || (validationResult?.metrics?.sentenceCount || 0) >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
-                    {validationResult?.metrics?.charCount || 0} chars / {wordCount} words
-                  </span>
-                  <span className={`${(validationResult?.metrics?.timingSeconds || dwellTimeSeconds) >= 45 ? 'text-green-600' : 'text-orange-500'}`}>
-                    ⏱️ {dwellTimeSeconds}s / 45s min
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {isDraftSaved && (
-                    <span className="text-green-600 text-xs flex items-center gap-1">
-                      <Save className="h-3 w-3" />
-                      Draft saved
-                    </span>
-                  )}
-                </div>
+            <div className="flex flex-col gap-1 text-sm">
+              <div className="flex items-center justify-between">
+                <span className={`${meetsCharRequirement ? 'text-green-600' : 'text-gray-500'}`}>
+                  {journalText.length}/{minChars} characters ({wordCount} words)
+                </span>
+                <span className={`${meetsDwellTimeRequirement ? 'text-green-600' : 'text-orange-500'}`}>
+                  Reflection time: {dwellTimeSeconds}s (min: {minDwellTime}s)
+                </span>
               </div>
-              
-              {/* Quality Metrics */}
-              {validationResult && (
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className={`flex items-center gap-1 ${(validationResult?.metrics?.uniqueCharRatio || 0) >= 0.6 ? 'text-green-600' : 'text-orange-500'}`}>
-                    <div className={`w-2 h-2 rounded-full ${(validationResult?.metrics?.uniqueCharRatio || 0) >= 0.6 ? 'bg-green-500' : 'bg-orange-500'}`} />
-                    Variety: {Math.round((validationResult?.metrics?.uniqueCharRatio || 0) * 100)}%
-                  </div>
-                  <div className={`flex items-center gap-1 ${(validationResult?.metrics?.sentenceCount || 0) >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
-                    <div className={`w-2 h-2 rounded-full ${(validationResult?.metrics?.sentenceCount || 0) >= 2 ? 'bg-green-500' : 'bg-gray-400'}`} />
-                    Sentences: {validationResult?.metrics?.sentenceCount || 0}
-                  </div>
-                </div>
-              )}
+              <div className="flex items-center justify-between">
+                <span className={`${meetsSentenceRequirement ? 'text-green-600' : 'text-gray-500'}`}>
+                  Sentences: {sentenceCount}/{minSentences}
+                </span>
+                <span className={`${meetsUniqueCharRequirement ? 'text-green-600' : 'text-gray-500'}`}>
+                  Variety: {(uniqueCharRatio * 100).toFixed(0)}% (min: {(minUniqueCharRatio * 100)}%)
+                </span>
+              </div>
             </div>
           </div>
 
@@ -356,30 +252,24 @@ export function DailyRitualCompletionModal({
             </div>
           </div>
 
-          {/* Enhanced Validation Messages */}
-          {validationResult && !validationResult.isValid && (
+          {/* Validation Messages */}
+          {!canSubmit && (
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="h-4 w-4 text-orange-600" />
-                <p className="text-orange-700 text-sm font-medium">Complete these requirements:</p>
-              </div>
+              <p className="text-orange-700 text-sm font-medium mb-1">Complete these requirements:</p>
               <ul className="text-orange-600 text-sm space-y-1">
-                {validationResult.errors.map((error, index) => (
-                  <li key={index}>• {error}</li>
-                ))}
+                {!meetsCharRequirement && (
+                  <li>• Write at least {minChars - journalText.length} more characters</li>
+                )}
+                {!meetsSentenceRequirement && (
+                  <li>• Write at least {minSentences - sentenceCount} more sentences</li>
+                )}
+                {!meetsDwellTimeRequirement && (
+                  <li>• Spend {minDwellTime - dwellTimeSeconds} more seconds reflecting</li>
+                )}
+                {!meetsUniqueCharRequirement && (
+                  <li>• Increase text variety (current: {(uniqueCharRatio * 100).toFixed(0)}%, need: {(minUniqueCharRatio * 100)}%)</li>
+                )}
               </ul>
-            </div>
-          )}
-
-          {/* Success validation display */}
-          {validationResult?.isValid && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-                <p className="text-green-700 text-sm font-medium">Ready to complete! All requirements met.</p>
-              </div>
             </div>
           )}
 

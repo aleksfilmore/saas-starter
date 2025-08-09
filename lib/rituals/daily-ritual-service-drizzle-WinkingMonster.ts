@@ -1,6 +1,6 @@
 /**
  * Daily Ritual Service for Paid Users (Firewall Mode)
- * CTRL+ALT+BLOCK™ v1.1 - Enhanced with specification-compliant validation
+ * Handles ritual allocation, completion tracking, and streak management
  */
 
 import { db } from '@/lib/db';
@@ -23,7 +23,7 @@ import {
   getPaidRitualById,
   type PaidRitual 
 } from './paid-rituals-database';
-import { validateJournalEntry, checkRateLimit, validateLanguageContent } from '@/lib/validation/journal-validator';
+import { getTierPermissions, type UserTier, type LegacyTier } from '@/lib/auth/tier-permissions';
 
 export interface DailyRitualCard {
   ritual: PaidRitual;
@@ -57,12 +57,27 @@ export class DailyRitualService {
         assignments = await this.createDailyAssignments(userId, today, userStateRecord.total_weeks_active);
       }
       
+      // Get user tier for permission checking
+      const user = await db
+        .select({ tier: users.tier })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+        
+      if (!user.length) {
+        throw new Error('User not found');
+      }
+      
+      const userTier = user[0].tier as LegacyTier;
+      const permissions = getTierPermissions(userTier);
+      const allowedRitualCount = permissions.dailyRitualCount;
+      
       // Get ritual details and completion state
       const ritual1 = getPaidRitualById(assignments.ritual_1_id);
       const ritual2 = getPaidRitualById(assignments.ritual_2_id);
       
-      if (!ritual1 || !ritual2) {
-        throw new Error('Invalid ritual IDs in assignments');
+      if (!ritual1) {
+        throw new Error('Invalid ritual ID in assignments');
       }
       
       // Check completion status
@@ -76,14 +91,18 @@ export class DailyRitualService {
           state: ritual1Completion ? 'completed' : 'available',
           completionId: ritual1Completion?.id,
           canComplete: !userStateRecord.daily_cap_reached && !ritual1Completion
-        },
-        {
+        }
+      ];
+      
+      // Only add second ritual for Firewall tier users
+      if (allowedRitualCount > 1 && ritual2 && assignments.ritual_1_id !== assignments.ritual_2_id) {
+        rituals.push({
           ritual: ritual2,
           state: ritual2Completion ? 'completed' : 'available',
           completionId: ritual2Completion?.id,
           canComplete: !userStateRecord.daily_cap_reached && !ritual2Completion
-        }
-      ];
+        });
+      }
       
       const canReroll = !userStateRecord.has_rerolled_today && 
                        !ritual1Completion && 
@@ -102,7 +121,7 @@ export class DailyRitualService {
   }
 
   /**
-   * Create daily ritual assignments for a user
+   * Create daily ritual assignments for a user (tier-aware)
    */
   private async createDailyAssignments(
     userId: string, 
@@ -110,6 +129,21 @@ export class DailyRitualService {
     userWeeks: number
   ): Promise<DailyRitualAssignment> {
     try {
+      // Get user tier for permission checking
+      const user = await db
+        .select({ tier: users.tier })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+        
+      if (!user.length) {
+        throw new Error('User not found');
+      }
+      
+      const userTier = user[0].tier as LegacyTier;
+      const permissions = getTierPermissions(userTier);
+      const allowedRitualCount = permissions.dailyRitualCount;
+      
       // Get recently used rituals for no-repeat enforcement (30 days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       const recentlyUsed = await db
@@ -124,13 +158,18 @@ export class DailyRitualService {
       
       const excludeIds = recentlyUsed.map((r: {ritual_id: string}) => r.ritual_id);
       
-      // Select rituals based on guided path
-      let selectedRituals = getGuidedPathRituals(userWeeks, 2, excludeIds);
+      // Select rituals based on tier permissions and guided path
+      let selectedRituals = getGuidedPathRituals(userWeeks, allowedRitualCount, excludeIds);
       
       // Fallback if not enough rituals available
-      if (selectedRituals.length < 2) {
-        selectedRituals = getRandomPaidRituals(2, []);
+      if (selectedRituals.length < allowedRitualCount) {
+        selectedRituals = getRandomPaidRituals(allowedRitualCount, []);
       }
+      
+      // For Ghost mode (1 ritual), use the first ritual as both ritual_1 and ritual_2
+      // This maintains database compatibility while limiting access
+      const ritual1Id = selectedRituals[0].id;
+      const ritual2Id = allowedRitualCount > 1 ? selectedRituals[1].id : selectedRituals[0].id;
       
       // Create assignment
       const newAssignment = await db
@@ -138,8 +177,8 @@ export class DailyRitualService {
         .values({
           user_id: userId,
           assigned_date: date,
-          ritual_1_id: selectedRituals[0].id,
-          ritual_2_id: selectedRituals[1].id,
+          ritual_1_id: ritual1Id,
+          ritual_2_id: ritual2Id,
           allocation_mode: 'guided',
           user_weeks_at_assignment: userWeeks
         })
@@ -173,80 +212,60 @@ export class DailyRitualService {
     error?: string;
   }> {
     try {
-      // CTRL+ALT+BLOCK™ v1.1 Enhanced Validation
+      // Validation - Updated per spec
+      const wordCount = journalText.trim().split(/\s+/).length;
+      const minChars = 120; // Updated from 140 to 120
+      const minDwellTime = 45; // Updated from 20 to 45 seconds
+      const minSentences = 2;
+      const minUniqueCharRatio = 0.6;
       
-      // Rate limiting check: ≤2 completes/10 min
-      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-      const recentCompletions = await db
-        .select()
-        .from(dailyRitualCompletions)
-        .where(
-          and(
-            eq(dailyRitualCompletions.user_id, userId),
-            gte(dailyRitualCompletions.completed_at, tenMinutesAgo)
-          )
-        );
-
-      if (recentCompletions.length >= 2) {
+      // Calculate unique character ratio
+      const uniqueChars = new Set(journalText.toLowerCase().replace(/\s/g, '')).size;
+      const totalChars = journalText.replace(/\s/g, '').length;
+      const uniqueCharRatio = totalChars > 0 ? uniqueChars / totalChars : 0;
+      
+      // Count sentences (basic: split by . ! ?)
+      const sentenceCount = journalText.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+      
+      if (journalText.length < minChars) {
         return {
           success: false,
           xpEarned: 0,
           bytesEarned: 0,
           streakDays: 0,
-          error: 'Rate limit exceeded. Please wait before completing another ritual (max 2 per 10 minutes).'
-        };
-      }
-
-      // Get last journal entry for similarity check
-      let lastJournalText = '';
-      try {
-        const lastEntry = await db
-          .select({ journalText: dailyRitualCompletions.journal_text })
-          .from(dailyRitualCompletions)
-          .where(eq(dailyRitualCompletions.user_id, userId))
-          .orderBy(sql`completed_at DESC`)
-          .limit(1);
-        
-        if (lastEntry.length > 0) {
-          lastJournalText = lastEntry[0].journalText || '';
-        }
-      } catch (error) {
-        console.error('Error fetching last entry:', error);
-      }
-
-      // Comprehensive journal validation per specification
-      const validationResult = await validateJournalEntry(
-        {
-          text: journalText,
-          userId,
-          timingSeconds: dwellTimeSeconds
-        },
-        lastJournalText
-      );
-
-      if (!validationResult.isValid) {
-        return {
-          success: false,
-          xpEarned: 0,
-          bytesEarned: 0,
-          streakDays: 0,
-          error: `Validation failed: ${validationResult.errors.join(', ')}`
-        };
-      }
-
-      // Language content validation
-      if (!validateLanguageContent(journalText)) {
-        return {
-          success: false,
-          xpEarned: 0,
-          bytesEarned: 0,
-          streakDays: 0,
-          error: 'Journal entry appears to contain insufficient meaningful content.'
+          error: `Journal entry too short. Need at least ${minChars} characters.`
         };
       }
       
-      // Calculate word count for completion record
-      const wordCount = journalText.trim().split(/\s+/).filter(w => w.length > 0).length;
+      if (sentenceCount < minSentences) {
+        return {
+          success: false,
+          xpEarned: 0,
+          bytesEarned: 0,
+          streakDays: 0,
+          error: `Please write at least ${minSentences} complete sentences.`
+        };
+      }
+      
+      if (uniqueCharRatio < minUniqueCharRatio) {
+        return {
+          success: false,
+          xpEarned: 0,
+          bytesEarned: 0,
+          streakDays: 0,
+          error: `Please add more variety to your writing. Current variety: ${(uniqueCharRatio * 100).toFixed(0)}%, need: ${(minUniqueCharRatio * 100)}%`
+        };
+      }
+      
+      if (dwellTimeSeconds < minDwellTime) {
+        return {
+          success: false,
+          xpEarned: 0,
+          bytesEarned: 0,
+          streakDays: 0,
+          error: `Please spend more time reflecting. Current: ${dwellTimeSeconds}s, need: ${minDwellTime}s`
+        };
+      }
       
       // Check if already completed
       const existingCompletion = await db

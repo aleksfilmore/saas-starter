@@ -214,6 +214,21 @@ export const ritualEntries = pgTable('ritual_entries', {
   byUserCreated: index().on(t.userId, t.createdAt),
 }));
 
+// Journal drafts for autosave and recovery
+export const journalDrafts = pgTable('journal_drafts', {
+  id: text('id').primaryKey(), // Format: userId_ritualId_assignmentId
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  ritualId: text('ritual_id').notNull(),
+  assignmentId: integer('assignment_id'), // Nullable for non-assignment rituals
+  text: text('text').notNull(),
+  timingSeconds: integer('timing_seconds').notNull().default(0),
+  lastSaved: timestamp('last_saved', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+}, (t) => ({
+  byUserRitual: index().on(t.userId, t.ritualId),
+  byUserSaved: index().on(t.userId, t.lastSaved),
+}));
+
 // Weekly AI summaries for premium users
 export const weeklySummaries = pgTable('weekly_summaries', {
   id: text('id').primaryKey().$defaultFn(() => randomUUID()),
@@ -441,5 +456,7 @@ export type NewSubscriptionEvent = typeof subscriptionEvents.$inferInsert;
 // Journal types
 export type RitualEntry = typeof ritualEntries.$inferSelect;
 export type NewRitualEntry = typeof ritualEntries.$inferInsert;
+export type JournalDraft = typeof journalDrafts.$inferSelect;
+export type NewJournalDraft = typeof journalDrafts.$inferInsert;
 export type WeeklySummary = typeof weeklySummaries.$inferSelect;
 export type NewWeeklySummary = typeof weeklySummaries.$inferInsert;

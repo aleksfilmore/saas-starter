@@ -1,6 +1,6 @@
 /**
  * Daily Ritual Service for Paid Users (Firewall Mode)
- * CTRL+ALT+BLOCK™ v1.1 - Enhanced with specification-compliant validation
+ * Handles ritual allocation, completion tracking, and streak management
  */
 
 import { db } from '@/lib/db';
@@ -23,7 +23,6 @@ import {
   getPaidRitualById,
   type PaidRitual 
 } from './paid-rituals-database';
-import { validateJournalEntry, checkRateLimit, validateLanguageContent } from '@/lib/validation/journal-validator';
 
 export interface DailyRitualCard {
   ritual: PaidRitual;
@@ -173,80 +172,30 @@ export class DailyRitualService {
     error?: string;
   }> {
     try {
-      // CTRL+ALT+BLOCK™ v1.1 Enhanced Validation
+      // Validation
+      const wordCount = journalText.trim().split(/\s+/).length;
+      const minChars = 140;
+      const minDwellTime = 20;
       
-      // Rate limiting check: ≤2 completes/10 min
-      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-      const recentCompletions = await db
-        .select()
-        .from(dailyRitualCompletions)
-        .where(
-          and(
-            eq(dailyRitualCompletions.user_id, userId),
-            gte(dailyRitualCompletions.completed_at, tenMinutesAgo)
-          )
-        );
-
-      if (recentCompletions.length >= 2) {
+      if (journalText.length < minChars) {
         return {
           success: false,
           xpEarned: 0,
           bytesEarned: 0,
           streakDays: 0,
-          error: 'Rate limit exceeded. Please wait before completing another ritual (max 2 per 10 minutes).'
-        };
-      }
-
-      // Get last journal entry for similarity check
-      let lastJournalText = '';
-      try {
-        const lastEntry = await db
-          .select({ journalText: dailyRitualCompletions.journal_text })
-          .from(dailyRitualCompletions)
-          .where(eq(dailyRitualCompletions.user_id, userId))
-          .orderBy(sql`completed_at DESC`)
-          .limit(1);
-        
-        if (lastEntry.length > 0) {
-          lastJournalText = lastEntry[0].journalText || '';
-        }
-      } catch (error) {
-        console.error('Error fetching last entry:', error);
-      }
-
-      // Comprehensive journal validation per specification
-      const validationResult = await validateJournalEntry(
-        {
-          text: journalText,
-          userId,
-          timingSeconds: dwellTimeSeconds
-        },
-        lastJournalText
-      );
-
-      if (!validationResult.isValid) {
-        return {
-          success: false,
-          xpEarned: 0,
-          bytesEarned: 0,
-          streakDays: 0,
-          error: `Validation failed: ${validationResult.errors.join(', ')}`
-        };
-      }
-
-      // Language content validation
-      if (!validateLanguageContent(journalText)) {
-        return {
-          success: false,
-          xpEarned: 0,
-          bytesEarned: 0,
-          streakDays: 0,
-          error: 'Journal entry appears to contain insufficient meaningful content.'
+          error: `Journal entry too short. Need at least ${minChars} characters.`
         };
       }
       
-      // Calculate word count for completion record
-      const wordCount = journalText.trim().split(/\s+/).filter(w => w.length > 0).length;
+      if (dwellTimeSeconds < minDwellTime) {
+        return {
+          success: false,
+          xpEarned: 0,
+          bytesEarned: 0,
+          streakDays: 0,
+          error: 'Please spend more time reflecting before completing.'
+        };
+      }
       
       // Check if already completed
       const existingCompletion = await db

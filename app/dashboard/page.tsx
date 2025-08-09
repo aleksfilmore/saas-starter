@@ -271,6 +271,7 @@ export default function DashboardPage() {
                   }}
                   featureGates={{ noContactTracker: true, aiTherapy: hasAIQuota, wallRead: canAccessWallPreview }}
                   aiQuota={{ msgsLeft: aiQuota, totalQuota: aiQuota }}
+                  subscription={authUser.subscriptionTier || 'free'}
                 />
               </div>
               <div>

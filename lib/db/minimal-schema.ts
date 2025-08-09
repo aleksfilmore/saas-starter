@@ -103,6 +103,61 @@ export const dailyRitualEvents = pgTable('daily_ritual_events', {
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+// =====================================
+// NOTIFICATIONS & ENGAGEMENT
+// =====================================
+
+export const notifications = pgTable('notifications', {
+  id: text('id').primaryKey(),
+  user_id: text('user_id').notNull().references(() => users.id),
+  type: varchar('type', { length: 50 }).notNull(),
+  title: text('title').notNull(),
+  body: text('body').notNull(),
+  priority: varchar('priority', { length: 20 }).notNull().default('normal'),
+  channels: jsonb('channels').notNull(), // ['push','in_app']
+  metadata: jsonb('metadata'),
+  delivered_at: timestamp('delivered_at', { withTimezone: true }),
+  read_at: timestamp('read_at', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: serial('id').primaryKey(),
+  user_id: text('user_id').notNull().references(() => users.id),
+  endpoint: text('endpoint').notNull(),
+  p256dh: text('p256dh').notNull(),
+  auth: text('auth').notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  last_used_at: timestamp('last_used_at', { withTimezone: true }),
+});
+
+// =====================================
+// ANALYTICS EVENTS (GENERIC)
+// =====================================
+
+export const analyticsEvents = pgTable('analytics_events', {
+  id: serial('id').primaryKey(),
+  user_id: text('user_id').references(() => users.id),
+  event_type: varchar('event_type', { length: 80 }).notNull(),
+  properties: jsonb('properties').notNull().default('{}'),
+  day_index: integer('day_index'), // days since signup
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// =====================================
+// AI SESSIONS (CHAT / VOICE)
+// =====================================
+
+export const aiSessions = pgTable('ai_sessions', {
+  id: text('id').primaryKey(),
+  user_id: text('user_id').notNull().references(() => users.id),
+  mode: varchar('mode', { length: 20 }).notNull().default('chat'), // chat | voice
+  started_at: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
+  ended_at: timestamp('ended_at', { withTimezone: true }),
+  token_usage: jsonb('token_usage'),
+  meta: jsonb('meta'),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -120,3 +175,12 @@ export type NewUserDailyState = typeof userDailyState.$inferInsert;
 
 export type UserRitualHistory = typeof userRitualHistory.$inferSelect;
 export type NewUserRitualHistory = typeof userRitualHistory.$inferInsert;
+
+export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+export type NewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
+export type AISession = typeof aiSessions.$inferSelect;
+export type NewAISession = typeof aiSessions.$inferInsert;
