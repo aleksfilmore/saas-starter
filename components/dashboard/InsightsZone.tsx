@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, Brain, Heart, TrendingUp, Calendar, BookOpen } from 'lucide-react';
-import { User } from '@/lib/db/actual-schema';
+import { User } from 'lucia';
 
 interface Props {
   dailyInsight: string;
@@ -57,7 +57,7 @@ export function InsightsZone({ dailyInsight, user }: Props) {
                 {getTimeBasedGreeting()}, {user.username}
               </h3>
               <p className="text-purple-200 mt-1">
-                You're on day {user.streak || 0} of your healing journey. Every step counts.
+                You're on day {user.ritual_streak || 0} of your healing journey. Every step counts.
               </p>
             </div>
           </div>

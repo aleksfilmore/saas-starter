@@ -10,6 +10,7 @@ import { RitualModal } from './modals/RitualModal';
 import { CheckInModal } from './modals/CheckInModal';
 import { AITherapyModal } from './modals/AITherapyModal';
 import { NoContactModal } from './modals/NoContactModal';
+import { UserMenu } from './UserMenu';
 
 interface Props {
   user: User;
@@ -59,6 +60,23 @@ export function HealingHubDashboard({ user }: Props) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [completedRituals, setCompletedRituals] = useState<Set<string>>(new Set());
+
+  // Load completed rituals from localStorage on mount
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const saved = localStorage.getItem(`completed-rituals-${today}`);
+    if (saved) {
+      setCompletedRituals(new Set(JSON.parse(saved)));
+    }
+  }, []);
+
+  // Save completed rituals to localStorage
+  const saveCompletedRituals = (newCompleted: Set<string>) => {
+    const today = new Date().toDateString();
+    localStorage.setItem(`completed-rituals-${today}`, JSON.stringify([...newCompleted]));
+    setCompletedRituals(newCompleted);
+  };
 
   // Fetch dashboard data
   useEffect(() => {
@@ -66,11 +84,20 @@ export function HealingHubDashboard({ user }: Props) {
       try {
         const response = await fetch('/api/dashboard/hub');
         const dashboardData = await response.json();
+        
+        // Apply completed rituals from localStorage
+        if (dashboardData.todaysRituals) {
+          dashboardData.todaysRituals = dashboardData.todaysRituals.map((ritual: any) => ({
+            ...ritual,
+            completed: completedRituals.has(ritual.id) || ritual.completed
+          }));
+        }
+        
         setData(dashboardData);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
-        // Set fallback data
-        setData({
+        // Set fallback data with completed rituals applied
+        const fallbackData = {
           streaks: { rituals: 7, noContact: 12 },
           xp: { current: 450, level: 3, nextLevelXP: 600, progressFraction: 0.75 },
           badges: [
@@ -79,9 +106,9 @@ export function HealingHubDashboard({ user }: Props) {
             { id: '3', name: 'AI Explorer', icon: '🤖', unlocked: false }
           ],
           todaysRituals: [
-            { id: '1', title: 'Morning Affirmation', difficulty: 'easy', completed: false, duration: '2 min', icon: '🌅' },
-            { id: '2', title: 'Boundary Setting Practice', difficulty: 'medium', completed: false, duration: '5 min', icon: '🛡️' },
-            { id: '3', title: 'Evening Reflection', difficulty: 'easy', completed: true, duration: '3 min', icon: '🌙' }
+            { id: '1', title: 'Morning Affirmation', difficulty: 'easy' as const, completed: completedRituals.has('1'), duration: '2 min', icon: '🌅' },
+            { id: '2', title: 'Boundary Setting Practice', difficulty: 'medium' as const, completed: completedRituals.has('2'), duration: '5 min', icon: '🛡️' },
+            { id: '3', title: 'Evening Reflection', difficulty: 'easy' as const, completed: completedRituals.has('3'), duration: '3 min', icon: '🌙' }
           ],
           wallPosts: [
             { id: '1', content: 'Just realized I deserve better treatment. Small win but it feels huge.', archetype: 'Data Flooder', timeAgo: '2m', reactions: 8, anonymous: true },
@@ -90,14 +117,15 @@ export function HealingHubDashboard({ user }: Props) {
           ],
           dailyInsight: 'Your consistent ritual practice is building new neural pathways. Each small action compounds.',
           motivationMeter: { level: 8, message: 'Momentum Building!' }
-        });
+        };
+        setData(fallbackData);
       } finally {
         setLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+  }, [completedRituals]);
 
   // Auto-refresh data every 30 seconds
   useEffect(() => {
@@ -139,13 +167,7 @@ export function HealingHubDashboard({ user }: Props) {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-white font-medium">{user.username}</p>
-                <p className="text-gray-400 text-sm">Level {data.xp.level}</p>
-              </div>
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">{user.username?.charAt(0)?.toUpperCase()}</span>
-              </div>
+              <UserMenu user={user} />
             </div>
           </div>
         </div>
@@ -206,7 +228,12 @@ export function HealingHubDashboard({ user }: Props) {
           rituals={data.todaysRituals}
           onClose={() => setActiveModal(null)}
           onComplete={(ritualId: string) => {
-            // Handle ritual completion
+            // Mark ritual as completed and save to localStorage
+            const newCompleted = new Set(completedRituals);
+            newCompleted.add(ritualId);
+            saveCompletedRituals(newCompleted);
+            
+            // Update data state
             setData(prev => prev ? {
               ...prev,
               todaysRituals: prev.todaysRituals.map(r => 

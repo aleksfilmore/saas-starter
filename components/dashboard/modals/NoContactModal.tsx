@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +23,17 @@ export function NoContactModal({ onClose, onComplete }: Props) {
   const [totalDays, setTotalDays] = useState(47);
   const [hasCheckedToday, setHasCheckedToday] = useState(false);
   
+  // Check if user has already checked in today
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const todayCheckin = localStorage.getItem(`no-contact-checkin-${today}`);
+    if (todayCheckin) {
+      const checkinData = JSON.parse(todayCheckin);
+      setCurrentStreak(checkinData.streak);
+      setHasCheckedToday(true);
+    }
+  }, []);
+  
   // Mock recent entries
   const [recentEntries] = useState<NoContactEntry[]>([
     { date: '2024-01-08', status: 'success' },
@@ -35,16 +46,35 @@ export function NoContactModal({ onClose, onComplete }: Props) {
   const handleDailyCheckIn = async (status: 'success' | 'struggle' | 'failure') => {
     setHasCheckedToday(true);
     
-    if (status === 'success') {
-      setCurrentStreak(prev => prev + 1);
+    let newStreak = currentStreak;
+    if (status === 'success' || status === 'struggle') {
+      newStreak = currentStreak + 1;
+      setCurrentStreak(newStreak);
     } else if (status === 'failure') {
+      newStreak = 0;
       setCurrentStreak(0);
     }
     
     setTotalDays(prev => prev + 1);
 
+    // Save to localStorage for today
+    const today = new Date().toDateString();
+    localStorage.setItem(`no-contact-checkin-${today}`, JSON.stringify({
+      status,
+      streak: newStreak,
+      date: today
+    }));
+
     // Here you would typically save to database
-    // await fetch('/api/no-contact/check-in', { ... });
+    try {
+      await fetch('/api/no-contact/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, streak: newStreak })
+      });
+    } catch (error) {
+      console.error('Failed to save check-in:', error);
+    }
 
     onComplete();
   };
