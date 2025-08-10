@@ -38,170 +38,77 @@ export default function PricingPage() {
           
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-6xl font-black text-white mb-6">
-              Choose Your Healing Mode
+            <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
+              Choose Your <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Protection</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Two powerful approaches to recovery. Both include our full healing protocol—choose the level of support that fits your journey.
+              Whether you need basic boundaries or full defensive protocols, we have the right plan for your healing journey.
             </p>
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             
             {/* Ghost Mode */}
-            <Card className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 backdrop-blur-lg">
-              <CardHeader className="text-center pb-2">
-                <div className="text-6xl mb-4">👻</div>
+            <Card className="bg-gray-800/80 border-gray-600/50 backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute top-4 right-4">
+                <Zap className="h-6 w-6 text-purple-400" />
+              </div>
+              <CardHeader>
                 <CardTitle className="text-3xl font-bold text-white">Ghost Mode</CardTitle>
-                <p className="text-gray-400">Silent healing with essential tools</p>
-                <div className="text-5xl font-black text-white mb-2 mt-4">
-                  $9.99<span className="text-xl text-gray-400 font-normal">/month</span>
-                </div>
-                <p className="text-gray-400">Perfect for independent healers</p>
+                <div className="text-5xl font-black text-white mb-2">$9.99</div>
+                <p className="text-gray-400">Per month • Essential healing toolkit</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Daily personalized rituals
+              <CardContent className="space-y-6">
+                <ul className="space-y-4">
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Daily healing rituals
                   </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    10 AI therapy sessions per month
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Progress tracking
                   </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Anonymous community access
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Basic gamification
                   </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Progress tracking & achievements
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Community support
                   </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Crisis support tools
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    No-contact streak tracker
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Basic progress analytics
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Crisis support resources
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white text-lg py-3" asChild>
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" asChild>
                   <Link href="/quiz">Start Ghost Mode</Link>
                 </Button>
               </CardContent>
             </Card>
 
             {/* Firewall Mode */}
-            <Card className="bg-gradient-to-r from-pink-900/20 to-purple-900/20 border border-pink-500/50 hover:border-pink-400 transition-all duration-300 backdrop-blur-lg relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  MOST POPULAR
-                </span>
-              </div>
-              <CardHeader className="text-center pb-2">
-                <div className="text-6xl mb-4">🛡️</div>
-                <CardTitle className="text-3xl font-bold text-white">Firewall Mode</CardTitle>
-                <p className="text-gray-400">Maximum protection & unlimited support</p>
-                <div className="text-5xl font-black text-white mb-2 mt-4">
-                  $19.99<span className="text-xl text-gray-400 font-normal">/month</span>
-                </div>
-                <p className="text-gray-400">For those who need extra support</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Everything in Ghost Mode
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    <strong>Unlimited</strong> AI therapy sessions
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Priority crisis support (4-hour response)
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Advanced progress analytics
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Early access to new features
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Personal progress coach
-                  </li>
-                  <li className="flex items-start text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
-                    Custom ritual builder
-                  </li>
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white text-lg py-3" asChild>
-                  <Link href="/quiz">Start Firewall Mode</Link>
-                </Button>
-              </CardContent>
-            </Card>
-            
-          </div>
-            
-            {/* Free Plan */}
-            <Card className="bg-gray-800/50 border border-gray-600/50 backdrop-blur-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white">Free Protocol</CardTitle>
-                <div className="text-4xl font-black text-white mb-2">$0</div>
-                <p className="text-gray-400">Perfect to start your journey</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Basic daily rituals
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    No-contact tracker
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Anonymous community
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Basic progress tracking
-                  </li>
-                </ul>
-                <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white" asChild>
-                  <Link href="/sign-up">Get Started Free</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Pro Plan */}
-            <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/50 backdrop-blur-lg relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+            <Card className="bg-gradient-to-br from-gray-800/80 to-purple-900/80 border-purple-500/50 backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute -top-1 -right-1 p-2">
                 <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center">
                   <Star className="h-4 w-4 mr-1" />
                   MOST POPULAR
                 </div>
               </div>
+              <div className="absolute top-4 right-4">
+                <Shield className="h-6 w-6 text-purple-400" />
+              </div>
               <CardHeader className="pt-8">
-                <CardTitle className="text-2xl font-bold text-white">Pro Protocol</CardTitle>
-                <div className="text-4xl font-black text-white mb-2">$19</div>
-                <p className="text-gray-400">Per month • Advanced healing tools</p>
+                <CardTitle className="text-3xl font-bold text-white">Firewall Mode</CardTitle>
+                <div className="text-5xl font-black text-white mb-2">$19.99</div>
+                <p className="text-gray-400">Per month • Complete protection suite</p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
+              <CardContent className="space-y-6">
+                <ul className="space-y-4">
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Everything in Free
+                    Everything in Ghost Mode
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
@@ -209,90 +116,99 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Advanced analytics
+                    Advanced pattern analysis
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Personalized ritual plans
+                    Priority support access
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Priority support
+                    Enhanced privacy controls
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Custom ritual creation
                   </li>
                 </ul>
                 <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white" asChild>
-                  <Link href="/sign-up">Start Pro Trial</Link>
+                  <Link href="/quiz">Start Firewall Mode</Link>
                 </Button>
               </CardContent>
             </Card>
-
-            {/* Elite Plan */}
-            <Card className="bg-gray-800/50 border border-gray-600/50 backdrop-blur-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center">
-                  Elite Protocol
-                  <Shield className="h-6 w-6 text-yellow-400 ml-2" />
-                </CardTitle>
-                <div className="text-4xl font-black text-white mb-2">$49</div>
-                <p className="text-gray-400">Per month • Maximum support</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-3">
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Everything in Pro
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    1-on-1 coaching sessions
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Custom healing protocols
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Crisis intervention access
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Direct therapist chat
-                  </li>
-                </ul>
-                <Button className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white" asChild>
-                  <Link href="/sign-up">Start Elite Trial</Link>
-                </Button>
-              </CardContent>
-            </Card>
-
           </div>
 
-          {/* Features Section */}
-          <div className="mt-24 text-center">
-            <h2 className="text-3xl font-bold text-white mb-8">
-              All Plans Include Core Features
+          {/* Features Comparison */}
+          <div className="mt-24">
+            <h2 className="text-4xl font-bold text-white text-center mb-12">
+              Compare Features
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="bg-purple-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Shield className="h-8 w-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">100% Anonymous</h3>
-                <p className="text-gray-400">No real names, complete privacy protection</p>
+            <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl p-8 overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-600">
+                    <th className="text-left py-4 text-white font-semibold">Feature</th>
+                    <th className="text-center py-4 text-white font-semibold">Ghost Mode</th>
+                    <th className="text-center py-4 text-white font-semibold">Firewall Mode</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-600">
+                  <tr>
+                    <td className="py-4 text-gray-300">Daily healing rituals</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 text-gray-300">Progress tracking</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 text-gray-300">AI therapy sessions</td>
+                    <td className="text-center py-4 text-gray-500">Limited</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 text-gray-300">Priority support</td>
+                    <td className="text-center py-4 text-gray-500">—</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 text-gray-300">Custom rituals</td>
+                    <td className="text-center py-4 text-gray-500">—</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 text-gray-300">Advanced analytics</td>
+                    <td className="text-center py-4 text-gray-500">—</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* FAQ Section */}
+          <div className="mt-24">
+            <h2 className="text-4xl font-bold text-white text-center mb-12">
+              Frequently Asked Questions
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6">
+                <h3 className="text-xl font-bold text-white mb-3">Can I switch between plans?</h3>
+                <p className="text-gray-300">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.</p>
               </div>
-              <div className="text-center">
-                <div className="bg-purple-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Zap className="h-8 w-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">Science-Backed</h3>
-                <p className="text-gray-400">Research-based attachment therapy methods</p>
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6">
+                <h3 className="text-xl font-bold text-white mb-3">What's included in the free trial?</h3>
+                <p className="text-gray-300">All new users get 7 days of Firewall Mode free to experience our full feature set before choosing a plan.</p>
               </div>
-              <div className="text-center">
-                <div className="bg-purple-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Star className="h-8 w-8 text-purple-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">24/7 Support</h3>
-                <p className="text-gray-400">Always-available community and resources</p>
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6">
+                <h3 className="text-xl font-bold text-white mb-3">Is my data secure?</h3>
+                <p className="text-gray-300">Absolutely. All data is encrypted end-to-end, and we never share personal information with third parties.</p>
+              </div>
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6">
+                <h3 className="text-xl font-bold text-white mb-3">Can I cancel anytime?</h3>
+                <p className="text-gray-300">Yes, you can cancel your subscription at any time. You'll retain access until the end of your billing period.</p>
               </div>
             </div>
           </div>
