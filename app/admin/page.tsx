@@ -6,15 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { 
-  Brain, Zap, Users, ArrowRight, Timer, 
-  Star, Sparkles, ChevronDown, 
-  ChevronUp, Quote, Gamepad2, Target
+  Brain, Zap, Users, ArrowRight, 
+  Sparkles, ChevronDown, 
+  ChevronUp, Quote, Gamepad2, CheckCircle
 } from 'lucide-react';
 
 export default function HomePage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
   const [currentPostIndex, setCurrentPostIndex] = useState(0);
   const [postReactions, setPostReactions] = useState<Record<string, number>>({});
+  const [isPaused, setIsPaused] = useState(false);
 
   const mockWallPosts = [
     {
@@ -75,12 +76,14 @@ export default function HomePage() {
 
   // Auto-scroll functionality
   useEffect(() => {
+    if (isPaused) return;
+    
     const interval = setInterval(() => {
       setCurrentPostIndex((prev) => (prev + 1) % mockWallPosts.length);
     }, 5000); // Change post every 5 seconds
 
     return () => clearInterval(interval);
-  }, [mockWallPosts.length]);
+  }, [mockWallPosts.length, isPaused]);
 
   // Animated reactions
   useEffect(() => {
@@ -113,6 +116,14 @@ export default function HomePage() {
     {
       question: "What happens in an emergency or crisis?",
       answer: "We have built-in emergency protocols including crisis hotline access, guided breathing exercises, and emergency affirmations. Our platform also connects you to professional mental health resources when needed."
+    },
+    {
+      question: "How secure is my payment information?",
+      answer: "We use industry-standard encryption and work with trusted payment processors. Your financial data is never stored on our servers and all transactions are processed securely through verified third-party payment gateways."
+    },
+    {
+      question: "What happens after I complete the 30-day program?",
+      answer: "After completing the core program, you can continue with our advanced modules, become a community mentor, or access our maintenance mode with weekly check-ins. Many users choose to stay connected to support others in their healing journey."
     }
   ];
 
@@ -120,28 +131,31 @@ export default function HomePage() {
     {
       icon: <Gamepad2 className="h-8 w-8" />,
       title: "Track Your Progress Like an RPG",
-      description: "Level up with XP points, unlock achievements, maintain streaks, and watch your healing stats grow in real-time.",
+      description: "Stay motivated with milestones, streaks, and rewards as you level up your healing journey.",
       gradient: "from-purple-500 to-pink-500"
     },
     {
-      icon: <Brain className="h-8 w-8" />,
+      icon: <Brain className="h-8 w-8" />, 
       title: "24/7 AI Therapy Tools", 
-      description: "Always-available closure simulators, letter generators, reframing tools, and voice therapy sessions.",
+      description: "Get instant emotional support with closure simulators, reframing tools, and personalized therapy sessions.",
       gradient: "from-green-500 to-emerald-500"
     },
     {
       icon: <Users className="h-8 w-8" />,
       title: "Anonymous Community",
-      description: "Share struggles and victories on the Wall of Wounds. Connect with others without compromising privacy.",
+      description: "Share your story and connect with others who understand, all while protecting your privacy completely.",
       gradient: "from-blue-500 to-cyan-500"
     },
     {
       icon: <Zap className="h-8 w-8" />,
       title: "Instant Crisis Support",
-      description: "Emergency protocols, breathing exercises, and crisis hotlines available 24/7 when you need them most.",
+      description: "Access emergency protocols and professional mental health resources whenever you need them most.",
       gradient: "from-red-500 to-orange-500"
     }
-  ];
+  ];  const handlePostClick = (postId: string) => {
+    // For now, redirect to sign-in. In production, this could open a modal
+    window.location.href = '/sign-in?redirect=' + encodeURIComponent('/wall#' + postId);
+  };
 
   const toggleFaq = (index: number) => {
     setExpandedFaq(expandedFaq === index ? null : index);
@@ -204,12 +218,12 @@ export default function HomePage() {
               </div>
             </div>
             <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 leading-tight">
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono">
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent">
                 INSTALL YOUR NEW SELF.
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              One scan → daily rituals, no-contact tracker, AI therapy.
+              Your daily AI-powered recovery program starts here.
             </p>
 
             {/* Quiz CTA - Primary */}
@@ -220,6 +234,30 @@ export default function HomePage() {
                 <p className="text-gray-300 text-lg">
                   Discover your attachment style and get your personalized healing protocol
                 </p>
+                
+                {/* Visual Flow: Scan → Rituals → Progress */}
+                <div className="flex items-center justify-center space-x-4 my-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mb-2">
+                      🔍
+                    </div>
+                    <span className="text-xs text-gray-400">SCAN</span>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-purple-400" />
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mb-2">
+                      🎯
+                    </div>
+                    <span className="text-xs text-gray-400">RITUALS</span>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-purple-400" />
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mb-2">
+                      📈
+                    </div>
+                    <span className="text-xs text-gray-400">PROGRESS</span>
+                  </div>
+                </div>
                 
                 {/* Animated Progress Bar */}
                 <div className="w-full bg-gray-700 rounded-full h-2 mb-4 overflow-hidden">
@@ -235,9 +273,9 @@ export default function HomePage() {
                 <Link href="/quiz">
                   <Button 
                     size="lg"
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-10 py-4 text-white border-0 shadow-[0_0_30px_rgba(168,85,247,0.5)] hover:scale-105 transition-all"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-xl px-12 py-6 text-white border-0 shadow-[0_0_40px_rgba(168,85,247,0.6)] hover:scale-110 transition-all duration-300 font-bold"
                   >
-                    <Brain className="h-6 w-6 mr-3" />
+                    <Brain className="h-7 w-7 mr-3" />
                     Start Free Scan →
                   </Button>
                 </Link>
@@ -263,7 +301,8 @@ export default function HomePage() {
       </div>
 
       {/* Live Wall of Wounds Preview - Auto-Scroll Carousel */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="bg-gradient-to-b from-gray-900 to-purple-900/30 py-20">
+        <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             <Sparkles className="h-8 w-8 inline mr-3 text-pink-400" />
@@ -272,6 +311,18 @@ export default function HomePage() {
           <p className="text-gray-400 text-lg">
             Real healing moments from our anonymous community
           </p>
+          
+          {/* Pause/Play Control */}
+          <div className="mt-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsPaused(!isPaused)}
+              className="text-gray-400 hover:text-white border border-gray-600 hover:border-purple-400"
+            >
+              {isPaused ? '▶️ Play' : '⏸️ Pause'} Auto-scroll
+            </Button>
+          </div>
         </div>
 
         {/* Auto-scroll carousel container */}
@@ -280,7 +331,10 @@ export default function HomePage() {
                style={{ transform: `translateX(-${currentPostIndex * 100}%)` }}>
             {mockWallPosts.map((post, index) => (
               <div key={post.id} className="w-full flex-shrink-0 px-4">
-                <Card className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 max-w-2xl mx-auto">
+                <Card 
+                  className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 max-w-2xl mx-auto cursor-pointer hover:scale-105"
+                  onClick={() => handlePostClick(post.id)}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-3 mb-4">
                       <div className="text-2xl">
@@ -336,7 +390,7 @@ export default function HomePage() {
               className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border-0"
             >
               <Sparkles className="h-5 w-5 mr-2" />
-              Read more confessions
+              Join the Wall →
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>
@@ -344,7 +398,8 @@ export default function HomePage() {
       </div>
 
       {/* Features Grid */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="bg-gradient-to-b from-purple-900/30 to-gray-900 py-20">
+        <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Why CTRL+ALT+BLOCK Works
@@ -356,19 +411,21 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group">
-              <CardContent className="p-8 text-center">
-                <div className={`inline-flex p-4 rounded-full bg-gradient-to-r ${feature.gradient} mb-6`}>
-                  <div className="text-white">
-                    {feature.icon}
+            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group hover:scale-105 cursor-pointer">
+              <CardContent className="p-8 text-center h-full flex flex-col justify-between">
+                <div>
+                  <div className={`inline-flex p-4 rounded-full bg-gradient-to-r ${feature.gradient} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className="text-white">
+                      {feature.icon}
+                    </div>
                   </div>
+                  <h3 className="text-xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  {feature.description}
-                </p>
               </CardContent>
             </Card>
           ))}
@@ -379,10 +436,12 @@ export default function HomePage() {
             Powered by CBT, attachment theory & gamification
           </p>
         </div>
+        </div>
       </div>
 
       {/* FAQ Section */}
-      <div className="max-w-4xl mx-auto px-6 py-16">
+      <div className="bg-gradient-to-b from-gray-900 to-purple-900/20 py-20">
+        <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Frequently Asked Questions
@@ -420,10 +479,12 @@ export default function HomePage() {
             </Card>
           ))}
         </div>
+        </div>
       </div>
 
       {/* How It Works Section */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
+      <div className="bg-gradient-to-b from-purple-900/20 to-gray-900 py-20">
+        <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Your Healing Journey in 4 Steps
@@ -440,135 +501,209 @@ export default function HomePage() {
               title: "SCAN",
               description: "Map attachment pattern",
               time: "(60s)",
-              icon: <Target className="h-8 w-8" />
+              link: "/quiz"
             },
             {
               step: "02", 
               title: "RITUALS",
               description: "Complete daily healing tasks",
               time: "(5 min/day)",
-              icon: <Timer className="h-8 w-8" />
+              link: "/features"
             },
             {
               step: "03",
               title: "LEVEL UP",
               description: "Earn XP and achievements",
               time: "(XP Milestones)",
-              icon: <Zap className="h-8 w-8" />
+              link: "/features"
             },
             {
               step: "04",
               title: "BREAK FREE",
               description: "Graduate healed and stronger",
               time: "(30 days)",
-              icon: <Star className="h-8 w-8" />
+              link: "/features"
             }
           ].map((item, index) => (
-            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300">
-              <CardContent className="p-6 text-center">
-                <div className="text-4xl font-black text-purple-400 mb-4">
-                  {item.step}
-                </div>
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                    {item.icon}
+            <Link key={index} href={item.link}>
+              <Card className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 h-full">
+                <CardContent className="p-6 text-center h-full flex flex-col justify-between">
+                  <div>
+                    <div className="text-5xl font-black text-purple-400 mb-6">
+                      {item.step}
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-1">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-purple-400 font-semibold mb-3">
+                      {item.time}
+                    </p>
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      {item.description}
+                    </p>
                   </div>
-                </div>
-                <h3 className="text-lg font-bold text-white mb-1">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-purple-400 font-semibold mb-3">
-                  {item.time}
-                </p>
-                <p className="text-gray-300 text-sm leading-relaxed">
-                  {item.description}
-                </p>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
+        </div>
         </div>
       </div>
 
-      {/* Social Proof Section */}
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Trusted by Thousands of Healers
-          </h2>
-          <p className="text-gray-400 text-lg">
-            Real results from our community of survivors
-          </p>
-        </div>
+      {/* Pricing Section */}
+      <div className="bg-gradient-to-b from-gray-900 to-purple-900/20 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Choose Your Healing Mode
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Two powerful approaches to recovery. Both include our full healing protocol—choose the level of support that fits your journey.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {[
-            {
-              number: "10,000+",
-              label: "Active Users",
-              description: "People actively healing"
-            },
-            {
-              number: "50,000+", 
-              label: "Confessions Shared",
-              description: "Anonymous healing moments"
-            },
-            {
-              number: "94%",
-              label: "Success Rate*", 
-              description: "Users who complete 30 days",
-              visual: true
-            }
-          ].map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="text-4xl md:text-5xl font-black text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-2">
-                {stat.number}
-              </div>
-              <div className="text-xl font-bold text-white mb-1">
-                {stat.label}
-              </div>
-              <div className="text-gray-400 mb-2">
-                {stat.description}
-              </div>
-              {stat.visual && (
-                <div className="w-full bg-gray-700 rounded-full h-3 mx-auto max-w-48">
-                  <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full" style={{width: '94%'}}></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Ghost Mode */}
+            <Card className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 relative">
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">👻</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Ghost Mode</h3>
+                  <p className="text-gray-400 text-sm mb-6">Silent healing with essential tools</p>
+                  
+                  <div className="text-4xl font-bold text-white mb-6">
+                    $9.99<span className="text-lg text-gray-400 font-normal">/month</span>
+                  </div>
+
+                  <ul className="text-left space-y-3 mb-8">
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Daily personalized rituals
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      10 AI therapy sessions/month
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Anonymous community access
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Progress tracking & XP
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Crisis support tools
+                    </li>
+                  </ul>
+
+                  <Link href="/quiz">
+                    <Button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
+                      Start Ghost Mode
+                    </Button>
+                  </Link>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
-        
-        <div className="text-center text-xs text-gray-500">
-          <p>*Self-reported via in-app survey, n = 812. <a href="/methodology" className="underline hover:text-gray-400">View methodology</a></p>
+              </CardContent>
+            </Card>
+
+            {/* Firewall Mode */}
+            <Card className="bg-gradient-to-r from-pink-900/20 to-purple-900/20 border border-pink-500/50 hover:border-pink-400 transition-all duration-300 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  MOST POPULAR
+                </span>
+              </div>
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <div className="text-4xl mb-4">🛡️</div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Firewall Mode</h3>
+                  <p className="text-gray-400 text-sm mb-6">Maximum protection & unlimited support</p>
+                  
+                  <div className="text-4xl font-bold text-white mb-6">
+                    $19.99<span className="text-lg text-gray-400 font-normal">/month</span>
+                  </div>
+
+                  <ul className="text-left space-y-3 mb-8">
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Everything in Ghost Mode
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      <strong>Unlimited</strong> AI therapy sessions
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Priority crisis support
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Advanced progress analytics
+                    </li>
+                    <li className="flex items-start text-gray-300">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+                      Early access to new features
+                    </li>
+                  </ul>
+
+                  <Link href="/quiz">
+                    <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600">
+                      Start Firewall Mode
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-8">
+            <p className="text-gray-400 text-sm">
+              🔒 30-day money-back guarantee • Cancel anytime • No hidden fees
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Final CTA Section */}
-      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
+      <div className="bg-gradient-to-b from-gray-900 to-purple-900/30 py-20">
+        <div className="max-w-4xl mx-auto px-6 text-center">
         <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-12 border border-purple-500/30">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Start Your Healing Journey?
           </h2>
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-            Join thousands who've transformed their heartbreak into strength. Your new chapter starts now.
+            Start your healing journey today — free to join, cancel anytime.
           </p>
           
-          {/* Single Button CTA */}
-          <div className="mb-4">
+          {/* Primary and Secondary CTAs */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
             <Link href="/quiz">
               <Button 
                 size="lg"
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-12 py-4 text-lg text-white border-0 hover:scale-105 transition-all"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-12 py-4 text-lg text-white border-0 hover:scale-105 transition-all font-bold"
               >
-                Start Healing
+                Start Free Scan
                 <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/sign-in">
+              <Button 
+                variant="outline"
+                size="lg"
+                className="border-gray-500 text-gray-300 hover:text-white hover:border-purple-400 px-8 py-4 text-lg transition-all"
+              >
+                Sign In
               </Button>
             </Link>
           </div>
           
           <p className="text-sm text-gray-400">Start free. Upgrade anytime.</p>
         </div>
+        </div>
       </div>
+
+    </div>
 
       {/* Simple Footer */}
       <footer className="bg-gray-900/50 border-t border-gray-600/30">
@@ -597,9 +732,9 @@ export default function HomePage() {
             <div>
               <h3 className="text-white font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/help" className="hover:text-white transition-colors">Help Center</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-                <li><Link href="/crisis" className="hover:text-white transition-colors">Crisis Support</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
+                <li><Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link></li>
+                <li><Link href="/crisis-support" className="hover:text-white transition-colors">Crisis Support</Link></li>
               </ul>
             </div>
             <div>
@@ -607,6 +742,7 @@ export default function HomePage() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
                 <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
+                <li><Link href="/fair-usage" className="hover:text-white transition-colors">Fair Usage Policy</Link></li>
                 <li><Link href="/security" className="hover:text-white transition-colors">Security</Link></li>
               </ul>
             </div>

@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
-  Shield, Brain, Zap, Users, MessageSquare, Gamepad2,
-  AlertTriangle, ArrowRight, Sparkles, Target, Timer, Star
+  Shield, Brain, Zap, MessageSquare, Gamepad2,
+  AlertTriangle, ArrowRight, Sparkles
 } from 'lucide-react';
 
 export default function FeaturesPage() {

@@ -600,7 +600,7 @@ export const FREE_RITUALS: Ritual[] = [
 
 // Ritual management functions
 export function getRandomRituals(category?: RitualCategory, count: number = 2): Ritual[] {
-  let rituals = category 
+  const rituals = category 
     ? FREE_RITUALS.filter(r => r.category === category)
     : FREE_RITUALS
   

@@ -137,7 +137,7 @@ export async function getWallFeed(opts: { userId: string; page: number; limit: n
   }
   const paginated = rows.slice(offset, offset + limit);
   const postIds = paginated.map(p=>p.id);
-  let userReactions: Record<string,string> = {};
+  const userReactions: Record<string,string> = {};
   if (postIds.length) {
     const reactions = await db.select({ id: wallPostReactions.id, postId: wallPostReactions.postId, reactionType: wallPostReactions.reactionType })
       .from(wallPostReactions)

@@ -22,7 +22,7 @@ export async function createCheckoutSession({
     const stripe = getStripe();
     
     // Create or retrieve Stripe customer
-    let customer = await stripe.customers.list({
+    const customer = await stripe.customers.list({
       email: userEmail,
       limit: 1
     });

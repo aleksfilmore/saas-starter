@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { users, anonymousPosts, wallPostReactions, wallPostComments, ritualEntries } from '@/lib/db';
+import { logSchemaWarning } from '@/lib/db/schema-health-logger';
 import { eq, and, gte, count, sql } from 'drizzle-orm';
 import { getLevelProgressSnapshot } from '@/lib/gamification/leveling';
 
@@ -11,9 +12,9 @@ export async function getDashboardSnapshot(userId: string) {
   let reactionsTableExists = true;
   let commentsTableExists = true;
   let ritualEntriesTableExists = true;
-  try { await db.execute(sql`SELECT 1 FROM wall_post_reactions LIMIT 1`); } catch { reactionsTableExists = false; }
-  try { await db.execute(sql`SELECT 1 FROM wall_post_comments LIMIT 1`); } catch { commentsTableExists = false; }
-  try { await db.execute(sql`SELECT 1 FROM ritual_entries LIMIT 1`); } catch { ritualEntriesTableExists = false; }
+  try { await db.execute(sql`SELECT 1 FROM wall_post_reactions LIMIT 1`); } catch { reactionsTableExists = false; logSchemaWarning('missing:wall_post_reactions', "Table 'wall_post_reactions' missing; returning 0 counts."); }
+  try { await db.execute(sql`SELECT 1 FROM wall_post_comments LIMIT 1`); } catch { commentsTableExists = false; logSchemaWarning('missing:wall_post_comments', "Table 'wall_post_comments' missing; returning 0 counts."); }
+  try { await db.execute(sql`SELECT 1 FROM ritual_entries LIMIT 1`); } catch { ritualEntriesTableExists = false; logSchemaWarning('missing:ritual_entries', "Table 'ritual_entries' missing; returning 0 counts."); }
   const [todayPosts, todayReactions, todayComments, todayRituals] = await Promise.all([
     db.select({ c: count(anonymousPosts.id) }).from(anonymousPosts).where(and(eq(anonymousPosts.userId, userId), gte(anonymousPosts.createdAt, startOfDay))),
     reactionsTableExists

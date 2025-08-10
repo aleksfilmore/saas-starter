@@ -1,7 +1,7 @@
 -- SAFE additive migration for unified schema introduction
 -- Does NOT drop or rename existing legacy tables/columns.
 
-BEGIN;
+-- Transaction removed to allow partial replay without aborting entire file on re-run
 
 -- Create new tables if not exist
 CREATE TABLE IF NOT EXISTS "daily_ritual_assignments" (
@@ -128,4 +128,4 @@ CREATE TABLE IF NOT EXISTS "ai_sessions" (
   "meta" jsonb
 );
 
-COMMIT;
+-- End of migration

@@ -57,7 +57,7 @@ export default function AdminPage() {
         fetch('/api/analytics/retention')
       ]);
 
-      let realStats: AdminStats = {
+      const realStats: AdminStats = {
         totalUsers: 150,
         activeUsers: 89,
         totalPosts: 234,

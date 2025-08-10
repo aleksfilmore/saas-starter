@@ -13,8 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Trophy, Target, Calendar, TrendingUp, Clock, Zap, Star, Brain, Heart, Shield,
-  ArrowLeft, BarChart3, Flame, Award
+  Target, Calendar, Clock, Zap, Star, Brain, Heart, Shield,
+  ArrowLeft, BarChart3
 } from 'lucide-react';
 import Link from 'next/link';
 

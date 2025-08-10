@@ -11,14 +11,7 @@ import {
   X, 
   Send, 
   ChevronDown, 
-  Sparkles, 
-  Skull, 
-  Brain,
-  ShoppingCart,
-  Zap,
-  AlertTriangle,
-  Info,
-  CheckCircle
+  ShoppingCart
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -140,8 +133,7 @@ export function LumoBubble() {
   } = useLumo();
   
   const [message, setMessage] = useState('');
-  const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  // Removed unused drag state (not yet implemented)
   const [showPersonaDropdown, setShowPersonaDropdown] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -202,8 +194,7 @@ export function LumoBubble() {
         <Card className="bg-gray-900/95 border-purple-500/50 shadow-2xl backdrop-blur-sm">
           {/* Draggable header */}
           <CardHeader 
-            className="pb-2 cursor-move border-b border-gray-700"
-            onMouseDown={() => setIsDragging(true)}
+            className="pb-2 border-b border-gray-700"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

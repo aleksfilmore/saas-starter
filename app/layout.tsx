@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: 'CTRL+ALT+BLOCK™ | Enhanced Digital Healing Platform',
   description: 'Next-generation therapeutic technology with AI personality adaptation, gamified progress tracking, and viral community healing mechanics. The reprogramming ritual evolved.',
   keywords: 'digital healing, AI therapy, mental health, gamification, community support, emotional wellness, enhanced platform',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://ctrlaltblock.com'),
   openGraph: {
     title: 'CTRL+ALT+BLOCK™ - Enhanced Digital Healing',
     description: 'Experience the evolution of digital healing with adaptive AI, achievement celebrations, and community-driven recovery.',

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Brain, Heart, Users, Target, CheckCircle, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Brain, Heart, Target, CheckCircle } from 'lucide-react';
 
 interface Question {
   id: string;

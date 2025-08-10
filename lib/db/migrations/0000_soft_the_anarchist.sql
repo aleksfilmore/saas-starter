@@ -57,10 +57,23 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
+-- Resilient FK for activity_logs.user_id: auto-upgrade integer -> text if users.id is text
 DO $$ BEGIN
- ALTER TABLE "activity_logs" ADD CONSTRAINT "activity_logs_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_constraint WHERE conname = 'activity_logs_user_id_users_id_fk'
+	) THEN
+		-- If types mismatch (activity_logs.user_id integer vs users.id text) coerce column first
+		IF (
+			SELECT data_type FROM information_schema.columns WHERE table_name='activity_logs' AND column_name='user_id'
+		) = 'integer' AND (
+			SELECT data_type FROM information_schema.columns WHERE table_name='users' AND column_name='id'
+		) = 'text' THEN
+			ALTER TABLE activity_logs ALTER COLUMN user_id TYPE text USING user_id::text;
+		END IF;
+		BEGIN
+			ALTER TABLE "activity_logs" ADD CONSTRAINT "activity_logs_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+		EXCEPTION WHEN duplicate_object THEN NULL; END;
+	END IF;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
@@ -69,20 +82,44 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
+-- Resilient FK for invitations.invited_by
 DO $$ BEGIN
- ALTER TABLE "invitations" ADD CONSTRAINT "invitations_invited_by_users_id_fk" FOREIGN KEY ("invited_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='invitations_invited_by_users_id_fk') THEN
+		IF (
+			SELECT data_type FROM information_schema.columns WHERE table_name='invitations' AND column_name='invited_by'
+		) = 'integer' AND (
+			SELECT data_type FROM information_schema.columns WHERE table_name='users' AND column_name='id'
+		) = 'text' THEN
+			ALTER TABLE invitations ALTER COLUMN invited_by TYPE text USING invited_by::text;
+		END IF;
+		BEGIN
+			ALTER TABLE "invitations" ADD CONSTRAINT "invitations_invited_by_users_id_fk" FOREIGN KEY ("invited_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+		EXCEPTION WHEN duplicate_object THEN NULL; END;
+	END IF;
 END $$;
 --> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "team_members" ADD CONSTRAINT "team_members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
+-- Ensure team_members.team_id FK (user_id handled in resilient block below)
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "team_members" ADD CONSTRAINT "team_members_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='team_members_team_id_teams_id_fk') THEN
+		BEGIN
+			ALTER TABLE "team_members" ADD CONSTRAINT "team_members_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE no action ON UPDATE no action;
+		EXCEPTION WHEN duplicate_object THEN NULL; END;
+	END IF;
+END $$;
+--> statement-breakpoint
+-- Resilient FK for team_members.user_id (convert integer to text if needed before adding constraint)
+DO $$ BEGIN
+	IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='team_members_user_id_users_id_fk') THEN
+		IF (
+			SELECT data_type FROM information_schema.columns WHERE table_name='team_members' AND column_name='user_id'
+		) = 'integer' AND (
+			SELECT data_type FROM information_schema.columns WHERE table_name='users' AND column_name='id'
+		) = 'text' THEN
+			ALTER TABLE team_members ALTER COLUMN user_id TYPE text USING user_id::text;
+		END IF;
+		BEGIN
+			ALTER TABLE "team_members" ADD CONSTRAINT "team_members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+		EXCEPTION WHEN duplicate_object THEN NULL; END;
+	END IF;
 END $$;

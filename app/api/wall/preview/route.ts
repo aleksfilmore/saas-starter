@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       .filter(p => !sinceDate || (p.createdAt && p.createdAt > sinceDate))
       .slice(0, limit);
     const postIds = ordered.map(p=>p.id);
-    let userReactions: Record<string,string> = {};
+    const userReactions: Record<string,string> = {};
     if (postIds.length) {
       let reactionsTableExists = true;
       try { await db.execute(sql`SELECT 1 FROM wall_post_reactions LIMIT 1`); } catch { reactionsTableExists = false; }

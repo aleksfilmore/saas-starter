@@ -265,7 +265,7 @@ export class VoiceTherapyService {
     const emotionalAnalysis = this.analyzeEmotionalContent(userInput);
     
     // Generate base response using voice configuration
-    let baseResponse = await this.generateBaseResponse(userInput, config, emotionalAnalysis, sessionType);
+    const baseResponse = await this.generateBaseResponse(userInput, config, emotionalAnalysis, sessionType);
     
     // Apply archetype personalization
     const personalizedResponse = this.personalizeForArchetype(baseResponse, userContext.archetype, voice);

@@ -1,4 +1,4 @@
-CREATE TABLE "analytics_events" (
+CREATE TABLE IF NOT EXISTS "analytics_events" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text,
 	"session_id" text,
@@ -10,7 +10,7 @@ CREATE TABLE "analytics_events" (
 	"referer" text
 );
 --> statement-breakpoint
-CREATE TABLE "conversion_funnels" (
+CREATE TABLE IF NOT EXISTS "conversion_funnels" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"funnel_name" text NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE "conversion_funnels" (
 	"properties" text
 );
 --> statement-breakpoint
-CREATE TABLE "referrals" (
+CREATE TABLE IF NOT EXISTS "referrals" (
 	"id" text PRIMARY KEY NOT NULL,
 	"referrer_id" text NOT NULL,
 	"referee_id" text,
@@ -34,7 +34,7 @@ CREATE TABLE "referrals" (
 	CONSTRAINT "referrals_referral_code_unique" UNIQUE("referral_code")
 );
 --> statement-breakpoint
-CREATE TABLE "ritual_entries" (
+CREATE TABLE IF NOT EXISTS "ritual_entries" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"ritual_code" varchar(64) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE "ritual_entries" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "subscription_events" (
+CREATE TABLE IF NOT EXISTS "subscription_events" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"stripe_customer_id" text,
@@ -71,7 +71,7 @@ CREATE TABLE "subscription_events" (
 	"metadata" text
 );
 --> statement-breakpoint
-CREATE TABLE "user_sessions" (
+CREATE TABLE IF NOT EXISTS "user_sessions" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"session_id" text NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE "user_sessions" (
 	CONSTRAINT "user_sessions_session_id_unique" UNIQUE("session_id")
 );
 --> statement-breakpoint
-CREATE TABLE "weekly_summaries" (
+CREATE TABLE IF NOT EXISTS "weekly_summaries" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"week_start" timestamp NOT NULL,
@@ -98,9 +98,15 @@ CREATE TABLE "weekly_summaries" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-ALTER TABLE "ritual_entries" ADD CONSTRAINT "ritual_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "weekly_summaries" ADD CONSTRAINT "weekly_summaries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "ritual_entries_user_id_performed_at_index" ON "ritual_entries" USING btree ("user_id","performed_at");--> statement-breakpoint
-CREATE INDEX "ritual_entries_user_id_ritual_code_index" ON "ritual_entries" USING btree ("user_id","ritual_code");--> statement-breakpoint
-CREATE INDEX "ritual_entries_user_id_created_at_index" ON "ritual_entries" USING btree ("user_id","created_at");--> statement-breakpoint
-CREATE INDEX "weekly_summaries_user_id_week_start_index" ON "weekly_summaries" USING btree ("user_id","week_start");
+DO $$ BEGIN
+	BEGIN
+		ALTER TABLE "ritual_entries" ADD CONSTRAINT "ritual_entries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+	EXCEPTION WHEN duplicate_object THEN NULL; END;
+	BEGIN
+		ALTER TABLE "weekly_summaries" ADD CONSTRAINT "weekly_summaries_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+	EXCEPTION WHEN duplicate_object THEN NULL; END;
+END $$;--> statement-breakpoint
+DO $$ BEGIN BEGIN CREATE INDEX "ritual_entries_user_id_performed_at_index" ON "ritual_entries" USING btree ("user_id","performed_at"); EXCEPTION WHEN duplicate_table THEN NULL; END; END $$;--> statement-breakpoint
+DO $$ BEGIN BEGIN CREATE INDEX "ritual_entries_user_id_ritual_code_index" ON "ritual_entries" USING btree ("user_id","ritual_code"); EXCEPTION WHEN duplicate_table THEN NULL; END; END $$;--> statement-breakpoint
+DO $$ BEGIN BEGIN CREATE INDEX "ritual_entries_user_id_created_at_index" ON "ritual_entries" USING btree ("user_id","created_at"); EXCEPTION WHEN duplicate_table THEN NULL; END; END $$;--> statement-breakpoint
+DO $$ BEGIN BEGIN CREATE INDEX "weekly_summaries_user_id_week_start_index" ON "weekly_summaries" USING btree ("user_id","week_start"); EXCEPTION WHEN duplicate_table THEN NULL; END; END $$;

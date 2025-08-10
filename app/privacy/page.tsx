@@ -5,8 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { 
-  Shield, Lock, Database, Eye, Download, AlertTriangle,
-  ArrowRight, Sparkles, CheckCircle, ExternalLink, Mail, Building
+  Shield, Lock, Database, Eye, AlertTriangle,
+  CheckCircle, Mail, Building
 } from 'lucide-react';
 
 export default function PrivacyPage() {

@@ -18,8 +18,14 @@ CREATE TABLE IF NOT EXISTS "wall_post_reactions" (
 -- Constraints: may already exist; if so these statements will error. If you need
 -- idempotency run scripts/restore-wall-post-reactions.js instead (preferred).
 -- Comment out if your environment re-runs migrations.
-ALTER TABLE "wall_post_reactions" ADD CONSTRAINT "wall_post_reactions_post_id_anonymous_posts_id_fk" FOREIGN KEY ("post_id") REFERENCES "anonymous_posts"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-ALTER TABLE "wall_post_reactions" ADD CONSTRAINT "wall_post_reactions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+DO $$ BEGIN
+  BEGIN
+    ALTER TABLE "wall_post_reactions" ADD CONSTRAINT "wall_post_reactions_post_id_anonymous_posts_id_fk" FOREIGN KEY ("post_id") REFERENCES "anonymous_posts"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+  EXCEPTION WHEN duplicate_object THEN NULL; END;
+  BEGIN
+    ALTER TABLE "wall_post_reactions" ADD CONSTRAINT "wall_post_reactions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+  EXCEPTION WHEN duplicate_object THEN NULL; END;
+END $$;
 
 COMMIT;
 COMMIT;

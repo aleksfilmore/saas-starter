@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Heart, Shield, Zap, Users, Star, Brain, CheckCircle, ArrowRight, Sparkles, Target, Calendar, Copy, Share2, Timer, MessageCircle, Mic, Crown, Bot, Menu, X, Check, Plus, HelpCircle } from 'lucide-react';
+import { Heart, Shield, Zap, Users, Star, Brain, CheckCircle, ArrowRight, Sparkles, Target, Calendar, Copy, Timer, MessageCircle, Menu, X, HelpCircle } from 'lucide-react';
 
 export default function ComingSoonPage() {
   const [email, setEmail] = useState('');
@@ -125,7 +125,7 @@ export default function ComingSoonPage() {
     {
       number: "3️⃣",
       title: "Level Up via AI & Community",
-      description: "Chat with the AI goblin, dump secrets on the Wall, collect Byte loot. Streaks trigger bigger rituals.",
+      description: "Chat with the AI goblin for guidance, share anonymous confessions on the Wall of Wounds, react with ❤️🔥😭 to others' posts, and collect Bytes (our in-app currency). Streaks trigger bigger healing rituals.",
       icon: <Users className="h-10 w-10" />,
       gradient: "from-purple-500 to-pink-500"
     },
@@ -157,6 +157,17 @@ export default function ComingSoonPage() {
         <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
         <div className="absolute bottom-20 left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+        
+        {/* Floating hearts that break and reassemble */}
+        <div className="absolute top-1/3 left-1/4 opacity-30">
+          <div className="text-6xl animate-pulse text-red-400/20">💔</div>
+        </div>
+        <div className="absolute top-1/2 right-1/3 opacity-40">
+          <div className="text-4xl animate-bounce text-purple-400/30">✨</div>
+        </div>
+        <div className="absolute bottom-1/3 right-1/4 opacity-20">
+          <div className="text-5xl animate-pulse text-cyan-400/25">💙</div>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -267,8 +278,11 @@ export default function ComingSoonPage() {
                INSTALL YOUR NEW SELF.
             </span>
           </h1>
+          <div className="text-xl sm:text-2xl md:text-3xl text-gray-200 mb-4 font-medium">
+            Your interactive breakup recovery program
+          </div>
           <div className="text-lg sm:text-xl md:text-2xl font-mono text-gray-300 mb-6">
-            Revolutionary healing through the psychology of gaming
+            Revolutionary healing through the psychology of gaming — with AI therapy, daily healing rituals, and a gamified progress tracker
           </div>
         </div>
 
@@ -318,37 +332,45 @@ export default function ComingSoonPage() {
 
           {/* Enhanced Feature Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group">
-              <CardContent className="p-4 text-center">
-                <Brain className="h-8 w-8 text-cyan-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                <span className="text-sm text-white font-semibold block">AI Therapy</span>
-                <p className="text-xs text-cyan-200 mt-1">24/7 Smart Support</p>
-              </CardContent>
-            </Card>
+            <Link href="/features#ai-therapy">
+              <Card className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <Brain className="h-8 w-8 text-cyan-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                  <span className="text-sm text-white font-semibold block">AI Therapy</span>
+                  <p className="text-xs text-cyan-200 mt-1">Chat 24/7 with your digital recovery coach</p>
+                </CardContent>
+              </Card>
+            </Link>
             
-            <Card className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all duration-300 group">
-              <CardContent className="p-4 text-center">
-                <Calendar className="h-8 w-8 text-purple-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                <span className="text-sm text-white font-semibold block">Daily Rituals</span>
-                <p className="text-xs text-purple-200 mt-1">Healing Habits</p>
-              </CardContent>
-            </Card>
+            <Link href="/features#daily-rituals">
+              <Card className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all duration-300 group cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <Calendar className="h-8 w-8 text-purple-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                  <span className="text-sm text-white font-semibold block">Daily Rituals</span>
+                  <p className="text-xs text-purple-200 mt-1">Science-backed micro-activities for healing</p>
+                </CardContent>
+              </Card>
+            </Link>
             
-            <Card className="bg-gradient-to-br from-red-900/40 to-orange-900/40 border border-red-500/30 hover:border-red-400/60 transition-all duration-300 group">
-              <CardContent className="p-4 text-center">
-                <Target className="h-8 w-8 text-red-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                <span className="text-sm text-white font-semibold block">No-Contact</span>
-                <p className="text-xs text-red-200 mt-1">Digital Boundaries</p>
-              </CardContent>
-            </Card>
+            <Link href="/features#no-contact">
+              <Card className="bg-gradient-to-br from-red-900/40 to-orange-900/40 border border-red-500/30 hover:border-red-400/60 transition-all duration-300 group cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <Target className="h-8 w-8 text-red-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                  <span className="text-sm text-white font-semibold block">No-Contact</span>
+                  <p className="text-xs text-red-200 mt-1">Track streaks and build healthy boundaries</p>
+                </CardContent>
+              </Card>
+            </Link>
             
-            <Card className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 hover:border-green-400/60 transition-all duration-300 group">
-              <CardContent className="p-4 text-center">
-                <Heart className="h-8 w-8 text-green-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                <span className="text-sm text-white font-semibold block">Wall of Wounds</span>
-                <p className="text-xs text-green-200 mt-1">Anonymous Support</p>
-              </CardContent>
-            </Card>
+            <Link href="/features#wall-of-wounds">
+              <Card className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 hover:border-green-400/60 transition-all duration-300 group cursor-pointer">
+                <CardContent className="p-4 text-center">
+                  <Heart className="h-8 w-8 text-green-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                  <span className="text-sm text-white font-semibold block">Wall of Wounds</span>
+                  <p className="text-xs text-green-200 mt-1">Anonymous support community space</p>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
 
           {/* Beta Progress */}
@@ -377,7 +399,7 @@ export default function ComingSoonPage() {
             <Button
               onClick={() => scrollToSection('waitlist')}
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 text-lg"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
             >
               Join Waitlist - Free
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -386,9 +408,9 @@ export default function ComingSoonPage() {
               onClick={() => window.location.href = '/quiz'}
               size="lg"
               variant="outline"
-              className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 px-8 py-4 text-lg"
+              className="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-300 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gray-900/50 backdrop-blur-sm"
             >
-              🧪 Try Beta Scan
+              🧪 Try Beta Scan Now
             </Button>
           </div>
         </div>
@@ -433,7 +455,11 @@ export default function ComingSoonPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {steps.map((step, index) => (
-              <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group">
+              <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group cursor-pointer"
+                onClick={() => {
+                  // Show tooltip or modal with detailed explanation
+                  alert(`Step ${step.number}: ${step.title}\n\n${step.description}\n\nClick to learn more about this step in our How It Works guide.`);
+                }}>
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-6">
                     <div className="text-6xl font-black text-purple-400 mb-4 flex-shrink-0">
@@ -445,7 +471,7 @@ export default function ComingSoonPage() {
                           {step.icon}
                         </div>
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-4">
+                      <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
                         {step.title}
                       </h3>
                       <p className="text-gray-300 leading-relaxed text-lg">
@@ -468,22 +494,22 @@ export default function ComingSoonPage() {
                 {
                   icon: <Brain className="h-8 w-8" />,
                   title: "AI-Powered",
-                  description: "Smart algorithms adapt to your healing style"
+                  description: "Smart algorithms that learn your healing patterns and adapt therapeutic responses to your specific attachment style and progress."
                 },
                 {
                   icon: <Zap className="h-8 w-8" />,
                   title: "Gamified",
-                  description: "XP, levels, and achievements make progress fun"
+                  description: "XP systems, achievement badges, and Byte currency transform healing milestones into engaging progress markers."
                 },
                 {
                   icon: <MessageCircle className="h-8 w-8" />,
                   title: "Anonymous",
-                  description: "Share and heal without compromising privacy"
+                  description: "Share your deepest struggles and victories without revealing identity, creating safe spaces for vulnerable healing."
                 },
                 {
                   icon: <Star className="h-8 w-8" />,
                   title: "Evidence-Based",
-                  description: "Backed by attachment theory and psychology"
+                  description: "Every feature is grounded in attachment theory research and cognitive-behavioral therapy best practices."
                 }
               ].map((feature, index) => (
                 <div key={index} className="text-center">
@@ -495,7 +521,7 @@ export default function ComingSoonPage() {
                   <h4 className="text-lg font-bold text-white mb-2">
                     {feature.title}
                   </h4>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -537,35 +563,30 @@ export default function ComingSoonPage() {
                   <div>
                     <h4 className="text-white font-semibold mb-2">No-Contact Tracker</h4>
                     <ul className="space-y-1 text-sm text-gray-300 ml-4">
-                      <li>• Daily check-in</li>
-                      <li>• Shield window 24h</li>
-                      <li>• Missed = streak resets</li>
+                      <li>• Build 24-hour no-contact streaks</li>
+                      <li>• One shield per month (streak protection)</li>
+                      <li>• Visual progress tracking</li>
                     </ul>
                   </div>
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">Daily Rituals</h4>
-                    <p className="text-sm text-gray-300 ml-4">1 random ritual (general pool)</p>
+                    <p className="text-sm text-gray-300 ml-4">1 science-backed healing activity daily from general pool</p>
                   </div>
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">Wall of Wounds™</h4>
-                    <p className="text-sm text-gray-300 ml-4">Read & react ❤️🔥😭</p>
+                    <p className="text-sm text-gray-300 ml-4">Read anonymous posts & react with ❤️🔥😭</p>
                   </div>
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">AI Therapy</h4>
-                    <p className="text-sm text-gray-300 ml-4">On-demand • $3.99/session (cap 300 msgs)</p>
+                    <p className="text-sm text-gray-300 ml-4">Pay-per-session • $3.99 for 300 messages</p>
                   </div>
 
                   <div>
-                    <h4 className="text-white font-semibold mb-2">XP & Levels</h4>
-                    <p className="text-sm text-gray-300 ml-4">Earn up to Lv 15</p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-white font-semibold mb-2">Bytes & Badges</h4>
-                    <p className="text-sm text-gray-300 ml-4">Earn only, can't spend • Starter set</p>
+                    <h4 className="text-white font-semibold mb-2">Progress & Gamification</h4>
+                    <p className="text-sm text-gray-300 ml-4">Earn XP up to Level 15 • Collect Bytes (no spending)</p>
                   </div>
 
                 </div>
@@ -599,43 +620,41 @@ export default function ComingSoonPage() {
                   <div>
                     <h4 className="text-white font-semibold mb-2">No-Contact Tracker</h4>
                     <ul className="space-y-1 text-sm text-gray-300 ml-4">
-                      <li>• Daily check-in</li>
-                      <li>• Shield window 48h</li>
-                      <li>• Weekly auto-shield</li>
+                      <li>• Build 48-hour no-contact streaks</li>
+                      <li>• Weekly auto-shield protection</li>
+                      <li>• Advanced analytics dashboard</li>
                     </ul>
                   </div>
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">Daily Rituals</h4>
                     <ul className="space-y-1 text-sm text-gray-300 ml-4">
-                      <li>• 2 rituals/day science-weighted to your archetype</li>
-                      <li>• Unlimited reroll</li>
+                      <li>• 2 personalized rituals daily (archetype-matched)</li>
+                      <li>• Unlimited reroll options</li>
+                      <li>• Advanced ritual types unlocked</li>
                     </ul>
                   </div>
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">Wall of Wounds™</h4>
-                    <p className="text-sm text-gray-300 ml-4">Unlimited posting, edit & delete</p>
+                    <p className="text-sm text-gray-300 ml-4">Unlimited anonymous posting • Edit & delete your confessions</p>
                   </div>
 
                   <div>
                     <h4 className="text-white font-semibold mb-2">AI Therapy</h4>
                     <ul className="space-y-1 text-sm text-gray-300 ml-4">
-                      <li>• Chat: Included (1,000 msgs/month fair-use†)</li>
-                      <li>• Voice: $4.99/15 min (3 personas)</li>
+                      <li>• Unlimited chat included (1,000 msgs/month fair-use†)</li>
+                      <li>• Voice therapy: $4.99 per 15-minute session</li>
+                      <li>• 3 specialized AI personas available</li>
                     </ul>
                   </div>
 
                   <div>
-                    <h4 className="text-white font-semibold mb-2">XP & Levels</h4>
-                    <p className="text-sm text-gray-300 ml-4">No cap – brag away</p>
-                  </div>
-
-                  <div>
-                    <h4 className="text-white font-semibold mb-2">Bytes & Badges</h4>
+                    <h4 className="text-white font-semibold mb-2">Progress & Gamification</h4>
                     <ul className="space-y-1 text-sm text-gray-300 ml-4">
-                      <li>• Earn & spend ① buy extra Voice minutes ② future merch</li>
-                      <li>• All badges + seasonal & secret quests</li>
+                      <li>• Unlimited XP and level progression</li>
+                      <li>• Earn & spend Bytes on Voice sessions and future merch</li>
+                      <li>• All badges plus seasonal & secret quests</li>
                     </ul>
                   </div>
 
@@ -828,48 +847,48 @@ export default function ComingSoonPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <h3 className="text-white font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/how-it-works" className="hover:text-purple-400 transition-colors">How It Works</Link></li>
-                <li><Link href="/features" className="hover:text-purple-400 transition-colors">Features</Link></li>
-                <li><Link href="/pricing" className="hover:text-purple-400 transition-colors">Pricing</Link></li>
-                <li><Link href="/quiz" className="hover:text-purple-400 transition-colors">Start Free</Link></li>
+              <ul className="space-y-2 text-gray-300 text-sm">
+                <li><Link href="/features" className="hover:text-purple-300 transition-colors">Features</Link></li>
+                <li><Link href="/quiz" className="hover:text-purple-300 transition-colors">Start Free Quiz</Link></li>
+                <li><button onClick={() => scrollToSection('pricing')} className="hover:text-purple-300 transition-colors text-left">Pricing</button></li>
+                <li><Link href="/status" className="hover:text-purple-300 transition-colors">Platform Status</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="text-white font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/crisis-support" className="hover:text-purple-400 transition-colors">Crisis Support</Link></li>
-                <li><a href="mailto:support@ctrlaltblock.com" className="hover:text-purple-400 transition-colors">Help Center</a></li>
-                <li><Link href="/status" className="hover:text-purple-400 transition-colors">Service Status</Link></li>
-                <li><a href="mailto:feedback@ctrlaltblock.com" className="hover:text-purple-400 transition-colors">Feedback</a></li>
+              <ul className="space-y-2 text-gray-300 text-sm">
+                <li><Link href="/crisis-support" className="hover:text-purple-300 transition-colors">Crisis Support</Link></li>
+                <li><a href="mailto:support@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Help Center</a></li>
+                <li><Link href="/status" className="hover:text-purple-300 transition-colors">Service Status</Link></li>
+                <li><a href="mailto:feedback@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Send Feedback</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="text-white font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="mailto:hello@ctrlaltblock.com" className="hover:text-purple-400 transition-colors">About</a></li>
-                <li><a href="mailto:press@ctrlaltblock.com" className="hover:text-purple-400 transition-colors">Press</a></li>
-                <li><a href="mailto:careers@ctrlaltblock.com" className="hover:text-purple-400 transition-colors">Careers</a></li>
-                <li><Link href="/security" className="hover:text-purple-400 transition-colors">Security</Link></li>
+              <ul className="space-y-2 text-gray-300 text-sm">
+                <li><a href="mailto:hello@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">About Us</a></li>
+                <li><a href="mailto:press@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Press Kit</a></li>
+                <li><a href="mailto:careers@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Careers</a></li>
+                <li><Link href="/security" className="hover:text-purple-300 transition-colors">Security</Link></li>
               </ul>
             </div>
             
             <div>
               <h3 className="text-white font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><Link href="/privacy" className="hover:text-purple-400 transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-purple-400 transition-colors">Terms of Service</Link></li>
-                <li><Link href="/refund" className="hover:text-purple-400 transition-colors">Refund Policy</Link></li>
-                <li><a href="mailto:legal@ctrlaltblock.com" className="hover:text-purple-400 transition-colors">Legal Inquiries</a></li>
+              <ul className="space-y-2 text-gray-300 text-sm">
+                <li><Link href="/privacy" className="hover:text-purple-300 transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-purple-300 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/refund" className="hover:text-purple-300 transition-colors">Refund Policy</Link></li>
+                <li><a href="mailto:legal@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Legal Inquiries</a></li>
               </ul>
             </div>
           </div>
           
           {/* Bottom Bar */}
           <div className="border-t border-gray-700/50 pt-6">
-            <div className="flex flex-col md:flex-row items-center justify-between text-gray-500 text-sm">
+            <div className="flex flex-col md:flex-row items-center justify-between text-gray-400 text-sm">
               <div className="flex items-center space-x-4 mb-4 md:mb-0">
                 <span>© 2025 CTRL+ALT+BLOCK</span>
                 <span>•</span>
