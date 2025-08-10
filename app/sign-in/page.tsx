@@ -24,7 +24,7 @@ export default function SignInPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

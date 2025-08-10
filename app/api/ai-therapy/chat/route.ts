@@ -109,7 +109,7 @@ export async function POST(request: Request) {
       and help them find stability and safety. Focus on regulation techniques and building a coherent narrative.`
     };
 
-    const systemPrompt = archetypePrompts[user.archetype as keyof typeof archetypePrompts] || 
+    const systemPrompt = archetypePrompts[user.emotional_archetype as keyof typeof archetypePrompts] || 
       archetypePrompts['ARCHITECT'];
 
     const baseSystemPrompt = `${systemPrompt}
@@ -123,7 +123,7 @@ IMPORTANT GUIDELINES:
 - Ask follow-up questions to encourage deeper reflection
 - Validate their emotions while gently challenging unhelpful thought patterns
 
-User's profile: ${user.archetype} archetype, ${user.tier} tier member.`;
+User's profile: ${user.emotional_archetype} archetype, ${user.tier} tier member.`;
 
     // Build conversation context
     const messages: Message[] = [
@@ -203,7 +203,7 @@ Breakups can bring up so many different emotions at once - sometimes conflicting
 Right now, let's focus on what feels safe and stable for you. Is there a place or activity that helps you feel more grounded? We can start there.`
         };
 
-        const response = mockResponses[user.archetype as keyof typeof mockResponses] || 
+        const response = mockResponses[user.emotional_archetype as keyof typeof mockResponses] || 
           mockResponses['ARCHITECT'];
 
         // Update quota

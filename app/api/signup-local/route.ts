@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/minimal-schema';
+import { users } from '@/lib/db/actual-schema';
 import { eq } from 'drizzle-orm';
 import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';
@@ -12,17 +12,20 @@ export async function POST(request: NextRequest) {
   try {
     console.log('🎯 Quiz signup attempt');
     
-    const { email, password, quizResult, source } = await request.json();
+    const { email, password, username, quizResult, source } = await request.json();
+    console.log('📧 Signup data received:', { email, username, source, hasQuizResult: !!quizResult });
 
     // Validation
-    if (!email || !password) {
+    if (!email || !password || !username) {
+      console.log('❌ Missing required fields');
       return NextResponse.json(
-        { success: false, error: 'Email and password are required' },
+        { success: false, error: 'Email, password, and username are required' },
         { status: 400 }
       );
     }
 
     if (password.length < 8) {
+      console.log('❌ Password too short');
       return NextResponse.json(
         { success: false, error: 'Password must be at least 8 characters' },
         { status: 400 }
@@ -31,13 +34,14 @@ export async function POST(request: NextRequest) {
 
     console.log('📧 Quiz signup for:', email);
 
-    // Check if user already exists
-    const existingUser = await db.select()
+    // Check if user already exists (only select essential columns)
+    const existingUser = await db.select({ id: users.id })
       .from(users)
       .where(eq(users.email, email.toLowerCase()))
       .limit(1);
 
     if (existingUser.length > 0) {
+      console.log('❌ User already exists');
       return NextResponse.json(
         { success: false, error: 'An account with this email already exists' },
         { status: 400 }
@@ -46,48 +50,53 @@ export async function POST(request: NextRequest) {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
+    console.log('🔐 Password hashed successfully');
 
     // Generate user ID
     const userId = generateId();
+    console.log('🆔 Generated user ID:', userId);
 
     // Extract archetype from quiz result
     const archetype = quizResult?.attachmentStyle || 'unknown';
+    console.log('🎭 User archetype:', archetype);
 
-    // Create user account
+    console.log('💾 Attempting to create user with data:', {
+      id: userId,
+      email: email.toLowerCase(),
+      username: username,
+      hasPasswordHash: !!hashedPassword
+    });
+
+    // Create user account using only columns that definitely exist
     const newUser = await db.insert(users).values({
       id: userId,
       email: email.toLowerCase(),
+      username: username,
       hashedPassword,
-      tier: 'ghost', // Free tier
-      archetype,
-      xp: 0,
-      bytes: 100, // Starting bytes
-      level: 1,
-      ritual_streak: 0,
-      no_contact_streak: 0,
-      is_verified: false,
-      subscription_status: 'none',
       created_at: new Date(),
       updated_at: new Date()
     }).returning({
       id: users.id,
       email: users.email,
-      tier: users.tier,
-      archetype: users.archetype
+      username: users.username
     });
 
-    console.log('✅ User created successfully:', userId);
+    console.log('✅ User created successfully:', newUser);
 
+    console.log('🔐 Creating session for user:', userId);
     // Create session using Lucia
     const session = await lucia.createSession(userId, {
       source: source || 'quiz-signup'
     });
+    console.log('✅ Session created:', session.id);
     
     const sessionCookie = lucia.createSessionCookie(session.id);
+    console.log('🍪 Session cookie created');
 
     // Set session cookie
     const cookieStore = await cookies();
     cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    console.log('🍪 Session cookie set successfully');
 
     console.log('🔐 Session created for quiz user:', userId);
 
@@ -97,11 +106,7 @@ export async function POST(request: NextRequest) {
       user: {
         id: userId,
         email: email.toLowerCase(),
-        tier: 'ghost',
-        archetype,
-        level: 1,
-        xp: 0,
-        bytes: 100
+        username: username
       }
     });
 

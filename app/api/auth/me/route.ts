@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
         email: dbUser.email,
         username: dbUser.email?.split('@')[0] || 'PremiumUser',
         tier: dbUser.tier,
-        archetype: dbUser.archetype,
+        archetype: dbUser.emotional_archetype, // Use correct column name
         xp: dbUser.xp,
         bytes: dbUser.bytes,
         level: dbUser.level,

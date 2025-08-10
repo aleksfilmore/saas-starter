@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Brain, Heart, Target, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Brain, Heart, Target, CheckCircle, HelpCircle, Sparkles } from 'lucide-react';
 
 interface Question {
   id: string;
@@ -215,29 +215,35 @@ export default function AttachmentQuizPage() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [resultStyle, setResultStyle] = useState<keyof typeof attachmentStyles | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [hoveredArchetype, setHoveredArchetype] = useState<string | null>(null);
   const router = useRouter();
 
   const handleAnswer = async (questionId: string, answer: string) => {
-    setAnswers(prev => ({ ...prev, [questionId]: answer }));
+    const newAnswers = { ...answers, [questionId]: answer };
+    setAnswers(newAnswers);
     
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
       setIsCalculating(true);
-      const result = await calculateResult();
+      const result = await calculateResult(newAnswers);
       setResultStyle(result);
       setIsCalculating(false);
       setShowResults(true);
     }
   };
 
-  const calculateResult = async () => {
+  const calculateResult = async (finalAnswers = answers) => {
     // Use the specification-compliant API scoring
     try {
-      const quizAnswers = Object.entries(answers).map(([questionId, value]) => ({
+      const quizAnswers = Object.entries(finalAnswers).map(([questionId, value]) => ({
         questionId,
         answer: value
       }));
+
+      console.log('=== FRONTEND QUIZ DEBUG ===');
+      console.log('Submitting answers:', quizAnswers);
+      console.log('Answers count:', quizAnswers.length);
 
       const response = await fetch('/api/onboarding/quiz', {
         method: 'POST',
@@ -247,6 +253,8 @@ export default function AttachmentQuizPage() {
 
       if (response.ok) {
         const result = await response.json();
+        console.log('API Response received:', result);
+        console.log('Archetype from API:', result.archetype);
         
         // Map archetype to attachment style for compatibility
         const archetypeToStyle = {
@@ -256,7 +264,13 @@ export default function AttachmentQuizPage() {
           'sn': 'secure'
         } as const;
 
-        return archetypeToStyle[result.archetype as keyof typeof archetypeToStyle] || 'secure';
+        const mappedStyle = archetypeToStyle[result.archetype as keyof typeof archetypeToStyle];
+        console.log('Mapped style:', mappedStyle);
+        console.log('Final style (with fallback):', mappedStyle || 'secure');
+
+        return mappedStyle || 'secure';
+      } else {
+        console.error('API response not ok:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Quiz scoring error:', error);
@@ -308,36 +322,41 @@ export default function AttachmentQuizPage() {
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
           <div className="max-w-2xl mx-auto text-center">
             
-            <div className="mb-8">
-              <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
-                <span className="glitch" data-text="SYSTEM SCAN">SYSTEM SCAN</span> v1.0
-              </h1>
-              <p className="text-xl text-gray-300 mb-6">
-                Answer 8 lightning-round prompts. We'll calibrate your daily rituals.
-              </p>
-              <p className="text-lg text-purple-400">
-                No real names. No spam. Just data-driven healing.
-              </p>
-            </div>
-
-            <Card className="bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl mb-8">
+              <div className="mb-8">
+                <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
+                  <span className="glitch" data-text="SYSTEM SCAN">SYSTEM SCAN</span> v1.0
+                </h1>
+                <p className="text-xl text-gray-300 mb-4">
+                  Answer 8 lightning-round prompts. We'll calibrate your daily rituals.
+                </p>
+                <p className="text-lg text-purple-400 mb-2">
+                  Takes ~90 seconds. You'll get your custom breakup protocol instantly.
+                </p>
+                <p className="text-lg text-purple-400">
+                  No real names. No spam. Just data-driven healing.
+                </p>
+              </div>            <Card className="bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl mb-8">
               <CardContent className="p-8">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                   <div className="text-center">
-                    <div className="text-3xl mb-2">�</div>
+                    <div className="text-3xl mb-2">📱</div>
                     <div className="text-sm text-cyan-400 font-medium">Data Flooder</div>
+                    <div className="text-xs text-gray-400 mt-1">Feels deeply, messages constantly</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl mb-2">🛡️</div>
                     <div className="text-sm text-red-400 font-medium">Firewall Builder</div>
+                    <div className="text-xs text-gray-500 mt-1">Builds walls faster than trust</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl mb-2">👻</div>
                     <div className="text-sm text-purple-400 font-medium">Ghost in Shell</div>
+                    <div className="text-xs text-gray-500 mt-1">Push-pull personified</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl mb-2">🔒</div>
                     <div className="text-sm text-green-400 font-medium">Secure Node</div>
+                    <div className="text-xs text-gray-500 mt-1">The rare bug-free build</div>
                   </div>
                 </div>
 
@@ -423,6 +442,21 @@ export default function AttachmentQuizPage() {
                 <p className="text-xl text-gray-300 leading-relaxed mb-4">
                   {result.description}
                 </p>
+                
+                {/* What This Means for You */}
+                <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4 mb-4">
+                  <h4 className="text-purple-400 font-bold mb-2 flex items-center">
+                    <Target className="h-5 w-5 mr-2" />
+                    What this means for you:
+                  </h4>
+                  <p className="text-gray-300 text-base">
+                    {result.title === 'Data Flooder' && "You feel deeply and care intensely, but sometimes your emotions flood the system. Your healing journey focuses on finding calm in the storm and learning to trust that connection doesn't require constant contact."}
+                    {result.title === 'Firewall Builder' && "You're naturally independent and self-sufficient, but sometimes your protective walls keep out the good along with the bad. Your healing journey focuses on selective vulnerability and learning that intimacy doesn't mean losing yourself."}
+                    {result.title === 'Ghost in the Shell' && "You want closeness but fear it at the same time, creating a push-pull dynamic that can be exhausting. Your healing journey focuses on finding stability in relationships and trusting that you can be both safe and connected."}
+                    {result.title === 'Secure Node' && "You have a strong foundation for healthy relationships, but there's always room to grow. Your healing journey focuses on deepening your existing skills and potentially helping others in their healing process."}
+                  </p>
+                </div>
+
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <span className="text-red-400 mr-3 font-bold">⚡ Core glitch:</span>
@@ -434,7 +468,9 @@ export default function AttachmentQuizPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-purple-400 mr-3 font-bold">🎯 First ritual queued:</span>
-                    <span className="text-gray-300">"{result.firstRitual}"</span>
+                    <span className="text-gray-300 cursor-pointer hover:text-purple-400 transition-colors" title="Click to preview this ritual">
+                      "{result.firstRitual}"
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -473,14 +509,44 @@ export default function AttachmentQuizPage() {
             </CardContent>
           </Card>
 
-          {/* CTA Section */}
-          <div className="text-center space-y-6">
-            <Card className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/50">
-              <CardContent className="p-8">
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  Save your results to unlock rituals
+          {/* Prominent CTA - Moved Higher */}
+          <div className="text-center mb-8">
+            <Card className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-2 border-purple-500/50 shadow-lg">
+              <CardContent className="p-6">
+                <h2 className="text-2xl font-bold text-white mb-3">
+                  🎯 Ready to unlock your healing protocol?
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-left">
+                <p className="text-gray-300 mb-4">
+                  Get instant access to personalized rituals, progress tracking, and community support.
+                </p>
+                <Button 
+                  onClick={handleSignUpFromResults}
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mr-4"
+                >
+                  <Sparkles className="h-6 w-6 mr-2" />
+                  Create Account & Start Healing →
+                </Button>
+                <Button 
+                  onClick={() => router.push('/')}
+                  variant="outline"
+                  size="lg"
+                  className="border-gray-400/50 bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:border-gray-300 hover:text-white transition-all duration-200 backdrop-blur-sm"
+                >
+                  Learn More First
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Benefits Section */}
+          <div className="text-center space-y-6">
+            <Card className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/30">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-white mb-4">
+                  What you'll get with your account:
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
                   <div className="bg-gray-800/40 p-4 rounded-lg">
                     <span className="text-purple-400 font-semibold">• Byte wallet</span>
                     <p className="text-sm text-gray-400 mt-1">Track healing progress</p>
@@ -494,25 +560,12 @@ export default function AttachmentQuizPage() {
                     <p className="text-sm text-gray-400 mt-1">AI therapy preview</p>
                   </div>
                 </div>
-                <Button 
-                  onClick={handleSignUpFromResults}
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-8 text-xl border-0 mr-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                >
-                  Create Account & Reveal Archetype →
-                </Button>
-                <Button 
-                  onClick={() => router.push('/')}
-                  variant="outline"
-                  size="lg"
-                  className="border-gray-500/50 bg-gray-800/40 text-gray-300 hover:bg-gray-700/60 hover:border-gray-400 hover:text-white transition-all duration-200 backdrop-blur-sm"
-                >
-                  Learn More First
-                </Button>
               </CardContent>
             </Card>
+          </div>
 
-            {/* FAQ Section */}
+          {/* FAQ Section */}
+          <div className="mt-8">
             <Card className="bg-gray-800/50 border border-gray-600/50 text-left" id="faq-attachment">
               <CardHeader>
                 <CardTitle className="text-white text-2xl">
@@ -559,7 +612,7 @@ export default function AttachmentQuizPage() {
               </CardContent>
             </Card>
 
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 text-center mt-6">
               🔒 Your results are saved. Continue anytime. • Free account setup • No credit card required
             </p>
           </div>
@@ -612,6 +665,15 @@ export default function AttachmentQuizPage() {
                 </div>
               </Button>
             ))}
+            
+            {/* Skip Option */}
+            <Button
+              onClick={() => handleAnswer(question.id, 'SKIP')}
+              variant="ghost"
+              className="w-full p-4 text-center bg-gray-700/30 border border-gray-600/30 hover:bg-gray-600/40 text-gray-400 hover:text-gray-300 transition-all duration-200"
+            >
+              <span className="text-sm">Not sure / Skip this question</span>
+            </Button>
           </CardContent>
         </Card>
 

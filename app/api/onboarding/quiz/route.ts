@@ -106,15 +106,31 @@ export async function POST(request: NextRequest) {
   try {
     const { answers }: { answers: QuizAnswer[] } = await request.json();
 
-    if (!answers || !Array.isArray(answers) || answers.length !== 8) {
+    console.log('=== QUIZ API DEBUG ===');
+    console.log('Received answers:', answers);
+    console.log('Answers count:', answers?.length);
+
+    if (!answers || !Array.isArray(answers)) {
+      console.log('Invalid answers format - not array');
       return NextResponse.json(
-        { error: 'Invalid answers format. Expected 8 questions.' },
+        { error: 'Invalid answers format. Expected array of answers.' },
+        { status: 400 }
+      );
+    }
+
+    if (answers.length !== 8) {
+      console.log(`Invalid answers count: ${answers.length}, expected 8`);
+      return NextResponse.json(
+        { error: `Invalid answers count. Expected 8 questions, received ${answers.length}.` },
         { status: 400 }
       );
     }
 
     // Calculate scores per specification
     const scores = { df: 0, fb: 0, gis: 0, sn: 0 };
+
+    console.log('=== QUIZ SCORING DEBUG ===');
+    console.log('Input answers:', answers);
 
     answers.forEach(({ questionId, answer }) => {
       const questionScoring = scoringMap[questionId];
@@ -124,20 +140,28 @@ export async function POST(request: NextRequest) {
         if (secondary) {
           scores[secondary as keyof typeof scores] += 1; // Secondary +1
         }
+        console.log(`${questionId} -> ${answer}: ${primary}(+2)${secondary ? `, ${secondary}(+1)` : ''}`);
       }
     });
+
+    console.log('Final scores:', scores);
 
     // Find highest scores
     const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     const highest = sortedScores[0];
     const secondHighest = sortedScores[1];
 
+    console.log('Sorted scores:', sortedScores);
+    console.log('Highest:', highest, 'Second highest:', secondHighest);
+
     let result: ArchetypeResult;
 
     // Check for tie within 1 point (blend 60/40)
-    if (highest[1] - secondHighest[1] <= 1) {
+    if (highest[1] - secondHighest[1] <= 1 && highest[1] > 0) {
+      console.log('Detected tie/close scores');
       // For ties, prefer secure if it's in top 2
       if (highest[0] === 'sn' || secondHighest[0] === 'sn') {
+        console.log('Secure in top 2, choosing secure');
         const secureArchetype = 'sn';
         const details = archetypeDetails[secureArchetype];
         result = {
@@ -149,6 +173,7 @@ export async function POST(request: NextRequest) {
           recommended_persona: details.recommended_persona
         };
       } else {
+        console.log('No secure in top 2, creating blend');
         // Near-balance → secure_node with shadow list
         const primaryCode = highest[0] as keyof typeof archetypeDetails;
         const secondaryCode = secondHighest[0] as keyof typeof archetypeDetails;
@@ -171,6 +196,7 @@ export async function POST(request: NextRequest) {
         };
       }
     } else {
+      console.log('Clear winner detected');
       // Clear winner
       const winningArchetype = highest[0] as keyof typeof archetypeDetails;
       const details = archetypeDetails[winningArchetype];
