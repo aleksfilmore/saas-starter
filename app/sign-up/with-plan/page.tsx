@@ -82,7 +82,7 @@ function SignUpWithPlanContent() {
         }
       }
 
-      const response = await fetch('/api/signup-local', {
+      const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ function SignUpWithPlanContent() {
       }
 
       // First create the account
-      const signupResponse = await fetch('/api/signup-local', {
+      const signupResponse = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

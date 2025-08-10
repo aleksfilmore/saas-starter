@@ -1,0 +1,177 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { users } from '@/lib/db/actual-schema';
+import { eq } from 'drizzle-orm';
+
+export async function GET(request: NextRequest) {
+  try {
+    const { user } = await validateRequest();
+    
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get fresh user data
+    const [userData] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.id))
+      .limit(1);
+
+    if (!userData) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Calculate XP and level
+    const currentXP = userData.xp || 0;
+    const level = userData.level || 1;
+    const nextLevelXP = level * 100;
+    const progressFraction = Math.min(1, (currentXP % 100) / 100);
+
+    // Calculate streaks
+    const ritualStreak = userData.streak || 0;
+    const noContactStreak = userData.no_contact_days || 0;
+
+    // Generate mock rituals for today (this would come from a rituals table in production)
+    const todaysRituals = [
+      {
+        id: '1',
+        title: 'Morning Affirmation',
+        difficulty: 'easy' as const,
+        completed: false,
+        duration: '2 min',
+        icon: '🌅'
+      },
+      {
+        id: '2',
+        title: 'Boundary Setting Practice',
+        difficulty: 'medium' as const,
+        completed: false,
+        duration: '5 min',
+        icon: '🛡️'
+      },
+      {
+        id: '3',
+        title: 'Evening Reflection',
+        difficulty: 'easy' as const,
+        completed: false,
+        duration: '3 min',
+        icon: '🌙'
+      }
+    ];
+
+    // Generate mock wall posts (this would come from a wall_posts table in production)
+    const wallPosts = [
+      {
+        id: '1',
+        content: 'Just realized I deserve better treatment. Small win but it feels huge.',
+        archetype: userData.emotional_archetype || 'Explorer',
+        timeAgo: '2m',
+        reactions: 8,
+        anonymous: true
+      },
+      {
+        id: '2',
+        content: 'Three weeks no contact. The urge to text is still there but getting weaker.',
+        archetype: 'Firewall Builder',
+        timeAgo: '15m',
+        reactions: 12,
+        anonymous: true
+      },
+      {
+        id: '3',
+        content: 'Had my first boundary conversation today. Scary but proud of myself.',
+        archetype: 'Secure Node',
+        timeAgo: '1h',
+        reactions: 15,
+        anonymous: true
+      }
+    ];
+
+    // Generate badges based on user progress
+    const badges = [
+      {
+        id: '1',
+        name: 'First Steps',
+        icon: '👟',
+        unlocked: currentXP >= 10
+      },
+      {
+        id: '2',
+        name: 'Week Warrior',
+        icon: '⚔️',
+        unlocked: ritualStreak >= 7
+      },
+      {
+        id: '3',
+        name: 'AI Explorer',
+        icon: '🤖',
+        unlocked: (userData.ai_quota_used || 0) >= 3
+      },
+      {
+        id: '4',
+        name: 'No Contact Champion',
+        icon: '🛡️',
+        unlocked: noContactStreak >= 30
+      },
+      {
+        id: '5',
+        name: 'Community Helper',
+        icon: '❤️',
+        unlocked: currentXP >= 200
+      }
+    ];
+
+    // Generate daily insight based on user's progress
+    const insights = [
+      "Your consistent ritual practice is building new neural pathways. Each small action compounds.",
+      "Progress isn't always linear. Celebrate the small victories on your healing journey.",
+      "Remember: You're not broken, you're breaking free from patterns that no longer serve you.",
+      "Every boundary you set is a gift to your future self.",
+      "The fact that you're here shows incredible courage and self-awareness."
+    ];
+    
+    const dailyInsight = insights[Math.floor(Math.random() * insights.length)];
+
+    // Calculate motivation meter
+    const recentActivity = Math.min(10, ritualStreak + (currentXP % 50) / 10);
+    const motivationLevel = Math.max(1, Math.min(10, Math.floor(recentActivity) + 1));
+    
+    const motivationMessages = [
+      'Just Getting Started', 'Building Momentum', 'Finding Your Rhythm', 
+      'Making Progress', 'Steady Growth', 'Strong Foundation', 
+      'Momentum Building!', 'On Fire!', 'Unstoppable!', 'Transformation Master!'
+    ];
+
+    const dashboardData = {
+      streaks: {
+        rituals: ritualStreak,
+        noContact: noContactStreak
+      },
+      xp: {
+        current: currentXP,
+        level: level,
+        nextLevelXP: nextLevelXP,
+        progressFraction: progressFraction
+      },
+      badges: badges,
+      todaysRituals: todaysRituals,
+      wallPosts: wallPosts,
+      dailyInsight: dailyInsight,
+      motivationMeter: {
+        level: motivationLevel,
+        message: motivationMessages[motivationLevel - 1]
+      }
+    };
+
+    return NextResponse.json(dashboardData);
+
+  } catch (error) {
+    console.error('Dashboard hub API error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch dashboard data' },
+      { status: 500 }
+    );
+  }
+}

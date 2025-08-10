@@ -1,13 +1,19 @@
 // Signup API route - Direct database registration with actual schema
 import { NextRequest, NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+import { db } from '@/lib/db/drizzle';
+import { users } from '@/lib/db/actual-schema';
+import { eq } from 'drizzle-orm';
+import { lucia } from '@/lib/auth';
+import { cookies } from 'next/headers';
+import { generateId } from '@/lib/utils';
+import { generateUniqueUsername } from '@/lib/username-generator';
 
 export interface SignupResponse {
   error?: string | null;
   success: boolean;
   message?: string;
+  token?: string;
   data?: {
     userId?: string;
     email?: string;
@@ -16,7 +22,7 @@ export interface SignupResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<SignupResponse>> {
   try {
-    const { email, password, username, quizResult } = await request.json();
+    const { email, password, username, wantsNewsletter, subscriptionTier, scanAnswers } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -35,24 +41,22 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
     }
 
     // Validate password strength
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { success: false, error: 'Password must be at least 6 characters long' },
+        { success: false, error: 'Password must be at least 8 characters long' },
         { status: 400 }
       );
     }
 
     console.log('🔧 Signup attempt for:', email);
 
-    // Direct database connection using Neon
-    const sql = neon(process.env.POSTGRES_URL!);
+    // Check if user already exists
+    const existingUser = await db.select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
 
-    // Check if user already exists - using actual column names
-    const existingUsers = await sql`
-      SELECT id FROM users WHERE email = ${email.toLowerCase()} LIMIT 1
-    `;
-
-    if (existingUsers.length > 0) {
+    if (existingUser.length > 0) {
       return NextResponse.json(
         { success: false, error: 'An account with this email already exists' },
         { status: 409 }
@@ -64,22 +68,45 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Generate user ID
-    const userId = uuidv4();
+    const userId = generateId();
 
-    // Determine archetype from quiz result or default
-    const archetype = quizResult?.archetype || 'balanced';
+    // Generate unique username using proper algorithm
+    console.log('🔧 Generating unique username for direct signup...');
+    const finalUsername = username || await generateUniqueUsername();
+    console.log('🔧 Final username for user:', finalUsername);
 
-    // Create user in database - using only existing columns
-    await sql`
-      INSERT INTO users (id, email, password_hash, archetype) 
-      VALUES (${userId}, ${email.toLowerCase()}, ${hashedPassword}, ${archetype})
-    `;
+    // Create user in database using actual schema
+    const newUser = await db.insert(users).values({
+      id: userId,
+      email: email.toLowerCase(),
+      username: finalUsername,
+      hashedPassword: hashedPassword,
+      subscription_tier: subscriptionTier || 'ghost_mode',
+      created_at: new Date(),
+      updated_at: new Date()
+    }).returning({
+      id: users.id,
+      email: users.email,
+      username: users.username
+    });
 
     console.log('✅ User created successfully:', email);
+
+    // Create session using Lucia
+    const session = await lucia.createSession(userId, {
+      source: 'direct-signup'
+    });
+    
+    const sessionCookie = lucia.createSessionCookie(session.id);
+
+    // Set session cookie
+    const cookieStore = await cookies();
+    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
     return NextResponse.json({
       success: true,
       message: 'Account created successfully',
+      token: session.id, // For compatibility with existing frontend
       data: {
         userId: userId,
         email: email

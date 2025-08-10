@@ -3,7 +3,7 @@
 import { Lucia, Session, User as LuciaUser } from 'lucia';
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { db } from '@/lib/db/drizzle';
-import { sessions, users, User as DbUser } from '@/lib/db/unified-schema';
+import { sessions, users, User as DbUser } from '@/lib/db/actual-schema';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 
