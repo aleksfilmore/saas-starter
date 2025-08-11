@@ -279,10 +279,10 @@ export function DailyRitualCompletionModal({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-4">
-                  <span className={`${(validationResult?.metrics?.charCount || 0) >= 120 || (validationResult?.metrics?.sentenceCount || 0) >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
-                    {validationResult?.metrics?.charCount || 0} chars / {wordCount} words
+                  <span className={`${(validationResult?.characterCount || 0) >= 120 || (validationResult?.wordCount || 0) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                    {validationResult?.characterCount || 0} chars / {wordCount} words
                   </span>
-                  <span className={`${(validationResult?.metrics?.timingSeconds || dwellTimeSeconds) >= 45 ? 'text-green-600' : 'text-orange-500'}`}>
+                  <span className={`${dwellTimeSeconds >= 45 ? 'text-green-600' : 'text-orange-500'}`}>
                     ⏱️ {dwellTimeSeconds}s / 45s min
                   </span>
                 </div>
@@ -299,13 +299,13 @@ export function DailyRitualCompletionModal({
               {/* Quality Metrics */}
               {validationResult && (
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className={`flex items-center gap-1 ${(validationResult?.metrics?.uniqueCharRatio || 0) >= 0.6 ? 'text-green-600' : 'text-orange-500'}`}>
-                    <div className={`w-2 h-2 rounded-full ${(validationResult?.metrics?.uniqueCharRatio || 0) >= 0.6 ? 'bg-green-500' : 'bg-orange-500'}`} />
-                    Variety: {Math.round((validationResult?.metrics?.uniqueCharRatio || 0) * 100)}%
+                  <div className={`flex items-center gap-1 ${(validationResult?.characterCount || 0) >= 50 ? 'text-green-600' : 'text-orange-500'}`}>
+                    <div className={`w-2 h-2 rounded-full ${(validationResult?.characterCount || 0) >= 50 ? 'bg-green-500' : 'bg-orange-500'}`} />
+                    Length: {validationResult?.characterCount || 0} chars
                   </div>
-                  <div className={`flex items-center gap-1 ${(validationResult?.metrics?.sentenceCount || 0) >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
-                    <div className={`w-2 h-2 rounded-full ${(validationResult?.metrics?.sentenceCount || 0) >= 2 ? 'bg-green-500' : 'bg-gray-400'}`} />
-                    Sentences: {validationResult?.metrics?.sentenceCount || 0}
+                  <div className={`flex items-center gap-1 ${(validationResult?.wordCount || 0) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                    <div className={`w-2 h-2 rounded-full ${(validationResult?.wordCount || 0) >= 10 ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    Words: {validationResult?.wordCount || 0}
                   </div>
                 </div>
               )}
