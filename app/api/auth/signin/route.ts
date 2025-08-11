@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/minimal-schema';
+import { users } from '@/lib/db/actual-schema'; // FIXED: Use consistent schema
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { verifyPassword } from '@/lib/crypto/password';
@@ -78,9 +78,20 @@ export async function POST(request: NextRequest) {
     const sessionCookie = lucia.createSessionCookie(session.id);
 
     const cookieStore = await cookies();
-    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    
+    // Enhanced cookie setting for production
+    const cookieOptions = {
+      ...sessionCookie.attributes,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    };
+    
+    cookieStore.set(sessionCookie.name, sessionCookie.value, cookieOptions);
 
-    console.log('Login successful for user:', existingUser.id);
+    console.log('Login successful for user:', existingUser.id, 'Cookie set:', sessionCookie.name);
 
     return NextResponse.json(
       { 

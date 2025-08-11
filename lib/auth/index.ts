@@ -16,6 +16,7 @@ export const lucia = new Lucia(adapter, {
       // Use secure cookies in production
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax', // Allow cross-site requests
+      domain: process.env.NODE_ENV === 'production' ? '.ctrlaltblock.com' : undefined, // Set domain for production
     },
   },
   getUserAttributes: (attributes) => {
