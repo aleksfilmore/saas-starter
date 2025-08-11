@@ -1,16 +1,12 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './actual-schema';
-import { config } from 'dotenv';
-
-// Load environment variables
-config({ path: '.env.local' });
 
 // Get the database URL from environment variables
 const postgresUrl = process.env.POSTGRES_URL;
 
 if (!postgresUrl) {
-  throw new Error('POSTGRES_URL environment variable is required');
+  throw new Error(`POSTGRES_URL environment variable is required. NODE_ENV: ${process.env.NODE_ENV}`);
 }
 
 // Only log in development
