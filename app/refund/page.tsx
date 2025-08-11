@@ -55,15 +55,15 @@ export default function RefundPage() {
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center">
                     <Shield className="h-5 w-5 mr-2" />
-                    30-Day Money-Back Guarantee
+                    Billing & Refund Policy
                   </h2>
                   <p className="text-blue-100 mb-4">
-                    We stand behind our service. If CTRL+ALT+BLOCK doesn't help you on your healing journey, 
-                    we'll refund your money within 30 days of purchase.
+                    Our billing and refund policies are designed to be fair and transparent. 
+                    All refund requests are handled on a case-by-case basis.
                   </p>
                   <div className="flex items-center text-green-300">
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    <span className="text-sm">No questions asked, no hassle, no hard feelings.</span>
+                    <span className="text-sm">Contact our support team to discuss your specific situation.</span>
                   </div>
                 </CardContent>
               </Card>
@@ -116,7 +116,7 @@ export default function RefundPage() {
                     Eligible for Full Refund
                   </h3>
                   <ul className="text-sm space-y-1">
-                    <li>• Purchase made within last 30 days</li>
+                    <li>• Purchase made recently</li>
                     <li>• Account in good standing (no policy violations)</li>
                     <li>• Request made through proper channels</li>
                     <li>• Service not meeting reasonable expectations</li>
@@ -147,7 +147,7 @@ export default function RefundPage() {
                     Non-Refundable Situations
                   </h3>
                   <ul className="text-sm space-y-1">
-                    <li>• Purchase made over 30 days ago</li>
+                    <li>• Purchase made beyond reasonable timeframe</li>
                     <li>• Account terminated for policy violations</li>
                     <li>• Fraudulent or chargeback claims</li>
                     <li>• Third-party payment processor fees</li>
@@ -293,7 +293,7 @@ export default function RefundPage() {
                 <CardContent className="p-4">
                   <h3 className="font-medium text-white mb-3">If You Disagree with Our Decision</h3>
                   <ol className="text-sm space-y-2 list-decimal list-inside">
-                    <li><strong>Appeal Process:</strong> Email appeals@ctrlaltblock.com within 30 days</li>
+                    <li><strong>Appeal Process:</strong> Email appeals@ctrlaltblock.com within reasonable timeframe</li>
                     <li><strong>Management Review:</strong> Senior team member will review your case</li>
                     <li><strong>Final Decision:</strong> Written response within 7 business days</li>
                     <li><strong>External Resolution:</strong> Contact your payment provider or local consumer protection agency</li>

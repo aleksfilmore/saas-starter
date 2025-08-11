@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 import { 
   Crown, 
   Calendar, 
@@ -22,6 +23,8 @@ interface SubscriptionData {
   status: string;
   currentPeriodEnd: string | null;
   cancelAtPeriodEnd: boolean;
+  customerId?: string;
+  subscriptionId?: string;
   plan: {
     name: string;
     price: number;
@@ -80,17 +83,29 @@ export function SubscriptionManager() {
       }
     } catch (err) {
       console.error('Upgrade error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to upgrade');
+      toast.error(err instanceof Error ? err.message : 'Failed to upgrade');
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleManageSubscription = async () => {
+    if (!subscription || !isPremium || !subscription.customerId) {
+      toast.error('Billing portal is only available for premium subscribers with active subscriptions');
+      return;
+    }
+
     setActionLoading(true);
     try {
       const response = await fetch('/api/stripe/portal', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerId: subscription.customerId,
+          returnUrl: window.location.href
+        }),
       });
 
       if (!response.ok) {
@@ -106,7 +121,38 @@ export function SubscriptionManager() {
       }
     } catch (err) {
       console.error('Portal error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to open billing portal');
+      toast.error(err instanceof Error ? err.message : 'Failed to open billing portal');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDevToggle = async () => {
+    if (process.env.NODE_ENV === 'production') return;
+    
+    setActionLoading(true);
+    try {
+      const action = isPremium ? 'downgrade_to_ghost' : 'upgrade_to_firewall';
+      const response = await fetch('/api/dev/subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle subscription');
+      }
+
+      const data = await response.json();
+      toast.success(data.message);
+      
+      // Refresh subscription data
+      await fetchSubscription();
+    } catch (err) {
+      console.error('Dev toggle error:', err);
+      toast.error(err instanceof Error ? err.message : 'Failed to toggle subscription');
     } finally {
       setActionLoading(false);
     }
@@ -145,6 +191,38 @@ export function SubscriptionManager() {
 
   return (
     <div className="space-y-6">
+      {/* Development Toggle - Only in development */}
+      {process.env.NODE_ENV === 'development' && (
+        <Card className="border-yellow-500/30 bg-yellow-900/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-yellow-300">
+              <Settings className="h-5 w-5" />
+              Development Tools
+            </CardTitle>
+            <CardDescription className="text-yellow-400/70">
+              Test subscription changes in development mode
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={handleDevToggle}
+              disabled={actionLoading}
+              variant="outline"
+              className="border-yellow-500/30 text-yellow-300 hover:bg-yellow-900/30"
+            >
+              {actionLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : isPremium ? (
+                <XCircle className="h-4 w-4 mr-2" />
+              ) : (
+                <Crown className="h-4 w-4 mr-2" />
+              )}
+              {isPremium ? 'Test Downgrade to Ghost' : 'Test Upgrade to Firewall'}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Current Plan Card */}
       <Card className={`${isPremium ? 'border-orange-500/30 bg-gradient-to-br from-orange-900/20 to-red-900/20' : 'bg-gray-800/50 border-gray-700'}`}>
         <CardHeader>
@@ -245,7 +323,7 @@ export function SubscriptionManager() {
                 )}
                 Upgrade to Firewall Mode
               </Button>
-            ) : (
+            ) : subscription.customerId ? (
               <Button 
                 onClick={handleManageSubscription}
                 disabled={actionLoading}
@@ -259,6 +337,20 @@ export function SubscriptionManager() {
                 )}
                 Manage Subscription
               </Button>
+            ) : (
+              <div className="flex-1 space-y-2">
+                <Button 
+                  disabled
+                  variant="outline"
+                  className="w-full border-gray-600 text-gray-500 cursor-not-allowed"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Billing Portal Unavailable
+                </Button>
+                <p className="text-xs text-gray-500 text-center">
+                  Your subscription is active but billing portal is not available in development mode.
+                </p>
+              </div>
             )}
           </div>
         </CardContent>

@@ -659,7 +659,7 @@ export default function HomePage() {
 
           <div className="text-center mt-8">
             <p className="text-gray-400 text-sm">
-              🔒 30-day money-back guarantee • Cancel anytime • No hidden fees
+              � Cancel anytime • 💳 No hidden fees
             </p>
           </div>
         </div>

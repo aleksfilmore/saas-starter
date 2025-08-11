@@ -78,24 +78,23 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   try {
     // Determine subscription tier based on price ID
     const priceId = subscription.items.data[0]?.price.id;
-    let tier = 'ghost_mode';
+    let subscriptionTier = 'ghost_mode';
+    let tier = 'ghost';
     
     if (priceId === process.env.STRIPE_FIREWALL_PRICE_ID) {
-      tier = 'firewall_mode';
+      subscriptionTier = 'firewall_mode';
+      tier = subscription.status === 'active' ? 'firewall' : 'ghost';
     }
-
-    // Cast subscription to access properties
-    const subscriptionData = subscription as any;
 
     await db.update(users)
       .set({
-        subscriptionTier: tier,
-        tier: subscription.status === 'active' ? 'premium' : 'freemium',
+        subscriptionTier: subscriptionTier,
+        tier: tier,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId));
 
-    console.log(`Updated user ${userId} subscription to ${tier}`);
+    console.log(`Updated user ${userId} subscription to ${tier} (${subscriptionTier})`);
   } catch (error) {
     console.error('Error updating user subscription:', error);
   }
@@ -113,7 +112,7 @@ async function handleSubscriptionCancellation(subscription: Stripe.Subscription)
     await db.update(users)
       .set({
         subscriptionTier: 'ghost_mode',
-        tier: 'freemium',
+        tier: 'ghost',
         updatedAt: new Date()
       })
       .where(eq(users.id, userId));

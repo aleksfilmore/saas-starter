@@ -49,7 +49,7 @@ export const TIER_PERMISSIONS: Record<UserTier, TierPermissions> = {
     
     // Advanced Features (Firewall Only)
     aiTherapy: false,
-    wallOfWounds: false,
+    wallOfWounds: true, // Ghost users can access Wall to read and react to posts
     advancedAnalytics: false,
     crisisSupport: false,
     gamification: false,

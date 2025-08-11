@@ -12,7 +12,7 @@ import { HeroGuidance } from '@/components/dashboard/HeroGuidance';
 import { InsightsZone } from '@/components/dashboard/InsightsZone';
 import { RitualModal } from '@/components/dashboard/modals/RitualModal';
 import { CheckInModal } from '@/components/dashboard/modals/CheckInModal';
-import { AITherapyModal } from '@/components/dashboard/modals/AITherapyModal';
+import AITherapyModal from '@/components/dashboard/modals/AITherapyModal';
 import { NoContactModal } from '@/components/dashboard/modals/NoContactModal';
 import { UserMenu } from './UserMenu';
 import { ProgressPath } from '@/components/dashboard/ProgressPath';

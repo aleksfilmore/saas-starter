@@ -21,13 +21,23 @@ interface CompleteResponse {
   user?: { xp: number; bytes: number; level: number; streak?: number };
 }
 
+interface RitualResponse {
+  // Ghost users get single ritual
+  ritual?: TodayRitual;
+  // Firewall users get multiple rituals
+  rituals?: TodayRitual[];
+  tier: 'ghost' | 'firewall';
+  hasExistingAssignment?: boolean;
+  isCompleted?: boolean;
+}
+
 const fetcher = (url: string) => fetch(url).then(r => {
   if (!r.ok) throw new Error(`Failed ${url}`);
   return r.json();
 });
 
 export function useHealingHubData() {
-  const { data: ritualData, isLoading: ritualLoading, error: ritualError, mutate: mutateRitual } = useSWR<{ ritual: TodayRitual }>(
+  const { data: ritualData, isLoading: ritualLoading, error: ritualError, mutate: mutateRitual } = useSWR<RitualResponse>(
     '/api/rituals/today',
     fetcher,
     { revalidateOnFocus: true, shouldRetryOnError: false }
@@ -48,7 +58,31 @@ export function useHealingHubData() {
         return false;
       }
       toast.success(`Ritual complete +${json.rewards?.xp} XP`, { id: ritualId });
-      mutateRitual(prev => prev ? ({ ritual: { ...prev.ritual, isCompleted: true, completedAt: new Date().toISOString() } }) : prev, false);
+      
+      // Update the completed ritual in the cache
+      mutateRitual(prev => {
+        if (!prev) return prev;
+        
+        if (prev.ritual) {
+          // Ghost user - single ritual
+          return {
+            ...prev,
+            ritual: { ...prev.ritual, isCompleted: true, completedAt: new Date().toISOString() }
+          };
+        } else if (prev.rituals) {
+          // Firewall user - multiple rituals
+          return {
+            ...prev,
+            rituals: prev.rituals.map(r => 
+              r.id === ritualId 
+                ? { ...r, isCompleted: true, completedAt: new Date().toISOString() }
+                : r
+            )
+          };
+        }
+        return prev;
+      }, false);
+      
       mutateRitual();
       return true;
     } catch (e) {
@@ -58,13 +92,22 @@ export function useHealingHubData() {
     }
   }, [mutateRitual]);
 
-  let steps: TodayRitual['steps'] = ritualData?.ritual?.steps;
+  // Handle both single ritual (Ghost) and multiple rituals (Firewall)
+  const allRituals = ritualData?.rituals || (ritualData?.ritual ? [ritualData.ritual] : []);
+  const primaryRitual = ritualData?.ritual || (ritualData?.rituals?.[0]);
+  
+  let steps: TodayRitual['steps'] = primaryRitual?.steps;
   if (steps && typeof steps === 'string') {
     try { steps = JSON.parse(steps as any); } catch { /* ignore */ }
   }
 
   return {
-    ritual: ritualData?.ritual ? { ...ritualData.ritual, steps } : null,
+    // For backwards compatibility, return the first/primary ritual
+    ritual: primaryRitual ? { ...primaryRitual, steps } : null,
+    // For Firewall users, return all rituals
+    rituals: allRituals.length > 0 ? allRituals : null,
+    tier: ritualData?.tier || 'ghost',
+    isFirewall: ritualData?.tier === 'firewall',
     ritualLoading,
     ritualError,
     completeRitual,

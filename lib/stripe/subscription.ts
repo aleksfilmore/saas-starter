@@ -99,8 +99,12 @@ export async function getUserSubscription(userId: string) {
 
     const userData = user[0];
     
-    // If user has no tier set or is freemium, they're on free plan
-    if (!userData.tier || userData.tier === 'freemium') {
+    // Check multiple tier fields for backward compatibility
+    const userTier = userData.tier || userData.subscriptionTier;
+    const isFirewall = userTier === 'firewall' || userTier === 'premium' || userData.subscriptionTier === 'premium';
+    
+    // If user has no tier set or is freemium/ghost, they're on free plan
+    if (!userTier || userTier === 'freemium' || userTier === 'ghost') {
       return {
         tier: 'FREE',
         status: 'active',
@@ -110,8 +114,8 @@ export async function getUserSubscription(userId: string) {
       };
     }
 
-    // If user is marked as premium, check Stripe
-    if (userData.tier === 'premium') {
+    // If user is marked as firewall/premium, check Stripe
+    if (isFirewall) {
       try {
         const stripe = getStripe();
         
@@ -122,13 +126,15 @@ export async function getUserSubscription(userId: string) {
         });
 
         if (customers.data.length === 0) {
-          // User marked as paid but no Stripe customer found - fallback to free
+          // User marked as paid but no Stripe customer found
+          // In development or if Stripe is misconfigured, treat as premium but with limited portal access
           return {
-            tier: 'FREE',
-            status: 'inactive',
+            tier: 'PREMIUM',
+            status: 'active',
             currentPeriodEnd: null,
             cancelAtPeriodEnd: false,
-            plan: SUBSCRIPTION_PLANS.FREE
+            plan: SUBSCRIPTION_PLANS.PREMIUM,
+            customerId: undefined // No portal access without customer ID
           };
         }
 
@@ -142,45 +148,67 @@ export async function getUserSubscription(userId: string) {
         });
 
         if (subscriptions.data.length === 0) {
+          // Check for past_due or trialing subscriptions too
+          const allSubscriptions = await stripe.subscriptions.list({
+            customer: customer.id,
+            limit: 1
+          });
+
+          if (allSubscriptions.data.length === 0) {
+            // No subscriptions but customer exists - treat as premium without active subscription
+            return {
+              tier: 'PREMIUM',
+              status: 'inactive',
+              currentPeriodEnd: null,
+              cancelAtPeriodEnd: false,
+              plan: SUBSCRIPTION_PLANS.PREMIUM,
+              customerId: customer.id // Portal access available
+            };
+          }
+
+          const subscription = allSubscriptions.data[0];
+          const subscriptionAny = subscription as any;
           return {
-            tier: 'FREE',
-            status: 'inactive',
-            currentPeriodEnd: null,
-            cancelAtPeriodEnd: false,
-            plan: SUBSCRIPTION_PLANS.FREE
+            tier: 'PREMIUM',
+            status: subscription.status,
+            currentPeriodEnd: subscriptionAny.current_period_end ? new Date(subscriptionAny.current_period_end * 1000) : null,
+            cancelAtPeriodEnd: subscriptionAny.cancel_at_period_end ?? false,
+            plan: SUBSCRIPTION_PLANS.PREMIUM,
+            subscriptionId: subscription.id,
+            customerId: customer.id
           };
         }
 
         const subscription = subscriptions.data[0];
+        const subscriptionAny = subscription as any;
         const priceId = subscription.items.data[0]?.price.id;
         
-        // Determine tier based on price ID
-        let tier: keyof typeof SUBSCRIPTION_PLANS = 'FREE';
+        // Determine tier based on price ID or default to PREMIUM for firewall users
+        let tier: keyof typeof SUBSCRIPTION_PLANS = 'PREMIUM';
         if (priceId === SUBSCRIPTION_PLANS.PREMIUM.priceId) {
           tier = 'PREMIUM';
         }
 
-        // Cast to any to access Stripe properties
-        const subscriptionData = subscription as any;
-
         return {
           tier,
           status: subscription.status,
-          currentPeriodEnd: subscriptionData.current_period_end ? new Date(subscriptionData.current_period_end * 1000) : null,
-          cancelAtPeriodEnd: subscriptionData.cancel_at_period_end ?? false,
+          currentPeriodEnd: subscriptionAny.current_period_end ? new Date(subscriptionAny.current_period_end * 1000) : null,
+          cancelAtPeriodEnd: subscriptionAny.cancel_at_period_end ?? false,
           plan: SUBSCRIPTION_PLANS[tier],
           subscriptionId: subscription.id,
           customerId: customer.id
         };
       } catch (stripeError) {
         console.error('Stripe API error:', stripeError);
-        // If Stripe fails, fallback to free tier
+        // If Stripe fails but user is marked as firewall, show them as premium with error status
+        // This handles cases like wrong API keys, network issues, etc.
         return {
-          tier: 'FREE',
-          status: 'error',
+          tier: 'PREMIUM',
+          status: 'active', // Assume active if database says firewall
           currentPeriodEnd: null,
           cancelAtPeriodEnd: false,
-          plan: SUBSCRIPTION_PLANS.FREE
+          plan: SUBSCRIPTION_PLANS.PREMIUM,
+          customerId: undefined // No portal access when Stripe is unavailable
         };
       }
     }

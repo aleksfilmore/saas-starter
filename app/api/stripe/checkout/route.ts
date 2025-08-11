@@ -13,11 +13,15 @@ export async function POST(request: NextRequest) {
 
     const { tier } = await request.json();
     
-    if (!tier || !SUBSCRIPTION_PLANS[tier as keyof typeof SUBSCRIPTION_PLANS]) {
+    // Normalize tier to uppercase
+    const normalizedTier = tier?.toUpperCase();
+    
+    if (!normalizedTier || !SUBSCRIPTION_PLANS[normalizedTier as keyof typeof SUBSCRIPTION_PLANS]) {
+      console.error('Invalid tier received:', tier, 'normalized:', normalizedTier);
       return NextResponse.json({ error: 'Invalid subscription tier' }, { status: 400 });
     }
 
-    const plan = SUBSCRIPTION_PLANS[tier as keyof typeof SUBSCRIPTION_PLANS];
+    const plan = SUBSCRIPTION_PLANS[normalizedTier as keyof typeof SUBSCRIPTION_PLANS];
     
     if (!plan.priceId) {
       return NextResponse.json({ error: 'Free tier does not require checkout' }, { status: 400 });

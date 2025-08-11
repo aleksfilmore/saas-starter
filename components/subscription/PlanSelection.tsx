@@ -174,7 +174,7 @@ export default function PlanSelection({
       <div className="mt-8 text-center">
         <div className="inline-flex items-center gap-2 text-sm text-gray-400 bg-gray-800/50 px-4 py-2 rounded-full">
           <Shield className="h-4 w-4" />
-          <span>Cancel anytime • No hidden fees • 30-day money-back guarantee</span>
+          <span>Cancel anytime • No hidden fees</span>
         </div>
       </div>
     </div>

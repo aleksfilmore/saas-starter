@@ -55,7 +55,7 @@ export const SUBSCRIPTION_PLANS = {
   },
   PREMIUM: {
     name: '🔥 Firewall Mode',
-    priceId: process.env.STRIPE_FIREWALL_PRICE_ID, // Set this in .env
+    priceId: 'price_1RtQQGQsKtdjWreV56y1dorc', // Production Firewall subscription
     price: 9.99,
     description: 'Complete protection and unlimited growth',
     features: [
@@ -84,6 +84,15 @@ export const SUBSCRIPTION_PLANS = {
       ritualArchetypeWeighted: true
     }
   }
+} as const;
+
+// AI Therapy Product Configuration
+export const AI_THERAPY_CONFIG = {
+  priceId: 'price_1RtT7SJOZTvNXQXGi7jUm5Dw', // Production AI Therapy price
+  price: 3.99,
+  messagesIncluded: 300,
+  name: 'AI Therapy Session',
+  description: '300 AI therapy messages for $3.99'
 } as const;
 
 export type SubscriptionTier = keyof typeof SUBSCRIPTION_PLANS;

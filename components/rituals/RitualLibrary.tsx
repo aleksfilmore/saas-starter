@@ -23,7 +23,7 @@ import {
 import { RITUAL_CATEGORIES, RITUAL_BANK, getRitualsByTier, type Ritual, type RitualCategory } from '@/lib/rituals/ritual-bank'
 
 interface RitualLibraryProps {
-  userTier: 'ghost' | 'firewall' | 'deep-reset'
+  userTier: 'ghost' | 'firewall'
   onStartRitual?: (ritual: Ritual) => void
 }
 
@@ -42,8 +42,8 @@ export default function RitualLibrary({ userTier, onStartRitual }: RitualLibrary
   const [selectedCategory, setSelectedCategory] = useState<RitualCategory>('grief-cycle')
   
   // Filter rituals by tier hierarchy
-  const getUserRitualsByTier = (tier: 'ghost' | 'firewall' | 'deep-reset') => {
-    const tierHierarchy = { 'ghost': 0, 'firewall': 1, 'deep-reset': 2 }
+  const getUserRitualsByTier = (tier: 'ghost' | 'firewall') => {
+    const tierHierarchy = { 'ghost': 0, 'firewall': 1 }
     const userTierLevel = tierHierarchy[tier]
     
     return RITUAL_BANK.filter(ritual => {
@@ -62,13 +62,12 @@ export default function RitualLibrary({ userTier, onStartRitual }: RitualLibrary
     switch (tier) {
       case 'ghost': return 'bg-gray-100 text-gray-800'
       case 'firewall': return 'bg-blue-100 text-blue-800'
-      case 'deep-reset': return 'bg-purple-100 text-purple-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
 
   const canAccessRitual = (ritual: Ritual) => {
-    const tierHierarchy = { 'ghost': 0, 'firewall': 1, 'deep-reset': 2 }
+    const tierHierarchy = { 'ghost': 0, 'firewall': 1 }
     return tierHierarchy[userTier] >= tierHierarchy[ritual.tier]
   }
 

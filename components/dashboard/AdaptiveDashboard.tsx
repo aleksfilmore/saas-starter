@@ -40,24 +40,31 @@ import {
 import { BreathingExercise } from '@/components/quick-actions/BreathingExercise';
 import { RitualModal } from '@/components/dashboard/modals/RitualModal';
 import { CheckInModal } from '@/components/dashboard/modals/CheckInModal';
-import { AITherapyModal } from '@/components/dashboard/modals/AITherapyModal';
+import AITherapyModal from '@/components/dashboard/modals/AITherapyModal';
+import { AITherapyPurchaseModal } from '@/components/dashboard/modals/AITherapyPurchaseModal';
 import { NoContactModal } from '@/components/dashboard/modals/NoContactModal';
 import { UpgradeModal } from './modals/UpgradeModal';
 import { VoiceTherapyModal } from './modals/VoiceTherapyModal';
+import WallOfWoundsDashboard from './WallOfWoundsDashboard';
+import DashboardFooter from './DashboardFooter';
 
 interface Props {
   user: User;
 }
 
 const AI_PERSONAS = [
-  { id: 'supportive', name: 'Supportive Guide', icon: '🌟', description: 'Gentle, encouraging companion' },
-  { id: 'analytical', name: 'Strategic Analyst', icon: '🧠', description: 'Data-driven insights & patterns' },
-  { id: 'empathetic', name: 'Emotional Healer', icon: '💝', description: 'Deep emotional understanding' }
+  { id: 'supportive-guide', name: 'Supportive Guide', icon: '🌟', description: 'Gentle, encouraging companion' },
+  { id: 'strategic-analyst', name: 'Strategic Analyst', icon: '🧠', description: 'Data-driven insights & patterns' },
+  { id: 'emotional-healer', name: 'Emotional Healer', icon: '💝', description: 'Deep emotional understanding' }
 ];
 
 function AdaptiveDashboard({ user }: Props) {
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [selectedPersona, setSelectedPersona] = useState<string>('supportive');
+  const [selectedPersona, setSelectedPersona] = useState<string>('supportive-guide');
+  const [customInsight, setCustomInsight] = useState<string>('');
+  const [noContactEncouragement, setNoContactEncouragement] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const { tasks, markTask, progressFraction } = useDailyTasks();
   const { user: authUser } = useAuth();
   const { 
@@ -68,15 +75,69 @@ function AdaptiveDashboard({ user }: Props) {
     wallPosts, 
     completeRitual, 
     rerollRitual, 
-    rerollCooldownHoursLeft 
+    rerollCooldownHoursLeft,
+    noContact
   } = useHealingHub();
 
+  // Error handling helper
+  const handleError = (error: unknown, context: string) => {
+    console.error(`Error in ${context}:`, error);
+    setError(`Unable to ${context}. Please try again.`);
+  };
+
+  // Retry function
+  const retryAction = () => {
+    setError(null);
+    setRetryCount(prev => prev + 1);
+  };
+
+  // Fetch custom daily insight and no-contact encouragement
+  useEffect(() => {
+    const fetchInsightAndEncouragement = async () => {
+      try {
+        setError(null); // Clear any previous errors
+        // Fetch daily insight
+        const insightResponse = await fetch('/api/seed-insights');
+        if (insightResponse.ok) {
+          const insightData = await insightResponse.json();
+          if (insightData.success && insightData.insight) {
+            setCustomInsight(insightData.insight.text);
+          }
+        }
+
+        // Fetch no-contact encouragement for current day
+        const currentDay = noContact?.currentStreak || 0;
+        if (currentDay > 0) {
+          const encouragementResponse = await fetch(`/api/no-contact/message/${currentDay}`);
+          if (encouragementResponse.ok) {
+            const encouragementData = await encouragementResponse.json();
+            if (encouragementData.success && encouragementData.message) {
+              setNoContactEncouragement(encouragementData.message.body);
+            }
+          }
+        }
+      } catch (error) {
+        handleError(error, 'load dashboard data');
+      }
+    };
+
+    fetchInsightAndEncouragement();
+  }, [noContact?.currentStreak]);
+
   const isPremium = authUser?.subscriptionTier === 'premium' || 
-                     authUser?.tier === 'premium' || 
                      (user as any)?.subscription_tier === 'premium' || 
-                     (user as any)?.tier === 'premium' ||
                      (user as any)?.tier === 'firewall' ||
                      (user as any)?.ritual_tier === 'firewall';
+                     
+  // Debug log to track tier detection
+  console.log('🔍 Tier Detection:', {
+    authUserSubTier: authUser?.subscriptionTier,
+    userSubTier: (user as any)?.subscription_tier,
+    userTier: (user as any)?.tier,
+    userRitualTier: (user as any)?.ritual_tier,
+    isPremium: isPremium,
+    userEmail: (user as any)?.email
+  });
   const canReroll = rerollCooldownHoursLeft === 0;
   const completedToday = Object.values(tasks).filter(Boolean).length;
   const totalTasks = Object.keys(tasks).length;
@@ -107,7 +168,12 @@ function AdaptiveDashboard({ user }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Enhanced Header */}
-      <header className="border-b border-purple-500/20 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
+            {/* Header */}
+      <header 
+        className="border-b border-gray-700 bg-gray-800/60 backdrop-blur-sm sticky top-0 z-50"
+        role="banner"
+        aria-label="Dashboard navigation"
+      >
         <div className="max-w-8xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             
@@ -150,9 +216,9 @@ function AdaptiveDashboard({ user }: Props) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-teal-300 hover:text-teal-200 hover:bg-teal-500/10 flex items-center gap-2"
+                  className="text-teal-300 hover:text-teal-200 hover:bg-teal-500/10 flex items-center gap-1.5 text-xs"
                 >
-                  <Wind className="h-4 w-4" />
+                  <Wind className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Breathing</span>
                 </Button>
               </BreathingExercise>
@@ -162,9 +228,10 @@ function AdaptiveDashboard({ user }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={() => window.location.href = '/crisis-support'}
-                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 flex items-center gap-2"
+                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 flex items-center gap-1.5 text-xs"
+                aria-label="Access crisis support center for immediate help"
               >
-                <AlertTriangle className="h-4 w-4" />
+                <AlertTriangle className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Crisis Center</span>
               </Button>
               
@@ -173,9 +240,9 @@ function AdaptiveDashboard({ user }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setActiveModal('settings')}
-                className="text-purple-300 hover:text-white flex items-center gap-2"
+                className="text-purple-300 hover:text-white flex items-center gap-1.5 text-xs"
               >
-                <Settings className="h-4 w-4" />
+                <Settings className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Settings</span>
               </Button>
               
@@ -184,9 +251,9 @@ function AdaptiveDashboard({ user }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-gray-300 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2"
+                className="text-gray-300 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-1.5 text-xs"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Sign Out</span>
               </Button>
             </div>
@@ -194,67 +261,202 @@ function AdaptiveDashboard({ user }: Props) {
         </div>
       </header>
 
-      <main className="max-w-8xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+      {/* Error Message Display */}
+      {error && (
+        <div 
+          className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-4"
+          role="alert"
+          aria-live="polite"
+        >
+          <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0" />
+              <div>
+                <p className="text-red-200 font-medium">Something went wrong</p>
+                <p className="text-red-300 text-sm">{error}</p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={retryAction}
+              className="border-red-500/50 text-red-300 hover:bg-red-500/20"
+              aria-label="Retry failed action"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <main 
+        className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
+        role="main"
+        aria-label="Dashboard content"
+      >
+        {/* Mobile: Stack all columns vertically, Desktop: Three-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
           
-          {/* Left Sidebar - Key Metrics */}
-          <div className="xl:col-span-3 space-y-6">
-            {/* Daily Activities Tracker */}
+          {/* Left Sidebar - Mobile: First, Desktop: Left column */}
+          <div 
+            className="lg:col-span-3 space-y-4 order-1 lg:order-1"
+            role="region"
+            aria-label="Progress tracking and daily tasks"
+          >
+
+            {/* Compact Today's Progress with Insight */}
             <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-500/30">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Target className="h-5 w-5 text-emerald-400" />
+              <CardHeader className="pb-2">
+                <CardTitle className="text-white flex items-center gap-2 text-lg">
+                  <Target className="h-4 w-4 text-emerald-400" />
                   Today's Progress
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-white">{completedToday}/{totalTasks}</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                    {Math.round(progressFraction * 100)}% Complete
+                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+                    {Math.round(progressFraction * 100)}%
                   </Badge>
                 </div>
-                <Progress value={progressFraction * 100} className="h-3" />
-                <div className="space-y-2 text-sm">
+                <Progress value={progressFraction * 100} className="h-2" />
+                <div className="space-y-1.5 text-xs">
                   <TaskItem label="Daily Ritual" completed={tasks.ritual} />
                   <TaskItem label="Check-In" completed={tasks.checkIn} />
                   <TaskItem label="AI Therapy" completed={tasks.aiTherapy} premium={!isPremium} />
-                  <TaskItem label="No-Contact Check" completed={tasks.noContact} />
+                  <TaskItem label="No-Contact" completed={tasks.noContact} />
                   <TaskItem label="Wall Interaction" completed={tasks.community} />
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Streak Counter */}
-            <Card className="bg-gradient-to-br from-emerald-900/50 to-slate-800/50 border-emerald-500/30">
-              <CardContent className="pt-6">
-                <div className="text-center space-y-3">
-                  <Shield className="h-12 w-12 mx-auto text-emerald-400" />
-                  <div>
-                    <div className="text-3xl font-bold text-white">{streaks?.noContact || 0}</div>
-                    <div className="text-sm text-emerald-300">Days No Contact</div>
+                
+                {/* Today's Insight integrated */}
+                <div className="border-t border-purple-500/20 pt-3">
+                  <div className="flex items-start gap-2">
+                    <Star className="h-3.5 w-3.5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-xs font-medium text-yellow-400 mb-1">Today's Insight</h4>
+                      <p className="text-xs text-slate-200 leading-relaxed italic">
+                        "{customInsight || dailyInsight || 'The fact that you\'re here shows incredible courage and self-awareness.'}"
+                      </p>
+                    </div>
                   </div>
-                  <Button 
-                    onClick={() => setActiveModal('no-contact')}
-                    size="sm" 
-                    className="w-full bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    Update Streak
-                  </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
+            {/* Three Cards Row: Check-In, No-Contact, Upgrade */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              
+              {/* Daily Check-In - Compact */}
+              <Card className="bg-gradient-to-br from-blue-900/50 to-slate-800/50 border-blue-500/30">
+                <CardContent className="pt-4 pb-4">
+                  <div className="text-center space-y-2">
+                    <MessageSquare className="h-6 w-6 mx-auto text-blue-400" />
+                    <div>
+                      <h3 className="text-sm font-semibold text-white">Check-In</h3>
+                      <p className="text-xs text-blue-200">How are you?</p>
+                    </div>
+                    <Button 
+                      onClick={() => setActiveModal('checkin')}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-xs h-7"
+                      disabled={tasks.checkIn}
+                    >
+                      {tasks.checkIn ? 'Done' : 'Start'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* No-Contact Streak - Compact */}
+              <Card 
+                className="bg-gradient-to-br from-emerald-900/50 to-slate-800/50 border-emerald-500/30 cursor-pointer hover:border-emerald-400/50 transition-colors"
+                onClick={() => setActiveModal('no-contact')}
+              >
+                <CardContent className="pt-4 pb-4">
+                  <div className="text-center space-y-2">
+                    <Shield className="h-6 w-6 mx-auto text-emerald-400" />
+                    <div>
+                      <div className="text-lg font-bold text-white">{noContact?.currentStreak || 0}</div>
+                      <div className="text-xs text-emerald-300">No Contact</div>
+                    </div>
+                    <Button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveModal('no-contact');
+                      }}
+                      size="sm" 
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-xs h-7"
+                    >
+                      Update
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Upgrade Card - Compact */}
+              {!isPremium ? (
+                <Card className="border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 to-slate-800/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="text-center space-y-2">
+                      <Crown className="h-6 w-6 mx-auto text-yellow-400" />
+                      <div>
+                        <h3 className="text-sm font-semibold text-white">Firewall</h3>
+                        <p className="text-xs text-yellow-200">Upgrade</p>
+                      </div>
+                      <Button 
+                        onClick={() => setActiveModal('upgrade')}
+                        className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold text-xs h-7"
+                      >
+                        Upgrade
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-slate-800/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="text-center space-y-2">
+                      <Crown className="h-6 w-6 mx-auto text-purple-400" />
+                      <div>
+                        <h3 className="text-sm font-semibold text-white">Firewall</h3>
+                        <p className="text-xs text-purple-200">Active</p>
+                      </div>
+                      <Badge className="bg-purple-500/20 text-purple-300 text-xs">
+                        Premium Member
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Daily Encouragement for No-Contact (if exists) */}
+            {noContactEncouragement && (
+              <Card className="bg-gradient-to-br from-emerald-900/30 to-slate-800/50 border-emerald-500/20">
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-start gap-2">
+                    <Shield className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="text-xs font-medium text-emerald-400 mb-1">Daily Encouragement</h4>
+                      <p className="text-xs text-emerald-200 leading-relaxed italic">
+                        "{noContactEncouragement}"
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Ritual Streak and Level Stats */}
             <Card className="bg-slate-800/50 border-slate-600/30">
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 pb-4">
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
-                    <div className="text-2xl font-bold text-purple-400">{streaks?.rituals || 0}</div>
+                    <div className="text-xl font-bold text-purple-400">{streaks?.rituals || (user as any)?.ritual_streak || 0}</div>
                     <div className="text-xs text-slate-400">Ritual Streak</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-pink-400">L{user.level || 1}</div>
+                    <div className="text-xl font-bold text-pink-400">L{(user as any)?.level || authUser?.level || 1}</div>
                     <div className="text-xs text-slate-400">Current Level</div>
                   </div>
                 </div>
@@ -263,7 +465,12 @@ function AdaptiveDashboard({ user }: Props) {
           </div>
 
           {/* Main Content Area */}
-          <div className="xl:col-span-6 space-y-8">
+                    {/* Center Area - Main Actions - Mobile: Second, Desktop: Center */}
+          <div 
+            className="lg:col-span-6 space-y-8 order-2 lg:order-2"
+            role="region"
+            aria-label="Main healing activities and therapy options"
+          >
             
             {/* Daily Rituals Section */}
             <Card className="bg-gradient-to-br from-purple-900/60 to-pink-900/40 border-purple-500/40 shadow-2xl">
@@ -271,10 +478,10 @@ function AdaptiveDashboard({ user }: Props) {
                 <CardTitle className="text-white flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Flame className="h-6 w-6 text-orange-400" />
-                    Today's Healing Ritual
+                    {isPremium ? "Today's Healing Rituals" : "Today's Healing Ritual"}
                   </div>
                   {isPremium && (
-                    <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/40">
+                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
                       <Crown className="h-3 w-3 mr-1" />
                       Premium
                     </Badge>
@@ -282,70 +489,168 @@ function AdaptiveDashboard({ user }: Props) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {ritual ? (
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <h3 className="text-xl font-semibold text-white">{ritual.title}</h3>
-                        <div className="flex items-center gap-3">
-                          <Badge className="bg-purple-500/20 text-purple-300">
-                            {ritual.difficulty}
-                          </Badge>
-                          <span className="text-sm text-slate-300 flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            {ritual.estimatedTime || '5-10'} min
-                          </span>
+                {isPremium ? (
+                  /* FIREWALL USERS: 2 Rituals */
+                  <div className="space-y-6">
+                    {ritual ? (
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-semibold text-white">{ritual.title}</h3>
+                            <div className="flex items-center gap-3">
+                              <Badge className="bg-purple-500/20 text-purple-300">
+                                {ritual.difficulty}
+                              </Badge>
+                              <span className="text-sm text-slate-300 flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                {ritual.estimatedTime || '5-10'} min
+                              </span>
+                            </div>
+                          </div>
+                          {ritual.isCompleted ? (
+                            <div className="flex items-center gap-2 text-emerald-400">
+                              <CheckCircle2 className="h-5 w-5" />
+                              <span className="text-sm font-medium">Completed</span>
+                            </div>
+                          ) : null}
+                        </div>
+                        
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={() => setActiveModal(`ritual-${ritual.id}`)}
+                            disabled={ritual.isCompleted}
+                            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            {ritual.isCompleted ? 'Completed' : 'Start Ritual'}
+                          </Button>
+                          <Button
+                            onClick={() => rerollRitual()}
+                            disabled={!canReroll || ritual.isCompleted}
+                            variant="outline"
+                            className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
+                            title={!canReroll && (rerollCooldownHoursLeft || 0) > 0 ? `Reroll cooldown: ${rerollCooldownHoursLeft}h remaining` : 'Reroll daily rituals (once per 24h)'}
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                            {!canReroll && (rerollCooldownHoursLeft || 0) > 0 ? `${rerollCooldownHoursLeft}h` : ''}
+                          </Button>
                         </div>
                       </div>
-                      {ritual.isCompleted ? (
-                        <div className="flex items-center gap-2 text-emerald-400">
-                          <CheckCircle2 className="h-5 w-5" />
-                          <span className="text-sm font-medium">Completed</span>
+                    ) : (
+                      <div className="text-center py-4 text-slate-400">
+                        <Zap className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Loading your personalized ritual...</p>
+                      </div>
+                    )}
+
+                    {/* Second Ritual for Premium Users */}
+                    <div className="border-t border-purple-500/20 pt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm text-purple-300">Personalized Ritual #2</span>
+                      </div>
+                      <div className="p-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg border border-purple-500/30">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                            <Heart className="h-5 w-5 text-purple-400" />
+                          </div>
+                          <div>
+                            <h4 className="text-white font-medium">Self-Hype Letter</h4>
+                            <div className="flex items-center gap-2 text-sm text-slate-300">
+                              <Badge className="bg-green-500/20 text-green-300 text-xs">Easy</Badge>
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                5-8 min
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                      ) : null}
-                    </div>
-                    
-                    <div className="flex gap-3">
-                      <Button
-                        onClick={() => setActiveModal(`ritual-${ritual.id}`)}
-                        disabled={ritual.isCompleted}
-                        className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                      >
-                        <Play className="h-4 w-4 mr-2" />
-                        {ritual.isCompleted ? 'Completed' : 'Start Ritual'}
-                      </Button>
-                      <Button
-                        onClick={() => rerollRitual()}
-                        disabled={!canReroll}
-                        variant="outline"
-                        className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
-                      >
-                        <RefreshCw className="h-4 w-4" />
-                        {!canReroll && (rerollCooldownHoursLeft || 0) > 0 ? `${rerollCooldownHoursLeft}h` : ''}
-                      </Button>
+                        <p className="text-sm text-slate-300 mb-3 leading-relaxed">
+                          Write a brag letter about everything you've done right lately. Be your own hype person.
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
+                          onClick={() => setActiveModal('ritual-secondary')}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Start Second Ritual
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-slate-400">
-                    <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Loading your personalized ritual...</p>
-                  </div>
-                )}
+                  /* FREE USERS: 1 Ritual + Upgrade CTA */
+                  <div className="space-y-6">
+                    {ritual ? (
+                      <div className="space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-semibold text-white">{ritual.title}</h3>
+                            <div className="flex items-center gap-3">
+                              <Badge className="bg-slate-500/20 text-slate-300">
+                                {ritual.difficulty}
+                              </Badge>
+                              <span className="text-sm text-slate-300 flex items-center gap-1">
+                                <Clock className="h-4 w-4" />
+                                {ritual.estimatedTime || '5-10'} min
+                              </span>
+                            </div>
+                          </div>
+                          {ritual.isCompleted ? (
+                            <div className="flex items-center gap-2 text-emerald-400">
+                              <CheckCircle2 className="h-5 w-5" />
+                              <span className="text-sm font-medium">Completed</span>
+                            </div>
+                          ) : null}
+                        </div>
+                        
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={() => setActiveModal(`ritual-${ritual.id}`)}
+                            disabled={ritual.isCompleted}
+                            className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800"
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            {ritual.isCompleted ? 'Completed' : 'Start Ritual'}
+                          </Button>
+                          <Button
+                            disabled={true}
+                            variant="outline"
+                            className="border-slate-500/50 text-slate-500 cursor-not-allowed opacity-50"
+                            title="Firewall users can re-roll their rituals once per day"
+                          >
+                            <RefreshCw className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-slate-400">
+                        <Zap className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Loading your ritual...</p>
+                      </div>
+                    )}
 
-                {/* Premium Ritual Slot */}
-                {isPremium && (
-                  <div className="border-t border-purple-500/20 pt-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm text-purple-300">Bonus Ritual (Premium)</span>
-                      <Badge className="bg-yellow-500/20 text-yellow-400 text-xs">+1</Badge>
+                    {/* Premium Upgrade CTA for Free Users */}
+                    <div className="border-t border-purple-500/20 pt-4">
+                      <div className="p-4 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 rounded-lg border border-yellow-500/30">
+                        <div className="flex items-start gap-3 mb-3">
+                          <Crown className="h-6 w-6 text-yellow-400 flex-shrink-0 mt-1" />
+                          <div>
+                            <h4 className="text-white font-medium mb-1">Unlock Your Full Healing Potential</h4>
+                            <p className="text-sm text-yellow-200 leading-relaxed">
+                              Firewall subscribers receive 2 daily personalized rituals specifically designed for your healing journey, plus the ability to reroll once per day.
+                            </p>
+                          </div>
+                        </div>
+                        <Button 
+                          className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold"
+                          onClick={() => setActiveModal('upgrade')}
+                        >
+                          <Crown className="h-4 w-4 mr-2" />
+                          Subscribe to Firewall
+                        </Button>
+                      </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-dashed border-purple-500/50 text-purple-300"
-                      onClick={() => setActiveModal('ritual-bonus')}
-                    >
-                      Choose Additional Ritual
-                    </Button>
                   </div>
                 )}
               </CardContent>
@@ -360,168 +665,106 @@ function AdaptiveDashboard({ user }: Props) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {AI_PERSONAS.map((persona) => (
-                    <Button
-                      key={persona.id}
-                      onClick={() => {
-                        setSelectedPersona(persona.id);
-                        setActiveModal('ai-therapy');
-                      }}
-                      variant={selectedPersona === persona.id ? "default" : "outline"}
-                      className="h-auto p-4 flex flex-col items-center text-center space-y-2"
-                    >
-                      <span className="text-2xl">{persona.icon}</span>
-                      <div>
-                        <div className="font-medium text-sm">{persona.name}</div>
-                        <div className="text-xs opacity-75">{persona.description}</div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-
-                {/* Voice AI Therapy */}
-                <div className="border-t border-indigo-500/20 pt-4">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 rounded-lg border border-indigo-500/30">
-                    <div className="flex items-center gap-3">
-                      <Mic className="h-6 w-6 text-indigo-400" />
-                      <div>
-                        <div className="font-medium text-white">Voice AI Therapy</div>
-                        <div className="text-sm text-indigo-300">Real-time voice session</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold text-white">$9.99</div>
-                      <div className="text-xs text-slate-400">per 15 min</div>
-                    </div>
-                  </div>
-                  <Button 
-                    className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700"
-                    onClick={() => setActiveModal('voice-therapy')}
-                  >
-                    Start Voice Session
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                onClick={() => setActiveModal('checkin')}
-                className="h-20 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 flex flex-col items-center justify-center space-y-1"
-              >
-                <MessageSquare className="h-6 w-6" />
-                <span className="font-medium">Daily Check-In</span>
-                <span className="text-xs opacity-75">How are you today?</span>
-              </Button>
-              
-              <Button
-                onClick={() => setActiveModal('upgrade')}
-                variant="outline"
-                className="h-20 border-yellow-500/50 bg-yellow-500/10 hover:bg-yellow-500/20 flex flex-col items-center justify-center space-y-1"
-              >
-                <Crown className="h-6 w-6 text-yellow-400" />
-                <span className="font-medium text-yellow-400">Upgrade</span>
-                <span className="text-xs opacity-75">Unlock Premium</span>
-              </Button>
-            </div>
-          </div>
-
-          {/* Right Sidebar - Wall of Wounds */}
-          <div className="xl:col-span-3 space-y-6">
-            <Card className="bg-slate-800/50 border-slate-600/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-pink-400" />
-                    Wall of Wounds
-                  </div>
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Quick Post (Premium) */}
                 {isPremium ? (
-                  <div className="space-y-3">
-                    <textarea
-                      placeholder="Share your healing journey..."
-                      className="w-full p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 text-sm resize-none"
-                      rows={3}
-                    />
-                    <Button size="sm" className="w-full bg-pink-600 hover:bg-pink-700">
-                      <Send className="h-4 w-4 mr-2" />
-                      Share Anonymously
-                    </Button>
-                  </div>
+                  /* FIREWALL USERS: Full AI Therapy Access */
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {AI_PERSONAS.map((persona) => (
+                        <Button
+                          key={persona.id}
+                          onClick={() => {
+                            setSelectedPersona(persona.id);
+                            setActiveModal('ai-therapy');
+                          }}
+                          variant={selectedPersona === persona.id ? "default" : "outline"}
+                          className="h-auto p-4 flex flex-col items-center text-center space-y-2"
+                        >
+                          <span className="text-2xl">{persona.icon}</span>
+                          <div>
+                            <div className="font-medium text-sm">{persona.name}</div>
+                            <div className="text-xs opacity-75">{persona.description}</div>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+
+                    {/* Voice AI Therapy for Premium Users */}
+                    <div className="border-t border-indigo-500/20 pt-4">
+                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 rounded-lg border border-indigo-500/30">
+                        <div className="flex items-center gap-3">
+                          <Mic className="h-6 w-6 text-indigo-400" />
+                          <div>
+                            <div className="font-medium text-white">Voice AI Therapy</div>
+                            <div className="text-sm text-indigo-300">Real-time voice session</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-white">$9.99</div>
+                          <div className="text-xs text-slate-400">per 15 min</div>
+                        </div>
+                      </div>
+                      <Button 
+                        className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700"
+                        onClick={() => setActiveModal('voice-therapy')}
+                      >
+                        Start Voice Session
+                      </Button>
+                    </div>
+                  </>
                 ) : (
-                  <div className="p-3 bg-gradient-to-r from-pink-600/20 to-purple-600/20 rounded-lg border border-pink-500/30 text-center">
-                    <Lock className="h-6 w-6 mx-auto mb-2 text-pink-400" />
-                    <p className="text-sm text-pink-300 mb-2">Posting requires Premium</p>
-                    <Button size="sm" variant="outline" className="border-pink-500/50 text-pink-300">
-                      Upgrade to Share
-                    </Button>
+                  /* FREE USERS: Purchase CTA for AI Therapy */
+                  <div className="text-center space-y-4">
+                    <div className="p-6 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 rounded-lg border border-indigo-500/30">
+                      <Brain className="h-12 w-12 mx-auto mb-4 text-indigo-400" />
+                      <h3 className="text-xl font-semibold text-white mb-2">AI Therapy Chat</h3>
+                      <p className="text-sm text-indigo-200 mb-4 leading-relaxed">
+                        Get personalized support with our AI therapy companions. Choose from different therapeutic approaches designed to help you heal.
+                      </p>
+                      
+                      <div className="flex items-center justify-center gap-4 mb-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-white">300</div>
+                          <div className="text-xs text-indigo-300">Messages</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-white">30</div>
+                          <div className="text-xs text-indigo-300">Days Valid</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-white">$3.99</div>
+                          <div className="text-xs text-indigo-300">One-time</div>
+                        </div>
+                      </div>
+
+                      <Button 
+                        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 font-semibold"
+                        onClick={() => setActiveModal('ai-therapy-purchase')}
+                      >
+                        <Brain className="h-4 w-4 mr-2" />
+                        Purchase AI Therapy Chat
+                      </Button>
+                    </div>
                   </div>
                 )}
-
-                {/* Recent Posts */}
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {wallPosts?.slice(0, 5).map((post) => (
-                    <div key={post.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge className="bg-purple-500/20 text-purple-300 text-xs">
-                          {post.archetype}
-                        </Badge>
-                        <span className="text-xs text-slate-400">{post.timeAgo}</span>
-                      </div>
-                      <p className="text-sm text-slate-200 leading-relaxed">{post.content}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-slate-400 hover:text-pink-400 text-xs"
-                          onClick={() => markTask('community')}
-                        >
-                          <Heart className="h-3 w-3 mr-1" />
-                          {post.reactions}
-                        </Button>
-                      </div>
-                    </div>
-                  )) || (
-                    <div className="text-center py-6 text-slate-400">
-                      <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Community is quiet right now</p>
-                    </div>
-                  )}
-                </div>
-
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full border-slate-600/50 text-slate-300"
-                >
-                  View All Posts
-                </Button>
               </CardContent>
             </Card>
+          </div>
 
-            {/* Daily Insight */}
-            <Card className="bg-gradient-to-br from-amber-900/30 to-slate-800/50 border-amber-500/30">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-amber-400" />
-                  Today's Insight
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-amber-100 leading-relaxed italic">
-                  "{dailyInsight || 'Loading your personalized insight...'}"
-                </p>
-              </CardContent>
-            </Card>
+          {/* Right Sidebar - Wall of Wounds - Mobile: Third, Desktop: Right */}
+          <div 
+            className="lg:col-span-3 space-y-6 order-3 lg:order-3"
+            role="region"
+            aria-label="Community Wall of Wounds for sharing and support"
+          >
+            <WallOfWoundsDashboard 
+              userTier={isPremium ? 'firewall' : 'ghost'} 
+            />
           </div>
         </div>
       </main>
+
+      {/* Dashboard Footer */}
+      <DashboardFooter />
 
       {/* Modals */}
       {activeModal?.startsWith('ritual-') && ritual && (
@@ -548,6 +791,49 @@ function AdaptiveDashboard({ user }: Props) {
         />
       )}
 
+      {/* Secondary ritual modal for premium users */}
+      {activeModal === 'ritual-secondary' && (
+        <RitualModal 
+          ritualId="self-hype-letter"
+          rituals={[{
+            id: "self-hype-letter",
+            title: "Self-Hype Letter",
+            difficulty: "easy",
+            completed: false,
+            duration: "5-8 min",
+            icon: '💝',
+            steps: [
+              {
+                title: "Set up your space",
+                description: "Find a comfortable place to write - digital or paper, whatever feels right.",
+                duration: 1
+              },
+              {
+                title: "List your recent wins",
+                description: "Write down everything you've accomplished lately - big or small. Include any growth, positive changes, or moments you handled well.",
+                duration: 3
+              },
+              {
+                title: "Write your hype letter",
+                description: "Address yourself by name and write like you're your biggest fan. Celebrate your strengths, acknowledge your progress, and remind yourself of your worth.",
+                duration: 3
+              },
+              {
+                title: "Read it aloud",
+                description: "Read your letter out loud to yourself. Let those words sink in and feel the impact of your own encouragement.",
+                duration: 1
+              }
+            ]
+          }]}
+          onClose={() => setActiveModal(null)}
+          onComplete={async (ritualId: string) => {
+            // For secondary ritual, we don't mark the main ritual task but can give XP
+            setActiveModal(null);
+            return true;
+          }}
+        />
+      )}
+
       {activeModal === 'checkin' && (
         <CheckInModal 
           onClose={() => setActiveModal(null)}
@@ -562,6 +848,14 @@ function AdaptiveDashboard({ user }: Props) {
         <AITherapyModal 
           onClose={() => setActiveModal(null)}
           onFirstUserMessage={() => markTask('aiTherapy')}
+          selectedPersona={selectedPersona}
+        />
+      )}
+
+      {activeModal === 'ai-therapy-purchase' && (
+        <AITherapyPurchaseModal 
+          open={true}
+          onClose={() => setActiveModal(null)}
         />
       )}
 
@@ -580,7 +874,10 @@ function AdaptiveDashboard({ user }: Props) {
       )}
       
       {activeModal === 'voice-therapy' && (
-        <VoiceTherapyModal onClose={() => setActiveModal(null)} />
+        <VoiceTherapyModal 
+          onClose={() => setActiveModal(null)} 
+          isPremium={isPremium}
+        />
       )}
 
       {/* Settings Modal */}

@@ -24,7 +24,7 @@ export interface Ritual {
   xpReward: number;
   byteReward: number;
   tags: string[];
-  tier: 'ghost' | 'firewall' | 'deep-reset';
+  tier: 'ghost' | 'firewall';
   estimatedTime: string;
   difficultyLevel: 1 | 2 | 3 | 4 | 5;
 }
@@ -357,11 +357,11 @@ export function getRitualsByCategory(category: RitualCategory): Ritual[] {
   return RITUAL_BANK.filter(ritual => ritual.category === category);
 }
 
-export function getRitualsByTier(tier: 'ghost' | 'firewall' | 'deep-reset'): Ritual[] {
+export function getRitualsByTier(tier: 'ghost' | 'firewall'): Ritual[] {
   return RITUAL_BANK.filter(ritual => ritual.tier === tier);
 }
 
-export function getRandomRitual(userTier: 'ghost' | 'firewall' | 'deep-reset' = 'ghost'): Ritual {
+export function getRandomRitual(userTier: 'ghost' | 'firewall' = 'ghost'): Ritual {
   const availableRituals = getRitualsByTier(userTier);
   return availableRituals[Math.floor(Math.random() * availableRituals.length)];
 }

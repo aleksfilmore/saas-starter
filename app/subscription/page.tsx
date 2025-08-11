@@ -52,7 +52,7 @@ export default function SubscriptionPage() {
         </div>
 
         {/* Subscription Manager Component */}
-        <div className="bg-white rounded-lg shadow-xl p-6">
+        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-600/30 rounded-lg shadow-xl p-6">
           <SubscriptionManager />
         </div>
 

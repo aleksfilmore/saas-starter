@@ -69,18 +69,6 @@ const BREATHING_PATTERNS: BreathingPattern[] = [
     cycles: 6,
     benefits: ['Panic relief', 'Emotional regulation', 'System reset'],
     difficulty: 'intermediate'
-  },
-  {
-    id: 'power',
-    name: 'Power Breath',
-    description: 'Build resilience and confidence',
-    icon: '🔥',
-    inhale: 6,
-    hold: 3,
-    exhale: 6,
-    cycles: 12,
-    benefits: ['Inner strength', 'Confidence', 'Emotional power'],
-    difficulty: 'advanced'
   }
 ];
 
@@ -88,9 +76,10 @@ type BreathingPhase = 'inhale' | 'hold' | 'exhale' | 'pause';
 
 interface BreathingExerciseProps {
   onComplete?: (pattern: BreathingPattern, completedCycles: number) => void;
+  children?: React.ReactNode;
 }
 
-export function BreathingExercise({ onComplete }: BreathingExerciseProps) {
+export function BreathingExercise({ onComplete, children }: BreathingExerciseProps) {
   const [selectedPattern, setSelectedPattern] = useState<BreathingPattern | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [currentPhase, setCurrentPhase] = useState<BreathingPhase>('inhale');
@@ -196,12 +185,18 @@ export function BreathingExercise({ onComplete }: BreathingExerciseProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-purple-200 text-center text-sm">
-          <Clock className="w-6 h-6 mx-auto mb-2" />
-          Breathing Exercise
-        </button>
+        {children || (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-teal-300 hover:text-teal-200 hover:bg-teal-500/10 flex items-center gap-1.5 text-xs"
+          >
+            <Wind className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Breathing</span>
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl bg-gray-900 border-gray-700">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white text-center">
             🫁 Breathing Exercise
@@ -214,7 +209,7 @@ export function BreathingExercise({ onComplete }: BreathingExerciseProps) {
               Choose a breathing pattern to reset your nervous system
             </p>
 
-            <div className="grid gap-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
               {BREATHING_PATTERNS.map((pattern) => (
                 <Card key={pattern.id} className="bg-gray-800 border-gray-600 hover:border-gray-500 transition-all cursor-pointer">
                   <CardContent className="p-4">
@@ -222,38 +217,44 @@ export function BreathingExercise({ onComplete }: BreathingExerciseProps) {
                       <div>
                         <div className="flex items-center space-x-2 mb-1">
                           <span className="text-xl">{pattern.icon}</span>
-                          <h3 className="font-bold text-white">{pattern.name}</h3>
-                          <Badge className={getDifficultyColor(pattern.difficulty)}>
+                          <h3 className="font-bold text-white text-sm">{pattern.name}</h3>
+                          <Badge className={`text-xs ${getDifficultyColor(pattern.difficulty)}`}>
                             {pattern.difficulty}
                           </Badge>
                         </div>
-                        <p className="text-gray-400 text-sm">{pattern.description}</p>
+                        <p className="text-gray-400 text-xs">{pattern.description}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-gray-300 mb-3">
-                      <span>Inhale {pattern.inhale}s</span>
+                    <div className="flex items-center justify-between text-xs text-gray-300 mb-3">
+                      <span>In {pattern.inhale}s</span>
                       <span>Hold {pattern.hold}s</span>
-                      <span>Exhale {pattern.exhale}s</span>
+                      <span>Out {pattern.exhale}s</span>
                       <span>{pattern.cycles} cycles</span>
                     </div>
 
                     <div className="mb-3">
                       <h4 className="text-xs font-medium text-gray-400 mb-1">Benefits:</h4>
                       <div className="flex flex-wrap gap-1">
-                        {pattern.benefits.map((benefit, index) => (
+                        {pattern.benefits.slice(0, 2).map((benefit, index) => (
                           <Badge key={index} variant="outline" className="text-xs">
                             {benefit}
                           </Badge>
                         ))}
+                        {pattern.benefits.length > 2 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{pattern.benefits.length - 2} more
+                          </Badge>
+                        )}
                       </div>
                     </div>
 
                     <Button 
                       onClick={() => startExercise(pattern)}
-                      className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
+                      className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-sm"
+                      size="sm"
                     >
-                      <Play className="w-4 h-4 mr-2" />
+                      <Play className="w-3 h-3 mr-2" />
                       Start {pattern.name}
                     </Button>
                   </CardContent>

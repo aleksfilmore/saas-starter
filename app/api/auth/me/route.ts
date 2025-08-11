@@ -32,24 +32,31 @@ export async function GET(request: NextRequest) {
     // Cast user to include database attributes
     const dbUser = user as any;
     
+    // Determine subscription tier based on actual user data
+    let subscriptionTier = 'free';
+    if (dbUser.tier === 'firewall' || dbUser.subscription_tier === 'premium' || dbUser.ritual_tier === 'firewall') {
+      subscriptionTier = 'premium';
+    }
+    
     // Return user data
     return NextResponse.json({
       success: true,
       user: {
         id: user.id,
         email: dbUser.email,
-        username: dbUser.email?.split('@')[0] || 'PremiumUser',
-        tier: dbUser.tier,
+        username: dbUser.email?.split('@')[0] || 'User',
+        tier: dbUser.tier || 'freemium',
+        subscription_tier: dbUser.subscription_tier || 'ghost_mode',
+        ritual_tier: dbUser.ritual_tier || 'ghost',
         archetype: dbUser.emotional_archetype, // Use correct column name
-        xp: dbUser.xp,
-        bytes: dbUser.bytes,
-        level: dbUser.level,
-        ritual_streak: dbUser.ritual_streak,
-        no_contact_streak: dbUser.noContactDays,
-        is_verified: dbUser.is_verified,
-        subscription_status: dbUser.subscription_status,
-        // For testing premium features - simulate premium subscription
-        subscriptionTier: 'premium'
+        xp: dbUser.xp || 0,
+        bytes: dbUser.bytes || 100,
+        level: dbUser.level || 1,
+        ritual_streak: dbUser.ritual_streak || 0,
+        no_contact_streak: dbUser.no_contact_streak || 0,
+        is_verified: dbUser.is_verified || false,
+        subscription_status: dbUser.subscription_status || 'free',
+        subscriptionTier: subscriptionTier
       }
     });
 
