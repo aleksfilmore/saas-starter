@@ -29,16 +29,6 @@ interface TodayRitual {
   completedAt?: string | null;
 }
 
-interface RitualResponse {
-  // Ghost users get single ritual
-  ritual?: TodayRitual;
-  // Firewall users get multiple rituals
-  rituals?: TodayRitual[];
-  tier: 'ghost' | 'firewall';
-  hasExistingAssignment?: boolean;
-  isCompleted?: boolean;
-}
-
 interface NoContactStatus {
   status: string;
   canCheckIn: boolean;
@@ -60,8 +50,6 @@ interface HealingHubContextValue {
   dailyInsight: string | null;
   motivationMeter: HubAPIData['motivationMeter'] | null;
   ritual: TodayRitual | null;
-  rituals: TodayRitual[] | null;
-  isFirewall: boolean;
   noContact: NoContactStatus | null;
   latestBadgeEmoji: string | null;
   completeRitual: (ritualId: string, difficulty?: string) => Promise<boolean>;
@@ -83,7 +71,7 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
   const { data: hubData, isLoading: hubLoading, mutate: mutateHub } = useSWR<HubAPIData>(
     '/api/dashboard/hub', fetcher, { revalidateOnFocus: false, dedupingInterval: 30000 }
   );
-  const { data: ritualWrapper, isLoading: ritualLoading, mutate: mutateRitual } = useSWR<RitualResponse>(
+  const { data: ritualWrapper, isLoading: ritualLoading, mutate: mutateRitual } = useSWR<{ ritual: TodayRitual }>(
     '/api/rituals/today', fetcher, { revalidateOnFocus: false, dedupingInterval: 15000 }
   );
   const { data: noContactStatus, isLoading: noContactLoading, mutate: mutateNoContact } = useSWR<any>(
@@ -112,28 +100,7 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
         return false;
       }
       toast.success(`Ritual complete +${json.rewards?.xp || 0} XP`, { id: ritualId });
-      mutateRitual(prev => {
-        if (!prev) return prev;
-        
-        if (prev.ritual) {
-          // Ghost user - single ritual
-          return {
-            ...prev,
-            ritual: { ...prev.ritual, isCompleted: true, completedAt: new Date().toISOString() }
-          };
-        } else if (prev.rituals) {
-          // Firewall user - multiple rituals
-          return {
-            ...prev,
-            rituals: prev.rituals.map(r => 
-              r.id === ritualId 
-                ? { ...r, isCompleted: true, completedAt: new Date().toISOString() }
-                : r
-            )
-          };
-        }
-        return prev;
-      }, false);
+      mutateRitual(prev => prev ? { ritual: { ...prev.ritual, isCompleted: true, completedAt: new Date().toISOString() } } : prev, false);
       mutateHub();
       updateUser({ xp: json.user?.xp, level: json.user?.level });
       return true;
@@ -200,10 +167,7 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
     wallPosts: hubData?.wallPosts || [],
     dailyInsight: hubData?.dailyInsight || null,
     motivationMeter: hubData?.motivationMeter || null,
-    ritual: ritualWrapper?.ritual ? { ...ritualWrapper.ritual, steps: ritualWrapper.ritual.steps } : 
-            (ritualWrapper?.rituals?.[0] ? { ...ritualWrapper.rituals[0], steps: ritualWrapper.rituals[0].steps } : null),
-    rituals: ritualWrapper?.rituals || (ritualWrapper?.ritual ? [ritualWrapper.ritual] : null),
-    isFirewall: ritualWrapper?.tier === 'firewall',
+    ritual: ritualWrapper?.ritual ? { ...ritualWrapper.ritual, steps: ritualWrapper.ritual.steps } : null,
     noContact: noContactStatus ? {
       status: noContactStatus.status,
       canCheckIn: !!noContactStatus.canCheckIn,

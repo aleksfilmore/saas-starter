@@ -45,8 +45,6 @@ import { AITherapyPurchaseModal } from '@/components/dashboard/modals/AITherapyP
 import { NoContactModal } from '@/components/dashboard/modals/NoContactModal';
 import { UpgradeModal } from './modals/UpgradeModal';
 import { VoiceTherapyModal } from './modals/VoiceTherapyModal';
-import WallOfWoundsDashboard from './WallOfWoundsDashboard';
-import DashboardFooter from './DashboardFooter';
 
 interface Props {
   user: User;
@@ -63,8 +61,6 @@ function AdaptiveDashboard({ user }: Props) {
   const [selectedPersona, setSelectedPersona] = useState<string>('supportive-guide');
   const [customInsight, setCustomInsight] = useState<string>('');
   const [noContactEncouragement, setNoContactEncouragement] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
   const { tasks, markTask, progressFraction } = useDailyTasks();
   const { user: authUser } = useAuth();
   const { 
@@ -79,23 +75,10 @@ function AdaptiveDashboard({ user }: Props) {
     noContact
   } = useHealingHub();
 
-  // Error handling helper
-  const handleError = (error: unknown, context: string) => {
-    console.error(`Error in ${context}:`, error);
-    setError(`Unable to ${context}. Please try again.`);
-  };
-
-  // Retry function
-  const retryAction = () => {
-    setError(null);
-    setRetryCount(prev => prev + 1);
-  };
-
   // Fetch custom daily insight and no-contact encouragement
   useEffect(() => {
     const fetchInsightAndEncouragement = async () => {
       try {
-        setError(null); // Clear any previous errors
         // Fetch daily insight
         const insightResponse = await fetch('/api/seed-insights');
         if (insightResponse.ok) {
@@ -117,7 +100,7 @@ function AdaptiveDashboard({ user }: Props) {
           }
         }
       } catch (error) {
-        handleError(error, 'load dashboard data');
+        console.error('Failed to fetch insight/encouragement:', error);
       }
     };
 
@@ -168,12 +151,7 @@ function AdaptiveDashboard({ user }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Enhanced Header */}
-            {/* Header */}
-      <header 
-        className="border-b border-gray-700 bg-gray-800/60 backdrop-blur-sm sticky top-0 z-50"
-        role="banner"
-        aria-label="Dashboard navigation"
-      >
+      <header className="border-b border-purple-500/20 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-8xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             
@@ -229,7 +207,6 @@ function AdaptiveDashboard({ user }: Props) {
                 size="sm"
                 onClick={() => window.location.href = '/crisis-support'}
                 className="text-red-300 hover:text-red-200 hover:bg-red-500/10 flex items-center gap-1.5 text-xs"
-                aria-label="Access crisis support center for immediate help"
               >
                 <AlertTriangle className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Crisis Center</span>
@@ -261,49 +238,11 @@ function AdaptiveDashboard({ user }: Props) {
         </div>
       </header>
 
-      {/* Error Message Display */}
-      {error && (
-        <div 
-          className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8 pt-4"
-          role="alert"
-          aria-live="polite"
-        >
-          <div className="bg-red-900/50 border border-red-500/50 rounded-lg p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0" />
-              <div>
-                <p className="text-red-200 font-medium">Something went wrong</p>
-                <p className="text-red-300 text-sm">{error}</p>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={retryAction}
-              className="border-red-500/50 text-red-300 hover:bg-red-500/20"
-              aria-label="Retry failed action"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Retry
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <main 
-        className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
-        role="main"
-        aria-label="Dashboard content"
-      >
-        {/* Mobile: Stack all columns vertically, Desktop: Three-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
+      <main className="max-w-8xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           
-          {/* Left Sidebar - Mobile: First, Desktop: Left column */}
-          <div 
-            className="lg:col-span-3 space-y-4 order-1 lg:order-1"
-            role="region"
-            aria-label="Progress tracking and daily tasks"
-          >
+          {/* Left Sidebar - Reorganized Layout */}
+          <div className="xl:col-span-3 space-y-4">
 
             {/* Compact Today's Progress with Insight */}
             <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-500/30">
@@ -465,12 +404,7 @@ function AdaptiveDashboard({ user }: Props) {
           </div>
 
           {/* Main Content Area */}
-                    {/* Center Area - Main Actions - Mobile: Second, Desktop: Center */}
-          <div 
-            className="lg:col-span-6 space-y-8 order-2 lg:order-2"
-            role="region"
-            aria-label="Main healing activities and therapy options"
-          >
+          <div className="xl:col-span-6 space-y-8">
             
             {/* Daily Rituals Section */}
             <Card className="bg-gradient-to-br from-purple-900/60 to-pink-900/40 border-purple-500/40 shadow-2xl">
@@ -750,21 +684,85 @@ function AdaptiveDashboard({ user }: Props) {
             </Card>
           </div>
 
-          {/* Right Sidebar - Wall of Wounds - Mobile: Third, Desktop: Right */}
-          <div 
-            className="lg:col-span-3 space-y-6 order-3 lg:order-3"
-            role="region"
-            aria-label="Community Wall of Wounds for sharing and support"
-          >
-            <WallOfWoundsDashboard 
-              userTier={isPremium ? 'firewall' : 'ghost'} 
-            />
+          {/* Right Sidebar - Wall of Wounds */}
+          <div className="xl:col-span-3 space-y-6">
+            <Card className="bg-slate-800/50 border-slate-600/30">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="h-5 w-5 text-pink-400" />
+                    Wall of Wounds
+                  </div>
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Quick Post (Premium) */}
+                {isPremium ? (
+                  <div className="space-y-3">
+                    <textarea
+                      placeholder="Share your healing journey..."
+                      className="w-full p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 text-sm resize-none"
+                      rows={3}
+                    />
+                    <Button size="sm" className="w-full bg-pink-600 hover:bg-pink-700">
+                      <Send className="h-4 w-4 mr-2" />
+                      Share Anonymously
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-gradient-to-r from-pink-600/20 to-purple-600/20 rounded-lg border border-pink-500/30 text-center">
+                    <Lock className="h-6 w-6 mx-auto mb-2 text-pink-400" />
+                    <p className="text-sm text-pink-300 mb-2">Posting requires Premium</p>
+                    <Button size="sm" variant="outline" className="border-pink-500/50 text-pink-300">
+                      Upgrade to Share
+                    </Button>
+                  </div>
+                )}
+
+                {/* Recent Posts */}
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {wallPosts?.slice(0, 5).map((post) => (
+                    <div key={post.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge className="bg-purple-500/20 text-purple-300 text-xs">
+                          {post.archetype}
+                        </Badge>
+                        <span className="text-xs text-slate-400">{post.timeAgo}</span>
+                      </div>
+                      <p className="text-sm text-slate-200 leading-relaxed">{post.content}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-slate-400 hover:text-pink-400 text-xs"
+                          onClick={() => markTask('community')}
+                        >
+                          <Heart className="h-3 w-3 mr-1" />
+                          {post.reactions}
+                        </Button>
+                      </div>
+                    </div>
+                  )) || (
+                    <div className="text-center py-6 text-slate-400">
+                      <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Community is quiet right now</p>
+                    </div>
+                  )}
+                </div>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full border-slate-600/50 text-slate-300"
+                >
+                  View All Posts
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
-
-      {/* Dashboard Footer */}
-      <DashboardFooter />
 
       {/* Modals */}
       {activeModal?.startsWith('ritual-') && ritual && (

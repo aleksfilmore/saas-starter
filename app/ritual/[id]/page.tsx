@@ -347,6 +347,16 @@ export default function RitualDetailPage() {
                   </div>
                   
                   <div className="flex justify-center space-x-4">
+                    {!isTimerRunning && timeLeft === (currentStepData.duration || 0) && (
+                      <Button 
+                        onClick={() => startTimer(currentStepData.duration || 0)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Start
+                      </Button>
+                    )}
+                    
                     {isTimerRunning && (
                       <Button 
                         onClick={pauseTimer}
@@ -390,6 +400,16 @@ export default function RitualDetailPage() {
                   </div>
                   
                   <div className="flex justify-center space-x-4">
+                    {!isTimerRunning && timeLeft === (currentStepData.duration || 0) && (
+                      <Button 
+                        onClick={() => startTimer(currentStepData.duration || 0)}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Play className="h-4 w-4 mr-2" />
+                        Start Timer
+                      </Button>
+                    )}
+                    
                     {isTimerRunning && (
                       <Button 
                         onClick={pauseTimer}

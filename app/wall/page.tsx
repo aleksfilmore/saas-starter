@@ -69,7 +69,6 @@ export default function SimplifiedWallPage() {
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filter, setFilter] = useState('recent');
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [user, setUser] = useState<{username: string; subscriptionTier: string; streak: number; bytes: number; level: number; noContactDays: number} | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -93,11 +92,7 @@ export default function SimplifiedWallPage() {
 
   const fetchPosts = useCallback(async () => {
     try {
-      const queryParams = new URLSearchParams({ filter });
-      if (categoryFilter) {
-        queryParams.append('category', categoryFilter);
-      }
-      const response = await fetch(`/api/wall/feed?${queryParams}`);
+      const response = await fetch(`/api/wall/feed?filter=${filter}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -110,7 +105,7 @@ export default function SimplifiedWallPage() {
     } finally {
       setLoading(false);
     }
-  }, [filter, categoryFilter]);
+  }, [filter]);
 
   useEffect(() => {
     if (authUser && isAuthenticated && !authLoading) {
@@ -376,16 +371,9 @@ export default function SimplifiedWallPage() {
               <div className="flex items-center space-x-2">
                 <Sparkles className="h-4 w-4 text-purple-400" />
                 <span className="text-sm font-medium text-white">View Options</span>
-                <div className="flex items-center space-x-1">
-                  <Badge variant="secondary" className="bg-purple-600/20 text-purple-300 text-xs">
-                    {filter}
-                  </Badge>
-                  {categoryFilter && (
-                    <Badge variant="secondary" className="bg-red-600/20 text-red-300 text-xs">
-                      {EMOJI_TAGS.find(tag => tag.category === categoryFilter)?.emoji} {EMOJI_TAGS.find(tag => tag.category === categoryFilter)?.label}
-                    </Badge>
-                  )}
-                </div>
+                <Badge variant="secondary" className="bg-purple-600/20 text-purple-300 text-xs">
+                  {filter}
+                </Badge>
               </div>
               {showFilters ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
             </button>
@@ -399,58 +387,24 @@ export default function SimplifiedWallPage() {
                   transition={{ duration: 0.2 }}
                   className="mt-2 p-4 bg-gray-800/30 rounded-lg border border-gray-600/20"
                 >
-                  <div className="space-y-4">
-                    {/* Filter Type Buttons */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-300 mb-2">Feed Type</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        {[
-                          { key: 'recent', label: 'Recent', icon: '🕒' },
-                          { key: 'viral', label: 'Viral', icon: '🔥' },
-                          { key: 'oracle', label: 'Oracle', icon: '⚡' },
-                          { key: 'pulse', label: 'Pulse', icon: '💖' }
-                        ].map(({ key, label, icon }) => (
-                          <Button
-                            key={key}
-                            variant={filter === key ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setFilter(key)}
-                            className={`${filter === key ? "bg-purple-600" : "text-gray-400 hover:text-white"} justify-start`}
-                          >
-                            <span className="mr-2">{icon}</span>
-                            {label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Emotion Category Filters */}
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-300 mb-2">Filter by Emotion</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                        <Button
-                          variant={categoryFilter === null ? "default" : "ghost"}
-                          size="sm"
-                          onClick={() => setCategoryFilter(null)}
-                          className={`${categoryFilter === null ? "bg-red-600" : "text-gray-400 hover:text-white"} justify-start`}
-                        >
-                          <span className="mr-2">🌀</span>
-                          All
-                        </Button>
-                        {EMOJI_TAGS.map((tag) => (
-                          <Button
-                            key={tag.category}
-                            variant={categoryFilter === tag.category ? "default" : "ghost"}
-                            size="sm"
-                            onClick={() => setCategoryFilter(tag.category)}
-                            className={`${categoryFilter === tag.category ? "bg-red-600" : "text-gray-400 hover:text-white"} justify-start`}
-                          >
-                            <span className="mr-2">{tag.emoji}</span>
-                            {tag.label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { key: 'recent', label: 'Recent', icon: '🕒' },
+                      { key: 'viral', label: 'Viral', icon: '🔥' },
+                      { key: 'oracle', label: 'Oracle', icon: '⚡' },
+                      { key: 'pulse', label: 'Pulse', icon: '💖' }
+                    ].map(({ key, label, icon }) => (
+                      <Button
+                        key={key}
+                        variant={filter === key ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setFilter(key)}
+                        className={`${filter === key ? "bg-purple-600" : "text-gray-400 hover:text-white"} justify-start`}
+                      >
+                        <span className="mr-2">{icon}</span>
+                        {label}
+                      </Button>
+                    ))}
                   </div>
                 </motion.div>
               )}

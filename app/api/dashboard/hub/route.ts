@@ -123,24 +123,16 @@ export async function GET(request: NextRequest) {
       }
     ];
 
-    // Generate daily insight based on date (consistent for each day)
+    // Generate daily insight based on user's progress
     const insights = [
       "Your consistent ritual practice is building new neural pathways. Each small action compounds.",
       "Progress isn't always linear. Celebrate the small victories on your healing journey.",
       "Remember: You're not broken, you're breaking free from patterns that no longer serve you.",
       "Every boundary you set is a gift to your future self.",
-      "The fact that you're here shows incredible courage and self-awareness.",
-      "Healing happens in the space between what was and what could be.",
-      "Your courage to face today is already a victory worth celebrating.",
-      "Small consistent actions create profound transformations over time.",
-      "You're not starting over, you're starting fresh with more wisdom.",
-      "Every moment you choose yourself is a moment of revolutionary self-love."
+      "The fact that you're here shows incredible courage and self-awareness."
     ];
     
-    // Use current date to ensure same insight for the entire day
-    const today = new Date();
-    const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
-    const dailyInsight = insights[dayOfYear % insights.length];
+    const dailyInsight = insights[Math.floor(Math.random() * insights.length)];
 
     // Calculate motivation meter
     const recentActivity = Math.min(10, ritualStreak + (currentXP % 50) / 10);
