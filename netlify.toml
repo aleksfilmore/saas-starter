@@ -1,11 +1,16 @@
 # Netlify configuration for CTRL+ALT+BLOCK Therapy Platform
 [build]
-command = "npm run build"
+command = "rm -rf .next && npm run build"
 publish = ".next"
 
 [build.environment]
 NODE_VERSION = "22.18.0"
 NODE_ENV = "production"
+NPM_FLAGS = "--legacy-peer-deps"
+
+# Clear build cache to fix Internal Server Error
+[build.processing]
+skip_processing = false
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"
