@@ -20,7 +20,7 @@ import { sql } from 'drizzle-orm';
     console.log('📋 Sessions table exists:', result.length > 0);
     
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('❌ Error:', error instanceof Error ? error.message : 'Unknown error');
   }
   process.exit(0);
 })();

@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { users } from '@/lib/db/unified-schema';
+import { eq } from 'drizzle-orm';
 
 interface ChatMessage {
   role: 'user' | 'lumo';
@@ -59,7 +63,8 @@ const MOCK_RESPONSES = {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ChatRequest = await request.json();
+  const { user } = await validateRequest();
+  const body: ChatRequest = await request.json();
     const { message, persona, history } = body;
 
     // Validate input
@@ -78,13 +83,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Pull minimal context for adaptive encouragement
+    let contextPrefix = '';
+    if (user) {
+      const [u] = await db.select({
+        ritual_streak: users.ritual_streak,
+        last_ritual: users.last_ritual,
+        xp: users.xp
+      }).from(users).where(eq(users.id, user.id)).limit(1);
+      if (u) {
+        const lastHours = u.last_ritual ? Math.round((Date.now() - new Date(u.last_ritual).getTime())/36e5) : 'many';
+        contextPrefix = `UserContext: streak=${u.ritual_streak} lastRitualHoursAgo=${lastHours} xp=${u.xp}. Respond with subtle and supportive tone adjusted for streak (higher streak => reinforce identity; low streak => encourage first win).\n`;
+      }
+    }
+
     // For now, use mock responses
     // TODO: Replace with actual AI integration (OpenAI, Claude, etc.)
     const responses = MOCK_RESPONSES[persona];
     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
     // Add some contextual responses based on keywords
-    let contextualResponse = randomResponse;
+  let contextualResponse = randomResponse;
     
     const lowerMessage = message.toLowerCase();
     if (lowerMessage.includes('panic') || lowerMessage.includes('anxiety')) {
@@ -118,7 +137,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      response: contextualResponse,
+      response: contextPrefix ? `${contextPrefix}${contextualResponse}` : contextualResponse,
       persona,
       timestamp: new Date().toISOString(),
       messageId: Date.now().toString()

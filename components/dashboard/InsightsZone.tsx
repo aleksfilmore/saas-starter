@@ -46,7 +46,7 @@ export function InsightsZone({ dailyInsight, user }: Props) {
       <h2 className="text-2xl font-bold text-white">Daily Insight & Encouragement</h2>
 
       {/* Personal Greeting */}
-      <Card className="bg-gradient-to-r from-purple-800/60 to-pink-800/60 border-purple-700">
+      <Card className="bg-gradient-to-r from-purple-900/60 to-pink-800/50 border-purple-700 shadow-[0_0_0_1px_rgba(168,85,247,0.3)]">
         <CardContent className="pt-6">
           <div className="flex items-start space-x-4">
             <div className="p-3 bg-white/10 rounded-full">
@@ -54,7 +54,7 @@ export function InsightsZone({ dailyInsight, user }: Props) {
             </div>
             <div>
               <h3 className="text-white font-medium text-lg">
-                {getTimeBasedGreeting()}, {user.username}
+                {getTimeBasedGreeting()}
               </h3>
               <p className="text-purple-200 mt-1">
                 You're on day {user.ritual_streak || 0} of your healing journey. Every step counts.
@@ -104,7 +104,7 @@ export function InsightsZone({ dailyInsight, user }: Props) {
       </Card>
 
       {/* Quick Wins */}
-      <Card className="bg-gray-800/60 border-gray-700">
+      <Card className="bg-gray-800/60 border-gray-700 relative overflow-hidden">
         <CardHeader>
           <CardTitle className="text-white flex items-center space-x-2">
             <TrendingUp className="h-5 w-5 text-green-400" />
@@ -127,6 +127,11 @@ export function InsightsZone({ dailyInsight, user }: Props) {
                 </Button>
               </div>
             ))}
+            <div className="mt-4 p-4 border border-dashed border-green-500/40 rounded-lg bg-green-500/5 text-center">
+              <p className="text-sm text-green-300 mb-2 font-medium">Micro Challenge</p>
+              <p className="text-xs text-green-200 mb-3">Share one small win on the wall today to reinforce progress.</p>
+              <Button size="sm" className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white text-xs">Post a Win</Button>
+            </div>
           </div>
         </CardContent>
       </Card>

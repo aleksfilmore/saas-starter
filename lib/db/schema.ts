@@ -176,6 +176,27 @@ export const rituals = pgTable('rituals', {
 });
 
 // =====================================
+// RITUAL LIBRARY (Free Ritual Bank)
+// =====================================
+
+export const ritualLibrary = pgTable('ritual_library', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  category: text('category').notNull(),
+  description: text('description'),
+  duration: text('duration'),
+  difficulty: text('difficulty'),
+  journal_prompt: text('journal_prompt'),
+  lesson: text('lesson'),
+  steps: text('steps').array(), // JSON array of strings
+  archetype: text('archetype'),
+  tier_requirement: text('tier_requirement'),
+  is_premium: boolean('is_premium').default(false),
+  is_active: boolean('is_active').default(true),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
 // RITUAL JOURNAL ENTRIES
 // =====================================
 

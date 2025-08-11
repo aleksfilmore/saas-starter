@@ -9,6 +9,7 @@ import { Brain, Send, Minimize2, Maximize2 } from 'lucide-react';
 
 interface Props {
   onClose: () => void;
+  onFirstUserMessage?: () => void; // callback to mark daily task completion
 }
 
 interface Message {
@@ -18,7 +19,7 @@ interface Message {
   timestamp: Date;
 }
 
-export function AITherapyModal({ onClose }: Props) {
+export function AITherapyModal({ onClose, onFirstUserMessage }: Props) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -49,6 +50,10 @@ export function AITherapyModal({ onClose }: Props) {
       sender: 'user',
       timestamp: new Date()
     };
+    // Fire first user message callback exactly once
+    if (!messages.some(m => m.sender === 'user')) {
+      onFirstUserMessage?.();
+    }
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useHealingHub } from '@/contexts/HealingHubContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,20 +20,17 @@ interface NoContactEntry {
 }
 
 export function NoContactModal({ onClose, onComplete }: Props) {
-  const [currentStreak, setCurrentStreak] = useState(14);
-  const [totalDays, setTotalDays] = useState(47);
+  const { noContact, checkInNoContact } = useHealingHub();
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [totalDays, setTotalDays] = useState(0);
   const [hasCheckedToday, setHasCheckedToday] = useState(false);
-  
-  // Check if user has already checked in today
+
   useEffect(() => {
-    const today = new Date().toDateString();
-    const todayCheckin = localStorage.getItem(`no-contact-checkin-${today}`);
-    if (todayCheckin) {
-      const checkinData = JSON.parse(todayCheckin);
-      setCurrentStreak(checkinData.streak);
-      setHasCheckedToday(true);
+    if (noContact) {
+      setCurrentStreak(noContact.currentStreak);
+      setHasCheckedToday(noContact.status === 'checked_in_today' || noContact.status === 'ok');
     }
-  }, []);
+  }, [noContact]);
   
   // Mock recent entries
   const [recentEntries] = useState<NoContactEntry[]>([
@@ -44,39 +42,21 @@ export function NoContactModal({ onClose, onComplete }: Props) {
   ]);
 
   const handleDailyCheckIn = async (status: 'success' | 'struggle' | 'failure') => {
-    setHasCheckedToday(true);
-    
-    let newStreak = currentStreak;
-    if (status === 'success' || status === 'struggle') {
-      newStreak = currentStreak + 1;
-      setCurrentStreak(newStreak);
-    } else if (status === 'failure') {
-      newStreak = 0;
+    // For now treat all as PATCH check-in (server only supports success path). Failure handling to be added separately.
+    if (status === 'failure') {
+      // Placeholder: could call a future endpoint to reset
       setCurrentStreak(0);
+      setHasCheckedToday(true);
+      onComplete();
+      return;
     }
-    
-    setTotalDays(prev => prev + 1);
-
-    // Save to localStorage for today
-    const today = new Date().toDateString();
-    localStorage.setItem(`no-contact-checkin-${today}`, JSON.stringify({
-      status,
-      streak: newStreak,
-      date: today
-    }));
-
-    // Here you would typically save to database
-    try {
-      await fetch('/api/no-contact/checkin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, streak: newStreak })
-      });
-    } catch (error) {
-      console.error('Failed to save check-in:', error);
+    const ok = await checkInNoContact();
+    if (ok) {
+      setHasCheckedToday(true);
+      setCurrentStreak(prev => prev + 1);
+      setTotalDays(prev => prev + 1);
+      onComplete();
     }
-
-    onComplete();
   };
 
   const getStreakColor = () => {
@@ -150,7 +130,7 @@ export function NoContactModal({ onClose, onComplete }: Props) {
           </div>
 
           {/* Today's Check-in */}
-          {!hasCheckedToday ? (
+    {!hasCheckedToday ? (
             <Card className="bg-gray-700 border-gray-600">
               <CardHeader>
                 <CardTitle className="text-center text-lg">How did today go?</CardTitle>
@@ -159,6 +139,7 @@ export function NoContactModal({ onClose, onComplete }: Props) {
                 <Button
                   onClick={() => handleDailyCheckIn('success')}
                   className="w-full bg-green-600 hover:bg-green-700 text-white"
+      disabled={!noContact?.canCheckIn}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Strong Day - No Contact
@@ -167,6 +148,7 @@ export function NoContactModal({ onClose, onComplete }: Props) {
                 <Button
                   onClick={() => handleDailyCheckIn('struggle')}
                   className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+      disabled={!noContact?.canCheckIn}
                 >
                   <AlertTriangle className="h-4 w-4 mr-2" />
                   Challenging - But Stayed Strong
@@ -175,6 +157,7 @@ export function NoContactModal({ onClose, onComplete }: Props) {
                 <Button
                   onClick={() => handleDailyCheckIn('failure')}
                   className="w-full bg-red-600 hover:bg-red-700 text-white"
+      disabled={!noContact?.canCheckIn}
                 >
                   <Heart className="h-4 w-4 mr-2" />
                   Made Contact - Reset & Restart

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { MessageSquare, Shield, Brain, CheckCircle, Clock, Zap } from 'lucide-react';
+import { MessageSquare, Shield, Brain, CheckCircle, Clock, Zap, Flame } from 'lucide-react';
 
 interface Ritual {
   id: string;
@@ -47,26 +47,29 @@ export function DailyActionsZone({
   const completionRate = rituals.length > 0 ? (completedRituals / rituals.length) * 100 : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 group">
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Your Healing Actions Today</h2>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-400">{completedRituals}/{rituals.length} completed</span>
-          <div className="w-16 h-2 bg-gray-700 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500"
-              style={{ width: `${completionRate}%` }}
+        <h2 className="text-xl font-semibold text-white tracking-wide flex items-center gap-2">
+          <Flame className="h-5 w-5 text-orange-400 animate-pulse" />
+          Today&apos;s Healing Actions
+        </h2>
+        <div className="flex items-center space-x-2 text-[11px]">
+          <span className="text-gray-400">{completedRituals}/{rituals.length || 1}</span>
+          <div className="w-20 h-2 bg-gray-700/70 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-emerald-400 via-green-400 to-lime-300 transition-all duration-700 ease-out"
+              style={{ width: `${completionRate || 0}%` }}
             />
           </div>
         </div>
       </div>
 
       {/* Quick Action Buttons Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Button
           onClick={onCheckInClick}
-          className="h-20 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white flex flex-col items-center justify-center space-y-1"
+      className="h-20 bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-[0_0_0_1px_#60a5fa,inset_0_0_12px_-2px_rgba(96,165,250,0.5)] hover:from-blue-600 hover:to-blue-700 text-white flex flex-col items-center justify-center space-y-1 transition-all"
         >
           <MessageSquare className="h-6 w-6" />
           <span className="text-sm font-medium">Check In</span>
@@ -75,8 +78,9 @@ export function DailyActionsZone({
 
         <Button
           onClick={onAITherapyClick}
-          className="h-20 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white flex flex-col items-center justify-center space-y-1"
+          className="relative h-20 bg-gradient-to-r from-purple-600 to-purple-700 hover:shadow-[0_0_0_1px_#a855f7,inset_0_0_14px_-2px_rgba(168,85,247,0.6)] text-white flex flex-col items-center justify-center space-y-1 transition-all"
         >
+          <span className="absolute top-1 right-1 text-[10px] bg-yellow-400/20 text-yellow-300 px-1.5 py-0.5 rounded-md border border-yellow-500/30">Premium</span>
           <Brain className="h-6 w-6" />
           <span className="text-sm font-medium">AI Therapy</span>
           <span className="text-xs opacity-75">Quick chat</span>
@@ -84,7 +88,7 @@ export function DailyActionsZone({
 
         <Button
           onClick={onNoContactClick}
-          className="h-20 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white flex flex-col items-center justify-center space-y-1"
+          className="h-20 bg-gradient-to-r from-amber-600 to-amber-700 hover:shadow-[0_0_0_1px_#f59e0b,inset_0_0_12px_-2px_rgba(245,158,11,0.5)] text-white flex flex-col items-center justify-center space-y-1 transition-all"
         >
           <Shield className="h-6 w-6" />
           <span className="text-sm font-medium">No Contact</span>
@@ -93,7 +97,7 @@ export function DailyActionsZone({
 
         <Button
           variant="outline"
-          className="h-20 border-gray-600 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 flex flex-col items-center justify-center space-y-1"
+          className="h-20 border-gray-600 bg-gray-800/60 hover:shadow-[0_0_0_1px_#10b981,inset_0_0_10px_-2px_rgba(16,185,129,0.5)] hover:bg-gray-700/60 text-gray-200 flex flex-col items-center justify-center space-y-1 transition-all"
         >
           <Zap className="h-6 w-6" />
           <span className="text-sm font-medium">Quick Win</span>
@@ -156,10 +160,14 @@ export function DailyActionsZone({
           ))}
 
           {rituals.length === 0 && (
-            <div className="text-center py-8 text-gray-400">
-              <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No rituals scheduled for today</p>
-              <p className="text-sm">Check back tomorrow for new healing practices</p>
+            <div className="text-center py-10 text-gray-300 border border-dashed border-gray-600 rounded-lg bg-gray-700/30">
+              <Zap className="h-12 w-12 mx-auto mb-4 opacity-40" />
+              <p className="font-medium mb-1">No ritual scheduled yet</p>
+              <p className="text-xs text-gray-400 mb-4">Pick a small grounding action now to build momentum.</p>
+              <button
+                onClick={() => onRitualClick('new')}
+                className="px-4 py-2 text-xs rounded-md bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium hover:from-pink-400 hover:to-purple-500"
+              >Choose a Ritual</button>
             </div>
           )}
         </CardContent>

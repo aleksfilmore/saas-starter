@@ -9,17 +9,18 @@ import { CheckCircle, Clock, Play, Pause, RotateCcw } from 'lucide-react';
 interface Ritual {
   id: string;
   title: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  completed: boolean;
-  duration: string;
-  icon: string;
+  difficulty?: 'easy' | 'medium' | 'hard';
+  completed?: boolean;
+  duration?: string;
+  icon?: string;
+  steps?: Array<{ title: string; description?: string; duration?: number }> | null;
 }
 
 interface Props {
   ritualId: string;
   rituals: Ritual[];
   onClose: () => void;
-  onComplete: (ritualId: string) => void;
+  onComplete: (ritualId: string) => Promise<boolean> | boolean;
 }
 
 export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
@@ -27,35 +28,21 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [completing, setCompleting] = useState(false);
 
   if (!ritual) return null;
 
-  // Mock ritual steps - in real app this would come from API
-  const ritualSteps = [
-    {
-      title: "Prepare Your Space",
-      description: "Find a quiet, comfortable space where you won't be interrupted. Take a moment to settle in.",
-      duration: 30
-    },
-    {
-      title: "Center Yourself",
-      description: "Take three deep breaths. Feel your feet on the ground and your body in the space.",
-      duration: 60
-    },
-    {
-      title: "Practice the Technique",
-      description: "Follow the guided practice. Remember, there's no perfect way to do this - just your way.",
-      duration: 180
-    },
-    {
-      title: "Reflect",
-      description: "Take a moment to notice how you feel. What did you discover about yourself?",
-      duration: 60
-    }
-  ];
+  const ritualSteps = (ritual?.steps && ritual.steps.length > 0 ? ritual.steps : [
+    { title: 'Prepare', description: 'Prepare your space and intention.', duration: 30 },
+    { title: 'Engage', description: 'Engage with the ritual focus.', duration: 120 },
+    { title: 'Reflect', description: 'Reflect on what surfaced.', duration: 60 }
+  ]).map(s => ({ ...s, duration: s.duration ?? 60 }));
 
-  const handleComplete = () => {
-    onComplete(ritual.id);
+  const handleComplete = async () => {
+    if (completing) return;
+    setCompleting(true);
+    const ok = await onComplete(ritual.id);
+    if (!ok) setCompleting(false);
   };
 
   const startTimer = (seconds: number) => {
@@ -85,7 +72,7 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
       <DialogContent className="max-w-2xl bg-gray-800 border-gray-700 text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-3">
-            <span className="text-2xl">{ritual.icon}</span>
+            {ritual.icon && <span className="text-2xl">{ritual.icon}</span>}
             <span>{ritual.title}</span>
           </DialogTitle>
         </DialogHeader>
@@ -124,7 +111,7 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
                       <div 
                         className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-1000"
                         style={{ 
-                          width: `${((ritualSteps[currentStep].duration - timeLeft) / ritualSteps[currentStep].duration) * 100}%` 
+                          width: `${((ritualSteps[currentStep]!.duration! - timeLeft) / ritualSteps[currentStep]!.duration!) * 100}%` 
                         }}
                       />
                     </div>
@@ -135,11 +122,11 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
                 <div className="flex justify-center space-x-2">
                   {timeLeft === 0 ? (
                     <Button
-                      onClick={() => startTimer(ritualSteps[currentStep].duration)}
+                      onClick={() => startTimer(ritualSteps[currentStep]!.duration!)}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Play className="h-4 w-4 mr-2" />
-                      Start ({Math.floor(ritualSteps[currentStep].duration / 60)}m)
+                      Start ({Math.floor(ritualSteps[currentStep]!.duration! / 60)}m)
                     </Button>
                   ) : (
                     <>
@@ -178,7 +165,7 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
               Previous
             </Button>
 
-            {currentStep < ritualSteps.length - 1 ? (
+      {currentStep < ritualSteps.length - 1 ? (
               <Button
                 onClick={() => setCurrentStep(currentStep + 1)}
                 className="bg-purple-600 hover:bg-purple-700"
@@ -187,11 +174,12 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
               </Button>
             ) : (
               <Button
-                onClick={handleComplete}
-                className="bg-green-600 hover:bg-green-700"
+        onClick={handleComplete}
+        disabled={completing}
+        className="bg-green-600 hover:bg-green-700 disabled:opacity-60"
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Complete Ritual
+        <CheckCircle className="h-4 w-4 mr-2" />
+        {completing ? 'Completing...' : 'Complete Ritual'}
               </Button>
             )}
           </div>

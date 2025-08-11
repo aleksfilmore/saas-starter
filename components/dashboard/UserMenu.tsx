@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { User } from 'lucia';
+import { useHealingHub } from '@/contexts/HealingHubContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,7 @@ interface Props {
 export function UserMenu({ user }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { latestBadgeEmoji } = useHealingHub();
 
   const handleSignOut = async () => {
     setIsLoading(true);
@@ -72,8 +74,8 @@ export function UserMenu({ user }: Props) {
           className="flex items-center space-x-3 h-auto p-2 hover:bg-gray-700/50"
         >
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">{getInitials()}</span>
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-xl">
+              <span className="text-white leading-none">{latestBadgeEmoji || getInitials()}</span>
             </div>
             <div className="text-left">
               <p className="text-white font-medium text-sm">{user.username || 'User'}</p>

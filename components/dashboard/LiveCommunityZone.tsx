@@ -18,7 +18,9 @@ interface WallPost {
 
 interface Props {
   posts: WallPost[];
-  onPostSubmit: (content: string) => void;
+  onPostSubmit: (content: string) => Promise<void> | void;
+  canPost?: boolean; // free users false
+  onEngage?: () => void; // like or any engagement (counts daily task)
 }
 
 const archetypeColors = {
@@ -28,7 +30,7 @@ const archetypeColors = {
   'Ghost in the Shell': 'bg-purple-500/20 text-purple-400 border-purple-500/30'
 };
 
-export function LiveCommunityZone({ posts, onPostSubmit }: Props) {
+export function LiveCommunityZone({ posts, onPostSubmit, canPost = true, onEngage }: Props) {
   const [newPost, setNewPost] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,35 +70,45 @@ export function LiveCommunityZone({ posts, onPostSubmit }: Props) {
       {/* Post Creation */}
       <Card className="bg-gray-800/60 border-gray-700">
         <CardContent className="pt-6">
-          <div className="space-y-4">
-            <Textarea
-              placeholder="Share your story, breakthrough, or struggle... (posted anonymously)"
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-              className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 resize-none"
-              rows={3}
-            />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-gray-400 text-sm">
-                <Shield className="h-4 w-4" />
-                <span>Anonymous • Safe space</span>
+          {canPost ? (
+            <div className="space-y-4">
+              <Textarea
+                placeholder="Share your story, breakthrough, or struggle... (posted anonymously)"
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 resize-none"
+                rows={3}
+              />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                  <Shield className="h-4 w-4" />
+                  <span>Anonymous • Safe space</span>
+                </div>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!newPost.trim() || isSubmitting}
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                >
+                  {isSubmitting ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Share
+                    </>
+                  )}
+                </Button>
               </div>
-              <Button
-                onClick={handleSubmit}
-                disabled={!newPost.trim() || isSubmitting}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                {isSubmitting ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Share
-                  </>
-                )}
-              </Button>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-4 text-sm text-gray-300">
+              <p className="mb-2 font-medium">Posting is a Premium feature</p>
+              <p className="text-xs text-gray-400 mb-3">Upgrade to share your own stories. You can still react & support others.</p>
+              <div className="w-full h-1 bg-gray-700 rounded">
+                <div className="h-full w-1/3 bg-gradient-to-r from-purple-600 to-pink-600 rounded" />
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -126,6 +138,9 @@ export function LiveCommunityZone({ posts, onPostSubmit }: Props) {
                   variant="ghost"
                   size="sm"
                   className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+                  onClick={() => {
+                    onEngage?.();
+                  }}
                 >
                   <Heart className="h-4 w-4 mr-1" />
                   {post.reactions}

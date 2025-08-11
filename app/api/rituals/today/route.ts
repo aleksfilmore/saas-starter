@@ -11,14 +11,18 @@ export const runtime = 'nodejs';
  */
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUser();
+  const user = await getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     console.log('🔮 Getting today\'s ritual for user:', user.id);
 
-    // Check for current ritual
+    // Determine user tier for ritual selection
+    const userTier = (user as any).subscription_tier === 'premium' ? 'premium' : 'free';
+    console.log('👤 User tier:', userTier);
+
+  // Check for current ritual
     const currentRitual = await db.execute(sql`
       SELECT 
         r.id,
@@ -26,12 +30,11 @@ export async function GET(request: NextRequest) {
         r.description,
         r.steps,
         r.difficulty,
-        r.xp_reward,
-        r.byte_reward,
-        r.estimated_time,
+        COALESCE(r.xp_reward, 15) as xp_reward,
+        25 as bytes_reward,
+        r.duration,
         r.category,
-        r.emotional_tone,
-        r.tier,
+        r.tier_requirement as tier,
         ur.delivered_at,
         ur.completed_at
       FROM user_rituals ur
@@ -46,6 +49,8 @@ export async function GET(request: NextRequest) {
       const ritual = currentRitual[0];
       console.log('📋 Found current ritual:', ritual.title);
       
+  const userRitualTier = (user as any).ritual_tier as string | undefined;
+  const tierMismatch = userRitualTier && ritual.tier && userRitualTier !== ritual.tier;
       return NextResponse.json({
         ritual: {
           id: ritual.id,
@@ -54,33 +59,71 @@ export async function GET(request: NextRequest) {
           steps: ritual.steps,
           difficulty: ritual.difficulty,
           xpReward: ritual.xp_reward,
-          byteReward: ritual.byte_reward,
-          estimatedTime: ritual.estimated_time,
+          byteReward: ritual.bytes_reward,
+          estimatedTime: ritual.duration,
           category: ritual.category,
-          emotionalTone: ritual.emotional_tone,
           tier: ritual.tier,
           deliveredAt: ritual.delivered_at,
           completedAt: ritual.completed_at,
-          isCompleted: !!ritual.completed_at
-        }
+          isCompleted: !!ritual.completed_at,
+          tierMismatch
+        },
+        warning: tierMismatch ? `Assigned ritual tier (${ritual.tier}) differs from user tier (${userRitualTier}).` : undefined
       });
     }
 
     // No current ritual, assign a new one
     console.log('🎲 No current ritual, assigning new one...');
+    console.log('🔧 Using NEW DIRECT LIBRARY QUERY (not database function)');
     
+    // Use simplified ritual assignment from ritual_library
     const newRitualResult = await db.execute(sql`
-      SELECT * FROM get_next_ritual_for_user(${user.id})
+      SELECT 
+        id,
+        title,
+        description,
+        steps,
+        difficulty,
+        COALESCE(xp_reward, 15) as xp_reward,
+        25 as bytes_reward,
+        duration,
+        category,
+        tier_requirement as tier
+      FROM ritual_library 
+      WHERE (
+        ${userTier === 'premium' ? sql`(is_premium = true OR is_premium = false OR is_premium IS NULL)` : sql`(is_premium = false OR is_premium IS NULL)`}
+      )
+        AND category IS NOT NULL
+        AND title IS NOT NULL
+        AND is_active = true
+        AND id NOT IN (
+          SELECT DISTINCT ritual_id 
+          FROM user_rituals 
+          WHERE user_id = ${user.id}
+        )
+      ORDER BY RANDOM()
+      LIMIT 1
     `);
 
     if (newRitualResult.length === 0) {
-      // Fallback: get any ritual they haven't done
+      // Fallback: get any ritual they haven't done from ritual_library
       const fallbackRitual = await db.execute(sql`
-        SELECT id, title, description, steps, difficulty, xp_reward, byte_reward, estimated_time
-        FROM rituals 
-        WHERE id NOT IN (
-          SELECT ritual_id FROM user_rituals WHERE user_id = ${user.id}
-        )
+        SELECT 
+          id, 
+          title, 
+          description, 
+          steps, 
+          difficulty, 
+          COALESCE(xp_reward, 15) as xp_reward, 
+          25 as bytes_reward, 
+          duration,
+          category,
+          tier_requirement as tier
+        FROM ritual_library 
+        WHERE is_active = true
+          AND id NOT IN (
+            SELECT DISTINCT ritual_id FROM user_rituals WHERE user_id = ${user.id}
+          )
         ORDER BY RANDOM()
         LIMIT 1
       `);
@@ -99,26 +142,31 @@ export async function GET(request: NextRequest) {
 
     // Assign this ritual to the user
     await db.execute(sql`
-      INSERT INTO user_rituals (user_id, ritual_id, is_current)
-      VALUES (${user.id}, ${newRitual.ritual_id}, true)
+      INSERT INTO user_rituals (user_id, ritual_id, is_current, delivered_at)
+      VALUES (${user.id}, ${newRitual.id}, true, NOW())
     `);
 
     console.log('✨ Assigned new ritual:', newRitual.title);
 
+  const userRitualTier = (user as any).ritual_tier as string | undefined;
+  const tierMismatch = userRitualTier && newRitual.tier && userRitualTier !== newRitual.tier;
     return NextResponse.json({
       ritual: {
-        id: newRitual.ritual_id,
+        id: newRitual.id,
         title: newRitual.title,
         description: newRitual.description,
         steps: newRitual.steps,
         difficulty: newRitual.difficulty,
         xpReward: newRitual.xp_reward,
-        byteReward: newRitual.byte_reward,
-        estimatedTime: newRitual.estimated_time,
+        byteReward: newRitual.bytes_reward,
+        estimatedTime: newRitual.duration,
         deliveredAt: new Date().toISOString(),
         completedAt: null,
-        isCompleted: false
-      }
+        isCompleted: false,
+        tier: newRitual.tier,
+        tierMismatch
+      },
+      warning: tierMismatch ? `Assigned ritual tier (${newRitual.tier}) differs from user tier (${userRitualTier}).` : undefined
     });
 
   } catch (error) {
@@ -152,14 +200,15 @@ export async function POST(request: NextRequest) {
     const now = new Date();
     const cooldownHours = 24;
 
-    if (lastReroll) {
+  if (lastReroll) {
       const timeSinceReroll = now.getTime() - new Date(lastReroll as string | number | Date).getTime();
       const hoursLeft = cooldownHours - (timeSinceReroll / (1000 * 60 * 60));
       
       if (hoursLeft > 0) {
         return NextResponse.json({
           error: 'Reroll on cooldown',
-          hoursLeft: Math.ceil(hoursLeft)
+      hoursLeft: Math.ceil(hoursLeft),
+      cooldownHours
         }, { status: 429 });
       }
     }
