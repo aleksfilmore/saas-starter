@@ -36,7 +36,7 @@ interface DashboardPayload {
   user: {
     alias: string;
     signupDate: string;
-    tier: 'ghost' | 'firewall' | 'cult_leader';
+    tier: 'ghost' | 'firewall';
     hasSubscription: boolean;
     lastActivity: string;
   };

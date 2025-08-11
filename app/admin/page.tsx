@@ -571,8 +571,8 @@ export default function HomePage() {
                   <h3 className="text-2xl font-bold text-white mb-2">Ghost Mode</h3>
                   <p className="text-gray-400 text-sm mb-6">Silent healing with essential tools</p>
                   
-                  <div className="text-4xl font-bold text-white mb-6">
-                    $9.99<span className="text-lg text-gray-400 font-normal">/month</span>
+                  <div className="text-4xl font-bold text-gray-300 mb-6">
+                    Free<span className="text-lg text-gray-400 font-normal"> forever</span>
                   </div>
 
                   <ul className="text-left space-y-3 mb-8">
@@ -621,7 +621,7 @@ export default function HomePage() {
                   <p className="text-gray-400 text-sm mb-6">Maximum protection & unlimited support</p>
                   
                   <div className="text-4xl font-bold text-white mb-6">
-                    $19.99<span className="text-lg text-gray-400 font-normal">/month</span>
+                    $9.99<span className="text-lg text-gray-400 font-normal">/month</span>
                   </div>
 
                   <ul className="text-left space-y-3 mb-8">

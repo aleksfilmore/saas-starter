@@ -29,17 +29,16 @@ const planFeatures = {
     '1 daily ritual from free pool',
     'Basic no-contact tracker (24h shield)',
     'Wall of Wounds: read + react only',
-    'AI chat: $3.99/300 messages',
+    'AI chat: 5 free messages/day',
     'Basic progress tracking',
     'General daily guidance'
   ],
   paid: [
     '2 personalized daily rituals + reroll',
-    'Enhanced no-contact tracker (48h + weekly auto-shield)',
+    'Enhanced no-contact tracker (48h + auto-shield)',
     'Wall of Wounds: read + react + post',
-    'Unlimited AI chat with personas*',
-    'Voice therapy add-on ($9.99/15 min)',
-    'Live progress metrics & insights',
+    'Unlimited AI chat with personas',
+    'Advanced pattern analysis & insights',
     'Archetype-specific daily guidance',
     'Bytes redemption & advanced gamification'
   ]

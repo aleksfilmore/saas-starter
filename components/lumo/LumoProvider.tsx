@@ -19,7 +19,7 @@ interface LumoContextType {
   persona: 'core' | 'gremlin' | 'analyst';
   setPersona: (persona: 'core' | 'gremlin' | 'analyst') => void;
   quotaLeft: number;
-  tier: 'ghost' | 'firewall' | 'cult_leader';
+  tier: 'ghost' | 'firewall';
   notify: (type: 'info' | 'error' | 'warning' | 'success', message: string) => void;
   notifications: LumoNotification[];
   clearNotifications: () => void;
@@ -33,7 +33,7 @@ const LumoContext = createContext<LumoContextType | undefined>(undefined);
 interface LumoProviderProps {
   children: React.ReactNode;
   initialQuota?: number;
-  userTier?: 'ghost' | 'firewall' | 'cult_leader';
+  userTier?: 'ghost' | 'firewall';
 }
 
 export function LumoProvider({ 

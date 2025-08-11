@@ -52,38 +52,42 @@ export default function PricingPage() {
             {/* Ghost Mode */}
             <Card className="bg-gray-800/80 border-gray-600/50 backdrop-blur-sm relative overflow-hidden">
               <div className="absolute top-4 right-4">
-                <Zap className="h-6 w-6 text-purple-400" />
+                <Zap className="h-6 w-6 text-gray-400" />
               </div>
               <CardHeader>
                 <CardTitle className="text-3xl font-bold text-white">Ghost Mode</CardTitle>
-                <div className="text-5xl font-black text-white mb-2">$9.99</div>
-                <p className="text-gray-400">Per month • Essential healing toolkit</p>
+                <div className="text-5xl font-black text-white mb-2">Free</div>
+                <p className="text-gray-400">Always free • Essential healing toolkit</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <ul className="space-y-4">
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Daily healing rituals
+                    1 daily ritual from free pool
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Progress tracking
+                    Basic no-contact tracker (24h shield)
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Basic gamification
+                    Wall of Wounds: read + react only
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Community support
+                    AI chat: 5 free messages/day
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Basic progress tracking
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
                     Crisis support resources
                   </li>
                 </ul>
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" asChild>
-                  <Link href="/quiz">Start Ghost Mode</Link>
+                <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white" asChild>
+                  <Link href="/sign-up">Start Free</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -101,7 +105,7 @@ export default function PricingPage() {
               </div>
               <CardHeader className="pt-8">
                 <CardTitle className="text-3xl font-bold text-white">Firewall Mode</CardTitle>
-                <div className="text-5xl font-black text-white mb-2">$19.99</div>
+                <div className="text-5xl font-black text-white mb-2">$9.99</div>
                 <p className="text-gray-400">Per month • Complete protection suite</p>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -112,27 +116,27 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    AI therapy sessions (unlimited)
+                    2 personalized daily rituals + reroll
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Advanced pattern analysis
+                    Enhanced no-contact tracker (48h + auto-shield)
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Priority support access
+                    Wall of Wounds: read + react + post
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Enhanced privacy controls
+                    Unlimited AI chat with personas
                   </li>
                   <li className="flex items-center text-gray-300">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Custom ritual creation
+                    Advanced pattern analysis & insights
                   </li>
                 </ul>
                 <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white" asChild>
-                  <Link href="/quiz">Start Firewall Mode</Link>
+                  <Link href="/sign-up">Start Firewall Mode</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -155,26 +159,26 @@ export default function PricingPage() {
                 <tbody className="divide-y divide-gray-600">
                   <tr>
                     <td className="py-4 text-gray-300">Daily healing rituals</td>
-                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
-                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 text-gray-300">Progress tracking</td>
-                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="text-center py-4 text-gray-500">1 ritual/day</td>
                     <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
                   </tr>
                   <tr>
-                    <td className="py-4 text-gray-300">AI therapy sessions</td>
-                    <td className="text-center py-4 text-gray-500">Limited</td>
-                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="py-4 text-gray-300">No-contact tracker</td>
+                    <td className="text-center py-4 text-gray-500">24h shield</td>
+                    <td className="text-center py-4 text-gray-300">48h + auto-shield</td>
                   </tr>
                   <tr>
-                    <td className="py-4 text-gray-300">Priority support</td>
+                    <td className="py-4 text-gray-300">AI chat messages</td>
+                    <td className="text-center py-4 text-gray-500">5/day</td>
+                    <td className="text-center py-4 text-gray-300">Unlimited</td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 text-gray-300">Wall of Wounds posting</td>
                     <td className="text-center py-4 text-gray-500">—</td>
                     <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
                   </tr>
                   <tr>
-                    <td className="py-4 text-gray-300">Custom rituals</td>
+                    <td className="py-4 text-gray-300">Ritual rerolls</td>
                     <td className="text-center py-4 text-gray-500">—</td>
                     <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
                   </tr>
