@@ -1,16 +1,15 @@
-// Minimal health check without database
+// Minimal production health check
 export async function GET() {
   try {
     return Response.json({ 
-      status: 'ok',
+      status: 'healthy',
       timestamp: new Date().toISOString(),
-      env: process.env.NODE_ENV,
-      hasPostgres: !!process.env.POSTGRES_URL
+      environment: process.env.NODE_ENV || 'unknown'
     });
   } catch (error) {
     return Response.json({ 
-      error: 'Health check failed',
-      details: error instanceof Error ? error.message : String(error)
+      status: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

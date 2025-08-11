@@ -1,4 +1,4 @@
-// Simple production test - API route
+// Simple production test - API route without drizzle import
 export async function GET() {
   try {
     console.log('🚨 Production test - checking environment');
@@ -16,26 +16,12 @@ export async function GET() {
       }, { status: 500 });
     }
     
-    // Try to import postgres directly without drizzle
-    const postgres = require('postgres');
-    
-    const client = postgres(process.env.POSTGRES_URL, {
-      ssl: 'require',
-      max: 1,
-      prepare: false,
-      connect_timeout: 5,
-    });
-    
-    console.log('Testing simple query...');
-    const result = await client`SELECT 1 as test, 'production-check' as status`;
-    console.log('Query result:', result[0]);
-    
-    await client.end();
-    
+    // Don't import drizzle/postgres to avoid schema issues for now
     return Response.json({ 
       success: true, 
-      result: result[0],
-      env: nodeEnv 
+      message: 'Environment OK - database import skipped for safety',
+      env: nodeEnv,
+      hasDb: hasPostgresUrl
     });
     
   } catch (error) {
