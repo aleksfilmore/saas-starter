@@ -1,4 +1,4 @@
-# Netlify configuration for CTRL+ALT+BLOCK Therapy Platform
+# Minimal Netlify configuration
 [build]
 command = "npm run build"
 publish = ".next"
@@ -6,13 +6,7 @@ publish = ".next"
 [build.environment]
 NODE_VERSION = "22"
 NODE_ENV = "production"
-NPM_FLAGS = "--legacy-peer-deps"
 
-# Next.js specific configuration
+# Essential Next.js plugin
 [[plugins]]
 package = "@netlify/plugin-nextjs"
-
-[functions]
-node_bundler = "nft"
-external_node_modules = ["postgres"]
-included_files = ["lib/**"]

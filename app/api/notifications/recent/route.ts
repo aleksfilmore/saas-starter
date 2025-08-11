@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     }
 
     const rows = await NotificationRepository.recent(user.id, 10);
-    const normalized = rows.map(r => {
-      const meta = (r as any).metadata || {};
+    const normalized = rows.map((r: any) => {
+      const meta = r.metadata || {};
       return {
       id: r.id,
       type: r.type,
