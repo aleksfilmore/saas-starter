@@ -12,5 +12,10 @@ NPM_FLAGS = "--legacy-peer-deps"
 [build.processing]
 skip_processing = false
 
+# Standard Next.js plugin without edge functions
 [[plugins]]
 package = "@netlify/plugin-nextjs"
+
+[functions]
+node_bundler = "nft"
+included_files = ["lib/**", "components/**"]
