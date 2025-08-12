@@ -543,7 +543,313 @@ export default function ComingSoonPage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 px-4 bg-gray-900/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              CTRL + ALT + BLOCK™ Pricing
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-4">
+              Simple, Fair, Worth-Your-Time
+            </p>
+            <p className="text-sm text-gray-400">
+              Prices in USD; tax/VAT added where required
+            </p>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            
+            {/* Ghost Mode - Free Plan */}
+            <Card className="bg-gray-800/50 border border-gray-600/50 backdrop-blur-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-white flex items-center">
+                  👻 Ghost Mode
+                </CardTitle>
+                <div className="text-4xl font-black text-white mb-2">Free</div>
+                <p className="text-gray-400">Forever • Perfect to start your journey</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">No-Contact Tracker</h4>
+                    <ul className="space-y-1 text-sm text-gray-300 ml-4">
+                      <li>• Build 24-hour no-contact streaks</li>
+                      <li>• One shield per month (streak protection)</li>
+                      <li>• Visual progress tracking</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Daily Rituals</h4>
+                    <p className="text-sm text-gray-300 ml-4">1 science-backed healing activity daily from general pool</p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Wall of Wounds™</h4>
+                    <p className="text-sm text-gray-300 ml-4">Read anonymous posts & react with ❤️🔥😭</p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">AI Therapy</h4>
+                    <p className="text-sm text-gray-300 ml-4">Pay-per-session • $3.99 for 300 messages</p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Progress & Gamification</h4>
+                    <p className="text-sm text-gray-300 ml-4">Earn XP up to Level 15 • Collect Bytes (no spending)</p>
+                  </div>
+
+                </div>
+                <Button 
+                  onClick={() => scrollToSection('waitlist')}
+                  className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+                >
+                  Start Ghost Mode Free
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Firewall Mode - Paid Plan */}
+            <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/50 backdrop-blur-lg relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center">
+                  <Star className="h-4 w-4 mr-1" />
+                  MOST POPULAR
+                </div>
+              </div>
+              <CardHeader className="pt-8">
+                <CardTitle className="text-2xl font-bold text-white flex items-center">
+                  🔥 Firewall Mode
+                </CardTitle>
+                <div className="text-4xl font-black text-white mb-2">$9.99</div>
+                <p className="text-gray-400">USD / month • Cancel anytime</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">No-Contact Tracker</h4>
+                    <ul className="space-y-1 text-sm text-gray-300 ml-4">
+                      <li>• Build 48-hour no-contact streaks</li>
+                      <li>• Weekly auto-shield protection</li>
+                      <li>• Advanced analytics dashboard</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Daily Rituals</h4>
+                    <ul className="space-y-1 text-sm text-gray-300 ml-4">
+                      <li>• 2 personalized rituals daily (archetype-matched)</li>
+                      <li>• Unlimited reroll options</li>
+                      <li>• Advanced ritual types unlocked</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Wall of Wounds™</h4>
+                    <p className="text-sm text-gray-300 ml-4">Unlimited anonymous posting • Edit & delete your confessions</p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">AI Therapy</h4>
+                    <ul className="space-y-1 text-sm text-gray-300 ml-4">
+                      <li>• Unlimited chat included (1,000 msgs/month fair-use†)</li>
+                      <li>• Voice therapy: $4.99 per 15-minute session</li>
+                      <li>• 3 specialized AI personas available</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-semibold mb-2">Progress & Gamification</h4>
+                    <ul className="space-y-1 text-sm text-gray-300 ml-4">
+                      <li>• Unlimited XP and level progression</li>
+                      <li>• Earn & spend Bytes on Voice sessions and future merch</li>
+                      <li>• All badges plus seasonal & secret quests</li>
+                    </ul>
+                  </div>
+
+                </div>
+                <Button 
+                  onClick={() => scrollToSection('waitlist')}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                >
+                  Start Firewall Mode
+                </Button>
+              </CardContent>
+            </Card>
+
+          </div>
+
+          {/* Fine Print & Core Features */}
+          <div className="mt-16">
+            <div className="bg-gray-800/30 border border-gray-600/30 rounded-lg p-6 mb-12">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+                <HelpCircle className="h-5 w-5 mr-2" />
+                Fine Print
+              </h3>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p><strong>Shield</strong> = one "streak freeze" token; Ghost earns 1/mo, Firewall 1/wk</p>
+                <p><strong>† Fair-use</strong> = 1,000 text messages / month. If you somehow out-chat the Oracle, we'll nudge you before throttling.</p>
+                <p>Cancel anytime with self-serve options • All features available immediately upon subscription</p>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h3 className="text-3xl font-bold text-white mb-8">
+                Both Plans Include Core CTRL+ALT+BLOCK Features
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <div className="bg-purple-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Shield className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-2">100% Anonymous</h4>
+                  <p className="text-gray-400">No real names, complete privacy protection</p>
+                </div>
+                <div className="text-center">
+                  <div className="bg-purple-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Zap className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-2">Science-Backed</h4>
+                  <p className="text-gray-400">Research-based attachment therapy methods</p>
+                </div>
+                <div className="text-center">
+                  <div className="bg-purple-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Star className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-2">24/7 Support</h4>
+                  <p className="text-gray-400">Always-available community and resources</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog Section - Featured Articles */}
+      <section className="py-24 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-purple-900/30" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              <Brain className="h-10 w-10 inline mr-3 text-purple-400" />
+              The Healing Blog
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Evidence-based insights and real recovery stories to guide your journey
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {/* Featured Healing Article */}
+            <Link href="/blog/7-stages-breakup-healing">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-purple-600/80 text-white text-xs">HEALING.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-purple-300 border-purple-400/50 bg-purple-900/30 mb-3">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all">
+                      The 7 Stages of Breakup Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Learn the psychological stages of healing and proven ways to navigate them without getting stuck.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <div className="flex items-center text-purple-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Featured Self-Care Article */}
+            <Link href="/blog/self-care-rituals-stop-overthinking">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-green-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-green-600/80 text-white text-xs">SELFCARE.APP</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-green-300 border-green-400/50 bg-green-900/30 mb-3">
+                      SELF-CARE
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 group-hover:bg-clip-text transition-all">
+                      Stop Breakup Overthinking at Night
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Learn proven nighttime self-care rituals that calm your mind and help you sleep better after a breakup.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <div className="flex items-center text-green-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Featured Tips Article */}
+            <Link href="/blog/breakup-hacks-stop-texting-ex">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-cyan-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-cyan-500 via-blue-500 to-cyan-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-cyan-600/80 text-white text-xs">TIPS.BAT</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-cyan-300 border-cyan-400/50 bg-cyan-900/30 mb-3">
+                      TIPS
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-blue-400 group-hover:bg-clip-text transition-all">
+                      10 Breakup Hacks That Actually Work
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Proven strategies to resist the urge to text your ex and protect your healing progress.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>5 min read</span>
+                      <div className="flex items-center text-cyan-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          <div className="text-center">
+            <Link href="/blog">
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 text-lg font-semibold">
+                <Brain className="h-5 w-5 mr-2" />
+                Read More Articles →
+              </Button>
+            </Link>
+            <p className="text-gray-400 text-sm mt-4">
+              12 expert articles • Evidence-based recovery • Updated weekly
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Waitlist Section */}
       <section id="waitlist" className="py-24 px-4 bg-gradient-to-br from-purple-900/50 to-pink-900/50">
@@ -580,15 +886,31 @@ export default function ComingSoonPage() {
                     </div>
                   </div>
 
-                  <form action="https://formspree.io/f/xrblayqb" method="POST" className="space-y-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
                     <Input
-                      type="email" name="email" placeholder="exile_404@protonmail.com"
+                      type="email"
+                      placeholder="exile_404@protonmail.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                       className="bg-gray-700/50 border-purple-500/30 text-white placeholder-gray-400 focus:border-cyan-400 text-lg py-3"
                     />
                     <Button
                       type="submit"
-                      >Join Waitlist - Free <ArrowRight className="ml-2 h-5 w-5" />
+                      disabled={isSubmitting}
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-4 text-lg"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-3"></div>
+                          Joining the Revolution...
+                        </>
+                      ) : (
+                        <>
+                          Join Waitlist - Free
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </>
+                      )}
                     </Button>
                     <p className="text-sm text-gray-400">
                       🔒 We store only your email. No names, no spam. Unsubscribe anytime.

@@ -18,60 +18,33 @@ export default function HomePage() {
   const [postReactions, setPostReactions] = useState<Record<string, number>>({});
   const [isPaused, setIsPaused] = useState(false);
 
-  const mockWallPosts = [
+  const healingInsights = [
     {
       id: '1',
-      content: "Day 47 no contact. Had a panic attack today but didn't text him. Using the breathing protocol right now and it's actually working.",
-      type: 'victory',
+      content: "The 2-minute attachment quiz revealed I'm 'anxious-avoidant' - finally understanding my patterns is helping me heal faster.",
+      type: 'insight',
       reactions: 23,
       replies: 8,
       timeAgo: '2h ago',
-      archetype: 'firewall'
+      archetype: 'seeker'
     },
     {
-      id: '2', 
-      content: "I keep checking his Instagram stories. I know I shouldn't but I can't stop. How do you all resist the urge?",
-      type: 'confession',
-      reactions: 41,
-      replies: 15,
+      id: '2',
+      content: "Quiz showed me I'm a 'phantom' type. The personalized healing plan feels like it was written just for me.",
+      type: 'breakthrough',
+      reactions: 45,
+      replies: 12,
       timeAgo: '4h ago',
-      archetype: 'ghost'
+      archetype: 'phantom'
     },
     {
       id: '3',
-      content: "3 months free and I finally feel like myself again. To anyone reading this in the early days - it DOES get easier. Promise.",
-      type: 'victory', 
-      reactions: 127,
-      replies: 34,
-      timeAgo: '6h ago',
-      archetype: 'secure'
-    },
-    {
-      id: '4',
-      content: "Trigger warning: saw my ex at the coffee shop today. My heart raced but I didn't approach. Used the breathing technique from the app and sat with the feeling. Small wins count.",
+      content: "Took the quiz 3 times over 2 months - watching my healing archetype evolve from 'wounded' to 'warrior' is incredible.",
       type: 'victory',
-      reactions: 34,
-      replies: 9,
-      timeAgo: '8h ago',
-      archetype: 'firewall'
-    },
-    {
-      id: '5',
-      content: "Month 3 update: I can finally listen to 'our song' without crying. The AI therapy sessions helped me reframe so many negative thought patterns. Healing isn't linear but it's happening.",
-      type: 'victory',
-      reactions: 73,
+      reactions: 67,
       replies: 15,
-      timeAgo: '12h ago',
-      archetype: 'secure'
-    },
-    {
-      id: '6',
-      content: "PSA: Your ex texting you at 2am drunk is not a sign to get back together. It's a sign that they're still the same person who couldn't prioritize you when it mattered. Stay strong.",
-      type: 'confession',
-      reactions: 156,
-      replies: 31,
-      timeAgo: '1d ago',
-      archetype: 'firewall'
+      timeAgo: '6h ago',
+      archetype: 'warrior'
     }
   ];
 
@@ -80,16 +53,16 @@ export default function HomePage() {
     if (isPaused) return;
     
     const interval = setInterval(() => {
-      setCurrentPostIndex((prev) => (prev + 1) % mockWallPosts.length);
+      setCurrentPostIndex((prev) => (prev + 1) % healingInsights.length);
     }, 5000); // Change post every 5 seconds
 
     return () => clearInterval(interval);
-  }, [mockWallPosts.length, isPaused]);
+  }, [healingInsights.length, isPaused]);
 
   // Animated reactions
   useEffect(() => {
     const reactionInterval = setInterval(() => {
-      const currentPost = mockWallPosts[currentPostIndex];
+      const currentPost = healingInsights[currentPostIndex];
       if (currentPost) {
         setPostReactions(prev => ({
           ...prev,
@@ -99,7 +72,7 @@ export default function HomePage() {
     }, 5000); // Add reaction every 5 seconds
 
     return () => clearInterval(reactionInterval);
-  }, [currentPostIndex, mockWallPosts]);
+  }, [currentPostIndex, healingInsights]);
 
   const faqs = [
     {
@@ -155,7 +128,7 @@ export default function HomePage() {
     }
   ];  const handlePostClick = (postId: string) => {
     // For now, redirect to sign-in. In production, this could open a modal
-    window.location.href = '/sign-in?redirect=' + encodeURIComponent('/wall#' + postId);
+    window.location.href = '/quiz';
   };
 
   const toggleFaq = (index: number) => {
@@ -313,13 +286,94 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Live Wall of Wounds Preview - Auto-Scroll Carousel */}
+      
+      {/* Featured Blog Articles */}
+      <section className="py-16 px-4 bg-gradient-to-b from-purple-900/20 to-gray-900/40">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+              <Brain className="h-8 w-8 inline mr-3 text-purple-400" />
+              Latest Healing Insights
+            </h2>
+            <p className="text-gray-300 max-w-2xl mx-auto">
+              Evidence-based articles and real recovery stories to guide your journey
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/blog/7-stages-breakup-healing">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all cursor-pointer hover:scale-105 group">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-purple-600 to-blue-600 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Brain className="h-12 w-12 text-white/80 group-hover:scale-110 transition-transform" />
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                      The 7 Stages of Breakup Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm">Science-based guide to recovery</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/blog/neuroplasticity-heartbreak-recovery">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all cursor-pointer hover:scale-105 group">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-blue-600 to-cyan-600 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Zap className="h-12 w-12 text-white/80 group-hover:scale-110 transition-transform" />
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                      Neuroplasticity & Recovery
+                    </h3>
+                    <p className="text-gray-400 text-sm">How your brain heals itself</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link href="/blog/sarah-recovery-story">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all cursor-pointer hover:scale-105 group">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-green-600 to-emerald-600 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <CheckCircle className="h-12 w-12 text-white/80 group-hover:scale-110 transition-transform" />
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                      From Devastation to Dream Life
+                    </h3>
+                    <p className="text-gray-400 text-sm">Sarah's transformation story</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          <div className="text-center mt-8">
+            <Link href="/blog">
+              <Button variant="outline" className="border-purple-500/50 text-purple-300 hover:bg-purple-600/20">
+                Read All Articles
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Healing Path Quiz Preview */}
       <div className="bg-gradient-to-b from-gray-900 to-purple-900/30 py-20">
         <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             <Sparkles className="h-8 w-8 inline mr-3 text-pink-400" />
-            Live from the Wall of Wounds
+            Discover Your Healing Path
           </h2>
           <p className="text-gray-400 text-lg">
             Real healing moments from our anonymous community
@@ -342,7 +396,7 @@ export default function HomePage() {
         <div className="relative overflow-hidden mb-8">
           <div className="flex transition-transform duration-1000 ease-in-out"
                style={{ transform: `translateX(-${currentPostIndex * 100}%)` }}>
-            {mockWallPosts.map((post, index) => (
+            {healingInsights.map((post, index) => (
               <div key={post.id} className="w-full flex-shrink-0 px-4">
                 <Card 
                   className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 max-w-2xl mx-auto cursor-pointer hover:scale-105"
@@ -385,7 +439,7 @@ export default function HomePage() {
           
           {/* Carousel indicators */}
           <div className="flex justify-center mt-6 space-x-2">
-            {mockWallPosts.map((_, index) => (
+            {healingInsights.map((_, index) => (
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
@@ -397,13 +451,13 @@ export default function HomePage() {
         </div>
 
         <div className="text-center">
-          <Link href="/wall">
+          <Link href="/quiz">
             <Button 
               size="lg"
               className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white border-0"
             >
               <Sparkles className="h-5 w-5 mr-2" />
-              Join the Wall →
+              Take the Quiz →
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>
@@ -466,12 +520,174 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {/* Featured Healing Article */}
+            {/* The 7 Stages of Breakup Healing */}
             <Link href="/blog/7-stages-breakup-healing">
               <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
                 <CardContent className="p-0">
-                  <div className="aspect-video bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800 relative overflow-hidden">
+                  <div className="aspect-video bg-cover bg-center relative overflow-hidden" style={{backgroundImage: 'url(/The 7 Stages of Breakup Healing.png)'}}>
                     <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-purple-600/80 text-white text-xs">HEALING.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-purple-300 border-purple-400/50 bg-purple-900/30 mb-3 text-xs">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all">
+                      The 7 Stages of Breakup Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Breaking up isn't just losing a person — it's losing a whole rhythm of your life. Learn the psychological stages.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <span>3.4k views</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* 30 Days No Contact Survival */}
+            <Link href="/blog/30-days-no-contact-survival">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-cover bg-center relative overflow-hidden" style={{backgroundImage: 'url(/Day-by-Day Survival Guide for Your First 30 Days of No Contact.png)'}}>
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-blue-600/80 text-white text-xs">NO-CONTACT.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-blue-300 border-blue-400/50 bg-blue-900/30 mb-3 text-xs">
+                      NO CONTACT
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-cyan-400 group-hover:bg-clip-text transition-all">
+                      30 Days No Contact Survival Guide
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      The first 30 days can feel like a marathon you didn't train for. Get a complete day-by-day breakdown.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <span>4.7k views</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Rewire Brain for Love */}
+            <Link href="/blog/rewire-brain-for-love">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-cover bg-center relative overflow-hidden" style={{backgroundImage: 'url(/Science-Backed Ways to Rewire Your Brain for Love Again.png)'}}>
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-green-600/80 text-white text-xs">NEURO.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-green-300 border-green-400/50 bg-green-900/30 mb-3 text-xs">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 group-hover:bg-clip-text transition-all">
+                      Rewire Your Brain for Love Again
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Thanks to neuroplasticity, you can literally reprogram your mind to trust, feel joy, and open up again.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>7 min read</span>
+                      <span>2.8k views</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-purple-600/80 text-white text-xs">HEALING.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-purple-300 border-purple-400/50 bg-purple-900/30 mb-3 text-xs">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all">
+                      The 7 Stages of Breakup Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Breaking up isn't just losing a person — it's losing a whole rhythm of your life. Learn the psychological stages.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <span>3.4k views</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* 30 Days No Contact Survival */}
+            <Link href="/blog/30-days-no-contact-survival">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-cover bg-center relative overflow-hidden" style={{backgroundImage: 'url(/Day-by-Day Survival Guide for Your First 30 Days of No Contact.png)'}}>
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-blue-600/80 text-white text-xs">NO-CONTACT.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-blue-300 border-blue-400/50 bg-blue-900/30 mb-3 text-xs">
+                      NO CONTACT
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-cyan-400 group-hover:bg-clip-text transition-all">
+                      30 Days No Contact Survival Guide
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      The first 30 days can feel like a marathon you didn't train for. Get a complete day-by-day breakdown.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <span>4.7k views</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Rewire Brain for Love */}
+            <Link href="/blog/rewire-brain-for-love">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-cover bg-center relative overflow-hidden" style={{backgroundImage: 'url(/Science-Backed Ways to Rewire Your Brain for Love Again.png)'}}>
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-green-600/80 text-white text-xs">NEURO.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-green-300 border-green-400/50 bg-green-900/30 mb-3 text-xs">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 group-hover:bg-clip-text transition-all">
+                      Rewire Your Brain for Love Again
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Thanks to neuroplasticity, you can literally reprogram your mind to trust, feel joy, and open up again.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>7 min read</span>
+                      <span>2.8k views</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
                     <div className="absolute bottom-4 right-4">
                       <Badge className="bg-purple-600/80 text-white text-xs">HEALING.EXE</Badge>
                     </div>
@@ -568,7 +784,7 @@ export default function HomePage() {
               </Button>
             </Link>
             <p className="text-gray-400 text-sm mt-4">
-              12 expert articles • Evidence-based recovery • Updated weekly
+              Evidence-based recovery insights • Updated weekly
             </p>
           </div>
         </div>
@@ -586,9 +802,9 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {faqs.map((faq, index) => (
-            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 overflow-hidden">
+            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 overflow-hidden h-fit">
               <CardContent className="p-0">
                 <button
                   onClick={() => toggleFaq(index)}
@@ -633,7 +849,7 @@ export default function HomePage() {
                     Start Your Journey
                   </Button>
                 </Link>
-                <Link href="/wall">
+                <Link href="/quiz">
                   <Button variant="outline" className="border-purple-400 text-purple-400 hover:bg-purple-400/20">
                     Join Community
                   </Button>
