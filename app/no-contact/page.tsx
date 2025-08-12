@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { SiteFooter } from '@/components/layout/SiteFooter'
 import { 
   Shield, 
   CheckCircle, 
@@ -432,6 +433,8 @@ export default function SimplifiedNoContactPage() {
           </Button>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   )
 }

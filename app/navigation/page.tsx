@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { MainNavigation } from '@/components/navigation/MainNavigation';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Compass } from 'lucide-react';
@@ -70,6 +71,7 @@ export default function NavigationPage() {
   }
 
   return (
+    <>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
@@ -129,33 +131,10 @@ export default function NavigationPage() {
           {/* Main Navigation */}
           <MainNavigation currentPath={pathname ?? undefined} userStats={userStats ?? undefined} />
 
-          {/* Footer */}
-          <div className="mt-12 text-center">
-            <Card className="bg-gray-900/30 border-gray-700">
-              <CardContent className="p-6">
-                <div className="text-gray-400 text-sm space-y-2">
-                  <p>🚀 CTRL+ALT+BLOCK™ Platform v2.0</p>
-                  <p>Next-generation digital healing technology</p>
-                  <div className="flex justify-center space-x-6 mt-4">
-                    <Link href="/privacy" className="hover:text-white transition-colors">
-                      Privacy
-                    </Link>
-                    <Link href="/terms" className="hover:text-white transition-colors">
-                      Terms
-                    </Link>
-                    <Link href="/security" className="hover:text-white transition-colors">
-                      Security
-                    </Link>
-                    <Link href="/status" className="hover:text-white transition-colors">
-                      Status
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
         </div>
       </div>
+
+      <SiteFooter />
+    </>
   );
 }
