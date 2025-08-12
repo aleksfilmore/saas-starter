@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
+    // Skip database operations during build time
+    if (process.env.NODE_ENV === 'production' && !process.env.POSTGRES_URL) {
+      return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
+    }
+
+    // Dynamic import to avoid loading database dependencies during build
+    const { db } = await import('@/lib/db');
+    const { users } = await import('@/lib/db/schema');
+    const { eq, sql } = await import('drizzle-orm');
+
     const { pattern, completedCycles } = await request.json();
     
     // Get user email from headers (temporary auth method)

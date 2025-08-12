@@ -244,7 +244,10 @@ export default function SimplifiedWallPage() {
           }}
           hasShield={true}
           onCheckin={() => console.log('Check-in clicked')}
-          onBreathing={() => window.location.href = '/breathing'}
+          onBreathing={() => {
+            // Use dashboard instead of non-existent /breathing route
+            window.location.href = '/dashboard';
+          }}
           onCrisis={() => window.location.href = '/crisis-support'}
         />
         
