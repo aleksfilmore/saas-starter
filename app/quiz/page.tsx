@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -15,88 +15,100 @@ interface Question {
     text: string;
     value: string;
     style: 'anxious' | 'avoidant' | 'secure' | 'disorganized';
+    originalIndex: number; // Track original position for scoring
   }[];
 }
 
-const questions: Question[] = [
+// Shuffle function
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Base questions that will be shuffled
+const baseQuestions = [
   {
     id: "q1_no_text_back",
     question: "When someone you're dating doesn't text back for hours, what's your first mental tab that opens?",
     options: [
-      { text: "'They're probably losing interest, and I need to fix it now.'", value: "A", style: "anxious" },
-      { text: "'They must be busy. I'll focus on my own stuff until they reply.'", value: "B", style: "secure" },
-      { text: "'I should pull back before they pull away.'", value: "C", style: "avoidant" },
-      { text: "'It's fine… but I'm also drafting an exit plan just in case.'", value: "D", style: "disorganized" }
+      { text: "'They're probably losing interest, and I need to fix it now.'", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "'They must be busy. I'll focus on my own stuff until they reply.'", value: "B", style: "secure" as const, originalIndex: 1 },
+      { text: "'I should pull back before they pull away.'", value: "C", style: "avoidant" as const, originalIndex: 2 },
+      { text: "'It's fine… but I'm also drafting an exit plan just in case.'", value: "D", style: "disorganized" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q2_cancelled_plans",
     question: "Imagine your partner cancels plans last-minute. How do you process it?",
     options: [
-      { text: "'I feel hurt and start wondering what I did wrong.'", value: "A", style: "anxious" },
-      { text: "'I'm annoyed, but it's not the end of the world.'", value: "B", style: "secure" },
-      { text: "'That's why I keep my walls up.'", value: "C", style: "avoidant" },
-      { text: "'I act like it's fine, but deep down I'm bracing for a breakup.'", value: "D", style: "disorganized" }
+      { text: "'I feel hurt and start wondering what I did wrong.'", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "'I'm annoyed, but it's not the end of the world.'", value: "B", style: "secure" as const, originalIndex: 1 },
+      { text: "'That's why I keep my walls up.'", value: "C", style: "avoidant" as const, originalIndex: 2 },
+      { text: "'I act like it's fine, but deep down I'm bracing for a breakup.'", value: "D", style: "disorganized" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q3_unstable_relationship", 
     question: "If a relationship starts to feel unstable, what's your autopilot move?",
     options: [
-      { text: "Double down with extra closeness to try and save it.", value: "A", style: "anxious" },
-      { text: "Give space and hope it evens out on its own.", value: "B", style: "avoidant" },
-      { text: "Pull away before I get hurt.", value: "C", style: "avoidant" },
-      { text: "Stay open but check in with myself about my needs.", value: "D", style: "secure" }
+      { text: "Double down with extra closeness to try and save it.", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "Give space and hope it evens out on its own.", value: "B", style: "avoidant" as const, originalIndex: 1 },
+      { text: "Pull away before I get hurt.", value: "C", style: "avoidant" as const, originalIndex: 2 },
+      { text: "Stay open but check in with myself about my needs.", value: "D", style: "secure" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q4_conflict_handling",
     question: "How do you usually handle conflict?",
     options: [
-      { text: "Over-explain and try to fix things immediately.", value: "A", style: "anxious" },
-      { text: "Shut down until I'm ready to talk.", value: "B", style: "avoidant" },
-      { text: "Get defensive, but secretly want reassurance.", value: "C", style: "disorganized" },
-      { text: "Discuss it calmly and look for solutions.", value: "D", style: "secure" }
+      { text: "Over-explain and try to fix things immediately.", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "Shut down until I'm ready to talk.", value: "B", style: "avoidant" as const, originalIndex: 1 },
+      { text: "Get defensive, but secretly want reassurance.", value: "C", style: "disorganized" as const, originalIndex: 2 },
+      { text: "Discuss it calmly and look for solutions.", value: "D", style: "secure" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q5_independence_request",
     question: "Your partner asks for more independence. What's your gut response?",
     options: [
-      { text: "Worry they're slipping away.", value: "A", style: "anxious" },
-      { text: "Feel relieved — I like my space.", value: "B", style: "avoidant" },
-      { text: "Pretend it's fine, then overthink alone.", value: "C", style: "disorganized" },
-      { text: "Respect it and adjust while staying connected.", value: "D", style: "secure" }
+      { text: "Worry they're slipping away.", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "Feel relieved — I like my space.", value: "B", style: "avoidant" as const, originalIndex: 1 },
+      { text: "Pretend it's fine, then overthink alone.", value: "C", style: "disorganized" as const, originalIndex: 2 },
+      { text: "Respect it and adjust while staying connected.", value: "D", style: "secure" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q6_breakup_first_move",
     question: "A breakup happens. First move?",
     options: [
-      { text: "Text them 'just to talk.'", value: "A", style: "anxious" },
-      { text: "Delete their number and focus forward.", value: "B", style: "avoidant" },
-      { text: "Block them but stalk from a burner.", value: "C", style: "disorganized" },
-      { text: "Process it, talk to friends, and give myself space to heal.", value: "D", style: "secure" }
+      { text: "Text them 'just to talk.'", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "Delete their number and focus forward.", value: "B", style: "avoidant" as const, originalIndex: 1 },
+      { text: "Block them but stalk from a burner.", value: "C", style: "disorganized" as const, originalIndex: 2 },
+      { text: "Process it, talk to friends, and give myself space to heal.", value: "D", style: "secure" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q7_relationship_superpower",
     question: "What's your relationship superpower?",
     options: [
-      { text: "Picking up on the tiniest shifts in mood.", value: "A", style: "anxious" },
-      { text: "Staying independent no matter what.", value: "B", style: "avoidant" },
-      { text: "Reading people's energy instantly (but sometimes misjudging it).", value: "C", style: "disorganized" },
-      { text: "Communicating needs clearly and kindly.", value: "D", style: "secure" }
+      { text: "Picking up on the tiniest shifts in mood.", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "Staying independent no matter what.", value: "B", style: "avoidant" as const, originalIndex: 1 },
+      { text: "Reading people's energy instantly (but sometimes misjudging it).", value: "C", style: "disorganized" as const, originalIndex: 2 },
+      { text: "Communicating needs clearly and kindly.", value: "D", style: "secure" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q8_biggest_fear",
     question: "What's your biggest relationship fear?",
     options: [
-      { text: "Being abandoned.", value: "A", style: "anxious" },
-      { text: "Being trapped.", value: "B", style: "avoidant" },
-      { text: "Wanting closeness but feeling unsafe.", value: "C", style: "disorganized" },
-      { text: "Losing myself completely or losing the other person suddenly.", value: "D", style: "secure" }
+      { text: "Being abandoned.", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "Being trapped.", value: "B", style: "avoidant" as const, originalIndex: 1 },
+      { text: "Wanting closeness but feeling unsafe.", value: "C", style: "disorganized" as const, originalIndex: 2 },
+      { text: "Losing myself completely or losing the other person suddenly.", value: "D", style: "secure" as const, originalIndex: 3 }
     ]
   }
 ];
@@ -216,10 +228,30 @@ export default function AttachmentQuizPage() {
   const [resultStyle, setResultStyle] = useState<keyof typeof attachmentStyles | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [hoveredArchetype, setHoveredArchetype] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const router = useRouter();
 
+  // Initialize shuffled questions when component mounts
+  React.useEffect(() => {
+    const shuffledQuestions = baseQuestions.map(q => ({
+      ...q,
+      options: shuffleArray(q.options).map((option, newIndex) => ({
+        ...option,
+        value: String.fromCharCode(65 + newIndex) // Reassign A, B, C, D based on new position
+      }))
+    }));
+    setQuestions(shuffledQuestions);
+  }, []);
+
   const handleAnswer = async (questionId: string, answer: string) => {
-    const newAnswers = { ...answers, [questionId]: answer };
+    // Find the original value based on the shuffled position
+    const questionData = questions.find(q => q.id === questionId);
+    const selectedOption = questionData?.options.find(opt => opt.value === answer);
+    
+    // Map back to original A,B,C,D values for scoring
+    const originalValue = selectedOption ? String.fromCharCode(65 + selectedOption.originalIndex) : answer;
+    
+    const newAnswers = { ...answers, [questionId]: originalValue };
     setAnswers(newAnswers);
     
     if (currentQuestion < questions.length - 1) {
@@ -626,15 +658,15 @@ export default function AttachmentQuizPage() {
   const question = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 px-2 sm:px-4 py-4">
       
       <div className="max-w-2xl mx-auto">
         
         {/* Progress */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-white font-medium">Prompt {currentQuestion + 1} of {questions.length}</p>
-            <p className="text-gray-400">{Math.round(progress)}% → 100%</p>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <p className="text-white font-medium text-sm sm:text-base">Prompt {currentQuestion + 1} of {questions.length}</p>
+            <p className="text-gray-400 text-xs sm:text-sm">{Math.round(progress)}% → 100%</p>
           </div>
           <Progress value={progress} className="h-2 bg-gray-700" />
           <p className="text-xs text-gray-400 mt-2 text-center">Not therapy. Pure optimization.</p>
@@ -642,43 +674,55 @@ export default function AttachmentQuizPage() {
 
         {/* Question */}
         <Card className="bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="text-white text-2xl leading-relaxed">
+          <CardHeader className="pb-4 sm:pb-6">
+            <CardTitle className="text-white text-lg sm:text-xl md:text-2xl leading-relaxed">
               {question.question}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {question.options.map((option, index) => (
-              <Button
-                key={index}
-                onClick={() => handleAnswer(question.id, option.value)}
-                variant="outline"
-                className="w-full p-6 text-left h-auto bg-gray-800/40 border-gray-600/50 hover:border-purple-400 hover:bg-purple-500/20 text-white justify-start transition-all duration-200 group backdrop-blur-sm"
-              >
-                <div className="flex items-center w-full">
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-500 group-hover:border-purple-400 flex items-center justify-center mr-4 transition-colors">
-                    <span className="text-sm font-bold text-gray-400 group-hover:text-purple-400">
-                      {String.fromCharCode(65 + index)}
-                    </span>
+          <CardContent className="space-y-3 sm:space-y-4">
+            {question.options.map((option, index) => {
+              // Get color based on attachment style
+              const styleColors = {
+                anxious: 'border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-500/20 text-cyan-100',
+                avoidant: 'border-red-400/50 hover:border-red-400 hover:bg-red-500/20 text-red-100', 
+                secure: 'border-green-400/50 hover:border-green-400 hover:bg-green-500/20 text-green-100',
+                disorganized: 'border-purple-400/50 hover:border-purple-400 hover:bg-purple-500/20 text-purple-100'
+              };
+              
+              const optionStyle = styleColors[option.style as keyof typeof styleColors];
+              
+              return (
+                <Button
+                  key={index}
+                  onClick={() => handleAnswer(question.id, option.value)}
+                  variant="outline"
+                  className={`w-full p-4 sm:p-6 text-left h-auto bg-gray-800/60 ${optionStyle} text-white justify-start transition-all duration-200 group backdrop-blur-sm text-sm sm:text-base leading-relaxed`}
+                >
+                  <div className="flex items-center w-full">
+                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center mr-3 sm:mr-4 transition-colors flex-shrink-0 ${optionStyle.replace('text-', 'border-').replace('-100', '-400')}`}>
+                      <span className="text-xs sm:text-sm font-bold">
+                        {option.value}
+                      </span>
+                    </div>
+                    <span className="flex-1 leading-relaxed">{option.text}</span>
                   </div>
-                  <span className="text-lg leading-relaxed flex-1">{option.text}</span>
-                </div>
-              </Button>
-            ))}
+                </Button>
+              );
+            })}
             
             {/* Skip Option */}
             <Button
               onClick={() => handleAnswer(question.id, 'SKIP')}
               variant="ghost"
-              className="w-full p-4 text-center bg-gray-700/30 border border-gray-600/30 hover:bg-gray-600/40 text-gray-400 hover:text-gray-300 transition-all duration-200"
+              className="w-full p-3 sm:p-4 text-center bg-gray-700/30 border border-gray-600/30 hover:bg-gray-600/40 text-gray-400 hover:text-gray-300 transition-all duration-200 text-sm sm:text-base"
             >
-              <span className="text-sm">Not sure / Skip this question</span>
+              <span>Not sure / Skip this question</span>
             </Button>
           </CardContent>
         </Card>
 
         {/* Back button */}
-        <div className="mt-6 text-center">
+        <div className="mt-4 sm:mt-6 text-center">
           <Button 
             variant="ghost" 
             onClick={() => {
@@ -688,7 +732,7 @@ export default function AttachmentQuizPage() {
                 setQuizStarted(false);
               }
             }}
-            className="text-gray-400 hover:text-white hover:bg-gray-800/50 px-6 py-3 transition-all duration-200"
+            className="text-gray-400 hover:text-white hover:bg-gray-800/50 px-4 sm:px-6 py-2 sm:py-3 transition-all duration-200 text-sm sm:text-base"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {currentQuestion > 0 ? 'Previous Question' : 'Back to Start'}
