@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import Link from 'next/link';
 import { 
   Brain, Zap, Users, ArrowRight, 
@@ -705,53 +706,7 @@ export default function HomePage() {
 
     </div>
 
-      {/* Simple Footer */}
-      <footer className="bg-gray-900/50 border-t border-gray-600/30">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-1 text-xl font-bold text-white">
-                <span>CTRL</span>
-                <span className="text-gray-400">+</span>
-                <span>ALT</span>
-                <span className="text-gray-400">+</span>
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-              </div>
-              <p className="text-gray-400 text-sm">
-                Transform your heartbreak into strength with the world's first gamified recovery platform.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Platform</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/features" className="hover:text-white transition-colors">Features</Link></li>
-                <li><Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link></li>
-                <li><Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/contact" className="hover:text-white transition-colors">Contact Support</Link></li>
-                <li><Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link></li>
-                <li><Link href="/crisis-support" className="hover:text-white transition-colors">Crisis Support</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-white transition-colors">Terms</Link></li>
-                <li><Link href="/fair-usage" className="hover:text-white transition-colors">Fair Usage Policy</Link></li>
-                <li><Link href="/security" className="hover:text-white transition-colors">Security</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-600/30 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 CTRL+ALT+BLOCK. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
     </div>
   );

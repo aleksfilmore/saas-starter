@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import Link from 'next/link';
 import { 
   CreditCard, RefreshCw, Clock, Shield, CheckCircle,
@@ -51,19 +52,19 @@ export default function RefundPage() {
             
             {/* Quick Overview */}
             <section>
-              <Card className="bg-blue-900/30 border-blue-600">
+              <Card className="bg-red-900/30 border-red-600">
                 <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold text-blue-200 mb-4 flex items-center">
-                    <Shield className="h-5 w-5 mr-2" />
-                    30-Day Money-Back Guarantee
+                  <h2 className="text-xl font-semibold text-red-200 mb-4 flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2" />
+                    No Refunds Policy
                   </h2>
-                  <p className="text-blue-100 mb-4">
-                    We stand behind our service. If CTRL+ALT+BLOCK doesn't help you on your healing journey, 
-                    we'll refund your money within 30 days of purchase.
+                  <p className="text-red-100 mb-4">
+                    CTRL+ALT+BLOCK offers digital services and content. All purchases are final and non-refundable.
+                    This includes both Ghost Mode (free tier) and Firewall Mode ($9.99/month) services.
                   </p>
-                  <div className="flex items-center text-green-300">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    <span className="text-sm">No questions asked, no hassle, no hard feelings.</span>
+                  <div className="flex items-center text-orange-300">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    <span className="text-sm">All sales are final. Please choose your plan carefully.</span>
                   </div>
                 </CardContent>
               </Card>
@@ -71,19 +72,20 @@ export default function RefundPage() {
 
             {/* What We Offer */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">1. What We Offer</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">1. Our Service Tiers</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="bg-gray-800/50 border-gray-600">
                   <CardContent className="p-4">
                     <h3 className="font-medium text-white mb-3 flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2 text-green-400" />
-                      AI Therapy Sessions ($3.99)
+                      <DollarSign className="h-4 w-4 mr-2 text-gray-400" />
+                      Ghost Mode (Free)
                     </h3>
                     <ul className="text-sm space-y-1">
-                      <li>• 300 AI therapy messages</li>
-                      <li>• Advanced conversation capabilities</li>
-                      <li>• Personalized coping strategies</li>
-                      <li>• Progress tracking integration</li>
+                      <li>• 1 daily ritual from free pool</li>
+                      <li>• Basic no-contact tracker (24h shield)</li>
+                      <li>• Wall of Wounds: read + react only</li>
+                      <li>• AI chat: 5 free messages/day</li>
+                      <li>• Basic progress tracking</li>
                     </ul>
                   </CardContent>
                 </Card>
@@ -92,13 +94,14 @@ export default function RefundPage() {
                   <CardContent className="p-4">
                     <h3 className="font-medium text-white mb-3 flex items-center">
                       <CreditCard className="h-4 w-4 mr-2 text-purple-400" />
-                      Future Premium Features
+                      Firewall Mode ($9.99/month)
                     </h3>
                     <ul className="text-sm space-y-1">
-                      <li>• Monthly/annual subscriptions</li>
-                      <li>• Advanced ritual tracking</li>
-                      <li>• Priority support</li>
-                      <li>• Same refund policy applies</li>
+                      <li>• 2 personalized daily rituals + reroll</li>
+                      <li>• Enhanced no-contact tracker (48h + auto-shield)</li>
+                      <li>• Wall of Wounds: read + react + post</li>
+                      <li>• Unlimited AI chat with personas</li>
+                      <li>• Advanced pattern analysis & insights</li>
                     </ul>
                   </CardContent>
                 </Card>
@@ -107,59 +110,43 @@ export default function RefundPage() {
 
             {/* Refund Eligibility */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">2. Refund Eligibility</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">2. No Refunds Policy</h2>
               
-              <Card className="bg-green-900/20 border-green-500/30 mb-4">
-                <CardContent className="p-4">
-                  <h3 className="font-medium text-green-300 mb-2 flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Eligible for Full Refund
-                  </h3>
-                  <ul className="text-sm space-y-1">
-                    <li>• Purchase made within last 30 days</li>
-                    <li>• Account in good standing (no policy violations)</li>
-                    <li>• Request made through proper channels</li>
-                    <li>• Service not meeting reasonable expectations</li>
-                    <li>• Technical issues preventing usage</li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-yellow-900/20 border-yellow-500/30 mb-4">
-                <CardContent className="p-4">
-                  <h3 className="font-medium text-yellow-300 mb-2 flex items-center">
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Partial Refund Scenarios
-                  </h3>
-                  <ul className="text-sm space-y-1">
-                    <li>• AI therapy messages partially used (pro-rated)</li>
-                    <li>• Premium subscription cancellation mid-cycle</li>
-                    <li>• Service changes affecting purchased features</li>
-                    <li>• Calculated based on unused portion</li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-red-900/20 border-red-500/30">
+              <Card className="bg-red-900/20 border-red-500/30 mb-4">
                 <CardContent className="p-4">
                   <h3 className="font-medium text-red-300 mb-2 flex items-center">
                     <AlertTriangle className="h-4 w-4 mr-2" />
-                    Non-Refundable Situations
+                    All Sales Are Final
                   </h3>
                   <ul className="text-sm space-y-1">
-                    <li>• Purchase made over 30 days ago</li>
-                    <li>• Account terminated for policy violations</li>
-                    <li>• Fraudulent or chargeback claims</li>
-                    <li>• Third-party payment processor fees</li>
-                    <li>• Services fully consumed/utilized</li>
+                    <li>• No refunds for any digital services or content</li>
+                    <li>• Firewall Mode ($9.99/month) subscriptions are non-refundable</li>
+                    <li>• Ghost Mode remains free with no charges</li>
+                    <li>• Subscription cancellation stops future billing only</li>
+                    <li>• Access continues until current billing period ends</li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-600">
+                <CardContent className="p-4">
+                  <h3 className="font-medium text-white mb-2 flex items-center">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Why No Refunds?
+                  </h3>
+                  <ul className="text-sm space-y-1">
+                    <li>• Digital content is immediately accessible upon purchase</li>
+                    <li>• Ghost Mode provides full feature preview before upgrading</li>
+                    <li>• Monthly billing allows easy cancellation anytime</li>
+                    <li>• Operational costs incurred immediately upon service delivery</li>
                   </ul>
                 </CardContent>
               </Card>
             </section>
 
-            {/* Refund Process */}
+            {/* Cancellation Process */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">3. How to Request a Refund</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">3. How to Cancel Your Subscription</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <Card className="bg-blue-900/20 border-blue-500/30">
@@ -167,9 +154,9 @@ export default function RefundPage() {
                     <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
                       <span className="text-white font-bold">1</span>
                     </div>
-                    <h3 className="font-medium text-blue-300 mb-2">Contact Us</h3>
+                    <h3 className="font-medium text-blue-300 mb-2">Access Settings</h3>
                     <p className="text-sm text-blue-100">
-                      Email refunds@ctrlaltblock.com with your request
+                      Go to your account settings or subscription page
                     </p>
                   </CardContent>
                 </Card>
@@ -179,9 +166,9 @@ export default function RefundPage() {
                     <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
                       <span className="text-white font-bold">2</span>
                     </div>
-                    <h3 className="font-medium text-purple-300 mb-2">Review</h3>
+                    <h3 className="font-medium text-purple-300 mb-2">Cancel</h3>
                     <p className="text-sm text-purple-100">
-                      We review your request within 24 hours
+                      Click cancel subscription button
                     </p>
                   </CardContent>
                 </Card>
@@ -191,9 +178,9 @@ export default function RefundPage() {
                     <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
                       <span className="text-white font-bold">3</span>
                     </div>
-                    <h3 className="font-medium text-green-300 mb-2">Process</h3>
+                    <h3 className="font-medium text-green-300 mb-2">Confirmation</h3>
                     <p className="text-sm text-green-100">
-                      Refund processed within 5-7 business days
+                      Access continues until period ends
                     </p>
                   </CardContent>
                 </Card>
@@ -201,13 +188,13 @@ export default function RefundPage() {
 
               <Card className="bg-gray-800/50 border-gray-600">
                 <CardContent className="p-4">
-                  <h3 className="font-medium text-white mb-3">Required Information for Refund Request</h3>
+                  <h3 className="font-medium text-white mb-3">Important Notes About Cancellation</h3>
                   <ul className="text-sm space-y-1">
-                    <li>• <strong>Account email:</strong> The email associated with your account</li>
-                    <li>• <strong>Purchase date:</strong> When you made the purchase</li>
-                    <li>• <strong>Transaction ID:</strong> From your email receipt or payment method</li>
-                    <li>• <strong>Reason:</strong> Brief explanation (optional but helpful)</li>
-                    <li>• <strong>Preferred refund method:</strong> Original payment method or alternative</li>
+                    <li>• <strong>Immediate effect:</strong> Cancellation stops future billing immediately</li>
+                    <li>• <strong>Access retention:</strong> You keep access until your current billing period ends</li>
+                    <li>• <strong>No prorating:</strong> No refunds for partial months used</li>
+                    <li>• <strong>Reactivation:</strong> You can resubscribe anytime to restore premium features</li>
+                    <li>• <strong>Data retention:</strong> Your progress and data remain safe</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -372,6 +359,8 @@ export default function RefundPage() {
           </div>
         </div>
       </div>
+
+      <SiteFooter />
     </div>
   );
 }
