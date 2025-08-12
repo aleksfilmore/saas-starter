@@ -96,17 +96,8 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/bg.png)',
-        }}
-      />
-      
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
-      
-      <div className="relative z-10">
+    <div className="min-h-screen">
+      <div className="relative">
         <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300 hover:bg-gray-800/90">
           <div className="max-w-6xl mx-auto px-6 py-4">
             <div className="flex items-center justify-between">
@@ -140,8 +131,17 @@ export default function HomePage() {
         </header>
 
         {/* Hero Section */}
-        <div className="px-6 py-20">
-          <div className="max-w-5xl mx-auto text-center">
+        <div className="relative overflow-hidden px-6 py-20">
+          {/* Background Image for Hero Only */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: 'url(/bg.png)',
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
+          
+          <div className="relative z-10 max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-purple-900/30 border border-purple-500/30 text-purple-300 text-sm mb-8">
               <Sparkles className="h-4 w-4 mr-2" />
               The Future of Heartbreak Recovery
@@ -201,7 +201,7 @@ export default function HomePage() {
         </div>
 
         {/* Features Section */}
-        <section id="features" className="py-20 px-6">
+        <section id="features" className="py-20 px-6 bg-gradient-to-b from-gray-900 to-gray-800">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -270,7 +270,7 @@ export default function HomePage() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="py-20 px-6">
+        <section id="pricing" className="py-20 px-6 bg-gradient-to-b from-gray-800 to-gray-900">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -367,7 +367,7 @@ export default function HomePage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 px-6 bg-gradient-to-r from-gray-900/50 to-purple-900/30">
+        <section className="py-20 px-6 bg-gradient-to-b from-gray-900 to-gray-800">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -396,7 +396,7 @@ export default function HomePage() {
         </section>
 
         {/* Final CTA Section */}
-        <div className="bg-gradient-to-b from-gray-900 to-purple-900/30 py-20">
+        <div className="bg-gradient-to-b from-gray-900 to-black py-20">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-12 border border-purple-500/30">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
