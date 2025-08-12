@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendPasswordResetEmail } from '@/lib/email/email-service'
 import { v4 as uuidv4 } from 'uuid'
-import { neon } from '@neondatabase/serverless'
+import { db } from '@/lib/db'
+import { users } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,16 +27,14 @@ export async function POST(request: NextRequest) {
 
     console.log('🔧 Processing password reset for:', email)
 
-    // Direct database connection using Neon
-    const sql = neon(process.env.POSTGRES_URL!)
-
-    // Check if user exists in database - using actual column names
+    // Check if user exists in database
     let user
     try {
-      const users = await sql`
-        SELECT id, email, archetype FROM users WHERE email = ${email} LIMIT 1
-      `
-      user = users[0]
+      const userResult = await db.select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1)
+      user = userResult[0]
     } catch (dbError) {
       console.error('Database error checking user:', dbError)
       // Continue anyway for security (don't reveal if email exists)
@@ -42,14 +42,27 @@ export async function POST(request: NextRequest) {
 
     // Generate a secure reset token
     const resetToken = uuidv4()
-
-    // Note: Since database doesn't have reset token columns, we'll store the token temporarily
-    // In a production system, you'd want to add these columns or use a separate tokens table
-    // For now, we'll just log it and send the email
+    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000) // 1 hour from now
 
     if (user) {
-      console.log('✅ User found, token generated:', resetToken)
-      console.log('📝 Note: Reset token storage requires database migration for production use')
+      // Store the reset token in the database
+      try {
+        await db.update(users)
+          .set({
+            resetToken: resetToken,
+            resetTokenExpiry: resetTokenExpiry,
+            updatedAt: new Date()
+          })
+          .where(eq(users.id, user.id))
+        
+        console.log('✅ User found and reset token stored:', resetToken.substring(0, 8) + '...')
+      } catch (updateError) {
+        console.error('❌ Failed to store reset token:', updateError)
+        return NextResponse.json(
+          { error: 'Failed to process password reset request' },
+          { status: 500 }
+        )
+      }
     }
 
     // Send the reset email (always send for security, even if user doesn't exist)
