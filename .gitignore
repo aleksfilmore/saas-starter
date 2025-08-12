@@ -46,4 +46,3 @@ postgres_data/
 
 # Local Netlify folder
 .netlify
-NETLIFY-ENV-VARS-CHECKLIST.md

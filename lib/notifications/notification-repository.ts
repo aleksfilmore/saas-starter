@@ -1,5 +1,7 @@
-// Simplified notification repository during schema migration
-// TODO: Re-enable full functionality when all tables are added to actual-schema
+import { db } from '@/lib/db/drizzle';
+import { notifications, pushSubscriptions, analyticsEvents, notificationSchedules } from '@/lib/db/unified-schema';
+import { eq, and, lte } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
 
 export interface CreateNotificationInput {
   userId: string;
@@ -14,55 +16,83 @@ export interface CreateNotificationInput {
 
 export class NotificationRepository {
   static async create(input: CreateNotificationInput) {
-    // TODO: Re-enable when notifications table is added to actual-schema
-    console.log('Notification created (disabled during migration):', input.title);
-    return 'temp-id';
+    const id = randomUUID();
+    await db.insert(notifications).values({
+      id,
+      user_id: input.userId,
+      type: input.type,
+      title: input.title,
+      body: input.body,
+      priority: input.priority || 'normal',
+      channels: input.channels as any,
+      metadata: input.metadata as any,
+      delivered_at: input.deliveredAt,
+    });
+    return id;
   }
 
   static async markRead(userId: string, id: string) {
-    // TODO: Re-enable when notifications table is added to actual-schema
-    console.log('Notification marked read (disabled during migration):', id);
+    await db.update(notifications)
+      .set({ read_at: new Date() })
+      .where(and(eq(notifications.id, id), eq(notifications.user_id, userId)));
   }
 
   static async recent(userId: string, limit = 20) {
-    // TODO: Re-enable when notifications table is added to actual-schema
-    return [];
+    return db.query.notifications.findMany({
+      where: (fields, { eq }) => eq(fields.user_id, userId),
+      limit,
+      orderBy: (fields, { desc }) => desc(fields.created_at)
+    });
   }
 }
 
 export class PushSubscriptionRepository {
   static async upsert(userId: string, endpoint: string, p256dh: string, auth: string) {
-    // TODO: Re-enable when pushSubscriptions table is added to actual-schema
-    console.log('Push subscription upserted (disabled during migration)');
+    // Simple delete then insert for now (could add unique constraint on endpoint)
+    await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, endpoint));
+    await db.insert(pushSubscriptions).values({ user_id: userId, endpoint, p256dh, auth });
   }
 
   static async remove(userId: string, endpoint: string) {
-    // TODO: Re-enable when pushSubscriptions table is added to actual-schema
-    console.log('Push subscription removed (disabled during migration)');
+    await db.delete(pushSubscriptions).where(and(eq(pushSubscriptions.user_id, userId), eq(pushSubscriptions.endpoint, endpoint)));
   }
 
   static async list(userId: string) {
-    // TODO: Re-enable when pushSubscriptions table is added to actual-schema
-    return [];
+    return db.query.pushSubscriptions.findMany({ where: (f, { eq }) => eq(f.user_id, userId) });
   }
 }
 
 export class AnalyticsEventRepository {
   static async track(userId: string | null, eventType: string, properties: Record<string, any> = {}, dayIndex?: number) {
-    // TODO: Re-enable when analyticsEvents table is added to actual-schema
-    console.log('Analytics event tracked (disabled during migration):', eventType);
+    await db.insert(analyticsEvents).values({
+      user_id: userId || null,
+      event_type: eventType,
+      properties: properties as any,
+      day_index: dayIndex,
+    });
   }
 }
 
 export class NotificationScheduleRepository {
   static async upsert(schedule: { id?: string; userId: string; type: string; cron: string; isActive?: boolean; nextRunAt?: Date; dedupeWindowSeconds?: number; backoffSeconds?: number; }) {
-    // TODO: Re-enable when notificationSchedules table is added to actual-schema
-    console.log('Notification schedule upserted (disabled during migration)');
-    return 'temp-id';
+    // naive upsert by delete existing (userId+type) then insert
+  await db.delete(notificationSchedules).where(and(eq(notificationSchedules.user_id, schedule.userId), eq(notificationSchedules.type, schedule.type)) as any);
+    const id = schedule.id || crypto.randomUUID();
+    await db.insert(notificationSchedules).values({
+      id,
+      user_id: schedule.userId,
+      type: schedule.type,
+      cron_expression: schedule.cron,
+      is_active: schedule.isActive ?? true,
+      next_run_at: schedule.nextRunAt,
+      dedupe_window_seconds: schedule.dedupeWindowSeconds ?? 0,
+      backoff_seconds: schedule.backoffSeconds ?? 0,
+    });
+    return id;
   }
 
   static async findDue(limit = 50) {
-    // TODO: Re-enable when notificationSchedules table is added to actual-schema
-    return [];
+    const now = new Date();
+  return db.select().from(notificationSchedules as any).where(lte(notificationSchedules.next_run_at, now) as any).limit(limit);
   }
 }

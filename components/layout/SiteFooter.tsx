@@ -27,7 +27,6 @@ export function SiteFooter() {
               <li><Link href="/how-it-works" className="hover:text-purple-300 transition-colors">How It Works</Link></li>
               <li><Link href="/quiz" className="hover:text-purple-300 transition-colors">Start Free Quiz</Link></li>
               <li><Link href="/pricing" className="hover:text-purple-300 transition-colors">Pricing</Link></li>
-              <li><Link href="/status" className="hover:text-purple-300 transition-colors">Platform Status</Link></li>
             </ul>
           </div>
           
@@ -35,20 +34,16 @@ export function SiteFooter() {
             <h3 className="text-white font-semibold mb-4">Support</h3>
             <ul className="space-y-2 text-gray-300 text-sm">
               <li><Link href="/crisis-support" className="hover:text-purple-300 transition-colors">Crisis Support</Link></li>
-              <li><a href="mailto:support@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Help Center</a></li>
+              <li><Link href="/help" className="hover:text-purple-300 transition-colors">Help Center</Link></li>
               <li><Link href="/contact" className="hover:text-purple-300 transition-colors">Contact Support</Link></li>
-              <li><a href="mailto:feedback@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Send Feedback</a></li>
-              <li><Link href="/status" className="hover:text-purple-300 transition-colors">Service Status</Link></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="text-white font-semibold mb-4">Company</h3>
+            <h3 className="text-white font-semibold mb-4">Community</h3>
             <ul className="space-y-2 text-gray-300 text-sm">
-              <li><a href="mailto:hello@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">About Us</a></li>
-              <li><a href="mailto:press@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Press Kit</a></li>
-              <li><a href="mailto:careers@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Careers</a></li>
-              <li><Link href="/security" className="hover:text-purple-300 transition-colors">Security</Link></li>
+              <li><Link href="/blog" className="hover:text-purple-300 transition-colors">Blog</Link></li>
+              <li><a href="https://www.tiktok.com/@ctrlaltblock" target="_blank" rel="noopener noreferrer" className="hover:text-purple-300 transition-colors">TikTok @ctrlaltblock</a></li>
             </ul>
           </div>
           
@@ -59,8 +54,6 @@ export function SiteFooter() {
               <li><Link href="/terms" className="hover:text-purple-300 transition-colors">Terms of Service</Link></li>
               <li><Link href="/refund" className="hover:text-purple-300 transition-colors">Refund Policy</Link></li>
               <li><Link href="/fair-usage" className="hover:text-purple-300 transition-colors">Fair Usage Policy</Link></li>
-              <li><Link href="/security" className="hover:text-purple-300 transition-colors">Security</Link></li>
-              <li><a href="mailto:legal@ctrlaltblock.com" className="hover:text-purple-300 transition-colors">Legal Inquiries</a></li>
             </ul>
           </div>
         </div>
