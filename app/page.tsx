@@ -140,7 +140,18 @@ export default function ComingSoonPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white overflow-x-hidden relative">
+    <div className="min-h-screen text-white overflow-x-hidden relative">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/bg.png)',
+        }}
+      />
+      
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
+      
       {/* Background Effects */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -248,18 +259,18 @@ export default function ComingSoonPage() {
       {/* Hero Section */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 pt-20">
         {/* Floating Confession Card */}
-        <div className="absolute top-20 right-10 max-w-xs opacity-80 z-20 hidden lg:block">
-          <Card className={`bg-gray-800/40 border border-purple-500/30 backdrop-blur-sm transition-all duration-1000 ${confessionVisible ? 'opacity-100' : 'opacity-30'}`}>
+        <div className="absolute top-20 right-10 max-w-xs opacity-80 z-20 hidden lg:block animate-float">
+          <Card className={`bg-gray-800/60 border border-purple-500/40 backdrop-blur-md transition-all duration-1000 hover:border-purple-400 hover:bg-gray-800/80 ${confessionVisible ? 'opacity-100 scale-100' : 'opacity-60 scale-95'}`}>
             <CardContent className="p-4">
               <div className={`text-sm text-gray-300 transition-all duration-500 ${confessionVisible ? 'blur-none' : 'blur-sm'}`}>
                 <div className="flex items-center mb-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                  <span className="text-xs text-green-400">exile_ghost</span>
+                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                  <span className="text-xs text-green-400 font-mono">exile_ghost</span>
                 </div>
                 {confessionVisible ? (
-                  <p>"Day 12: The no-contact tracker actually works. Haven't checked their socials once today. Level up feels real 🔥"</p>
+                  <p className="leading-relaxed">"Day 12: The no-contact tracker actually works. Haven't checked their socials once today. Level up feels real 🔥"</p>
                 ) : (
-                  <p className="text-gray-500">████████████████████████████████████████</p>
+                  <p className="text-gray-500 font-mono">████████████████████████████████████████</p>
                 )}
               </div>
             </CardContent>
@@ -717,6 +728,129 @@ export default function ComingSoonPage() {
         </div>
       </section>
 
+      {/* Blog Section - Featured Articles */}
+      <section className="py-24 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-purple-900/30" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+              <Brain className="h-10 w-10 inline mr-3 text-purple-400" />
+              The Healing Blog
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Evidence-based insights and real recovery stories to guide your journey
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {/* Featured Healing Article */}
+            <Link href="/blog/7-stages-breakup-healing">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-purple-600/80 text-white text-xs">HEALING.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-purple-300 border-purple-400/50 bg-purple-900/30 mb-3">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all">
+                      The 7 Stages of Breakup Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Learn the psychological stages of healing and proven ways to navigate them without getting stuck.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <div className="flex items-center text-purple-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Featured Self-Care Article */}
+            <Link href="/blog/self-care-rituals-stop-overthinking">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-green-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-green-600/80 text-white text-xs">SELFCARE.APP</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-green-300 border-green-400/50 bg-green-900/30 mb-3">
+                      SELF-CARE
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 group-hover:bg-clip-text transition-all">
+                      Stop Breakup Overthinking at Night
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Learn proven nighttime self-care rituals that calm your mind and help you sleep better after a breakup.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <div className="flex items-center text-green-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Featured Tips Article */}
+            <Link href="/blog/breakup-hacks-stop-texting-ex">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-cyan-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-cyan-500 via-blue-500 to-cyan-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-cyan-600/80 text-white text-xs">TIPS.BAT</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-cyan-300 border-cyan-400/50 bg-cyan-900/30 mb-3">
+                      TIPS
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-blue-400 group-hover:bg-clip-text transition-all">
+                      10 Breakup Hacks That Actually Work
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Proven strategies to resist the urge to text your ex and protect your healing progress.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>5 min read</span>
+                      <div className="flex items-center text-cyan-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          <div className="text-center">
+            <Link href="/blog">
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 text-lg font-semibold">
+                <Brain className="h-5 w-5 mr-2" />
+                Read More Articles →
+              </Button>
+            </Link>
+            <p className="text-gray-400 text-sm mt-4">
+              12 expert articles • Evidence-based recovery • Updated weekly
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Waitlist Section */}
       <section id="waitlist" className="py-24 px-4 bg-gradient-to-br from-purple-900/50 to-pink-900/50">
         <div className="max-w-2xl mx-auto text-center">
@@ -829,11 +963,6 @@ export default function ComingSoonPage() {
       </section>
 
       <SiteFooter />
-
-      {/* Styles */}
-      <style jsx>{`
-        /* Custom styles can be added here if needed in the future */
-      `}</style>
     </div>
   );
 }

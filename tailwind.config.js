@@ -80,6 +80,12 @@ module.exports = {
         'neon-purple': '0 0 20px rgb(139 69 255 / 0.5)',
         'glitch': '0 0 10px rgb(255 20 147 / 0.3), 0 0 20px rgb(0 255 255 / 0.2)',
       },
+      scale: {
+        '102': '1.02',
+        '105': '1.05',
+        '110': '1.1',
+        '115': '1.15',
+      },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'glitch': 'glitch 2s infinite',

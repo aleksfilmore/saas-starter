@@ -9,7 +9,15 @@ const adjectives = [
   'quiet', 'renewed', 'strong', 'transformed', 'upgraded', 'valued', 'wise', 'zen',
   'bright', 'clever', 'gentle', 'noble', 'pure', 'swift', 'fierce', 'bold',
   'serene', 'vibrant', 'peaceful', 'radiant', 'mindful', 'steady', 'clear', 'whole',
-  'cosmic', 'lunar', 'solar', 'mystic', 'wild', 'epic', 'sage', 'royal'
+  'cosmic', 'lunar', 'solar', 'mystic', 'wild', 'epic', 'sage', 'royal',
+  'ancient', 'modern', 'future', 'quantum', 'neural', 'cyber', 'neon', 'crystal',
+  'steel', 'golden', 'silver', 'diamond', 'emerald', 'ruby', 'sapphire', 'jade',
+  'electric', 'magnetic', 'atomic', 'stellar', 'galactic', 'infinite', 'eternal', 'prime',
+  'shadow', 'crimson', 'azure', 'violet', 'amber', 'ivory', 'obsidian', 'platinum',
+  'titanium', 'carbon', 'phoenix', 'storm', 'frost', 'flame', 'wind', 'earth',
+  'water', 'fire', 'void', 'light', 'dark', 'gray', 'silent', 'swift',
+  'rapid', 'fluid', 'solid', 'vapor', 'plasma', 'energy', 'matrix', 'vector',
+  'binary', 'hex', 'alpha', 'beta', 'gamma', 'delta', 'omega', 'sigma'
 ];
 
 const nouns = [
@@ -18,10 +26,25 @@ const nouns = [
   'pioneer', 'mystic', 'rebel', 'knight', 'scholar', 'artist', 'runner', 'climber',
   'soul', 'heart', 'mind', 'spirit', 'river', 'mountain', 'star', 'ocean',
   'forest', 'dawn', 'moon', 'sun', 'breeze', 'flame', 'spark', 'path',
-  'journey', 'light', 'hope', 'dream', 'vision', 'voice', 'strength', 'dancer'
+  'journey', 'light', 'hope', 'dream', 'vision', 'voice', 'strength', 'dancer',
+  'coder', 'hacker', 'ninja', 'wizard', 'mage', 'sorcerer', 'witch', 'shaman',
+  'monk', 'priest', 'paladin', 'rogue', 'ranger', 'archer', 'hunter', 'tracker',
+  'scout', 'pilot', 'captain', 'admiral', 'general', 'marshal', 'commander', 'leader',
+  'chief', 'master', 'guru', 'sensei', 'teacher', 'student', 'learner', 'pupil',
+  'ghost', 'phantom', 'specter', 'wraith', 'demon', 'angel', 'deity', 'god',
+  'titan', 'giant', 'dwarf', 'elf', 'fairy', 'sprite', 'pixie', 'dragon',
+  'tiger', 'lion', 'wolf', 'bear', 'eagle', 'hawk', 'raven', 'dove',
+  'snake', 'spider', 'scorpion', 'shark', 'whale', 'dolphin', 'fox', 'rabbit',
+  'cipher', 'code', 'algorithm', 'program', 'script', 'function', 'method', 'class',
+  'object', 'array', 'string', 'boolean', 'integer', 'float', 'double', 'byte'
 ];
 
-const numbers = ['01', '02', '03', '07', '11', '13', '21', '42', '99'];
+const numbers = [
+  '01', '02', '03', '07', '11', '13', '17', '19', '21', '23', '29', '31', '37', '41', '43', '47',
+  '53', '59', '61', '67', '71', '73', '79', '83', '89', '97', '42', '99', '88', '77', '66', '55',
+  '44', '33', '22', '00', '10', '20', '30', '40', '50', '60', '70', '80', '90', '12', '34', '56',
+  '78', '91', '92', '93', '94', '95', '96', '97', '98', '87', '76', '65', '54', '43', '32', '21'
+];
 
 /**
  * Check if a username is available in the database

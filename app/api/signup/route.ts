@@ -75,6 +75,21 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
     const finalUsername = username || await generateUniqueUsername();
     console.log('🔧 Final username for user:', finalUsername);
 
+    // Double-check username availability right before insertion to prevent race conditions
+    if (username) {
+      const usernameCheck = await db.select({ id: users.id })
+        .from(users)
+        .where(eq(users.username, finalUsername))
+        .limit(1);
+      
+      if (usernameCheck.length > 0) {
+        return NextResponse.json(
+          { success: false, error: 'Username is no longer available. Please try a different one.' },
+          { status: 409 }
+        );
+      }
+    }
+
     // Create user in database using actual schema
     const newUser = await db.insert(users).values({
       id: userId,

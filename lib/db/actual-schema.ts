@@ -8,7 +8,7 @@ export const users = pgTable('users', {
   hashedPassword: text('password_hash').notNull(),
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  username: text('username'),
+  username: text('username').unique(),
   // Add other columns that actually exist
   avatar: text('avatar'),
   onboarding_completed: boolean('onboarding_completed').default(false),

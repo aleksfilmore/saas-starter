@@ -180,8 +180,20 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
-      {/* Simple Header */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/bg.png)',
+        }}
+      />
+      
+      {/* Dark overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
+      
+      {/* Content */}
+      <div className="relative z-10">{/* Simple Header */}
       <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300 hover:bg-gray-800/90">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full py-3 sm:py-4 flex items-center justify-between">
@@ -440,6 +452,128 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Blog Section - Featured Articles */}
+      <div className="bg-gradient-to-b from-purple-900/30 to-gray-900 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <Brain className="h-8 w-8 inline mr-3 text-purple-400" />
+              The Healing Blog
+            </h2>
+            <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+              Evidence-based insights and real recovery stories to guide your journey
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {/* Featured Healing Article */}
+            <Link href="/blog/7-stages-breakup-healing">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-purple-600/80 text-white text-xs">HEALING.EXE</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-purple-300 border-purple-400/50 bg-purple-900/30 mb-3 text-xs">
+                      HEALING
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all">
+                      The 7 Stages of Breakup Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Learn the psychological stages of healing and proven ways to navigate them without getting stuck.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <div className="flex items-center text-purple-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Featured Self-Care Article */}
+            <Link href="/blog/self-care-rituals-stop-overthinking">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-green-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-green-600/80 text-white text-xs">SELFCARE.APP</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-green-300 border-green-400/50 bg-green-900/30 mb-3 text-xs">
+                      SELF-CARE
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-green-400 group-hover:to-emerald-400 group-hover:bg-clip-text transition-all">
+                      Stop Breakup Overthinking at Night
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Learn proven nighttime self-care rituals that calm your mind and help you sleep better after a breakup.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>8 min read</span>
+                      <div className="flex items-center text-green-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+
+            {/* Featured Community Article */}
+            <Link href="/blog/peer-support-healing-heartbreak">
+              <Card className="bg-gray-800/50 border-gray-600/50 hover:border-orange-500/50 transition-all duration-300 cursor-pointer hover:scale-105 group h-full">
+                <CardContent className="p-0">
+                  <div className="aspect-video bg-gradient-to-br from-orange-500 via-yellow-600 to-orange-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    <div className="absolute bottom-4 right-4">
+                      <Badge className="bg-orange-600/80 text-white text-xs">CONNECT.NET</Badge>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <Badge className="text-orange-300 border-orange-400/50 bg-orange-900/30 mb-3 text-xs">
+                      COMMUNITY
+                    </Badge>
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-orange-400 group-hover:to-yellow-400 group-hover:bg-clip-text transition-all">
+                      The Power of Peer Support in Healing
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Research shows that community support accelerates recovery. Discover how connection transforms healing.
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>6 min read</span>
+                      <div className="flex items-center text-orange-400">
+                        Read More <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          <div className="text-center">
+            <Link href="/blog">
+              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 text-lg font-semibold">
+                <Brain className="h-5 w-5 mr-2" />
+                Read More Articles →
+              </Button>
+            </Link>
+            <p className="text-gray-400 text-sm mt-4">
+              12 expert articles • Evidence-based recovery • Updated weekly
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* FAQ Section */}
       <div className="bg-gradient-to-b from-gray-900 to-purple-900/20 py-20">
         <div className="max-w-4xl mx-auto px-6">
@@ -452,33 +586,61 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {faqs.map((faq, index) => (
-            <Card key={index} className="bg-gray-800/50 border border-gray-600/50">
+            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 overflow-hidden">
               <CardContent className="p-0">
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-700/30 transition-colors"
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-gray-700/30 transition-all duration-300 group"
                 >
-                  <h3 className="text-lg font-semibold text-white pr-4">
+                  <h3 className="text-lg font-semibold text-white pr-4 group-hover:text-purple-300 transition-colors">
                     {faq.question}
                   </h3>
                   {expandedFaq === index ? (
-                    <ChevronUp className="h-5 w-5 text-purple-400 flex-shrink-0" />
+                    <ChevronUp className="h-6 w-6 text-purple-400 flex-shrink-0 transform transition-transform duration-300" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-purple-400 flex-shrink-0" />
+                    <ChevronDown className="h-6 w-6 text-purple-400 flex-shrink-0 transform transition-transform duration-300 group-hover:scale-110" />
                   )}
                 </button>
                 {expandedFaq === index && (
-                  <div className="px-6 pb-6">
-                    <p className="text-gray-300 leading-relaxed">
-                      {faq.answer}
-                    </p>
+                  <div className="px-6 pb-6 border-t border-gray-600/30 bg-gray-900/20">
+                    <div className="pt-4">
+                      <p className="text-gray-300 leading-relaxed text-base">
+                        {faq.answer}
+                      </p>
+                    </div>
                   </div>
                 )}
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        {/* Help CTA */}
+        <div className="mt-12 text-center">
+          <Card className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 border-purple-500/30 max-w-2xl mx-auto">
+            <CardContent className="p-8">
+              <h3 className="text-xl font-bold text-white mb-4">
+                Still have questions?
+              </h3>
+              <p className="text-gray-300 mb-6">
+                Join our community or contact our support team for personalized help
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/quiz">
+                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                    Start Your Journey
+                  </Button>
+                </Link>
+                <Link href="/wall">
+                  <Button variant="outline" className="border-purple-400 text-purple-400 hover:bg-purple-400/20">
+                    Join Community
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
         </div>
       </div>
@@ -707,6 +869,7 @@ export default function HomePage() {
     </div>
 
       <SiteFooter />
+      </div>
 
     </div>
   );

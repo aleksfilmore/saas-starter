@@ -18,75 +18,159 @@ export default function BlogPage() {
   const blogPosts = [
     {
       id: 1,
-      title: "The Science Behind No-Contact: Why Going Silent Actually Works",
-      excerpt: "Research shows that no-contact isn't just about avoiding your ex - it's about rewiring your brain for healing. Learn the neuroscience behind why silence is your superpower.",
-      category: "No Contact",
-      author: "Dr. Sarah Chen",
-      date: "2024-01-15",
+      title: "The 7 Stages of Breakup Healing (And How to Move Through Them Faster)",
+      excerpt: "Breaking up isn't just losing a person — it's losing a whole rhythm of your life. Learn the psychological stages of healing and proven ways to navigate them without getting stuck.",
+      category: "Healing",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-10",
       readTime: "8 min read",
-      views: "2.1k",
+      views: "3.4k",
       featured: true,
-      image: "/blog/no-contact-science.jpg"
+      image: "/The 7 Stages of Breakup Healing.png",
+      slug: "7-stages-breakup-healing"
     },
     {
       id: 2,
-      title: "Daily Rituals That Actually Heal: Moving Beyond 'Just Get Over It'",
-      excerpt: "Discover evidence-based daily practices that help process grief, build resilience, and create new neural pathways for emotional strength.",
-      category: "Healing",
-      author: "Maya Rodriguez",
-      date: "2024-01-12",
-      readTime: "6 min read",
-      views: "1.8k",
+      title: "Day-by-Day Survival Guide for Your First 30 Days of No Contact",
+      excerpt: "The first 30 days of no contact can feel like a marathon you didn't train for. Get a complete day-by-day breakdown with actionable strategies for each phase of your journey.",
+      category: "No Contact",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-01-15",
+      readTime: "8 min read",
+      views: "4.7k",
       featured: false,
-      image: "/blog/daily-rituals.jpg"
+      image: "/Day-by-Day Survival Guide for Your First 30 Days of No Contact.png",
+      slug: "30-days-no-contact-survival"
     },
     {
       id: 3,
-      title: "When Your Ex Reaches Out: A Strategic Guide to Boundary Setting",
-      excerpt: "They texted. Now what? Navigate contact attempts with confidence using our framework for protecting your healing journey.",
+      title: "Why Breaking No Contact Always Hurts More Than Staying Strong",
+      excerpt: "Breaking no contact isn't just a setback in your recovery; it can reset your emotional progress to day one. Learn why staying strong protects your healing journey.",
       category: "No Contact",
-      author: "Alex Morgan",
-      date: "2024-01-10",
-      readTime: "5 min read",
-      views: "3.2k",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-01-18",
+      readTime: "7 min read",
+      views: "3.9k",
       featured: false,
-      image: "/blog/boundary-setting.jpg"
+      image: "/Why Breaking No Contact Always Hurts More Than Staying Strong.png",
+      slug: "breaking-no-contact-consequences"
     },
     {
       id: 4,
-      title: "Building Your Support Network: Why Community Matters in Healing",
-      excerpt: "Healing isn't a solo journey. Learn how to build authentic connections and find your tribe during your recovery process.",
-      category: "Community",
-      author: "Jordan Kim",
-      date: "2024-01-08",
+      title: "Texting Temptations: How to Beat the Urge to Reach Out to Your Ex",
+      excerpt: "The urge to text your ex can hit like lightning. Here's your step-by-step guide to outsmarting the temptation before your thumbs betray you.",
+      category: "No Contact",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-01-20",
       readTime: "7 min read",
-      views: "1.5k",
+      views: "3.2k",
       featured: false,
-      image: "/blog/support-network.jpg"
+      image: "/How to Beat the Urge to Reach Out to Your Ex.png",
+      slug: "urge-to-text-ex-how-to-stop"
     },
     {
       id: 5,
-      title: "The Wall of Wounds: How Shared Stories Create Collective Healing",
-      excerpt: "Discover how our community platform transforms individual pain into collective wisdom, and why sharing your story matters.",
-      category: "Community",
-      author: "Riley Thompson",
-      date: "2024-01-05",
-      readTime: "4 min read",
-      views: "2.7k",
+      title: "The Neuroscience of Silence: What Happens in Their Brain When You Go No Contact",
+      excerpt: "The psychology of no contact isn't about playing games — it's about letting both nervous systems detach from emotional dependency. Here's the science.",
+      category: "No Contact",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-01-22",
+      readTime: "8 min read",
+      views: "2.9k",
       featured: false,
-      image: "/blog/wall-of-wounds.jpg"
+      image: "/What Happens in Their Brain When You Go No Contact.png",
+      slug: "neuroscience-no-contact-brain"
     },
     {
       id: 6,
-      title: "Micro-Habits for Macro-Healing: Small Changes, Big Impact",
-      excerpt: "You don't need to overhaul your entire life to heal. These tiny daily shifts can create profound transformation over time.",
-      category: "Self-Care",
-      author: "Dr. Marcus Webb",
-      date: "2024-01-03",
-      readTime: "6 min read",
-      views: "1.9k",
+      title: "Science-Backed Ways to Rewire Your Brain for Love Again",
+      excerpt: "After a breakup, your brain goes through withdrawal. Thanks to neuroplasticity, you can literally reprogram your mind to trust, feel joy, and open up to connection again.",
+      category: "Healing",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-05",
+      readTime: "7 min read",
+      views: "2.8k",
       featured: false,
-      image: "/blog/micro-habits.jpg"
+      image: "/Science-Backed Ways to Rewire Your Brain for Love Again.png",
+      slug: "rewire-brain-for-love"
+    },
+    {
+      id: 7,
+      title: "How to Spot (and Stop) Emotional Relapses During Breakup Recovery",
+      excerpt: "Recovery isn't a straight line. Learn to recognize when you're sliding backward and develop rapid-response strategies to get back on track before the spiral deepens.",
+      category: "Healing",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-07-28",
+      readTime: "6 min read",
+      views: "2.1k",
+      featured: false,
+      image: "/How to Spot (and Stop) Emotional Relapses During Breakup Recovery.png",
+      slug: "emotional-relapses-recovery"
+    },
+    {
+      id: 8,
+      title: "The Self-Care Rituals That Stop Breakup Overthinking at Night",
+      excerpt: "You crawl into bed hoping for rest — but your brain has other plans. Learn proven nighttime self-care rituals that calm your mind and help you sleep better after a breakup.",
+      category: "Self-Care",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-12",
+      readTime: "8 min read",
+      views: "3.2k",
+      featured: true,
+      image: "/The Self-Care Rituals That Stop Breakup Overthinking at Night.png",
+      slug: "self-care-rituals-stop-overthinking"
+    },
+    {
+      id: 9,
+      title: "How Micro-Healing Changes Can Lead to Massive Emotional Shifts",
+      excerpt: "Small, consistent actions that rewire your brain for lasting recovery. Discover how micro-healing creates compound emotional growth and transforms your healing journey.",
+      category: "Self-Care",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-10",
+      readTime: "7 min read",
+      views: "2.9k",
+      featured: false,
+      image: "/How Micro-Healing Changes Can Lead to Massive Emotional Shifts.png",
+      slug: "micro-healing-emotional-shifts"
+    },
+    {
+      id: 10,
+      title: "The Power of Peer Support in Healing from Heartbreak",
+      excerpt: "Research shows that breakup support groups and peer connections accelerate recovery. Discover how community support can transform your healing journey.",
+      category: "Community",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-08",
+      readTime: "6 min read",
+      views: "4.1k",
+      featured: false,
+      image: "/The Power of Peer Support in Healing from Heartbreak.png",
+      slug: "peer-support-healing-heartbreak"
+    },
+    {
+      id: 11,
+      title: "10 Quick Breakup Hacks That Stop You from Texting Your Ex",
+      excerpt: "When the urge to reach out hits, logic often loses to muscle memory. Learn proven strategies to resist the urge and protect your healing progress.",
+      category: "Tips",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-06",
+      readTime: "5 min read",
+      views: "5.7k",
+      featured: false,
+      image: "/10 Quick Breakup Hacks That Stop You from Texting Your Ex.png",
+      slug: "breakup-hacks-stop-texting-ex"
+    },
+    {
+      id: 12,
+      title: "The Breakup Emergency Kit: What to Do When You're Spiraling",
+      excerpt: "One text, one sighting, or one late-night scroll can send you into an emotional freefall. Build your emergency toolkit to stop spirals before they start.",
+      category: "Tips",
+      author: "CTRL+ALT+BLOCK",
+      date: "2025-08-04",
+      readTime: "6 min read",
+      views: "4.8k",
+      featured: false,
+      image: "/The Breakup Emergency Kit What to Do When You're Spiraling.png",
+      slug: "breakup-emergency-kit-spiraling"
     }
   ];
 
@@ -141,58 +225,89 @@ export default function BlogPage() {
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
               onClick={() => setSelectedCategory(category)}
-              className={`
-                ${selectedCategory === category 
-                  ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                  : 'border-gray-600 text-gray-300 hover:text-white hover:border-purple-400'
-                }
-              `}
+              className={`font-mono font-bold tracking-wider transition-all duration-300 transform hover:scale-105 ${
+                selectedCategory === category 
+                  ? category === 'Healing' ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-purple-400' :
+                    category === 'No Contact' ? 'bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white border-red-400' :
+                    category === 'Self-Care' ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400' :
+                    category === 'Community' ? 'bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white border-orange-400' :
+                    category === 'Tips' ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-cyan-400' :
+                    'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-purple-400'
+                  : `border-gray-600 text-gray-300 hover:text-white hover:border-${
+                      category === 'Healing' ? 'purple' :
+                      category === 'No Contact' ? 'red' :
+                      category === 'Self-Care' ? 'green' :
+                      category === 'Community' ? 'pink' :
+                      category === 'Tips' ? 'yellow' : 'purple'
+                    }-400 hover:bg-${
+                      category === 'Healing' ? 'purple' :
+                      category === 'No Contact' ? 'red' :
+                      category === 'Self-Care' ? 'green' :
+                      category === 'Community' ? 'pink' :
+                      category === 'Tips' ? 'yellow' : 'purple'
+                    }-900/30`
+              }`}
             >
-              {category}
+              {category.toUpperCase()}
             </Button>
           ))}
         </div>
 
         {/* Featured Post */}
         {featuredPost && selectedCategory === 'All' && (
-          <Card className="bg-gray-800/50 border-gray-600 mb-12 overflow-hidden">
+          <Card className="bg-gray-800/50 border-gray-600 mb-12 overflow-hidden hover:border-purple-400 transition-all duration-300">
             <CardContent className="p-0">
               <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 p-8 lg:p-12 flex items-center">
-                  <div>
+                <div className="bg-gradient-to-br from-purple-600/30 via-blue-600/30 to-purple-800/30 p-8 lg:p-12 flex items-center relative">
+                  {/* Glitch effect overlay */}
+                  <div className="absolute inset-0 bg-black/10 mix-blend-overlay"></div>
+                  
+                  <div className="relative z-10">
                     <div className="flex items-center mb-4">
-                      <span className="bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
-                        Featured
+                      <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-4 py-2 rounded-full font-mono font-bold tracking-wider">
+                        ★ FEATURED
                       </span>
-                      <span className="text-purple-400 text-sm ml-3">{featuredPost.category}</span>
+                      <span className="text-purple-300 text-sm ml-3 font-mono">{featuredPost.category.toUpperCase()}</span>
                     </div>
-                    <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4 leading-tight">
+                    <h2 className="text-2xl lg:text-3xl font-bold text-white mb-4 leading-tight bg-gradient-to-r from-white to-purple-200 bg-clip-text">
                       {featuredPost.title}
                     </h2>
                     <p className="text-gray-300 mb-6 leading-relaxed">
                       {featuredPost.excerpt}
                     </p>
-                    <div className="flex items-center text-sm text-gray-400 mb-6">
+                    <div className="flex items-center text-sm text-gray-400 mb-6 font-mono">
                       <User className="h-4 w-4 mr-2" />
                       <span className="mr-4">{featuredPost.author}</span>
                       <Calendar className="h-4 w-4 mr-2" />
-                      <span className="mr-4">{new Date(featuredPost.date).toLocaleDateString()}</span>
+                      <span className="mr-4">{featuredPost.date}</span>
                       <Clock className="h-4 w-4 mr-2" />
                       <span className="mr-4">{featuredPost.readTime}</span>
                       <Eye className="h-4 w-4 mr-2" />
                       <span>{featuredPost.views}</span>
                     </div>
-                    <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                      Read Article
-                      <ArrowRight className="h-4 w-4 ml-2" />
+                    <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105">
+                      <Link href={`/blog/${featuredPost.slug}`} className="flex items-center">
+                        Read Article
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Link>
                     </Button>
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center p-8">
-                  <div className="text-center">
-                    <Brain className="h-24 w-24 text-purple-400 mx-auto mb-4" />
-                    <p className="text-gray-300">Featured Article Image</p>
-                  </div>
+                <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800 flex items-center justify-center relative overflow-hidden aspect-square">
+                  {/* Featured article image */}
+                  {featuredPost.image && (
+                    <img 
+                      src={featuredPost.image} 
+                      alt={featuredPost.title}
+                      className="w-full h-full object-cover absolute inset-0"
+                    />
+                  )}
+                  
+                  {/* Glitch effect */}
+                  <div className="absolute inset-0 bg-black/40 mix-blend-overlay"></div>
+                  
+                  {/* Neon accent border */}
+                  <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-400 to-blue-400 shadow-lg"></div>
                 </div>
               </div>
             </CardContent>
@@ -202,53 +317,112 @@ export default function BlogPage() {
         {/* Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts.map((post) => (
-            <Card key={post.id} className="bg-gray-800/50 border-gray-600 hover:border-purple-400 transition-all duration-300 overflow-hidden group">
-              <CardContent className="p-0">
-                {/* Image Placeholder */}
-                <div className="bg-gradient-to-br from-gray-700 to-gray-800 h-48 flex items-center justify-center">
-                  {post.category === 'Healing' && <Heart className="h-12 w-12 text-pink-400" />}
-                  {post.category === 'No Contact' && <Shield className="h-12 w-12 text-green-400" />}
-                  {post.category === 'Self-Care' && <Zap className="h-12 w-12 text-purple-400" />}
-                  {post.category === 'Community' && <User className="h-12 w-12 text-blue-400" />}
-                  {post.category === 'Tips' && <Brain className="h-12 w-12 text-yellow-400" />}
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-purple-400 text-sm font-medium">{post.category}</span>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <Eye className="h-3 w-3 mr-1" />
-                      {post.views}
+            <Link key={post.id} href={`/blog/${post.slug}`} className="block">
+              <Card className="bg-gray-800/50 border-gray-600 hover:border-purple-400 transition-all duration-300 overflow-hidden group cursor-pointer transform hover:scale-[1.02]">
+                <CardContent className="p-0">
+                  {/* Image with overlay effects */}
+                  <div className={`aspect-square flex items-center justify-center relative overflow-hidden ${
+                    post.category === 'Healing' ? 'bg-gradient-to-br from-purple-600 via-blue-600 to-purple-800' :
+                    post.category === 'No Contact' ? 'bg-gradient-to-br from-red-600 via-pink-600 to-purple-700' :
+                    post.category === 'Self-Care' ? 'bg-gradient-to-br from-green-500 via-emerald-600 to-teal-700' :
+                    post.category === 'Community' ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-orange-700' :
+                    post.category === 'Tips' ? 'bg-gradient-to-br from-cyan-500 via-blue-500 to-cyan-700' :
+                    'bg-gradient-to-br from-gray-700 to-gray-800'
+                  }`}>
+                    {/* Article image */}
+                    {post.image && (
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        className="w-full h-full object-cover absolute inset-0"
+                      />
+                    )}
+                    
+                    {/* Glitch effect overlay */}
+                    <div className="absolute inset-0 bg-black/30 mix-blend-overlay"></div>
+                    
+                    {/* Category tech label overlay */}
+                    <div className="absolute bottom-4 right-4 z-10">
+                      <div className={`text-white/90 text-xs font-mono tracking-wider px-2 py-1 rounded ${
+                        post.category === 'Healing' ? 'bg-purple-600/80' :
+                        post.category === 'No Contact' ? 'bg-red-600/80' :
+                        post.category === 'Self-Care' ? 'bg-green-600/80' :
+                        post.category === 'Community' ? 'bg-pink-600/80' :
+                        post.category === 'Tips' ? 'bg-yellow-600/80' :
+                        'bg-gray-600/80'
+                      }`}>
+                        {post.category === 'Healing' && 'HEALING.EXE'}
+                        {post.category === 'No Contact' && 'BLOCK.SYS'}
+                        {post.category === 'Self-Care' && 'SELFCARE.APP'}
+                        {post.category === 'Community' && 'CONNECT.NET'}
+                        {post.category === 'Tips' && 'TIPS.BAT'}
+                      </div>
+                    </div>
+                    
+                    {/* Neon accent border */}
+                    <div className={`absolute bottom-0 left-0 right-0 h-1 ${
+                      post.category === 'Healing' ? 'bg-gradient-to-r from-purple-400 to-blue-400' :
+                      post.category === 'No Contact' ? 'bg-gradient-to-r from-red-400 to-pink-400' :
+                      post.category === 'Self-Care' ? 'bg-gradient-to-r from-green-400 to-emerald-400' :
+                      post.category === 'Community' ? 'bg-gradient-to-r from-orange-400 to-yellow-400' :
+                      post.category === 'Tips' ? 'bg-gradient-to-r from-cyan-400 to-blue-400' :
+                      'bg-gradient-to-r from-gray-400 to-gray-500'
+                    } shadow-lg`}></div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedCategory(post.category);
+                        }}
+                        className={`text-sm font-mono font-bold px-3 py-1 rounded-full border cursor-pointer hover:scale-105 transition-all z-10 relative ${
+                          post.category === 'Healing' ? 'text-purple-300 border-purple-400/50 bg-purple-900/30 hover:border-purple-400 hover:bg-purple-900/50' :
+                          post.category === 'No Contact' ? 'text-red-300 border-red-400/50 bg-red-900/30 hover:border-red-400 hover:bg-red-900/50' :
+                          post.category === 'Self-Care' ? 'text-green-300 border-green-400/50 bg-green-900/30 hover:border-green-400 hover:bg-green-900/50' :
+                          post.category === 'Community' ? 'text-pink-300 border-pink-400/50 bg-pink-900/30 hover:border-pink-400 hover:bg-pink-900/50' :
+                          post.category === 'Tips' ? 'text-yellow-300 border-yellow-400/50 bg-yellow-900/30 hover:border-yellow-400 hover:bg-yellow-900/50' :
+                          'text-gray-300 border-gray-400/50 bg-gray-900/30 hover:border-gray-400 hover:bg-gray-900/50'
+                        }`}
+                      >
+                        {post.category.toUpperCase()}
+                      </button>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Eye className="h-3 w-3 mr-1" />
+                        {post.views}
+                      </div>
+                    </div>
+                    
+                    <h3 className="text-white font-bold text-lg mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300 leading-tight">
+                      {post.title}
+                    </h3>
+                    
+                    <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center text-xs text-gray-500 mb-4">
+                      <User className="h-3 w-3 mr-1" />
+                      <span className="mr-3">{post.author}</span>
+                      <Clock className="h-3 w-3 mr-1" />
+                      <span>{post.readTime}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {post.date}
+                      </span>
+                      <div className="flex items-center text-purple-400 group-hover:text-white transition-colors text-sm font-medium">
+                        Read More
+                        <ArrowRight className="h-3 w-3 ml-1" />
+                      </div>
                     </div>
                   </div>
-                  
-                  <h3 className="text-white font-bold text-lg mb-3 group-hover:text-purple-400 transition-colors leading-tight">
-                    {post.title}
-                  </h3>
-                  
-                  <p className="text-gray-400 text-sm mb-4 leading-relaxed">
-                    {post.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center text-xs text-gray-500 mb-4">
-                    <User className="h-3 w-3 mr-1" />
-                    <span className="mr-3">{post.author}</span>
-                    <Clock className="h-3 w-3 mr-1" />
-                    <span>{post.readTime}</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">
-                      {new Date(post.date).toLocaleDateString()}
-                    </span>
-                    <Button variant="ghost" size="sm" className="text-purple-400 hover:text-white p-0">
-                      Read More
-                      <ArrowRight className="h-3 w-3 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
 
@@ -257,23 +431,18 @@ export default function BlogPage() {
           <Card className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-purple-500/30">
             <CardContent className="p-8 text-center">
               <h3 className="text-2xl font-bold text-white mb-4">
-                Never Miss a Healing Insight
+                Ready to Start Your Healing Journey?
               </h3>
               <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-                Get our latest articles, community highlights, and evidence-based healing tips delivered to your inbox weekly.
+                Take our personalized breakup recovery quiz and get matched with the perfect healing tools for your situation.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white whitespace-nowrap">
-                  Subscribe
+              <Link href="/quiz">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-lg px-8 py-4">
+                  Start Your Healing Journey →
                 </Button>
-              </div>
+              </Link>
               <p className="text-xs text-gray-400 mt-3">
-                No spam, ever. Unsubscribe anytime.
+                Personalized recommendations • Science-backed approach • Free to start
               </p>
             </CardContent>
           </Card>
@@ -281,21 +450,20 @@ export default function BlogPage() {
 
         {/* Community Section */}
         <div className="mt-12 text-center">
-          <h3 className="text-xl font-bold text-white mb-4">Join the Conversation</h3>
+          <h3 className="text-xl font-bold text-white mb-4">Follow Our Journey</h3>
           <p className="text-gray-300 mb-6">
-            Connect with our healing community on social media and share your journey
+            Get daily healing tips, real stories, and behind-the-scenes content on TikTok
           </p>
-          <div className="flex justify-center space-x-4">
-            <Button variant="outline" className="border-gray-600 text-gray-300 hover:text-white hover:border-purple-400">
+          <div className="flex justify-center">
+            <a 
+              href="https://tiktok.com/@ctrlaltblock" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold rounded-lg transition-all transform hover:scale-105"
+            >
               <span className="mr-2">📱</span>
               @ctrlaltblock on TikTok
-            </Button>
-            <Link href="/wall">
-              <Button variant="outline" className="border-gray-600 text-gray-300 hover:text-white hover:border-pink-400">
-                <Heart className="h-4 w-4 mr-2" />
-                Wall of Wounds
-              </Button>
-            </Link>
+            </a>
           </div>
         </div>
       </div>
