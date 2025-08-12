@@ -203,8 +203,8 @@ export default function PricingPage() {
                 <p className="text-gray-300">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.</p>
               </div>
               <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6">
-                <h3 className="text-xl font-bold text-white mb-3">What's included in the free trial?</h3>
-                <p className="text-gray-300">All new users get 7 days of Firewall Mode free to experience our full feature set before choosing a plan.</p>
+                <h3 className="text-xl font-bold text-white mb-3">What's included for free users?</h3>
+                <p className="text-gray-300">Ghost Mode users get access to basic healing rituals, no-contact tracking, community features, and progress tracking completely free.</p>
               </div>
               <div className="bg-gray-800/60 backdrop-blur-sm rounded-xl p-6">
                 <h3 className="text-xl font-bold text-white mb-3">Is my data secure?</h3>

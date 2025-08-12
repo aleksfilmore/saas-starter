@@ -84,6 +84,14 @@ export default function HomePage() {
     {
       question: "How long does the healing process take?",
       answer: "Everyone's journey is different. Our data shows most users see significant improvement within 30-90 days of consistent engagement with the platform."
+    },
+    {
+      question: "Can I use this if I'm not tech-savvy?",
+      answer: "Absolutely! The platform is designed to be intuitive and user-friendly. Our gamified approach makes complex psychological concepts accessible and engaging for everyone."
+    },
+    {
+      question: "What if I need crisis support?",
+      answer: "While our AI provides great support, for crisis situations we always recommend contacting emergency services or crisis hotlines. We also provide resources for professional therapy when needed."
     }
   ];
 
@@ -139,9 +147,14 @@ export default function HomePage() {
               The Future of Heartbreak Recovery
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-              Stop <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Obsessing</span><br />
-              Start <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">Healing</span>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 bg-clip-text mb-4 tracking-wide">
+              UNINSTALL YOUR EX.
+            </div>
+            
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold mb-4 leading-tight">
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono">
+                INSTALL YOUR NEW SELF.
+              </span>
             </h1>
             
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -173,7 +186,7 @@ export default function HomePage() {
             <div className="flex items-center justify-center space-x-8 text-sm text-gray-400">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
-                Free for 7 days
+                Start free
               </div>
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
@@ -344,7 +357,7 @@ export default function HomePage() {
                   
                   <Link href="/sign-up/with-plan">
                     <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                      Start 7-Day Free Trial
+                      Start Firewall Mode
                     </Button>
                   </Link>
                 </CardContent>
@@ -355,7 +368,7 @@ export default function HomePage() {
 
         {/* FAQ Section */}
         <section className="py-20 px-6 bg-gradient-to-r from-gray-900/50 to-purple-900/30">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Frequently Asked Questions
@@ -365,29 +378,16 @@ export default function HomePage() {
               </p>
             </div>
             
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {faqs.map((faq, index) => (
                 <Card key={index} className="bg-gray-800/60 border-gray-600/50 hover:border-purple-500/30 transition-all duration-300">
-                  <CardContent className="p-0">
-                    <button
-                      onClick={() => toggleFaq(index)}
-                      className="w-full text-left p-6 flex items-center justify-between"
-                    >
-                      <span className="text-lg font-semibold text-white">
-                        {faq.question}
-                      </span>
-                      {expandedFaq === index ? (
-                        <ChevronUp className="h-5 w-5 text-purple-400" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5 text-purple-400" />
-                      )}
-                    </button>
-                    
-                    {expandedFaq === index && (
-                      <div className="px-6 pb-6 text-gray-300 leading-relaxed">
-                        {faq.answer}
-                      </div>
-                    )}
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      {faq.question}
+                    </h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      {faq.answer}
+                    </p>
                   </CardContent>
                 </Card>
               ))}

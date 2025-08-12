@@ -141,47 +141,6 @@ export default function ComingSoonPage() {
 
   return (
     <div className="min-h-screen text-white overflow-x-hidden relative">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(/bg.png)',
-        }}
-      />
-      
-      {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
-      
-      {/* Background Effects */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <filter id="noise">
-              <feTurbulence baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
-              <feColorMatrix type="saturate" values="0"/>
-            </filter>
-          </defs>
-          <rect width="100%" height="100%" filter="url(#noise)" opacity="0.1"/>
-        </svg>
-      </div>
-
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
-        
-        {/* Floating hearts that break and reassemble */}
-        <div className="absolute top-1/3 left-1/4 opacity-30">
-          <div className="text-6xl animate-pulse text-red-400/20">💔</div>
-        </div>
-        <div className="absolute top-1/2 right-1/3 opacity-40">
-          <div className="text-4xl animate-bounce text-purple-400/30">✨</div>
-        </div>
-        <div className="absolute bottom-1/3 right-1/4 opacity-20">
-          <div className="text-5xl animate-pulse text-cyan-400/25">💙</div>
-        </div>
-      </div>
-
       {/* Navigation */}
       <nav className="relative z-50 w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -256,201 +215,245 @@ export default function ComingSoonPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 pt-20">
-        {/* Floating Confession Card */}
-        <div className="absolute top-20 right-10 max-w-xs opacity-80 z-20 hidden lg:block animate-float">
-          <Card className={`bg-gray-800/60 border border-purple-500/40 backdrop-blur-md transition-all duration-1000 hover:border-purple-400 hover:bg-gray-800/80 ${confessionVisible ? 'opacity-100 scale-100' : 'opacity-60 scale-95'}`}>
-            <CardContent className="p-4">
-              <div className={`text-sm text-gray-300 transition-all duration-500 ${confessionVisible ? 'blur-none' : 'blur-sm'}`}>
-                <div className="flex items-center mb-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-                  <span className="text-xs text-green-400 font-mono">exile_ghost</span>
-                </div>
-                {confessionVisible ? (
-                  <p className="leading-relaxed">"Day 12: The no-contact tracker actually works. Haven't checked their socials once today. Level up feels real 🔥"</p>
-                ) : (
-                  <p className="text-gray-500 font-mono">████████████████████████████████████████</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+      {/* Hero Section with bg.png */}
+      <div className="relative">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: 'url(/bg.png)',
+          }}
+        />
+        
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
+        
+        {/* Background Effects */}
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="noise">
+                <feTurbulence baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+                <feColorMatrix type="saturate" values="0"/>
+              </filter>
+            </defs>
+            <rect width="100%" height="100%" filter="url(#noise)" opacity="0.1"/>
+          </svg>
         </div>
 
-        {/* Main Motto */}
-        <div className="text-center mb-8">
-          <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 bg-clip-text mb-4 tracking-wide">
-            UNINSTALL YOUR EX.
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute top-40 right-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+          <div className="absolute bottom-20 left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+          
+          {/* Floating hearts that break and reassemble */}
+          <div className="absolute top-1/3 left-1/4 opacity-30">
+            <div className="text-6xl animate-pulse text-red-400/20">💔</div>
           </div>
-        </div>
-        {/* Logo/Brand */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 leading-tight">
-            <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono">
-               INSTALL YOUR NEW SELF.
-            </span>
-          </h1>
-          <div className="text-xl sm:text-2xl md:text-3xl text-gray-200 mb-4 font-medium">
-            Your interactive breakup recovery program
+          <div className="absolute top-1/2 right-1/3 opacity-40">
+            <div className="text-4xl animate-bounce text-purple-400/30">✨</div>
           </div>
-          <div className="text-lg sm:text-xl md:text-2xl font-mono text-gray-300 mb-6">
-            Revolutionary healing through the psychology of gaming — with AI therapy, daily healing rituals, and a gamified progress tracker
+          <div className="absolute bottom-1/3 right-1/4 opacity-20">
+            <div className="text-5xl animate-pulse text-cyan-400/25">💙</div>
           </div>
         </div>
 
-        {/* Countdown Timer */}
-        <div className="mb-8">
-          <Card className="bg-red-900/20 border border-red-500/50 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="text-center">
-                <div className="text-sm text-red-300 mb-4">🚀 PLATFORM LAUNCHES IN</div>
-                <div className="flex justify-center space-x-4 text-white font-mono">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-red-400">{timeLeft.days}</div>
-                    <div className="text-xs text-gray-400">DAYS</div>
+        {/* Hero Section */}
+        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 pt-20">
+          {/* Floating Confession Card */}
+          <div className="absolute top-20 right-10 max-w-xs opacity-80 z-20 hidden lg:block animate-float">
+            <Card className={`bg-gray-800/60 border border-purple-500/40 backdrop-blur-md transition-all duration-1000 hover:border-purple-400 hover:bg-gray-800/80 ${confessionVisible ? 'opacity-100 scale-100' : 'opacity-60 scale-95'}`}>
+              <CardContent className="p-4">
+                <div className={`text-sm text-gray-300 transition-all duration-500 ${confessionVisible ? 'blur-none' : 'blur-sm'}`}>
+                  <div className="flex items-center mb-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                    <span className="text-xs text-green-400 font-mono">exile_ghost</span>
                   </div>
-                  <div className="text-3xl text-red-400">:</div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-red-400">{timeLeft.hours}</div>
-                    <div className="text-xs text-gray-400">HOURS</div>
-                  </div>
-                  <div className="text-3xl text-red-400">:</div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-red-400">{timeLeft.minutes}</div>
-                    <div className="text-xs text-gray-400">MIN</div>
-                  </div>
-                  <div className="text-3xl text-red-400">:</div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-red-400">{timeLeft.seconds}</div>
-                    <div className="text-xs text-gray-400">SEC</div>
-                  </div>
+                  {confessionVisible ? (
+                    <p className="leading-relaxed">"Day 12: The no-contact tracker actually works. Haven't checked their socials once today. Level up feels real 🔥"</p>
+                  ) : (
+                    <p className="text-gray-500 font-mono">████████████████████████████████████████</p>
+                  )}
                 </div>
-                <div className="text-sm text-gray-400 mt-4">September 5th, 2025</div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-4xl text-center mb-12 px-4">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-white leading-tight">
-            The World's First Gamified Heartbreak Recovery Platform
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
-            Revolutionary platform combining AI-powered therapy, gamified healing rituals, 
-            and anonymous community support. Transform your heartbreak into your comeback with 
-            science-backed attachment theory and cutting-edge technology.
-          </p>
-
-          {/* Enhanced Feature Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Link href="/features#ai-therapy">
-              <Card className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-4 text-center">
-                  <Brain className="h-8 w-8 text-cyan-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                  <span className="text-sm text-white font-semibold block">AI Therapy</span>
-                  <p className="text-xs text-cyan-200 mt-1">Chat 24/7 with your digital recovery coach</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/features#daily-rituals">
-              <Card className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-4 text-center">
-                  <Calendar className="h-8 w-8 text-purple-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                  <span className="text-sm text-white font-semibold block">Daily Rituals</span>
-                  <p className="text-xs text-purple-200 mt-1">Science-backed micro-activities for healing</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/features#no-contact">
-              <Card className="bg-gradient-to-br from-red-900/40 to-orange-900/40 border border-red-500/30 hover:border-red-400/60 transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-4 text-center">
-                  <Target className="h-8 w-8 text-red-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                  <span className="text-sm text-white font-semibold block">No-Contact</span>
-                  <p className="text-xs text-red-200 mt-1">Track streaks and build healthy boundaries</p>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/features#wall-of-wounds">
-              <Card className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 hover:border-green-400/60 transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-4 text-center">
-                  <Heart className="h-8 w-8 text-green-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
-                  <span className="text-sm text-white font-semibold block">Wall of Wounds</span>
-                  <p className="text-xs text-green-200 mt-1">Anonymous support community space</p>
-                </CardContent>
-              </Card>
-            </Link>
-          </div>
-
-          {/* Beta Progress */}
-          <div className="mb-8">
-            <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-yellow-200 font-semibold">🏆 Exclusive Beta Access</span>
-                  <span className="text-yellow-300 font-bold">{betaCount} / 500</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-3 mb-3">
-                  <div 
-                    className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${(betaCount / 500) * 100}%` }}
-                  ></div>
-                </div>
-                <p className="text-sm text-yellow-200">
-                  First 500 users get an exclusive avatar frame + lifetime discount
-                </p>
               </CardContent>
             </Card>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={() => scrollToSection('waitlist')}
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-            >
-              Join Waitlist - Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              onClick={() => window.location.href = '/quiz'}
-              size="lg"
-              variant="outline"
-              className="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-300 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gray-900/50 backdrop-blur-sm"
-            >
-              🧪 Try Beta Scan Now
-            </Button>
+          {/* Main Motto */}
+          <div className="text-center mb-8">
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 bg-clip-text mb-4 tracking-wide">
+              UNINSTALL YOUR EX.
+            </div>
           </div>
-        </div>
+          {/* Logo/Brand */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 leading-tight">
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono">
+                 INSTALL YOUR NEW SELF.
+              </span>
+            </h1>
+            <div className="text-xl sm:text-2xl md:text-3xl text-gray-200 mb-4 font-medium">
+              Your interactive breakup recovery program
+            </div>
+            <div className="text-lg sm:text-xl md:text-2xl font-mono text-gray-300 mb-6">
+              Revolutionary healing through the psychology of gaming — with AI therapy, daily healing rituals, and a gamified progress tracker
+            </div>
+          </div>
 
-        {/* Social Proof */}
-        <div className="text-center max-w-lg px-4">
-          <p className="text-gray-400 text-sm mb-4">
-            Built on evidence-based psychology, attachment theory, and cutting-edge AI
-          </p>
-          <div className="flex items-center justify-center space-x-6 text-gray-500 flex-wrap">
-            <div className="flex items-center mb-2 sm:mb-0">
-              <Star className="h-4 w-4 mr-1" />
-              <span className="text-xs">Science-Backed</span>
+          {/* Countdown Timer */}
+          <div className="mb-8">
+            <Card className="bg-red-900/20 border border-red-500/50 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="text-sm text-red-300 mb-4">🚀 PLATFORM LAUNCHES IN</div>
+                  <div className="flex justify-center space-x-4 text-white font-mono">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-red-400">{timeLeft.days}</div>
+                      <div className="text-xs text-gray-400">DAYS</div>
+                    </div>
+                    <div className="text-3xl text-red-400">:</div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-red-400">{timeLeft.hours}</div>
+                      <div className="text-xs text-gray-400">HOURS</div>
+                    </div>
+                    <div className="text-3xl text-red-400">:</div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-red-400">{timeLeft.minutes}</div>
+                      <div className="text-xs text-gray-400">MIN</div>
+                    </div>
+                    <div className="text-3xl text-red-400">:</div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-red-400">{timeLeft.seconds}</div>
+                      <div className="text-xs text-gray-400">SEC</div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-400 mt-4">September 5th, 2025</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="max-w-4xl text-center mb-12 px-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-white leading-tight">
+              The World's First Gamified Heartbreak Recovery Platform
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
+              Revolutionary platform combining AI-powered therapy, gamified healing rituals, 
+              and anonymous community support. Transform your heartbreak into your comeback with 
+              science-backed attachment theory and cutting-edge technology.
+            </p>
+
+            {/* Enhanced Feature Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <Link href="/features#ai-therapy">
+                <Card className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 border border-cyan-500/30 hover:border-cyan-400/60 transition-all duration-300 group cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Brain className="h-8 w-8 text-cyan-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                    <span className="text-sm text-white font-semibold block">AI Therapy</span>
+                    <p className="text-xs text-cyan-200 mt-1">Chat 24/7 with your digital recovery coach</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              
+              <Link href="/features#daily-rituals">
+                <Card className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 border border-purple-500/30 hover:border-purple-400/60 transition-all duration-300 group cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Calendar className="h-8 w-8 text-purple-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                    <span className="text-sm text-white font-semibold block">Daily Rituals</span>
+                    <p className="text-xs text-purple-200 mt-1">Science-backed micro-activities for healing</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              
+              <Link href="/features#no-contact">
+                <Card className="bg-gradient-to-br from-red-900/40 to-orange-900/40 border border-red-500/30 hover:border-red-400/60 transition-all duration-300 group cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Target className="h-8 w-8 text-red-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                    <span className="text-sm text-white font-semibold block">No-Contact</span>
+                    <p className="text-xs text-red-200 mt-1">Track streaks and build healthy boundaries</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              
+              <Link href="/features#wall-of-wounds">
+                <Card className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border border-green-500/30 hover:border-green-400/60 transition-all duration-300 group cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Heart className="h-8 w-8 text-green-400 mb-3 mx-auto group-hover:scale-110 transition-transform" />
+                    <span className="text-sm text-white font-semibold block">Wall of Wounds</span>
+                    <p className="text-xs text-green-200 mt-1">Anonymous support community space</p>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
-            <div className="flex items-center mb-2 sm:mb-0">
-              <Heart className="h-4 w-4 mr-1" />
-              <span className="text-xs">Privacy-First</span>
+
+            {/* Beta Progress */}
+            <div className="mb-8">
+              <Card className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-500/30">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-yellow-200 font-semibold">🏆 Exclusive Beta Access</span>
+                    <span className="text-yellow-300 font-bold">{betaCount} / 500</span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-3 mb-3">
+                    <div 
+                      className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-500"
+                      style={{ width: `${(betaCount / 500) * 100}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-sm text-yellow-200">
+                    First 500 users get an exclusive avatar frame + lifetime discount
+                  </p>
+                </CardContent>
+              </Card>
             </div>
-            <div className="flex items-center mb-2 sm:mb-0">
-              <Sparkles className="h-4 w-4 mr-1" />
-              <span className="text-xs">Gamified Experience</span>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                onClick={() => scrollToSection('waitlist')}
+                size="lg"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+              >
+                Join Waitlist - Free
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/quiz'}
+                size="lg"
+                variant="outline"
+                className="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-300 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gray-900/50 backdrop-blur-sm"
+              >
+                🧪 Try Beta Scan Now
+              </Button>
+            </div>
+          </div>
+
+          {/* Social Proof */}
+          <div className="text-center max-w-lg px-4">
+            <p className="text-gray-400 text-sm mb-4">
+              Built on evidence-based psychology, attachment theory, and cutting-edge AI
+            </p>
+            <div className="flex items-center justify-center space-x-6 text-gray-500 flex-wrap">
+              <div className="flex items-center mb-2 sm:mb-0">
+                <Star className="h-4 w-4 mr-1" />
+                <span className="text-xs">Science-Backed</span>
+              </div>
+              <div className="flex items-center mb-2 sm:mb-0">
+                <Heart className="h-4 w-4 mr-1" />
+                <span className="text-xs">Privacy-First</span>
+              </div>
+              <div className="flex items-center mb-2 sm:mb-0">
+                <Sparkles className="h-4 w-4 mr-1" />
+                <span className="text-xs">Gamified Experience</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-24 px-4 bg-gray-900/50">
+      <section id="how-it-works" className="py-24 px-4 bg-gradient-to-br from-gray-900 via-purple-900/50 to-gray-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-6">
@@ -546,7 +549,7 @@ export default function ComingSoonPage() {
 
 
       {/* Waitlist Section */}
-      <section id="waitlist" className="py-24 px-4 bg-gradient-to-br from-purple-900/50 to-pink-900/50">
+      <section id="waitlist" className="py-24 px-4 bg-gradient-to-br from-purple-900 via-pink-900/50 to-purple-900">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
             Join the Revolution
