@@ -5,13 +5,13 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-  "dev": "node scripts/prestart.js && npx next dev -p 3001",
+    "dev": "node scripts/prestart.js && npx next dev -p 3001",
     "build": "node scripts/build-wrapper.mjs",
     "start": "next start",
     "lint": "next lint",
-  "lint:unused": "node scripts/lint-unused.cjs",
-  "lint:unused:fix": "node scripts/lint-unused-fix.cjs",
-  "lint:unused:report": "node scripts/report-unused.js",
+    "lint:unused": "node scripts/lint-unused.cjs",
+    "lint:unused:fix": "node scripts/lint-unused-fix.cjs",
+    "lint:unused:report": "node scripts/report-unused.js",
     "db:recover:core": "psql $POSTGRES_URL -f scripts/recreate-missing-core-tables.sql",
     "schema:check": "node --loader tsx scripts/schema-startup-check.ts",
     "test:production": "npx tsx scripts/production-test.ts",
@@ -65,9 +65,9 @@
     "nanoid": "^5.0.7",
     "next": "15.1.0",
     "openai": "^5.11.0",
+    "pg": "^8.12.0",
     "postcss": "^8.5.6",
-  "postgres": "^3.4.5",
-  "pg": "^8.12.0",
+    "postgres": "^3.4.5",
     "radix-ui": "^1.4.2",
     "react": "19.0.0",
     "react-datepicker": "^7.5.0",
@@ -96,6 +96,7 @@
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
     "eslint": "^9.32.0",
-    "eslint-config-next": "15.4.5"
+    "eslint-config-next": "15.4.5",
+    "sass": "^1.90.0"
   }
 }
