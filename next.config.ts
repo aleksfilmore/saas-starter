@@ -17,10 +17,9 @@ const nextConfig: NextConfig = {
   // Force ES modules resolution 
   experimental: {
     esmExternals: true,
+    // Disable static optimization that's causing issues
+    forceSwcTransforms: true,
   },
-  
-  // Skip static optimization for error pages
-  skipTrailingSlashRedirect: true,
   
   // Webpack optimizations for bundler stability
   webpack: (config, { dev, isServer }) => {
