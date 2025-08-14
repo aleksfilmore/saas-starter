@@ -1,26 +1,24 @@
-import Link from 'next/link';
-import { Frown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-
 export default function NotFound() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-      <div className="max-w-md space-y-8 p-8 text-center bg-card border border-border rounded-lg">
-        <div className="flex justify-center">
-          <Frown className="size-16 text-primary" />
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground">
-          404: Page Ghosted
-        </h1>
-        <p className="text-base text-muted-foreground">
-          Looks like the page you're looking for has blocked you, moved on, or maybe it never existed in the first place. Time to go back and focus on your own reformat.
-        </p>
-        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/80">
-          <Link href="/">
-            Return to Homepage
-          </Link>
-        </Button>
-      </div>
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      minHeight: '100vh',
+      flexDirection: 'column',
+      gap: '20px'
+    }}>
+      <h1>404: Page Not Found</h1>
+      <p>The page you are looking for doesn't exist.</p>
+      <a href="/" style={{ 
+        padding: '10px 20px', 
+        backgroundColor: '#6366f1', 
+        color: 'white', 
+        textDecoration: 'none',
+        borderRadius: '6px'
+      }}>
+        Go Home
+      </a>
     </div>
   );
 }

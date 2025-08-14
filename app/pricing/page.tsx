@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Check, Star, Zap, Shield } from 'lucide-react';
 import Link from 'next/link';
 
@@ -86,9 +85,12 @@ export default function PricingPage() {
                     Crisis support resources
                   </li>
                 </ul>
-                <Button className="w-full bg-gray-600 hover:bg-gray-700 text-white" asChild>
-                  <Link href="/sign-up">Start Free</Link>
-                </Button>
+                <Link 
+                  href="/sign-up"
+                  className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white"
+                >
+                  Start Free
+                </Link>
               </CardContent>
             </Card>
 
@@ -135,9 +137,12 @@ export default function PricingPage() {
                     Advanced pattern analysis & insights
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white" asChild>
-                  <Link href="/sign-up">Start Firewall Mode</Link>
-                </Button>
+                <Link 
+                  href="/sign-up"
+                  className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                >
+                  Start Firewall Mode
+                </Link>
               </CardContent>
             </Card>
           </div>
@@ -226,9 +231,12 @@ export default function PricingPage() {
               <p className="text-gray-300 mb-6">
                 Join thousands of people already healing their attachment patterns with CTRL+ALT+BLOCK
               </p>
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-3 text-lg" asChild>
-                <Link href="/sign-up">Start Your Journey Today</Link>
-              </Button>
+              <Link 
+                href="/sign-up"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-lg font-medium transition-all h-12 px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+              >
+                Start Your Journey Today
+              </Link>
             </div>
           </div>
 
