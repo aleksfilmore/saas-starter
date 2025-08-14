@@ -15,11 +15,11 @@ export default function NotFound() {
         <p className="text-base text-muted-foreground">
           Looks like the page you're looking for has blocked you, moved on, or maybe it never existed in the first place. Time to go back and focus on your own reformat.
         </p>
-        <Link href="/" passHref>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/80">
+        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/80">
+          <Link href="/">
             Return to Homepage
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );
