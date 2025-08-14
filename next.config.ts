@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
   experimental: {
     esmExternals: true,
   },
+  
+  // Skip static optimization for error pages
+  skipTrailingSlashRedirect: true,
+  
   // Webpack optimizations for bundler stability
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
