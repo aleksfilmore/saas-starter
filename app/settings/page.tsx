@@ -1,4 +1,7 @@
-"use client";
+'use client';
+
+// Force dynamic rendering for auth-dependent pages
+export const dynamic = 'force-dynamic';
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

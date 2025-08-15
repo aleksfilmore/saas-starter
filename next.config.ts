@@ -14,34 +14,14 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Force ES modules resolution 
+  // Disable experimental features that might be causing issues
   experimental: {
     esmExternals: true,
-    // Disable static optimization that's causing issues
-    forceSwcTransforms: true,
   },
   
-  // Webpack optimizations for bundler stability
-  webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      // Disable React DevTools in development to reduce memory usage
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'react-dom$': 'react-dom/profiling',
-        'scheduler/tracing': 'scheduler/tracing-profiling',
-      };
-    }
-    
-    // Optimize bundling for React Server Components
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-      net: false,
-      tls: false,
-    };
-    
-    return config;
-  },
+  // Skip error page prerendering
+  staticPageGenerationTimeout: 60,
+  
   // Disable telemetry and other potentially problematic features
   eslint: {
     ignoreDuringBuilds: true,
