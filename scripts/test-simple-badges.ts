@@ -3,7 +3,7 @@ import { sql } from 'drizzle-orm';
 
 // Simple badge system that works with existing database
 class SimpleBadgeEvaluator {
-  async awardBadgeForStreak(userId, streakCount) {
+  async awardBadgeForStreak(userId: string, streakCount: number) {
     console.log(`🎯 Checking badges for user ${userId} with ${streakCount} day streak...`);
     
     try {
