@@ -52,16 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Verify password with secure crypto
     console.log('Verifying password...');
-    let validPassword = false;
-    
-    // Special case for test users
-    if ((existingUser.email === 'premium@test.com' && password === 'password123') ||
-        (existingUser.email === 'ghost@test.com' && password === 'TestPassword123!') ||
-        (existingUser.email === 'firewall@test.com' && password === 'TestPassword123!')) {
-      validPassword = true;
-    } else {
-      validPassword = await verifyPassword(password, existingUser.hashedPassword);
-    }
+    const validPassword = await verifyPassword(password, existingUser.hashedPassword);
     
     if (!validPassword) {
       return NextResponse.json(
