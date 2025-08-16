@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { sql } from 'drizzle-orm';
@@ -72,20 +73,20 @@ export async function POST(request: NextRequest) {
 
     // Update user stats
     const currentUserData = await db.execute(sql`
-      SELECT xp, level, streak FROM users WHERE id = ${user.id}
+      SELECT xp, level, ritual_streak FROM users WHERE id = ${user.id}
     `);
 
-    const currentUser = currentUserData[0] as { xp: number; level: number; streak: number } | undefined;
+    const currentUser = currentUserData[0] as { xp: number; level: number; ritual_streak: number } | undefined;
     const newXP = (currentUser?.xp || 0) + xpReward;
     const newLevel = Math.floor(newXP / 1000) + 1;
-    const newStreak = (currentUser?.streak || 0) + 1;
+    const newRitualStreak = (currentUser?.ritual_streak || 0) + 1;
 
     await db.execute(sql`
       UPDATE users 
       SET 
         xp = ${newXP},
         level = ${newLevel},
-        streak = ${newStreak}
+        ritual_streak = ${newRitualStreak}
       WHERE id = ${user.id}
     `);
 
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
       user: {
         xp: newXP,
         level: newLevel,
-        streak: newStreak
+        streak: newRitualStreak
       }
     });
 
