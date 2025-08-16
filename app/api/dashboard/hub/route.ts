@@ -29,9 +29,9 @@ export async function GET(request: NextRequest) {
     const nextLevelXP = level * 100;
     const progressFraction = Math.min(1, (currentXP % 100) / 100);
 
-    // Calculate streaks
-  const ritualStreak = (userData as any).ritual_streak || 0;
-  const noContactStreak = (userData as any).no_contact_streak || 0;
+    // Calculate streaks using correct field names
+    const ritualStreak = userData.ritual_streak || 0;
+    const noContactStreak = userData.no_contact_streak || 0;
 
     // Generate mock rituals for today (this would come from a rituals table in production)
     const todaysRituals = [
@@ -89,39 +89,67 @@ export async function GET(request: NextRequest) {
       }
     ];
 
-    // Generate badges based on user progress
-    const badges = [
-      {
-        id: '1',
-        name: 'First Steps',
-        icon: '👟',
-        unlocked: currentXP >= 10
-      },
-      {
-        id: '2',
-        name: 'Week Warrior',
-        icon: '⚔️',
-        unlocked: ritualStreak >= 7
-      },
-      {
-        id: '3',
-        name: 'AI Explorer',
-        icon: '🤖',
-  unlocked: true
-      },
-      {
-        id: '4',
-        name: 'No Contact Champion',
-        icon: '🛡️',
-        unlocked: noContactStreak >= 30
-      },
-      {
-        id: '5',
-        name: 'Community Helper',
-        icon: '❤️',
-        unlocked: currentXP >= 200
-      }
-    ];
+    // Get real user badges from the badge system
+    let badges = [];
+    try {
+      // Import from the correct schema location
+      const userBadgeData = await db.execute(sql`
+        SELECT badge_id, earned_at 
+        FROM user_badges 
+        WHERE user_id = ${user.id}
+      `);
+
+      // Get badge details
+      const allBadges = await db.execute(sql`
+        SELECT id, name, icon_url, is_active
+        FROM badges
+        WHERE is_active = true
+      `);
+
+      const earnedBadgeIds = new Set(userBadgeData.map((b: any) => b.badge_id));
+      
+      badges = allBadges.map((badge: any) => ({
+        id: badge.id,
+        name: badge.name,
+        icon: badge.icon_url,
+        unlocked: earnedBadgeIds.has(badge.id)
+      }));
+    } catch (error) {
+      console.error('Failed to fetch real badges:', error);
+      // Fallback to mock badges
+      badges = [
+        {
+          id: '1',
+          name: 'First Steps',
+          icon: '👟',
+          unlocked: currentXP >= 10
+        },
+        {
+          id: '2',
+          name: 'Week Warrior',
+          icon: '⚔️',
+          unlocked: ritualStreak >= 7
+        },
+        {
+          id: '3',
+          name: 'AI Explorer',
+          icon: '🤖',
+          unlocked: true
+        },
+        {
+          id: '4',
+          name: 'No Contact Champion',
+          icon: '🛡️',
+          unlocked: noContactStreak >= 30
+        },
+        {
+          id: '5',
+          name: 'Community Helper',
+          icon: '❤️',
+          unlocked: currentXP >= 200
+        }
+      ];
+    }
 
     // Generate daily insight based on user's progress
     const insights = [

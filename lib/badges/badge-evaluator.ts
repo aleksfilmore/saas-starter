@@ -162,10 +162,14 @@ export class BadgeEvaluator {
     switch (eventType) {
       case 'check_in_completed':
         unlockCandidates.push(...await this.evaluateStreakBadges(user.id, payload as CheckInCompletedPayload));
+        // Game badges also check streaks
+        unlockCandidates.push(...await this.evaluateGameBadges(user.id, user.tier, payload));
         break;
       
       case 'ritual_completed':
         unlockCandidates.push(...await this.evaluateRitualBadges(user.id, payload as RitualCompletedPayload));
+        // Game badges also check ritual counts
+        unlockCandidates.push(...await this.evaluateGameBadges(user.id, user.tier, payload));
         break;
       
       case 'wall_reaction_added':
@@ -213,6 +217,12 @@ export class BadgeEvaluator {
         const archetypeBadgeId = this.getArchetypeF4Badge(user.archetype as ArchetypeCode);
         if (archetypeBadgeId) candidates.push(archetypeBadgeId);
       }
+
+      // F6 - Consistency Master (90 days)
+      if (streakCount >= 90) {
+        const archetypeBadgeId = this.getArchetypeF6Badge(user.archetype as ArchetypeCode);
+        if (archetypeBadgeId) candidates.push(archetypeBadgeId);
+      }
     }
 
     return candidates;
@@ -250,6 +260,18 @@ export class BadgeEvaluator {
         }
       }
 
+      // F5 - Data Mastery (100 completions)
+      if (ritualCount >= 100) {
+        const archetypeBadgeId = this.getArchetypeF5Badge(user.archetype as ArchetypeCode);
+        if (archetypeBadgeId) candidates.push(archetypeBadgeId);
+      }
+
+      // F8 - Ultimate Achievement (200 completions)
+      if (ritualCount >= 200) {
+        const archetypeBadgeId = this.getArchetypeF8Badge(user.archetype as ArchetypeCode);
+        if (archetypeBadgeId) candidates.push(archetypeBadgeId);
+      }
+
       // X3 - Ritual Forge (7 rituals in 7 days)
       const weeklyRitualDays = await this.countRitualDaysInWindow(userId, 7);
       if (weeklyRitualDays >= 7) {
@@ -274,6 +296,19 @@ export class BadgeEvaluator {
       candidates.push('G3');
     }
 
+    // Get user for Firewall badges
+    const user = await this.getUser(userId);
+    if (user?.tier === 'firewall' && user.archetype) {
+      // Count total wall interactions
+      const totalInteractions = await this.countWallInteractions(userId);
+      
+      // F7 - Social Master (25 wall interactions)
+      if (totalInteractions >= 25) {
+        const archetypeBadgeId = this.getArchetypeF7Badge(user.archetype as ArchetypeCode);
+        if (archetypeBadgeId) candidates.push(archetypeBadgeId);
+      }
+    }
+
     return candidates;
   }
 
@@ -287,29 +322,45 @@ export class BadgeEvaluator {
   }
 
   /**
-   * Evaluate game-exclusive badges (X1, X2)
+   * Evaluate game achievement badges (X1-X4)
    */
-  private async evaluateGameBadges(userId: string, tier: string, payload: GameEventPayload): Promise<string[]> {
+  private async evaluateGameBadges(userId: string, tier: string, payload: any): Promise<string[]> {
     const candidates: string[] = [];
 
     if (tier !== 'firewall') return candidates; // Games are Firewall-only
 
-    // Check cooldowns (weekly earn limits)
-    const lastWeekStart = new Date();
-    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    // Get user's current statistics
+    const userStats = await this.getUserGameStats(userId);
 
-    if (payload.gameType === 'bingo') {
-      // X1 - Bingo Unlocked
-      const recentBingo = await this.hasEarnedBadgeInWindow(userId, 'X1', lastWeekStart);
-      if (!recentBingo) {
-        candidates.push('X1');
-      }
-    } else if (payload.gameType === 'smash' && (payload.score! >= 15 || payload.rounds! >= 3)) {
-      // X2 - ExeSmash
-      const recentSmash = await this.hasEarnedBadgeInWindow(userId, 'X2', lastWeekStart);
-      if (!recentSmash) {
-        candidates.push('X2');
-      }
+    // X1 - Digital Initiate (5 rituals + 3 categories + 7-day streak)
+    if (userStats.totalRituals >= 5 && 
+        userStats.ritualCategories >= 3 && 
+        userStats.maxStreak >= 7) {
+      candidates.push('X1_Initiate');
+    }
+
+    // X2 - System Awakened (25 rituals + 4 categories + 3 firewall badges + 30-day streak)
+    if (userStats.totalRituals >= 25 && 
+        userStats.ritualCategories >= 4 && 
+        userStats.firewallBadges >= 3 && 
+        userStats.maxStreak >= 30) {
+      candidates.push('X2_Awakened');
+    }
+
+    // X3 - Digital Transcendent (75 rituals + 5 categories + 6 firewall badges + 60-day streak)
+    if (userStats.totalRituals >= 75 && 
+        userStats.ritualCategories >= 5 && 
+        userStats.firewallBadges >= 6 && 
+        userStats.maxStreak >= 60) {
+      candidates.push('X3_Transcendent');
+    }
+
+    // X4 - Eternal Legend (150 rituals + 6 categories + 8 firewall badges + 90-day streak)
+    if (userStats.totalRituals >= 150 && 
+        userStats.ritualCategories >= 6 && 
+        userStats.firewallBadges >= 8 && 
+        userStats.maxStreak >= 90) {
+      candidates.push('X4_Legend');
     }
 
     return candidates;
@@ -494,6 +545,71 @@ export class BadgeEvaluator {
     return events[0]?.distinctDays || 0;
   }
 
+  private async countWallInteractions(userId: string): Promise<number> {
+    const events = await db
+      .select({ 
+        count: sql<number>`COUNT(*)` 
+      })
+      .from(badgeEvents)
+      .where(and(
+        eq(badgeEvents.userId, userId),
+        eq(badgeEvents.eventType, 'wall_reaction_added')
+      ));
+    
+    return events[0]?.count || 0;
+  }
+
+  private async getUserGameStats(userId: string): Promise<{
+    totalRituals: number;
+    ritualCategories: number;
+    maxStreak: number;
+    firewallBadges: number;
+  }> {
+    // Get total ritual completions
+    const ritualEvents = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(badgeEvents)
+      .where(and(
+        eq(badgeEvents.userId, userId),
+        eq(badgeEvents.eventType, 'ritual_completed')
+      ));
+
+    // Get distinct ritual categories
+    const categoryEvents = await db
+      .select({ count: sql<number>`COUNT(DISTINCT (payload->>'category'))` })
+      .from(badgeEvents)
+      .where(and(
+        eq(badgeEvents.userId, userId),
+        eq(badgeEvents.eventType, 'ritual_completed')
+      ));
+
+    // Get max streak
+    const streakEvents = await db
+      .select({ maxStreak: sql<number>`MAX((payload->>'streakCount')::integer)` })
+      .from(badgeEvents)
+      .where(and(
+        eq(badgeEvents.userId, userId),
+        eq(badgeEvents.eventType, 'check_in_completed')
+      ));
+
+    // Get firewall badges earned
+    const firewallBadges = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(userBadges)
+      .innerJoin(badges, eq(userBadges.badgeId, badges.id))
+      .where(and(
+        eq(userBadges.userId, userId),
+        eq(badges.tierScope, 'firewall')
+      ));
+
+    return {
+      totalRituals: ritualEvents[0]?.count || 0,
+      ritualCategories: categoryEvents[0]?.count || 0,
+      maxStreak: streakEvents[0]?.maxStreak || 0,
+      firewallBadges: firewallBadges[0]?.count || 0
+    };
+  }
+
   private async hasEarnedBadgeInWindow(userId: string, badgeId: string, since: Date): Promise<boolean> {
     const recent = await db
       .select()
@@ -548,6 +664,46 @@ export class BadgeEvaluator {
       'FB': 'F4_FB', // Secure Fortress
       'GS': 'F4_GS', // Stable Phantom
       'SN': 'F4_SN'  // Master Node
+    };
+    return mapping[archetype] || null;
+  }
+
+  private getArchetypeF5Badge(archetype: ArchetypeCode): string | null {
+    const mapping = {
+      'DF': 'F5_DF', // Data Deluge Master
+      'FB': 'F5_FB', // Fortress Architect
+      'GS': 'F5_GS', // Phantom Virtuoso
+      'SN': 'F5_SN'  // Network Sovereign
+    };
+    return mapping[archetype] || null;
+  }
+
+  private getArchetypeF6Badge(archetype: ArchetypeCode): string | null {
+    const mapping = {
+      'DF': 'F6_DF', // Eternal Flow
+      'FB': 'F6_FB', // Immutable Defense
+      'GS': 'F6_GS', // Persistent Shade
+      'SN': 'F6_SN'  // Steadfast Guardian
+    };
+    return mapping[archetype] || null;
+  }
+
+  private getArchetypeF7Badge(archetype: ArchetypeCode): string | null {
+    const mapping = {
+      'DF': 'F7_DF', // Stream Broadcaster
+      'FB': 'F7_FB', // Community Bastion
+      'GS': 'F7_GS', // Echo Amplifier
+      'SN': 'F7_SN'  // Network Nexus
+    };
+    return mapping[archetype] || null;
+  }
+
+  private getArchetypeF8Badge(archetype: ArchetypeCode): string | null {
+    const mapping = {
+      'DF': 'F8_DF', // Data Deity
+      'FB': 'F8_FB', // Eternal Sentinel
+      'GS': 'F8_GS', // Digital Transcendence
+      'SN': 'F8_SN'  // Omninet Overseer
     };
     return mapping[archetype] || null;
   }

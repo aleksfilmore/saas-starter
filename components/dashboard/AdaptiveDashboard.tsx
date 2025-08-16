@@ -46,6 +46,8 @@ import { AITherapyPurchaseModal } from '@/components/dashboard/modals/AITherapyP
 import { NoContactModal } from '@/components/dashboard/modals/NoContactModal';
 import { UpgradeModal } from './modals/UpgradeModal';
 import { VoiceTherapyModal } from './modals/VoiceTherapyModal';
+import { NotificationDisplay } from '@/components/notifications/NotificationDisplay';
+import { UserAvatar } from '@/components/ui/UserAvatar';
 
 interface Props {
   user: User;
@@ -223,6 +225,16 @@ function AdaptiveDashboard({ user }: Props) {
                 <Settings className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Settings</span>
               </Button>
+              
+              {/* Notifications */}
+              <NotificationDisplay className="hidden sm:block" />
+              
+              {/* User Avatar */}
+              <UserAvatar 
+                user={user} 
+                size="md" 
+                onProfileClick={() => setActiveModal('settings')}
+              />
               
               {/* Sign Out Button */}
               <Button
