@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { NotificationProvider } from '@/contexts/SimpleNotificationContext';
+import { HealingHubProvider } from '@/contexts/HealingHubContext';
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -19,7 +20,9 @@ export default function ClientProviders({ children }: { children: React.ReactNod
   return (
     <AuthProvider>
       <NotificationProvider>
-        {children}
+        <HealingHubProvider>
+          {children}
+        </HealingHubProvider>
       </NotificationProvider>
     </AuthProvider>
   );

@@ -80,6 +80,34 @@ export async function POST(request: NextRequest) {
 
     const leveledUp = newLevel > (currentUser?.level || 1);
 
+    // 🎯 BADGE SYSTEM: Trigger badge check-in for ritual completion
+    try {
+      const badgeResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3001'}/api/badges/check-in`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          eventType: 'ritual_completed',
+          payload: {
+            ritualId: ritualId,
+            journalWordCount: 0, // Could be extracted from ritual completion
+            timeSpent: 300, // Default 5 minutes in seconds
+            category: ritual.category || 'mindfulness'
+          }
+        })
+      });
+      
+      if (badgeResponse.ok) {
+        const badgeData = await badgeResponse.json();
+        console.log('🎖️ Badge check-in successful:', badgeData);
+      }
+    } catch (badgeError) {
+      // Don't fail the ritual completion if badge system has issues
+      console.warn('⚠️ Badge check-in failed (non-blocking):', badgeError);
+    }
+
     console.log('✅ Ritual completed:', ritual.title, 'XP:', xpReward, 'Bytes:', byteReward);
 
     return NextResponse.json({

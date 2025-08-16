@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { User } from 'lucia';
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { useAuth } from '@/contexts/AuthContext';
-import { HealingHubProvider, useHealingHub } from '@/contexts/HealingHubContext';
+import { useHealingHub } from '@/contexts/HealingHubContext';
+import { BadgeCollection } from '@/components/badges/BadgeCollection';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -386,18 +387,21 @@ function AdaptiveDashboard({ user }: Props) {
               </Card>
             )}
 
-            {/* Ritual Streak and Level Stats */}
+            {/* Badge Collection & Streak Stats */}
             <Card className="bg-slate-800/50 border-slate-600/30">
               <CardContent className="pt-4 pb-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
+                <div className="grid grid-cols-2 gap-4 text-center mb-4">
                   <div>
                     <div className="text-xl font-bold text-purple-400">{streaks?.rituals || (user as any)?.ritual_streak || 0}</div>
                     <div className="text-xs text-slate-400">Ritual Streak</div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-pink-400">L{(user as any)?.level || authUser?.level || 1}</div>
-                    <div className="text-xs text-slate-400">Current Level</div>
+                    <div className="text-xl font-bold text-pink-400">{streaks?.noContact || 0}</div>
+                    <div className="text-xs text-slate-400">No-Contact Days</div>
                   </div>
+                </div>
+                <div className="border-t border-slate-600/30 pt-4">
+                  <BadgeCollection userId={user.id} compact={true} />
                 </div>
               </CardContent>
             </Card>
@@ -956,11 +960,7 @@ function TaskItem({ label, completed, premium }: { label: string; completed: boo
 }
 
 export function AdaptiveDashboardWithProvider(props: Props) {
-  return (
-    <HealingHubProvider>
-      <AdaptiveDashboard {...props} />
-    </HealingHubProvider>
-  );
+  return <AdaptiveDashboard {...props} />;
 }
 
 export default AdaptiveDashboard;
