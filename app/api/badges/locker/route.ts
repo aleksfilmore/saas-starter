@@ -5,13 +5,14 @@ import { db } from '@/lib/db/drizzle';
 import { badges, userBadges, users } from '@/lib/db/badges-schema';
 import { eq, and, count, isNull } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { validateRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get user from session/auth - adjust based on your auth system
-    const userId = request.headers.get('x-user-id');
+    // Get user from session
+    const { user: sessionUser } = await validateRequest();
     
-    if (!userId) {
+    if (!sessionUser) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
       email: users.email,
       tier: users.tier,
       archetype: users.archetype
-    }).from(users).where(eq(users.id, userId)).limit(1);
+    }).from(users).where(eq(users.id, sessionUser.id)).limit(1);
 
     if (user.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
     })
     .from(userBadges)
     .innerJoin(badges, eq(userBadges.badgeId, badges.id))
-    .where(eq(userBadges.userId, userId))
+    .where(eq(userBadges.userId, userData.id))
     .orderBy(userBadges.earnedAt);
 
     // Get total available badges for this user's tier

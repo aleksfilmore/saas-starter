@@ -31,18 +31,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Ritual not found in bank' }, { status: 404 });
     }
 
-    // Check if user has already completed this ritual today
+    // Check if user has already completed ANY ritual today for this specific assignment
     const existingCompletion = await db.execute(sql`
-      SELECT id FROM user_ritual_assignments
+      SELECT id, ritual_key, completed_at FROM user_ritual_assignments
       WHERE user_id = ${user.id} 
         AND ritual_key = ${ritualId}
         AND DATE(assigned_at) = CURRENT_DATE
-        AND completed_at IS NOT NULL
+        AND rerolled = false
+      ORDER BY assigned_at DESC
       LIMIT 1
     `);
 
-    if (existingCompletion.length > 0) {
-      return NextResponse.json({ error: 'Ritual already completed today' }, { status: 400 });
+    if (existingCompletion.length > 0 && existingCompletion[0].completed_at) {
+      return NextResponse.json({ 
+        error: 'Ritual already completed today',
+        message: 'You have already completed this ritual today. Come back tomorrow for a new ritual!'
+      }, { status: 400 });
+    }
+
+    if (existingCompletion.length === 0) {
+      return NextResponse.json({ 
+        error: 'No active ritual assignment',
+        message: 'This ritual is not currently assigned to you.'
+      }, { status: 400 });
     }
 
     // Mark the ritual as completed

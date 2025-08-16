@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { users, dailyRitualCompletions } from '@/lib/db/unified-schema';
-import { eq, and, gte, sql } from 'drizzle-orm';
+import { db } from '@/lib/db/drizzle';
+import { sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,16 +11,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get fresh user data
-    const [userData] = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, user.id))
-      .limit(1);
+    // Get fresh user data using SQL
+    const userDataResult = await db.execute(sql`
+      SELECT 
+        id, email, tier, archetype, xp, bytes, level, 
+        ritual_streak, no_contact_streak, selected_badge_id,
+        last_checkin, last_ritual, created_at
+      FROM users 
+      WHERE id = ${user.id}
+    `);
 
-    if (!userData) {
+    if (userDataResult.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
+
+    const userData = userDataResult[0] as any;
 
     // Calculate XP and level
     const currentXP = userData.xp || 0;
@@ -172,50 +176,37 @@ export async function GET(request: NextRequest) {
       'Momentum Building!', 'On Fire!', 'Unstoppable!', 'Transformation Master!'
     ];
 
-    // Real completed rituals count (total lifetime)
+    // Real completed rituals count (simplified)
     let completedRituals = 0;
     try {
-      const sinceEpoch = new Date(0);
-      const countRes = await db
-        .select({ count: sql<number>`COUNT(${dailyRitualCompletions.id})` })
-        .from(dailyRitualCompletions)
-        .where(eq(dailyRitualCompletions.user_id, user.id));
-      completedRituals = countRes[0]?.count || 0;
+      const countResult = await db.execute(sql`
+        SELECT COUNT(*) as count 
+        FROM user_ritual_assignments 
+        WHERE user_id = ${user.id} AND completed_at IS NOT NULL
+      `);
+      completedRituals = (countResult[0] as any)?.count || 0;
     } catch (e) {
-      console.warn('Failed to count completed rituals, falling back heuristic', e);
+      console.warn('Failed to count completed rituals, using streak estimate');
       completedRituals = ritualStreak * 3;
     }
 
-    // Build real streak history for last 14 days using completion rows
+    // Build simplified streak history
     let streakHistory: Array<{ date: string; completed: boolean }> = [];
     try {
       const days = 14;
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - (days - 1));
-      startDate.setHours(0,0,0,0);
-      const rows = await db
-        .select({ d: sql<string>`DATE(${dailyRitualCompletions.completed_at})` })
-        .from(dailyRitualCompletions)
-        .where(and(
-          eq(dailyRitualCompletions.user_id, user.id),
-          gte(dailyRitualCompletions.completed_at, startDate)
-        ));
-      const completedSet = new Set(rows.map(r => r.d));
       for (let i = 0; i < days; i++) {
-        const d = new Date(startDate);
-        d.setDate(startDate.getDate() + i);
-        const iso = d.toISOString().slice(0,10);
-        streakHistory.push({ date: iso, completed: completedSet.has(iso) });
-      }
-    } catch (e) {
-      console.warn('Failed to build streak history, using synthetic', e);
-      streakHistory = Array.from({ length: 14 }).map((_, i) => {
         const daysAgo = 13 - i;
         const date = new Date();
         date.setDate(date.getDate() - daysAgo);
         const inStreak = daysAgo < ritualStreak;
-        return { date: date.toISOString().slice(0,10), completed: inStreak };
-      });
+        streakHistory.push({ 
+          date: date.toISOString().slice(0,10), 
+          completed: inStreak 
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to build streak history');
+      streakHistory = [];
     }
 
     const dashboardData = {
