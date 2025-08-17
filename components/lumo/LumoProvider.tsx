@@ -1,6 +1,7 @@
-'use client';
+'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useIsClient } from '@/hooks/useClient';
 
 interface LumoNotification {
   id: string;
@@ -41,6 +42,7 @@ export function LumoProvider({
   initialQuota = 5, 
   userTier = 'ghost' 
 }: LumoProviderProps) {
+  const isClient = useIsClient();
   const [isOpen, setIsOpen] = useState(false);
   const [persona, setPersona] = useState<'core' | 'gremlin' | 'analyst'>('core');
   const [quotaLeft, setQuotaLeft] = useState(initialQuota);
@@ -50,6 +52,7 @@ export function LumoProvider({
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   const addWelcomeMessage = () => {
+    if (!isClient) return;
     const userAlias = localStorage.getItem('user-alias') || 'Warrior';
     setChatHistory([{
       role: 'lumo',
@@ -59,6 +62,7 @@ export function LumoProvider({
   };
 
   const checkForNudges = useCallback(() => {
+    if (!isClient) return;
     // Mock nudge checks - replace with actual logic
     const streakData = localStorage.getItem('user-streak');
     const lastCheckin = localStorage.getItem('last-checkin');
@@ -66,10 +70,12 @@ export function LumoProvider({
     if (!lastCheckin || isStreakAtRisk()) {
       notify('warning', "Don't lose your streak!");
     }
-  }, []);
+  }, [isClient]);
 
   // Check for first-time user
   useEffect(() => {
+    if (!isClient) return;
+    
     const skipOnboard = localStorage.getItem('lumo.skipOnboard');
     const completedOnboard = localStorage.getItem('lumo.completedOnboard');
     
@@ -83,9 +89,11 @@ export function LumoProvider({
     
     // Check for contextual nudges
     checkForNudges();
-  }, [checkForNudges]);
+  }, [checkForNudges, isClient]);
 
   const isStreakAtRisk = () => {
+    if (!isClient) return false;
+    
     const lastCheckin = localStorage.getItem('last-checkin');
     if (!lastCheckin) return true;
     

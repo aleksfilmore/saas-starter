@@ -12,11 +12,8 @@ export default function ClientProviders({ children }: { children: React.ReactNod
     setIsMounted(true);
   }, []);
 
-  // Return children without providers during SSR to prevent hydration issues
-  if (!isMounted) {
-    return <>{children}</>;
-  }
-
+  // Always wrap in providers to prevent hydration mismatch
+  // Providers themselves handle SSR/mounting states internally
   return (
     <AuthProvider>
       <NotificationProvider>

@@ -20,6 +20,7 @@ export default function ComingSoonPage() {
   const [showReferral, setShowReferral] = useState(false);
   const [confessionVisible, setConfessionVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -27,16 +28,25 @@ export default function ComingSoonPage() {
     seconds: 0
   });
 
+  // Track if component is mounted to prevent hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Animated confession card effect
   useEffect(() => {
+    if (!isMounted) return;
+    
     const interval = setInterval(() => {
       setConfessionVisible(prev => !prev);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMounted]);
 
   // Countdown timer effect - counting to September 5th, 2025
   useEffect(() => {
+    if (!isMounted) return;
+    
     const calculateTimeLeft = () => {
       const launchDate = new Date('2025-09-05T00:00:00Z').getTime();
       const now = new Date().getTime();
@@ -60,9 +70,10 @@ export default function ComingSoonPage() {
     // Update every second
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isMounted]);
 
   const generateReferralCode = () => {
+    if (!isMounted) return;
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     setReferralCode(code);
     setShowReferral(true);
@@ -420,7 +431,11 @@ export default function ComingSoonPage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
-                onClick={() => window.location.href = '/quiz'}
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/quiz';
+                  }
+                }}
                 size="lg"
                 variant="outline"
                 className="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-300 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gray-900/50 backdrop-blur-sm"
@@ -575,7 +590,11 @@ export default function ComingSoonPage() {
                     </p>
                     <div className="mb-6">
                       <Button
-                        onClick={() => window.location.href = '/quiz'}
+                        onClick={() => {
+                          if (typeof window !== 'undefined') {
+                            window.location.href = '/quiz';
+                          }
+                        }}
                         variant="outline"
                         className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 mb-4"
                       >
