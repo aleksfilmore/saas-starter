@@ -63,7 +63,7 @@ const EMOJI_TAGS = [
 ];
 
 export default function SimplifiedWallPage() {
-  const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [postContent, setPostContent] = useState('');
@@ -74,6 +74,32 @@ export default function SimplifiedWallPage() {
   const [filter, setFilter] = useState('recent');
   const [user, setUser] = useState<{username: string; subscriptionTier: string; streak: number; bytes: number; level: number; noContactDays: number} | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auth state - only accessible after mounting
+  const [authUser, setAuthUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Mount effect
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Auth effect - only runs after mounting
+  useEffect(() => {
+    if (!mounted) return;
+
+    try {
+      const { useAuth } = require('@/contexts/AuthContext');
+      const authHook = useAuth();
+      setAuthUser(authHook.user);
+      setIsAuthenticated(authHook.isAuthenticated);
+      setAuthLoading(authHook.isLoading);
+    } catch (error) {
+      console.error('Auth context error:', error);
+      setAuthLoading(false);
+    }
+  }, [mounted]);
 
   const fetchUserData = useCallback(async () => {
     if (!authUser || !isAuthenticated) return;
@@ -211,7 +237,7 @@ export default function SimplifiedWallPage() {
     ? `${selectedTag.emoji} Share your ${selectedTag.label.toLowerCase()} healing journey anonymously...`
     : 'Click to choose an emotion tag, then share your healing journey...';
 
-  if (authLoading || loading) {
+  if (!mounted || authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
         <div className="text-center">

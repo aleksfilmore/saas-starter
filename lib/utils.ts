@@ -36,3 +36,30 @@ export function getUserId(user: User): string {
   
   return user.id;
 }
+
+/**
+ * Safely copy text to clipboard with fallback
+ * @param text - The text to copy
+ * @param fallbackMessage - Optional custom fallback message
+ * @returns Promise that resolves to success boolean
+ */
+export async function safeClipboardCopy(text: string, fallbackMessage?: string): Promise<boolean> {
+  try {
+    // Check if clipboard API is available and has permissions
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } else {
+      // Fallback: show text to user for manual copying
+      const message = fallbackMessage || `Please copy this manually: ${text}`;
+      alert(message);
+      return false;
+    }
+  } catch (error) {
+    console.warn('Clipboard copy failed:', error);
+    // Fallback: show text to user for manual copying
+    const message = fallbackMessage || `Please copy this manually: ${text}`;
+    alert(message);
+    return false;
+  }
+}

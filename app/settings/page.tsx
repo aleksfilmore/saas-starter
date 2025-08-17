@@ -3,7 +3,7 @@
 // Force dynamic rendering for auth-dependent pages
 export const dynamic = 'force-dynamic';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,9 +12,18 @@ import { ArrowLeft, Settings, User, Bell, Shield, Palette, Database, Download, T
 import { NotificationSettings } from '@/components/notifications/NotificationSettings';
 
 export default function SettingsPage() {
-  const { user: authUser, isAuthenticated, isLoading: authLoading, logout } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+
+  // Handle hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Only try to use auth after component is mounted
+  const auth = mounted ? useAuth() : null;
+  const { user: authUser, isAuthenticated, isLoading: authLoading, logout } = auth || {};
 
   const handleExportData = async () => {
     setExportLoading(true);
@@ -62,7 +71,7 @@ export default function SettingsPage() {
       
       if (response.ok) {
         alert('Your account has been permanently deleted.');
-        logout();
+        if (logout) logout();
         window.location.href = '/';
       } else {
         throw new Error('Deletion failed');
@@ -74,9 +83,21 @@ export default function SettingsPage() {
   };
 
   const handleSignOut = () => {
-    logout();
+    if (logout) logout();
     window.location.href = '/';
   };
+
+  // Show loading during SSR/hydration
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (authLoading) {
     return (

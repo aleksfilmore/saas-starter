@@ -18,7 +18,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface ReferralStats {
+import { safeClipboardCopy } from '@/lib/utils';
+
+interface ReferralData {
   referralCode: string;
   referralLink: string;
   stats: {
@@ -69,8 +71,15 @@ export function ReferralDashboard() {
     
     try {
       setCopying(true);
-      await navigator.clipboard.writeText(referralData.referralLink);
-      toast.success('Referral link copied to clipboard!');
+      const success = await safeClipboardCopy(
+        referralData.referralLink,
+        `Please copy this referral link manually: ${referralData.referralLink}`
+      );
+      if (success) {
+        toast.success('Referral link copied to clipboard!');
+      } else {
+        toast.info('Referral link shown for manual copying');
+      }
     } catch (error) {
       toast.error('Failed to copy link');
     } finally {

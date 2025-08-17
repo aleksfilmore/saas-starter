@@ -18,6 +18,9 @@ export async function getUser() {
       .select({
         id: users.id,
         email: users.email,
+        tier: users.tier,
+        subscription_tier: users.subscriptionTier,
+        ritual_tier: users.tier, // Use main tier as ritual tier
       })
       .from(users)
       .where(eq(users.id, user.id))
@@ -30,6 +33,9 @@ export async function getUser() {
     return {
       id: userFromDb[0].id,
       email: userFromDb[0].email,
+      tier: userFromDb[0].tier,
+      subscription_tier: userFromDb[0].subscription_tier,
+      ritual_tier: userFromDb[0].ritual_tier,
     };
   } catch (error) {
     console.error('Error fetching user:', error);

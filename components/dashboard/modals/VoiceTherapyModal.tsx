@@ -46,29 +46,22 @@ export function VoiceTherapyModal({ onClose, isPremium }: Props) {
     setPurchasing(true);
     try {
       // Redirect to Stripe checkout for Voice AI Therapy
-      const response = await fetch('/api/stripe/create-checkout-session', {
+      const response = await fetch('/api/stripe/voice-therapy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          productId: 'prod_SqXAeMTdI69iSQ',
-          priceId: 'price_1Ruq6ZQsKtdjWreVgNFduSHE',
-          mode: 'payment', // One-time payment
-          successUrl: `${window.location.origin}/dashboard?voice_therapy=success`,
-          cancelUrl: `${window.location.origin}/dashboard?voice_therapy=cancelled`,
-        }),
       });
 
-      const { url, error } = await response.json();
+      const data = await response.json();
 
-      if (error) {
-        toast.error(error);
+      if (!response.ok) {
+        toast.error(data.error || 'Failed to initiate purchase');
         return;
       }
 
-      if (url) {
-        window.location.href = url;
+      if (data.url) {
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Purchase error:', error);

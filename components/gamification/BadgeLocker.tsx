@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Share2, Star, Award, Lock, Crown, Shield, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, safeClipboardCopy } from '@/lib/utils';
 
 // =====================================
 // TYPES
@@ -444,7 +444,10 @@ export default function BadgeLocker() {
                 className="mx-auto mb-4 rounded-lg shadow-lg max-w-full"
               />
               <Button onClick={() => {
-                navigator.clipboard.writeText(shareCardData.shareCardUrl);
+                safeClipboardCopy(
+                  shareCardData.shareCardUrl,
+                  `Please copy this badge share link: ${shareCardData.shareCardUrl}`
+                );
                 // Could add toast notification here
               }}>
                 Copy Share Link

@@ -45,10 +45,16 @@ interface CheckInData {
 }
 
 export default function SimplifiedNoContactPage() {
-  const { user: authUser, isAuthenticated, isLoading: authLoading, refetchUser } = useAuth()
+  const [isMounted, setIsMounted] = useState(false)
+  const authHook = isMounted ? useAuth() : { user: null, isAuthenticated: false, isLoading: true, refetchUser: () => {} }
+  const { user: authUser, isAuthenticated, isLoading: authLoading, refetchUser } = authHook
   const [data, setData] = useState<NoContactData | null>(null)
   const [loading, setLoading] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
   const [showMilestones, setShowMilestones] = useState(false)
   const [showSettingsMenu, setShowSettingsMenu] = useState(false)
   const [checkingIn, setCheckingIn] = useState(false)

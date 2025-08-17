@@ -4,7 +4,7 @@ import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema'; // FIXED: Use main schema consistently
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
-import { verifyPassword } from '@/lib/crypto/password';
+import bcrypt from 'bcryptjs';
 
 // Force Node.js runtime for database operations
 export const runtime = 'nodejs';
@@ -50,9 +50,9 @@ export async function POST(request: NextRequest) {
     const existingUser = user[0];
     console.log('User found:', existingUser.id);
 
-    // Verify password with secure crypto
+    // Verify password with bcrypt
     console.log('Verifying password...');
-    const validPassword = await verifyPassword(password, existingUser.hashedPassword);
+    const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
     
     if (!validPassword) {
       return NextResponse.json(

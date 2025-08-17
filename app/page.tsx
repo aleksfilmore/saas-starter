@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { safeClipboardCopy } from '@/lib/utils';
 import { Heart, Shield, Zap, Users, Star, Brain, CheckCircle, ArrowRight, Sparkles, Target, Calendar, Copy, Timer, MessageCircle, Menu, X, HelpCircle } from 'lucide-react';
 
 export default function ComingSoonPage() {
@@ -626,7 +627,7 @@ export default function ComingSoonPage() {
                           size="sm"
                           variant="outline"
                           className="border-green-500 text-green-400 hover:bg-green-500/20"
-                          onClick={() => navigator.clipboard.writeText(`https://ctrlaltblock.com/r/${referralCode}`)}
+                          onClick={() => safeClipboardCopy(`https://ctrlaltblock.com/r/${referralCode}`, `Please copy this referral link: https://ctrlaltblock.com/r/${referralCode}`)}
                         >
                           <Copy className="h-4 w-4" />
                         </Button>

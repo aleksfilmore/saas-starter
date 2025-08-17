@@ -64,6 +64,7 @@ function AdaptiveDashboard({ user }: Props) {
   const [selectedPersona, setSelectedPersona] = useState<string>('supportive-guide');
   const [customInsight, setCustomInsight] = useState<string>('');
   const [noContactEncouragement, setNoContactEncouragement] = useState<string>('');
+  const [wallPostContent, setWallPostContent] = useState<string>(''); // Add state for wall post
   const { tasks, markTask, progressFraction } = useDailyTasks();
   const { user: authUser } = useAuth();
   const { 
@@ -148,6 +149,30 @@ function AdaptiveDashboard({ user }: Props) {
     } catch (error) {
       console.error('Logout error:', error);
       alert('Failed to sign out. Please try again.');
+    }
+  };
+
+  // Handle wall post submission
+  const handleWallPost = async () => {
+    if (!wallPostContent.trim()) return;
+    
+    try {
+      const response = await fetch('/api/wall/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: wallPostContent,
+          anonymous: true
+        })
+      });
+      
+      if (response.ok) {
+        setWallPostContent('');
+        markTask('community');
+        // Optionally refresh wall posts here
+      }
+    } catch (error) {
+      console.error('Failed to post to wall:', error);
     }
   };
 
@@ -257,39 +282,46 @@ function AdaptiveDashboard({ user }: Props) {
           {/* Left Sidebar - Reorganized Layout */}
           <div className="xl:col-span-3 space-y-4">
 
-            {/* Compact Today's Progress with Insight */}
-            <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-500/30">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-white flex items-center gap-2 text-lg">
-                  <Target className="h-4 w-4 text-emerald-400" />
+            {/* Enhanced Today's Progress with Prominent Insight */}
+            <Card className="bg-gradient-to-br from-purple-900/60 to-indigo-900/60 border-purple-400/40 shadow-xl">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-white flex items-center gap-2 text-xl font-bold">
+                  <Target className="h-5 w-5 text-emerald-400" />
                   Today's Progress
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-white">{completedToday}/{totalTasks}</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
-                    {Math.round(progressFraction * 100)}%
-                  </Badge>
-                </div>
-                <Progress value={progressFraction * 100} className="h-2" />
-                <div className="space-y-1.5 text-xs">
-                  <TaskItem label="Daily Ritual" completed={tasks.ritual} />
-                  <TaskItem label="Check-In" completed={tasks.checkIn} />
-                  <TaskItem label="AI Therapy" completed={tasks.aiTherapy} premium={!isPremium} />
-                  <TaskItem label="No-Contact" completed={tasks.noContact} />
-                  <TaskItem label="Wall Interaction" completed={tasks.community} />
+              <CardContent className="space-y-4">
+                {/* Progress Display */}
+                <div className="bg-black/20 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-2xl font-bold text-white">{completedToday}/{totalTasks}</span>
+                    <Badge className="bg-emerald-500/30 text-emerald-300 border-emerald-400/50 text-sm px-3 py-1">
+                      {Math.round(progressFraction * 100)}%
+                    </Badge>
+                  </div>
+                  <Progress value={progressFraction * 100} className="h-3 mb-4" />
+                  <div className="space-y-2">
+                    <TaskItem label="Daily Ritual" completed={tasks.ritual} />
+                    <TaskItem label="Check-In" completed={tasks.checkIn} />
+                    <TaskItem label="AI Therapy" completed={tasks.aiTherapy} premium={!isPremium} />
+                    <TaskItem label="No-Contact" completed={tasks.noContact} />
+                    <TaskItem label="Wall Interaction" completed={tasks.community} />
+                  </div>
                 </div>
                 
-                {/* Today's Insight integrated */}
-                <div className="border-t border-purple-500/20 pt-3">
-                  <div className="flex items-start gap-2">
-                    <Star className="h-3.5 w-3.5 text-yellow-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-xs font-medium text-yellow-400 mb-1">Today's Insight</h4>
-                      <p className="text-xs text-slate-200 leading-relaxed italic">
-                        "{customInsight || dailyInsight || 'The fact that you\'re here shows incredible courage and self-awareness.'}"
-                      </p>
+                {/* Today's Insight - More Prominent */}
+                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 bg-yellow-400/20 rounded-full flex items-center justify-center">
+                        <Star className="h-4 w-4 text-yellow-400" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-yellow-300 mb-2">Today's Insight</h4>
+                      <blockquote className="text-sm text-gray-200 leading-relaxed italic border-l-2 border-yellow-400/30 pl-3">
+                        "{customInsight || dailyInsight || 'Your sensitivity isn\'t a flaw—it\'s a feature to be honored.'}"
+                      </blockquote>
                     </div>
                   </div>
                 </div>
@@ -413,7 +445,7 @@ function AdaptiveDashboard({ user }: Props) {
                   </div>
                 </div>
                 <div className="border-t border-slate-600/30 pt-4">
-                  <BadgeCollection userId={user.id} compact={true} />
+                  <BadgeCollection userId={user.id} compact={true} userTier={(user as any)?.tier || 'ghost'} />
                 </div>
               </CardContent>
             </Card>
@@ -618,6 +650,15 @@ function AdaptiveDashboard({ user }: Props) {
                 {isPremium ? (
                   /* FIREWALL USERS: Full AI Therapy Access */
                   <>
+                    <div className="mb-4 p-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-lg border border-green-500/30">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Crown className="h-4 w-4 text-green-400" />
+                        <span className="text-sm font-medium text-green-300">Firewall Premium</span>
+                      </div>
+                      <p className="text-xs text-green-200">
+                        ✨ Click any AI personality below for unlimited chat-based therapy sessions
+                      </p>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {AI_PERSONAS.map((persona) => (
                         <Button
@@ -627,12 +668,18 @@ function AdaptiveDashboard({ user }: Props) {
                             setActiveModal('ai-therapy');
                           }}
                           variant={selectedPersona === persona.id ? "default" : "outline"}
-                          className="h-auto p-4 flex flex-col items-center text-center space-y-2"
+                          className="h-auto p-4 flex flex-col items-center text-center space-y-2 relative"
                         >
+                          <div className="absolute top-2 right-2">
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs px-1 py-0">
+                              Free
+                            </Badge>
+                          </div>
                           <span className="text-2xl">{persona.icon}</span>
                           <div>
                             <div className="font-medium text-sm">{persona.name}</div>
                             <div className="text-xs opacity-75">{persona.description}</div>
+                            <div className="text-xs text-green-400 mt-1">Unlimited Chat</div>
                           </div>
                         </Button>
                       ))}
@@ -720,8 +767,15 @@ function AdaptiveDashboard({ user }: Props) {
                       placeholder="Share your healing journey..."
                       className="w-full p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 text-sm resize-none"
                       rows={3}
+                      value={wallPostContent}
+                      onChange={(e) => setWallPostContent(e.target.value)}
                     />
-                    <Button size="sm" className="w-full bg-pink-600 hover:bg-pink-700">
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-pink-600 hover:bg-pink-700"
+                      onClick={handleWallPost}
+                      disabled={!wallPostContent.trim()}
+                    >
                       <Send className="h-4 w-4 mr-2" />
                       Share Anonymously
                     </Button>
@@ -752,7 +806,21 @@ function AdaptiveDashboard({ user }: Props) {
                           variant="ghost" 
                           size="sm" 
                           className="text-slate-400 hover:text-pink-400 text-xs"
-                          onClick={() => markTask('community')}
+                          onClick={async () => {
+                            try {
+                              await fetch('/api/wall/react', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  postId: post.id,
+                                  reactionType: 'resonate'
+                                })
+                              });
+                              markTask('community');
+                            } catch (error) {
+                              console.error('Failed to react to post:', error);
+                            }
+                          }}
                         >
                           <Heart className="h-3 w-3 mr-1" />
                           {post.reactions}
@@ -771,8 +839,9 @@ function AdaptiveDashboard({ user }: Props) {
                   variant="outline" 
                   size="sm" 
                   className="w-full border-slate-600/50 text-slate-300"
+                  onClick={() => window.location.href = '/wall'}
                 >
-                  View All Posts
+                  See All Posts
                 </Button>
               </CardContent>
             </Card>

@@ -19,9 +19,10 @@ interface BadgeData {
 interface BadgeCollectionProps {
   userId?: string;
   compact?: boolean;
+  userTier?: string; // Add user tier prop
 }
 
-export function BadgeCollection({ userId, compact = false }: BadgeCollectionProps) {
+export function BadgeCollection({ userId, compact = false, userTier }: BadgeCollectionProps) {
   const [badges, setBadges] = useState<BadgeData[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedArchetype, setSelectedArchetype] = useState<string | null>(null);
@@ -55,6 +56,17 @@ export function BadgeCollection({ userId, compact = false }: BadgeCollectionProp
   };
 
   const getArchetypeIcon = (archetype: string | null) => {
+    // Use actual user tier if provided
+    if (userTier) {
+      switch (userTier.toLowerCase()) {
+        case 'firewall': return '🛡️'; 
+        case 'premium': return '👑';
+        case 'ghost': return '👻';
+        default: return '👻';
+      }
+    }
+    
+    // Fallback to archetype-based icons
     switch (archetype) {
       case 'DF': return '🌊'; // Data Flooder
       case 'FB': return '🛡️'; // Firewall Builder  
@@ -65,6 +77,17 @@ export function BadgeCollection({ userId, compact = false }: BadgeCollectionProp
   };
 
   const getArchetypeName = (archetype: string | null) => {
+    // Use actual user tier if provided
+    if (userTier) {
+      switch (userTier.toLowerCase()) {
+        case 'firewall': return 'Firewall Tier';
+        case 'premium': return 'Premium Tier';
+        case 'ghost': return 'Ghost Tier';
+        default: return 'Ghost Tier';
+      }
+    }
+    
+    // Fallback to archetype-based naming
     switch (archetype) {
       case 'DF': return 'Data Flooder';
       case 'FB': return 'Firewall Builder';
