@@ -180,10 +180,14 @@ export default function SimplifiedWallPage() {
 
   const reactToPost = async (postId: string, reactionType: string) => {
     try {
+      console.log('Attempting to react to post:', { postId, reactionType });
+      
+      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/wall/react', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
         },
         body: JSON.stringify({
           postId,
@@ -191,8 +195,15 @@ export default function SimplifiedWallPage() {
         })
       });
 
+      console.log('Reaction response status:', response.status);
+      
       if (response.ok) {
+        const result = await response.json();
+        console.log('Reaction result:', result);
         await fetchPosts();
+      } else {
+        const error = await response.text();
+        console.error('Reaction failed:', error);
       }
     } catch (error) {
       console.error('Error reacting to post:', error);

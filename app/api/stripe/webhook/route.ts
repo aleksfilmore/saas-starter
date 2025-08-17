@@ -40,6 +40,12 @@ export async function POST(request: NextRequest) {
         break;
       }
       
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutCompleted(session);
+        break;
+      }
+      
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
         await handlePaymentSucceeded(invoice);
@@ -63,6 +69,37 @@ export async function POST(request: NextRequest) {
       { error: 'Webhook handler failed' },
       { status: 500 }
     );
+  }
+}
+
+async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  try {
+    const userId = session.metadata?.userId;
+    const productType = session.metadata?.productType;
+    
+    if (!userId) {
+      console.error('No userId found in checkout session metadata');
+      return;
+    }
+
+    if (productType === 'voice_therapy') {
+      // Handle voice therapy purchase
+      const sessionDuration = parseInt(session.metadata?.sessionDuration || '15');
+      
+      // Grant voice therapy credits/minutes to the user
+      // You might want to update a voice_credits table or add minutes to user record
+      console.log(`Voice therapy purchased for user ${userId}: ${sessionDuration} minutes`);
+      
+      // Add voice therapy credits to user account
+      // This would require a voice_credits table or field in users table
+      // For now, we'll just log it - you can implement the actual credit system
+      
+    } else if (productType === 'subscription') {
+      // Handle subscription purchases (if any one-time subscription payments)
+      console.log(`Subscription payment completed for user ${userId}`);
+    }
+  } catch (error) {
+    console.error('Error handling checkout completion:', error);
   }
 }
 

@@ -139,42 +139,42 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 z-50">
-          <Card className="bg-gray-800 border-gray-700 shadow-lg">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-4">
+        <div className="absolute right-0 top-full mt-2 w-80 z-[9999]">
+          <Card className="bg-gray-800 border-gray-700 shadow-2xl">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between p-4 border-b border-gray-700">
                 <h3 className="text-sm font-medium text-white">Notifications</h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-white p-1"
+                  className="text-gray-400 hover:text-white p-1 h-6 w-6"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
 
               {loading && (
-                <div className="text-center py-8">
+                <div className="text-center py-8 px-4">
                   <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                   <p className="text-xs text-gray-400">Loading notifications...</p>
                 </div>
               )}
               {!loading && loadError && (
-                <div className="text-center py-6">
+                <div className="text-center py-6 px-4">
                   <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
                   <p className="text-xs text-red-300 mb-2">{loadError}</p>
                   <Button size="sm" variant="outline" className="text-xs" onClick={fetchNotifications}>Retry</Button>
                 </div>
               )}
               {!loading && !loadError && notifications.length === 0 ? (
-                <div className="text-center py-8">
+                <div className="text-center py-8 px-4">
                   <Bell className="w-8 h-8 text-gray-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-400">No notifications yet</p>
                 </div>
               ) : null}
               {!loading && !loadError && notifications.length > 0 && (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="space-y-1 max-h-96 overflow-y-auto p-2">
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
@@ -241,7 +241,7 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
               )}
 
               {notifications.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-600">
+                <div className="mt-2 pt-3 border-t border-gray-600 px-4 pb-4">
                   <Button
                     variant="ghost"
                     size="sm"
