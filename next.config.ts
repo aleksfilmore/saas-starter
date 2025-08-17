@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
   // Disable experimental features that might be causing issues
   experimental: {
     esmExternals: true,
+    // Skip build-time static generation
+    skipTrailingSlashRedirect: true,
+    skipMiddlewareUrlNormalize: true,
   },
   
   // Skip error page prerendering
@@ -33,8 +36,13 @@ const nextConfig: NextConfig = {
   // Force dynamic rendering for all pages to avoid static generation issues
   output: 'standalone',
   
-  // Disable static optimization
+  // Disable static optimization and error page generation
   generateEtags: false,
+  trailingSlash: false,
+  
+  // Completely disable static generation
+  distDir: '.next',
+  poweredByHeader: false,
 };
 
 export default nextConfig;
