@@ -30,8 +30,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Try to avoid static generation issues
-  trailingSlash: false,
+  // Force dynamic rendering for all pages to avoid static generation issues
+  output: 'standalone',
+  
+  // Disable static optimization
+  generateEtags: false,
 };
 
 export default nextConfig;
