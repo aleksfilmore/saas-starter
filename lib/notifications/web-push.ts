@@ -55,7 +55,7 @@ class WebPushManager {
   }
 
   async requestPermission(): Promise<NotificationPermission> {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       console.warn('Notifications not supported');
       return 'denied';
     }
@@ -228,12 +228,16 @@ class WebPushManager {
 
   // Check if push notifications are supported and enabled
   isSupported(): boolean {
-    return 'serviceWorker' in navigator && 
+    return typeof window !== 'undefined' &&
+           'serviceWorker' in navigator && 
            'PushManager' in window && 
            'Notification' in window;
   }
 
   getPermissionStatus(): NotificationPermission {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      return 'denied';
+    }
     return Notification.permission;
   }
 }

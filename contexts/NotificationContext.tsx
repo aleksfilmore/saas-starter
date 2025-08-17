@@ -33,7 +33,9 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const [isSubscribed, setIsSubscribed] = useState(false);
 
   useEffect(() => {
-    // Initialize notification system
+    // Initialize notification system only on client side
+    if (typeof window === 'undefined') return;
+    
     const initialize = async () => {
       const supported = webPushManager.isSupported();
       setIsSupported(supported);
