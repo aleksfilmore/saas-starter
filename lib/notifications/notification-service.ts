@@ -391,6 +391,12 @@ export class NotificationService {
       
       // Mock implementation - would integrate with actual push service
       if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'Notification' in window) {
+        // Check if Notification constructor is available (some mobile browsers don't support it)
+        if (typeof Notification === 'undefined') {
+          console.log('📱 Notification API not available on this device');
+          return false;
+        }
+        
         // Request permission if needed
         if (Notification.permission === 'default') {
           await Notification.requestPermission();
