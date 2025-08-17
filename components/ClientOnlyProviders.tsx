@@ -2,14 +2,10 @@
 
 import dynamic from 'next/dynamic';
 import { ReactNode } from 'react';
+import { SafeNotificationProvider } from '@/contexts/SafeNotificationContext';
 
 const AuthProvider = dynamic(
   () => import('@/contexts/AuthContext').then(mod => ({ default: mod.AuthProvider })),
-  { ssr: false }
-);
-
-const NotificationProvider = dynamic(
-  () => import('@/contexts/NotificationContext').then(mod => ({ default: mod.NotificationProvider })),
   { ssr: false }
 );
 
@@ -20,9 +16,9 @@ interface ClientOnlyProvidersProps {
 export function ClientOnlyProviders({ children }: ClientOnlyProvidersProps) {
   return (
     <AuthProvider>
-      <NotificationProvider>
+      <SafeNotificationProvider>
         {children}
-      </NotificationProvider>
+      </SafeNotificationProvider>
     </AuthProvider>
   );
 }

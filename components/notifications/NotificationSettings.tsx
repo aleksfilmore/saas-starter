@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { Bell, Clock, Shield, Zap, Heart, AlertTriangle, Moon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNotifications } from '@/contexts/NotificationContext';
+import { useSafeNotifications } from '@/contexts/SafeNotificationContext';
 
 interface NotificationPreferences {
   enablePush: boolean;
@@ -37,7 +37,7 @@ export function NotificationSettings() {
     subscribeToPush, 
     unsubscribeFromPush,
     sendTestNotification 
-  } = useNotifications();
+  } = useSafeNotifications();
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     enablePush: true,
     enableEmail: true,
