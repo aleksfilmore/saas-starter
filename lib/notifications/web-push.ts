@@ -60,17 +60,22 @@ class WebPushManager {
       return 'denied';
     }
 
-    if (Notification.permission === 'granted') {
-      return 'granted';
-    }
+    try {
+      if (Notification.permission === 'granted') {
+        return 'granted';
+      }
 
-    if (Notification.permission === 'denied') {
+      if (Notification.permission === 'denied') {
+        return 'denied';
+      }
+
+      // Request permission
+      const permission = await Notification.requestPermission();
+      return permission;
+    } catch (error) {
+      console.warn('Notification permission request failed:', (error as Error)?.message || 'Unknown error');
       return 'denied';
     }
-
-    // Request permission
-    const permission = await Notification.requestPermission();
-    return permission;
   }
 
   async subscribeToPush(): Promise<PushSubscriptionData | null> {
@@ -238,7 +243,12 @@ class WebPushManager {
     if (typeof window === 'undefined' || !('Notification' in window)) {
       return 'denied';
     }
-    return Notification.permission;
+    try {
+      return Notification.permission;
+    } catch (error) {
+      console.warn('Failed to access Notification.permission:', (error as Error)?.message || 'Unknown error');
+      return 'denied';
+    }
   }
 }
 

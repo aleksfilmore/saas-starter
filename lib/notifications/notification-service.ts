@@ -397,21 +397,26 @@ export class NotificationService {
           return false;
         }
         
-        // Request permission if needed
-        if (Notification.permission === 'default') {
-          await Notification.requestPermission();
-        }
-        
-        if (Notification.permission === 'granted') {
-          new Notification(notification.title, {
-            body: notification.body,
-            icon: '/icons/lumo-icon-192.png',
-            badge: '/icons/lumo-badge-72.png',
-            tag: notification.type,
-            data: notification.data,
-            requireInteraction: notification.priority === 'urgent'
-          });
-          return true;
+        // Request permission if needed (wrap in try-catch for mobile compatibility)
+        try {
+          if (Notification.permission === 'default') {
+            await Notification.requestPermission();
+          }
+          
+          if (Notification.permission === 'granted') {
+            new Notification(notification.title, {
+              body: notification.body,
+              icon: '/icons/lumo-icon-192.png',
+              badge: '/icons/lumo-badge-72.png',
+              tag: notification.type,
+              data: notification.data,
+              requireInteraction: notification.priority === 'urgent'
+            });
+            return true;
+          }
+        } catch (notificationError) {
+          console.log('📱 Notification API access failed:', (notificationError as Error)?.message || 'Unknown error');
+          return false;
         }
       }
       
