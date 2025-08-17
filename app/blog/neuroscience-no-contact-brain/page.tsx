@@ -18,7 +18,7 @@ export default function NeuroscienceNoContactPage() {
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await safeClipboardCopy(window.location.href);
         alert('Link copied to clipboard!');
       } catch (error) {
         console.log('Error copying to clipboard:', error);

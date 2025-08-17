@@ -71,6 +71,9 @@ export const users = pgTable('users', {
   isBanned: boolean('is_banned').notNull().default(false),
   lastActiveAt: timestamp('last_active_at', { withTimezone: true, mode: 'date' }),
   
+  // Email Preferences
+  emailNotifications: boolean('email_notifications').notNull().default(true),
+  
   // Timestamps
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),

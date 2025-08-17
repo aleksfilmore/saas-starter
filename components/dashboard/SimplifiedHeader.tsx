@@ -151,7 +151,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                       <div className="border-t border-gray-600 my-2"></div>
                       
                       <Link
-                        href="/progress"
+                        href="/dashboard/progress"
                         className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
                         onClick={() => setShowUserDropdown(false)}
                       >

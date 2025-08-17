@@ -77,7 +77,7 @@ const mainFeatures = [
   },
   {
     title: 'Progress Analytics',
-    href: '/progress',
+    href: '/dashboard/progress',
     icon: BarChart3,
     description: 'Track your growth',
     color: 'from-cyan-500 to-blue-500',
@@ -86,23 +86,6 @@ const mainFeatures = [
 ];
 
 const advancedFeatures = [
-  {
-    title: 'GLOW-UP CONSOLE',
-    href: '/dashboard/glow-up-console',
-    icon: Star,
-    description: 'Advanced command center',
-    color: 'from-cyan-400 to-purple-500',
-    badge: '🚀',
-    highlight: true
-  },
-  {
-    title: 'Achievements',
-    href: '/achievements',
-    icon: Trophy,
-    description: 'Milestone rewards',
-    color: 'from-yellow-500 to-orange-500',
-    badge: '🏆'
-  },
   {
     title: 'Settings',
     href: '/settings',

@@ -98,7 +98,7 @@ export const DashboardTiles: React.FC<DashboardTilesProps> = ({ mode, user, feat
       title: 'Progress Insights',
       icon: <BarChart3 className="w-6 h-6 text-white" />,
       description: mode==='free' ? 'Basic metrics tracking' : 'Live metrics & analytics',
-      href: '/progress',
+      href: '/dashboard/progress',
       locked: false,
       gradient: 'from-emerald-500 to-teal-500',
       badge: mode==='free' ? 'FREE' : 'LIVE',

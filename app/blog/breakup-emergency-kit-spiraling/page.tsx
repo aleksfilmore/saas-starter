@@ -30,7 +30,7 @@ export default function BreakupEmergencyKitArticle() {
         console.log('Error sharing:', err);
       }
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      safeClipboardCopy(window.location.href);
       alert('Link copied to clipboard!');
     }
   };

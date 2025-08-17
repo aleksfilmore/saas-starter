@@ -3,6 +3,35 @@ import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
 import { sql } from 'drizzle-orm';
 
+// Helper function to format time ago
+function formatTimeAgo(date: Date): string {
+  const now = Date.now();
+  const diff = now - date.getTime();
+  const m = Math.floor(diff/60000); 
+  const h = Math.floor(diff/3600000); 
+  const d = Math.floor(diff/86400000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  if (h < 24) return `${h}h ago`;
+  if (d < 7) return `${d}d ago`;
+  return date.toLocaleDateString();
+}
+
+// Helper function to get human-readable emotion tag from glitch category
+function getEmotionTagFromCategory(category: string): string {
+  const emotionMap: Record<string, string> = {
+    'system_error': 'Breaking Down',
+    'memory_leak': 'Breakthrough',
+    'buffer_overflow': 'Overwhelmed',
+    'loop_detected': 'Stuck Pattern',
+    'syntax_error': 'Confusion',
+    'null_pointer': 'Empty Inside',
+    'stack_overflow': 'Too Much',
+    'access_denied': 'Blocked Out'
+  };
+  return emotionMap[category] || 'Raw Emotion';
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { user } = await validateRequest();
@@ -65,33 +94,70 @@ export async function GET(request: NextRequest) {
       }
     ];
 
-    // Generate mock wall posts (this would come from a wall_posts table in production)
-    const wallPosts = [
-      {
-        id: '1',
-        content: 'Just realized I deserve better treatment. Small win but it feels huge.',
-        archetype: 'Explorer',
-        timeAgo: '2m',
-        reactions: 8,
-        anonymous: true
-      },
-      {
-        id: '2',
-        content: 'Three weeks no contact. The urge to text is still there but getting weaker.',
-        archetype: 'Firewall Builder',
-        timeAgo: '15m',
-        reactions: 12,
-        anonymous: true
-      },
-      {
-        id: '3',
-        content: 'Had my first boundary conversation today. Scary but proud of myself.',
-        archetype: 'Secure Node',
-        timeAgo: '1h',
-        reactions: 15,
-        anonymous: true
-      }
-    ];
+    // Get real wall posts with emotion categories
+    let wallPosts = [];
+    try {
+      const wallPostsResult = await db.execute(sql`
+        SELECT 
+          id, content, glitch_category, glitch_title, created_at,
+          resonate_count, same_loop_count, dragged_me_too_count, 
+          stone_cold_count, cleansed_count
+        FROM anonymous_posts 
+        WHERE is_active = true
+        ORDER BY created_at DESC 
+        LIMIT 8
+      `);
+
+      wallPosts = wallPostsResult.map((post: any) => {
+        const timeAgo = formatTimeAgo(new Date(post.created_at));
+        const totalReactions = (post.resonate_count || 0) + (post.same_loop_count || 0) + 
+                              (post.dragged_me_too_count || 0) + (post.stone_cold_count || 0) + 
+                              (post.cleansed_count || 0);
+        
+        return {
+          id: post.id,
+          content: post.content,
+          glitchCategory: post.glitch_category,
+          glitchTitle: post.glitch_title,
+          emotionTag: getEmotionTagFromCategory(post.glitch_category),
+          timeAgo: timeAgo,
+          reactions: totalReactions,
+          anonymous: true
+        };
+      });
+    } catch (error) {
+      console.error('Failed to fetch real wall posts:', error);
+      // Fallback to mock wall posts with emotion categories
+      wallPosts = [
+        {
+          id: '1',
+          content: 'Just realized I deserve better treatment. Small win but it feels huge.',
+          glitchCategory: 'memory_leak',
+          emotionTag: 'Breakthrough Moment',
+          timeAgo: '2m',
+          reactions: 8,
+          anonymous: true
+        },
+        {
+          id: '2',
+          content: 'Three weeks no contact. The urge to text is still there but getting weaker.',
+          glitchCategory: 'system_error',
+          emotionTag: 'Progress Update',
+          timeAgo: '15m',
+          reactions: 12,
+          anonymous: true
+        },
+        {
+          id: '3',
+          content: 'Had my first boundary conversation today. Scary but proud of myself.',
+          glitchCategory: 'buffer_overflow',
+          emotionTag: 'Courage Moment',
+          timeAgo: '1h',
+          reactions: 15,
+          anonymous: true
+        }
+      ];
+    }
 
     // Get real user badges from the badge system
     let badges = [];

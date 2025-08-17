@@ -29,6 +29,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  
+  // Try to avoid static generation issues
+  trailingSlash: false,
 };
 
 export default nextConfig;

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link'
+import { safeClipboardCopy } from '@/lib/utils';
 import { Share2, Bookmark, ThumbsUp, MessageCircle } from 'lucide-react'
 
 export default function NoContactSurvivalGuidePage() {
@@ -18,7 +19,7 @@ export default function NoContactSurvivalGuidePage() {
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await safeClipboardCopy(window.location.href);
         alert('Link copied to clipboard!');
       } catch (error) {
         console.log('Error copying to clipboard:', error);

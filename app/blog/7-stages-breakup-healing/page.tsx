@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SiteFooter } from '@/components/layout/SiteFooter';
+import { safeClipboardCopy } from '@/lib/utils';
 import Link from 'next/link';
 import { 
   ArrowLeft, Calendar, User, Clock, Eye, 
@@ -38,7 +39,7 @@ export default function SevenStagesArticlePage() {
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await safeClipboardCopy(window.location.href);
         alert('Link copied to clipboard!');
       } catch (error) {
         console.log('Error copying to clipboard:', error);

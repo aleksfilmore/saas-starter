@@ -586,7 +586,7 @@ export default function ComingSoonPage() {
                       Reserve Your Spot Today
                     </h3>
                     <p className="text-gray-300 mb-6">
-                      Join {waitlistCount.toLocaleString()}+ people waiting for early access to the most advanced heartbreak recovery platform ever built.
+                      Join {isMounted ? waitlistCount.toLocaleString() : '10,274'}+ people waiting for early access to the most advanced heartbreak recovery platform ever built.
                     </p>
                     <div className="mb-6">
                       <Button
@@ -625,7 +625,7 @@ export default function ComingSoonPage() {
                     Welcome to the Revolution! 🎉
                   </h3>
                   <p className="text-gray-300 mb-6">
-                    You're now part of an exclusive group of {waitlistCount.toLocaleString()} healers waiting for CTRL+ALT+BLOCK. 
+                    You're now part of an exclusive group of {isMounted ? waitlistCount.toLocaleString() : '10,274'} healers waiting for CTRL+ALT+BLOCK. 
                     We'll notify you as soon as the platform launches on September 5th.
                   </p>
                   

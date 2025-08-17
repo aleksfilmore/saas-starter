@@ -10,7 +10,7 @@ interface HubAPIData {
   xp: { current: number; level: number; nextLevelXP: number; progressFraction: number };
   badges: Array<{ id: string; name: string; icon: string; unlocked: boolean }>;
   todaysRituals: Array<{ id: string; title: string; difficulty: string; completed: boolean; duration: string; icon: string }>;
-  wallPosts: Array<{ id: string; content: string; archetype: string; timeAgo: string; reactions: number; anonymous: boolean }>;
+  wallPosts: Array<{ id: string; content: string; emotionTag?: string; archetype?: string; glitchCategory?: string; timeAgo: string; reactions: number; anonymous: boolean }>;
   dailyInsight: string;
   motivationMeter: { level: number; message: string };
   completedRituals?: number;

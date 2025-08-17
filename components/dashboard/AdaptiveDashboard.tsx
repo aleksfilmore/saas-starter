@@ -431,21 +431,22 @@ function AdaptiveDashboard({ user }: Props) {
               </Card>
             )}
 
-            {/* Badge Collection & Streak Stats */}
+            {/* Badge Collection */}
             <Card className="bg-slate-800/50 border-slate-600/30">
               <CardContent className="pt-4 pb-4">
-                <div className="grid grid-cols-2 gap-4 text-center mb-4">
-                  <div>
-                    <div className="text-xl font-bold text-purple-400">{streaks?.rituals || (user as any)?.ritual_streak || 0}</div>
-                    <div className="text-xs text-slate-400">Ritual Streak</div>
-                  </div>
-                  <div>
-                    <div className="text-xl font-bold text-pink-400">{streaks?.noContact || 0}</div>
-                    <div className="text-xs text-slate-400">No-Contact Days</div>
-                  </div>
+                <div className="mb-4">
+                  <BadgeCollection userId={user.id} compact={true} userTier={(user as any)?.tier || 'ghost'} />
                 </div>
                 <div className="border-t border-slate-600/30 pt-4">
-                  <BadgeCollection userId={user.id} compact={true} userTier={(user as any)?.tier || 'ghost'} />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
+                    onClick={() => window.location.href = '/dashboard/progress'}
+                  >
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    View Progress & Stats
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -791,12 +792,12 @@ function AdaptiveDashboard({ user }: Props) {
                 )}
 
                 {/* Recent Posts */}
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {wallPosts?.slice(0, 5).map((post) => (
+                <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                  {wallPosts?.slice(0, 8).map((post) => (
                     <div key={post.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
                       <div className="flex items-center justify-between mb-2">
                         <Badge className="bg-purple-500/20 text-purple-300 text-xs">
-                          {post.archetype}
+                          {post.emotionTag || post.archetype || post.glitchCategory || 'Anonymous'}
                         </Badge>
                         <span className="text-xs text-slate-400">{post.timeAgo}</span>
                       </div>
@@ -808,15 +809,33 @@ function AdaptiveDashboard({ user }: Props) {
                           className="text-slate-400 hover:text-pink-400 text-xs"
                           onClick={async () => {
                             try {
-                              await fetch('/api/wall/react', {
+                              const response = await fetch('/api/wall/react', {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: { 
+                                  'Content-Type': 'application/json'
+                                },
+                                credentials: 'include', // Important for cookie-based auth
                                 body: JSON.stringify({
                                   postId: post.id,
                                   reactionType: 'resonate'
                                 })
                               });
-                              markTask('community');
+                              
+                              if (response.ok) {
+                                // Refresh wall posts to show updated like count
+                                const wallResponse = await fetch('/api/wall/posts', {
+                                  credentials: 'include'
+                                });
+                                if (wallResponse.ok) {
+                                  const updatedPosts = await wallResponse.json();
+                                  // Update the wallPosts state
+                                  window.location.reload(); // Temporary solution to refresh
+                                }
+                                markTask('community');
+                              } else {
+                                const errorText = await response.text();
+                                console.error('Failed to like post:', errorText);
+                              }
                             } catch (error) {
                               console.error('Failed to react to post:', error);
                             }
