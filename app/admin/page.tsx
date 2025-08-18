@@ -1,378 +1,441 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SiteFooter } from '@/components/layout/SiteFooter';
-import { safeClipboardCopy } from '@/lib/utils';
-import { Heart, Shield, Zap, Users, Star, Brain, CheckCircle, ArrowRight, Sparkles, Target, Calendar, Copy, Timer, MessageCircle, Menu, X, HelpCircle } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Brain, Zap, Users, ArrowRight,
+  Sparkles, ChevronDown,
+  ChevronUp, Quote, Gamepad2, CheckCircle,
+  Star, Heart, Target, Calendar, Timer, MessageCircle
+} from 'lucide-react';
 
-export default function AdminHomePage() {
-  const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [waitlistCount, setWaitlistCount] = useState(10274);
-  const [betaCount, setBetaCount] = useState(142);
-  const [referralCode, setReferralCode] = useState('');
-  const [showReferral, setShowReferral] = useState(false);
-  const [confessionVisible, setConfessionVisible] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
+export default function HomePage() {
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  // Track if component is mounted to prevent hydration issues
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Animated confession card effect
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const interval = setInterval(() => {
-      setConfessionVisible(prev => !prev);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [isMounted]);
-
-  // Countdown timer effect - counting to September 5th, 2025
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const calculateTimeLeft = () => {
-      const launchDate = new Date('2025-09-05T00:00:00Z').getTime();
-      const now = new Date().getTime();
-      const difference = launchDate - now;
-
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setTimeLeft({ days, hours, minutes, seconds });
-      } else {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    // Calculate initial time
-    calculateTimeLeft();
-
-    // Update every second
-    const timer = setInterval(calculateTimeLeft, 1000);
-    return () => clearInterval(timer);
-  }, [isMounted]);
-
-  const generateReferralCode = () => {
-    if (!isMounted) return;
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setReferralCode(code);
-    setShowReferral(true);
+  const toggleFaq = (index: number) => {
+    setExpandedFaq(expandedFaq === index ? null : index);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch('https://formspree.io/f/xrblayqb', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          message: 'Early access signup from CTRL+ALT+BLOCK homepage',
-          referralCode: referralCode || 'direct'
-        }),
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true);
-        setEmail('');
-        setWaitlistCount(prev => prev + 1);
-        setBetaCount(prev => prev + 1);
-        generateReferralCode();
-      }
-    } catch (error) {
-      console.error('Submission error:', error);
-    } finally {
-      setIsSubmitting(false);
+  const features = [
+    {
+      icon: <Brain className="h-12 w-12 text-purple-400" />,
+      title: "AI Therapy Chat",
+      description: "24/7 access to AI-powered therapeutic conversations with specialized personas tailored to your healing journey.",
+      gradient: "from-purple-500 to-pink-500"
+    },
+    {
+      icon: <Calendar className="h-12 w-12 text-blue-400" />,
+      title: "Daily Healing Rituals",
+      description: "Science-backed micro-activities designed to rebuild your confidence and emotional strength systematically.",
+      gradient: "from-blue-500 to-cyan-500"
+    },
+    {
+      icon: <Target className="h-12 w-12 text-red-400" />,
+      title: "No-Contact Tracker",
+      description: "Gamified streak tracking to help you maintain healthy boundaries and resist the urge to reconnect.",
+      gradient: "from-red-500 to-orange-500"
+    },
+    {
+      icon: <Users className="h-12 w-12 text-green-400" />,
+      title: "Wall of Wounds",
+      description: "Anonymous community space to share your journey, connect with others, and celebrate healing milestones.",
+      gradient: "from-green-500 to-emerald-500"
     }
-  };
+  ];
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const testimonials = [
+    {
+      name: "exile_ghost",
+      archetype: "Strategic Survivor",
+      text: "The AI therapy sessions actually understood my attachment style. First time I felt heard in months.",
+      days: 45
+    },
+    {
+      name: "phoenix_rising",
+      archetype: "Emotional Healer",
+      text: "Daily rituals kept me grounded when everything felt chaotic. The progress tracking is motivating.",
+      days: 72
+    },
+    {
+      name: "digital_nomad",
+      archetype: "Logical Optimizer",
+      text: "Wall of Wounds community is incredible. Anonymous support when you need it most.",
+      days: 156
     }
-    setMobileMenuOpen(false);
-  };
+  ];
+
+  const faqs = [
+    {
+      question: "How does the AI therapy actually work?",
+      answer: "Our AI companions are trained on evidence-based therapeutic approaches including CBT and attachment theory. They adapt to your specific healing style and provide personalized guidance 24/7."
+    },
+    {
+      question: "Is my data really anonymous?",
+      answer: "Yes. We use cryptographic techniques to ensure complete anonymity. No real names, no contact info linked to your healing data. Your privacy is our top priority."
+    },
+    {
+      question: "What makes this different from other breakup apps?",
+      answer: "We're the first to gamify the healing process with real psychology. Think of it as RPG character development, but for your emotional growth and attachment patterns."
+    },
+    {
+      question: "How long does the healing process take?",
+      answer: "Everyone's journey is different. Our data shows most users see significant improvement within 30-90 days of consistent engagement with the platform."
+    }
+  ];
 
   return (
-    <div className="min-h-screen text-white overflow-x-hidden relative">
-      {/* Navigation */}
-      <nav className="relative z-50 w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <div className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <button 
-                onClick={() => scrollToSection('how-it-works')}
-                className="text-gray-300 hover:text-white transition-colors"
-              >
-                How It Works
-              </button>
-              <button 
-                onClick={() => scrollToSection('pricing')}
-                className="text-gray-300 hover:text-white transition-colors"
-              >
-                Pricing
-              </button>
-              <Button
-                onClick={() => scrollToSection('waitlist')}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              >
-                Join Waitlist
-              </Button>
-            </div>
+    <div className="min-h-screen relative overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/bg.png)',
+        }}
+      />
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <Button
-                variant="ghost"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-white"
-              >
-                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </Button>
-            </div>
-          </div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
 
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-gray-600/30">
-              <div className="flex flex-col space-y-4">
-                <button 
-                  onClick={() => scrollToSection('how-it-works')}
-                  className="text-gray-300 hover:text-white transition-colors text-left"
-                >
-                  How It Works
-                </button>
-                <button 
-                  onClick={() => scrollToSection('pricing')}
-                  className="text-gray-300 hover:text-white transition-colors text-left"
-                >
-                  Pricing
-                </button>
-                <Button
-                  onClick={() => scrollToSection('waitlist')}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 w-full"
-                >
-                  Join Waitlist
-                </Button>
+      <div className="relative z-10">
+        <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300 hover:bg-gray-800/90">
+          <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="text-2xl font-bold text-white tracking-tight">
+                  CTRL+ALT+<span className="text-purple-400">BLOCK</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <Link href="/quiz">
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-6 text-white border-0 hover:scale-105 transition-all"
+                  >
+                    Start Healing Scan
+                  </Button>
+                </Link>
+                <Link href="/sign-in">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-500 text-gray-300 hover:text-white hover:border-purple-400 transition-all"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
               </div>
             </div>
-          )}
-        </div>
-      </nav>
-
-      {/* Hero Section with bg.png */}
-      <div className="relative">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url(/bg.png)',
-          }}
-        />
-        
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-purple-900/75 to-blue-900/85" />
-        
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <filter id="noise">
-                <feTurbulence baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
-                <feColorMatrix type="saturate" values="0"/>
-              </filter>
-            </defs>
-            <rect width="100%" height="100%" filter="url(#noise)" opacity="0.1"/>
-          </svg>
-        </div>
-
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-          <div className="absolute top-40 right-10 w-48 h-48 sm:w-72 sm:h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
-          <div className="absolute bottom-20 left-20 w-48 h-48 sm:w-72 sm:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
-        </div>
+          </div>
+        </header>
 
         {/* Hero Section */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 pt-20">
-          {/* Main Motto */}
-          <div className="text-center mb-8">
-            <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-red-400 via-pink-400 to-purple-400 bg-clip-text mb-4 tracking-wide">
-              UNINSTALL YOUR EX.
+        <div className="px-6 py-20">
+          <div className="max-w-5xl mx-auto text-center">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-purple-900/30 border border-purple-500/30 text-purple-300 text-sm mb-8">
+              <Sparkles className="h-4 w-4 mr-2" />
+              The Future of Heartbreak Recovery
             </div>
-          </div>
-          {/* Logo/Brand */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 leading-tight">
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-400 bg-clip-text text-transparent font-mono">
-                 INSTALL YOUR NEW SELF.
-              </span>
-            </h1>
-            <div className="text-xl sm:text-2xl md:text-3xl text-gray-200 mb-4 font-medium">
-              Your interactive breakup recovery program
-            </div>
-            <div className="text-lg sm:text-xl md:text-2xl font-mono text-gray-300 mb-6">
-              Revolutionary healing through the psychology of gaming — with AI therapy, daily healing rituals, and a gamified progress tracker
-            </div>
-          </div>
 
-          {/* Countdown Timer */}
-          <div className="mb-8">
-            <Card className="bg-red-900/20 border border-red-500/50 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <div className="text-sm text-red-300 mb-4">🚀 PLATFORM LAUNCHES IN</div>
-                  <div className="flex justify-center space-x-4 text-white font-mono">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-red-400">{timeLeft.days}</div>
-                      <div className="text-xs text-gray-400">DAYS</div>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              Stop <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Obsessing</span><br />
+              Start <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">Healing</span>
+            </h1>
+
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              The first AI-powered platform that gamifies your healing journey. Track progress,
+              unlock achievements, and connect with a supportive community—all while maintaining complete anonymity.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Link href="/quiz">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-12 py-4 text-lg text-white border-0 hover:scale-105 transition-all font-bold"
+                >
+                  Discover Your Healing Archetype
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+              <Link href="#features">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-gray-500 text-gray-300 hover:text-white hover:border-purple-400 px-8 py-4 text-lg transition-all"
+                >
+                  See How It Works
+                </Button>
+              </Link>
+            </div>
+
+            <div className="flex items-center justify-center space-x-8 text-sm text-gray-400">
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
+                Free for 7 days
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
+                Cancel anytime
+              </div>
+              <div className="flex items-center">
+                <CheckCircle className="h-4 w-4 text-green-400 mr-2" />
+                Anonymous community
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Features Section */}
+        <section id="features" className="py-20 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Revolutionary Healing Technology
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Combining AI therapy, gamification, and community support to create
+                the most effective heartbreak recovery experience ever built.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {features.map((feature, index) => (
+                <Card key={index} className="bg-gray-800/60 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group">
+                  <CardContent className="p-8">
+                    <div className={`inline-flex p-4 rounded-full bg-gradient-to-r ${feature.gradient} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      {feature.icon}
                     </div>
-                    <div className="text-3xl text-red-400">:</div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-red-400">{timeLeft.hours}</div>
-                      <div className="text-xs text-gray-400">HOURS</div>
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-300 leading-relaxed text-lg">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="py-20 px-6 bg-gradient-to-r from-gray-900/50 to-purple-900/30">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Healing Stories from Our Community
+              </h2>
+              <p className="text-xl text-gray-300">
+                Real progress from real people (anonymously shared)
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <Card key={index} className="bg-gray-800/60 border-gray-600/50 hover:border-purple-500/30 transition-all duration-300">
+                  <CardContent className="p-6">
+                    <Quote className="h-8 w-8 text-purple-400 mb-4" />
+                    <p className="text-gray-300 mb-6 leading-relaxed">
+                      "{testimonial.text}"
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-white font-semibold">{testimonial.name}</div>
+                        <div className="text-purple-300 text-sm">{testimonial.archetype}</div>
+                      </div>
+                      <Badge className="bg-green-600/20 text-green-400 border-green-500/30">
+                        Day {testimonial.days}
+                      </Badge>
                     </div>
-                    <div className="text-3xl text-red-400">:</div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-red-400">{timeLeft.minutes}</div>
-                      <div className="text-xs text-gray-400">MIN</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="py-20 px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Choose Your Healing Path
+              </h2>
+              <p className="text-xl text-gray-300">
+                Start free, upgrade when you're ready for advanced features
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Free Plan */}
+              <Card className="bg-gray-800/60 border-gray-600/50 hover:border-purple-500/50 transition-all duration-300">
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl font-bold text-white mb-2">Ghost Mode</h3>
+                    <div className="text-4xl font-bold text-white mb-2">Free</div>
+                    <p className="text-gray-400">Perfect for getting started</p>
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Basic healing rituals</span>
                     </div>
-                    <div className="text-3xl text-red-400">:</div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-red-400">{timeLeft.seconds}</div>
-                      <div className="text-xs text-gray-400">SEC</div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">No-contact tracker</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Community access</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Progress tracking</span>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-400 mt-4">September 5th, 2025</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={() => scrollToSection('waitlist')}
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-            >
-              Join Waitlist - Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Link href="/sign-in">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-300 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-gray-900/50 backdrop-blur-sm"
-              >
-                Sign In
-              </Button>
-            </Link>
+                  <Link href="/sign-up">
+                    <Button className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800">
+                      Start Free
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              {/* Premium Plan */}
+              <Card className="bg-gradient-to-br from-purple-900/60 to-pink-900/60 border-purple-500/50 relative overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    MOST POPULAR
+                  </Badge>
+                </div>
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    <h3 className="text-2xl font-bold text-white mb-2">Firewall Mode</h3>
+                    <div className="text-4xl font-bold text-white mb-2">$9.99</div>
+                    <p className="text-purple-200">per month</p>
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Everything in Ghost Mode</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Unlimited AI therapy chat</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Advanced healing rituals</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Voice AI therapy sessions</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                      <span className="text-gray-300">Priority support</span>
+                    </div>
+                  </div>
+
+                  <Link href="/sign-up/with-plan">
+                    <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                      Start 7-Day Free Trial
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-20 px-6 bg-gradient-to-r from-gray-900/50 to-purple-900/30">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xl text-gray-300">
+                Everything you need to know about your healing journey
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <Card key={index} className="bg-gray-800/60 border-gray-600/50 hover:border-purple-500/30 transition-all duration-300">
+                  <CardContent className="p-0">
+                    <button
+                      onClick={() => toggleFaq(index)}
+                      className="w-full text-left p-6 flex items-center justify-between"
+                    >
+                      <span className="text-lg font-semibold text-white">
+                        {faq.question}
+                      </span>
+                      {expandedFaq === index ? (
+                        <ChevronUp className="h-5 w-5 text-purple-400" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-purple-400" />
+                      )}
+                    </button>
+
+                    {expandedFaq === index && (
+                      <div className="px-6 pb-6 text-gray-300 leading-relaxed">
+                        {faq.answer}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <div className="bg-gradient-to-b from-gray-900 to-purple-900/30 py-20">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-12 border border-purple-500/30">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Start Your Healing Journey?
+              </h2>
+              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                Join thousands of people who've transformed their heartbreak into their comeback.
+                Start your healing journey today — free to join, cancel anytime.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
+                <Link href="/quiz">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-12 py-4 text-lg text-white border-0 hover:scale-105 transition-all font-bold"
+                  >
+                    Start Free Scan
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Button>
+                </Link>
+                <Link href="/sign-in">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-gray-500 text-gray-300 hover:text-white hover:border-purple-400 px-8 py-4 text-lg transition-all"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+
+              <p className="text-sm text-gray-400">Start free. Upgrade anytime. Cancel with one click.</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Waitlist Section */}
-      <section id="waitlist" className="py-24 px-4 bg-gradient-to-br from-purple-900 via-pink-900/50 to-purple-900">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            Join the Revolution
-          </h2>
-          <p className="text-xl text-purple-200 mb-8">
-            Be among the first to experience the future of heartbreak recovery
-          </p>
-
-          <Card className="bg-gray-800/60 backdrop-blur-md border-purple-500/30">
-            <CardContent className="p-8">
-              {!isSubmitted ? (
-                <>
-                  <div className="mb-6">
-                    <Badge className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white mb-4">
-                      BETA ACCESS
-                    </Badge>
-                    <h3 className="text-2xl font-semibold text-white mb-4">
-                      Reserve Your Spot Today
-                    </h3>
-                    <p className="text-gray-300 mb-6">
-                      Join {isMounted ? waitlistCount.toLocaleString() : '10,274'}+ people waiting for early access to the most advanced heartbreak recovery platform ever built.
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="exile_404@protonmail.com"
-                      required
-                      className="bg-gray-700/50 border-purple-500/30 text-white placeholder-gray-400 focus:border-cyan-400 text-lg py-3"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 text-lg"
-                    >
-                      {isSubmitting ? 'Joining...' : 'Join Waitlist - Free'}
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                    <p className="text-sm text-gray-400">
-                      🔒 We store only your email. No names, no spam. Unsubscribe anytime.
-                    </p>
-                  </form>
-                </>
-              ) : (
-                <div className="py-8">
-                  <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-6" />
-                  <h3 className="text-2xl font-semibold text-white mb-4">
-                    Welcome to the Revolution! 🎉
-                  </h3>
-                  <p className="text-gray-300 mb-6">
-                    You're now part of an exclusive group of {isMounted ? waitlistCount.toLocaleString() : '10,274'} healers waiting for CTRL+ALT+BLOCK. 
-                    We'll notify you as soon as the platform launches on September 5th.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       <SiteFooter />
     </div>
   );
+
 }
