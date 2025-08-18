@@ -41,6 +41,29 @@ interface ReferralData {
   };
 }
 
+interface ReferralStats {
+  referralCode: string;
+  referralLink: string;
+  stats: {
+    totalClicks: number;
+    totalSignups: number;
+    totalReferrals: number;
+    pending: number;
+    completed: number;
+    rewarded: number;
+    totalRewards: number;
+    conversionRate: number;
+    referrals: Array<{
+      id: string;
+      status: string;
+      clickedAt: Date | null;
+      signedUpAt: Date | null;
+      completedAt: Date | null;
+      rewardAmount: number;
+    }>;
+  };
+}
+
 export function ReferralDashboard() {
   const [referralData, setReferralData] = useState<ReferralStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -306,7 +329,7 @@ export function ReferralDashboard() {
             </div>
           ) : (
             <div className="space-y-3">
-              {stats.referrals.slice(0, 10).map((referral, index) => (
+              {stats.referrals.slice(0, 10).map((referral: any, index: number) => (
                 <div key={referral.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">

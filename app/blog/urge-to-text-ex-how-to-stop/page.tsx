@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Share2, Bookmark, ThumbsUp, MessageCircle } from 'lucide-react'
+import { safeClipboardCopy } from '@/lib/utils'
 
 export default function TextingTemptationsPage() {
   const handleShare = async () => {

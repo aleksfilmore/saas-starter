@@ -1,3 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { 
@@ -33,14 +34,14 @@ const calculateStreak = async (userId: string) => {
     if (activities.length === 0) return { current: 0, longest: 0 };
 
     // Group by date and calculate streaks
-    const activityDates = new Set();
+    const activityDates = new Set<number>();
     activities.forEach(activity => {
       const date = new Date(activity.completedAt);
       date.setHours(0, 0, 0, 0);
       activityDates.add(date.getTime());
     });
 
-    const uniqueDates = Array.from(activityDates).sort((a, b) => b - a);
+    const uniqueDates = Array.from(activityDates).sort((a: number, b: number) => b - a);
     
     let currentStreak = 0;
     let longestStreak = 0;

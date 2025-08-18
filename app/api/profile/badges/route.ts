@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       .select({
         id: badges.id,
         name: badges.name,
-        iconUrl: badges.iconUrl,
+        iconUrl: badges.artUrl,
         tierScope: badges.tierScope,
         archetypeScope: badges.archetypeScope,
         discountPercent: badges.discountPercent,

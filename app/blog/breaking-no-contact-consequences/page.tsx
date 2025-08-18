@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Share2, Bookmark, ThumbsUp, MessageCircle } from 'lucide-react'
+import { safeClipboardCopy } from '@/lib/utils'
 
 export default function BreakingNoContactPage() {
   const handleShare = async () => {
@@ -16,7 +17,6 @@ export default function BreakingNoContactPage() {
         console.log('Error sharing:', error);
       }
     } else {
-      // Fallback: copy to clipboard
       try {
         await safeClipboardCopy(window.location.href);
         alert('Link copied to clipboard!');

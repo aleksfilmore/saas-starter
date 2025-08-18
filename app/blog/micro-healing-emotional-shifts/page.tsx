@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Heart, Bookmark, Share2, Calendar, Clock, Eye, User } from 'lucide-react';
+import { safeClipboardCopy } from '@/lib/utils';
 
 export default function MicroHealingArticle() {
   const [isLiked, setIsLiked] = useState(false);

@@ -39,7 +39,6 @@ export class CacheService {
     try {
       if (process.env.REDIS_URL) {
         this.redis = new Redis(process.env.REDIS_URL, {
-          retryDelayOnFailover: 100,
           maxRetriesPerRequest: 3,
           lazyConnect: true
         });

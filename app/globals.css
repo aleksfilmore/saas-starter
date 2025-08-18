@@ -176,3 +176,20 @@ textarea:focus-visible {
 .progress-contrast .bg-purple-600 {
   background-color: #10b981 !important; /* Green for completion */
 }
+
+/* Line clamp utilities for text truncation */
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.line-clamp-6 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+}

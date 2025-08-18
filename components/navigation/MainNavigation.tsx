@@ -191,8 +191,6 @@ export function MainNavigation({ currentPath, userStats }: MainNavigationProps) 
             return (
               <Link key={feature.href} href={feature.href}>
                 <Card className={`group transition-all duration-200 cursor-pointer ${
-                  feature.highlight 
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border-cyan-500/50 hover:scale-105' :
                   active 
                     ? 'bg-purple-500/20 border-purple-500/50 scale-105' 
                     : 'bg-gray-900/50 border-gray-700 hover:bg-gray-800/50 hover:scale-105'
@@ -204,9 +202,7 @@ export function MainNavigation({ currentPath, userStats }: MainNavigationProps) 
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2">
-                          <h3 className={`font-semibold ${
-                            feature.highlight ? 'text-cyan-400' : 'text-white'
-                          }`}>
+                          <h3 className="font-semibold text-white">
                             {feature.title}
                           </h3>
                           <span className="text-sm">{feature.badge}</span>

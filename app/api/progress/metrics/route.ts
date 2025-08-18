@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { eq, and, gte, desc, sql, count } from 'drizzle-orm';
 import { users, ritualCompletions, journalDrafts } from '@/lib/db/schema';
-import { dailyGuidanceService } from '@/lib/guidance/daily-guidance-service-clean';
 import { getNextLevelXP } from '@/lib/gamification/leveling';
 
 export async function GET(request: NextRequest) {

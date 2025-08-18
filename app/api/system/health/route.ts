@@ -5,6 +5,7 @@ import { validateRequest } from '@/lib/auth';
 import { authRateLimit } from '@/lib/middleware/rate-limiter';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   // Apply rate limiting
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user is admin
-    const userData = await db.select().from(users).where({ id: user.id }).limit(1);
+    const userData = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
     if (!userData.length || userData[0].tier !== 'admin') {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
     }
@@ -35,14 +36,14 @@ export async function GET(request: NextRequest) {
 
     const [dbHealth, cacheHealth, appHealth, performance] = healthChecks.map(result => 
       result.status === 'fulfilled' ? result.value : { status: 'error', error: result.reason?.message }
-    );
+    ) as [any, any, any, any];
 
     // Determine overall system status
-    const allHealthy = [dbHealth, cacheHealth, appHealth].every(check => 
+    const allHealthy = [dbHealth, cacheHealth, appHealth].every((check: any) => 
       check.status === 'healthy' || check.status === 'warning'
     );
 
-    const hasCritical = [dbHealth, cacheHealth, appHealth].some(check => 
+    const hasCritical = [dbHealth, cacheHealth, appHealth].some((check: any) => 
       check.status === 'critical'
     );
 

@@ -17,13 +17,14 @@ const nextConfig: NextConfig = {
   // Disable experimental features that might be causing issues
   experimental: {
     esmExternals: true,
-    // Skip build-time static generation
-    skipTrailingSlashRedirect: true,
-    skipMiddlewareUrlNormalize: true,
   },
   
   // Skip error page prerendering
   staticPageGenerationTimeout: 60,
+  
+  // Skip build-time static generation
+  skipTrailingSlashRedirect: true,
+  skipMiddlewareUrlNormalize: true,
   
   // Disable telemetry and other potentially problematic features
   eslint: {

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Share2, Bookmark, ThumbsUp } from 'lucide-react'
+import { safeClipboardCopy } from '@/lib/utils'
 
 export default function NeuroscienceNoContactPage() {
   const handleShare = async () => {

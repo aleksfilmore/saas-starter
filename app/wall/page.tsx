@@ -48,16 +48,16 @@ interface Post {
 }
 
 const EMOJI_TAGS = [
-  { emoji: '💔', label: 'Heartbreak', category: 'heartbreak' },
-  { emoji: '😢', label: 'Sadness', category: 'sadness' },
-  { emoji: '😤', label: 'Anger', category: 'anger' },
-  { emoji: '😰', label: 'Anxiety', category: 'anxiety' },
-  { emoji: '🔥', label: 'Rage', category: 'rage' },
-  { emoji: '💭', label: 'Confusion', category: 'confusion' },
-  { emoji: '🌟', label: 'Hope', category: 'hope' },
-  { emoji: '⚡', label: 'Breakthrough', category: 'breakthrough' },
-  { emoji: '🎭', label: 'Identity', category: 'identity' },
-  { emoji: '🔮', label: 'Future', category: 'future' }
+  { emoji: '💔', label: 'Heartbreak', category: 'heartbreak', color: 'from-red-500 to-pink-600', border: 'border-red-500/50', bg: 'bg-red-500/10' },
+  { emoji: '😢', label: 'Sadness', category: 'sadness', color: 'from-blue-500 to-indigo-600', border: 'border-blue-500/50', bg: 'bg-blue-500/10' },
+  { emoji: '😤', label: 'Anger', category: 'anger', color: 'from-orange-500 to-red-600', border: 'border-orange-500/50', bg: 'bg-orange-500/10' },
+  { emoji: '😰', label: 'Anxiety', category: 'anxiety', color: 'from-yellow-500 to-orange-600', border: 'border-yellow-500/50', bg: 'bg-yellow-500/10' },
+  { emoji: '🔥', label: 'Rage', category: 'rage', color: 'from-red-600 to-red-700', border: 'border-red-600/50', bg: 'bg-red-600/10' },
+  { emoji: '💭', label: 'Confusion', category: 'confusion', color: 'from-purple-500 to-violet-600', border: 'border-purple-500/50', bg: 'bg-purple-500/10' },
+  { emoji: '🌟', label: 'Hope', category: 'hope', color: 'from-green-500 to-emerald-600', border: 'border-green-500/50', bg: 'bg-green-500/10' },
+  { emoji: '⚡', label: 'Breakthrough', category: 'breakthrough', color: 'from-cyan-500 to-blue-600', border: 'border-cyan-500/50', bg: 'bg-cyan-500/10' },
+  { emoji: '🎭', label: 'Identity', category: 'identity', color: 'from-pink-500 to-purple-600', border: 'border-pink-500/50', bg: 'bg-pink-500/10' },
+  { emoji: '🔮', label: 'Future', category: 'future', color: 'from-indigo-500 to-purple-600', border: 'border-indigo-500/50', bg: 'bg-indigo-500/10' }
 ];
 
 const fetcher = (url: string) => fetch(url, { credentials: 'include' }).then(res => {
@@ -88,9 +88,9 @@ export default function OptimizedWallPage() {
 
   const posts: Post[] = feedData?.posts || [];
 
-  // Optimistic reaction handler
-  const handleReaction = async (postId: string, reactionType: string = 'resonate') => {
-    // Optimistically update the reaction count
+  // Optimistic heart reaction handler (consistent with dashboard)
+  const handleHeartReaction = async (postId: string) => {
+    // Optimistically update the heart count
     setOptimisticReactions(prev => ({
       ...prev,
       [postId]: (prev[postId] || 0) + 1
@@ -101,12 +101,13 @@ export default function OptimizedWallPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ postId, reactionType })
+        body: JSON.stringify({ postId, reactionType: 'resonate' })
       });
 
       if (response.ok) {
         // Refresh data in background
         refresh();
+        toast.success('💖 Reaction added!');
       } else {
         // Revert optimistic update on failure
         setOptimisticReactions(prev => ({
@@ -177,20 +178,8 @@ export default function OptimizedWallPage() {
     return icons[type] || '👍';
   };
 
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      heartbreak: 'border-red-500/30',
-      sadness: 'border-blue-500/30',
-      anger: 'border-orange-500/30',
-      anxiety: 'border-yellow-500/30',
-      rage: 'border-red-600/30',
-      confusion: 'border-purple-500/30',
-      hope: 'border-green-500/30',
-      breakthrough: 'border-cyan-500/30',
-      identity: 'border-pink-500/30',
-      future: 'border-indigo-500/30'
-    };
-    return colors[category] || 'border-gray-500/30';
+  const getEmotionData = (category: string) => {
+    return EMOJI_TAGS.find(tag => tag.category === category) || EMOJI_TAGS[0];
   };
 
   // Early returns for auth states
@@ -261,7 +250,7 @@ export default function OptimizedWallPage() {
       />
       
       {/* Main Container */}
-      <div className="max-w-3xl mx-auto px-4 pb-4">
+      <div className="max-w-7xl mx-auto px-4 pb-4">
         
         {/* Page Title */}
         <div className="flex items-center justify-between mb-6">
@@ -407,7 +396,7 @@ export default function OptimizedWallPage() {
           </div>
         </div>
 
-        {/* Posts Feed */}
+        {/* Posts Feed - 3 Column Spotify-Style Grid */}
         {isLoading ? (
           <div className="text-center py-12">
             <RefreshCw className="h-8 w-8 text-gray-400 animate-spin mx-auto mb-4" />
@@ -421,77 +410,85 @@ export default function OptimizedWallPage() {
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className={`bg-gray-800/80 border ${getCategoryColor(post.glitchCategory)}`}>
-                  <CardContent className="p-4">
-                    
-                    {/* Post Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="secondary" className="bg-gray-700/50 text-gray-300 text-xs px-2 py-1">
-                          {EMOJI_TAGS.find(tag => tag.category === post.glitchCategory)?.emoji} {post.glitchTitle}
-                        </Badge>
-                        {post.isOraclePost && (
-                          <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
-                            ⚡ Oracle
-                          </Badge>
-                        )}
-                        {post.isFeatured && (
-                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">
-                            Featured
-                          </Badge>
-                        )}
-                      </div>
-                      <span className="text-xs text-gray-400">{post.timeAgo}</span>
-                    </div>
-
-                    {/* Post Content */}
-                    <p className="text-white leading-relaxed mb-4">{post.content}</p>
-
-                    {/* Reactions */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        {[
-                          { type: 'resonate', count: post.resonateCount },
-                          { type: 'same_loop', count: post.sameLoopCount },
-                          { type: 'cleansed', count: post.cleansedCount }
-                        ].map(({ type, count }) => (
-                          <button
-                            key={type}
-                            onClick={() => handleReaction(post.id, type)}
-                            className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
-                              post.userReaction === type 
-                                ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50' 
-                                : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
-                            }`}
-                          >
-                            <span>{getReactionIcon(type)}</span>
-                            <span>{count + (optimisticReactions[post.id] || 0)}</span>
-                          </button>
-                        ))}
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => {
+              const emotionData = getEmotionData(post.glitchCategory);
+              const totalReactions = post.resonateCount + post.sameLoopCount + post.cleansedCount;
+              
+              return (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="h-fit"
+                >
+                  <Card className={`bg-gradient-to-br ${emotionData.bg} backdrop-blur-sm border ${emotionData.border} hover:border-opacity-80 transition-all duration-300 h-full`}>
+                    <CardContent className="p-5">
                       
-                      <div className="flex items-center space-x-3 text-gray-400">
-                        <div className="flex items-center space-x-1">
-                          <MessageCircle className="h-3 w-3" />
-                          <span className="text-xs">{post.commentCount}</span>
+                      {/* Post Header with Emotion Tag */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-2">
+                          <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${emotionData.color} text-white text-sm font-medium flex items-center space-x-2`}>
+                            <span className="text-lg">{emotionData.emoji}</span>
+                            <span>{emotionData.label}</span>
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-400">{post.timeAgo}</span>
+                      </div>
+
+                      {/* Badges */}
+                      {(post.isOraclePost || post.isFeatured) && (
+                        <div className="flex items-center space-x-2 mb-3">
+                          {post.isOraclePost && (
+                            <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
+                              ⚡ Oracle
+                            </Badge>
+                          )}
+                          {post.isFeatured && (
+                            <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs">
+                              ✨ Featured
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Post Content */}
+                      <p className="text-white leading-relaxed mb-4 line-clamp-6">{post.content}</p>
+
+                      {/* Actions - Consistent Heart Reaction like Dashboard */}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-700/50">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleHeartReaction(post.id)}
+                          className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                            post.userReaction 
+                              ? 'text-red-400 bg-red-500/10 hover:bg-red-500/20' 
+                              : 'text-gray-400 hover:text-red-400 hover:bg-red-500/10'
+                          }`}
+                        >
+                          <Heart className={`h-4 w-4 ${post.userReaction ? 'fill-current' : ''}`} />
+                          <span className="font-medium">
+                            {totalReactions + (optimisticReactions[post.id] || 0)}
+                          </span>
+                        </Button>
+                        
+                        <div className="flex items-center space-x-3 text-gray-400">
+                          <div className="flex items-center space-x-1">
+                            <MessageCircle className="h-4 w-4" />
+                            <span className="text-sm">{post.commentCount}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
 
             {posts.length === 0 && !isLoading && (
-              <div className="text-center py-12">
+              <div className="col-span-full text-center py-12">
                 <div className="text-4xl mb-4">✨</div>
                 <p className="text-gray-400 text-lg">No confessions found</p>
                 <p className="text-gray-500 text-sm mt-2">Be the first to share your healing journey</p>
