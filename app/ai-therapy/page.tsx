@@ -71,9 +71,8 @@ export default function SimplifiedAITherapyPage() {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/auth/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
+        credentials: 'include' // Use cookies for authentication
       });
       
       if (response.ok) {
@@ -139,13 +138,12 @@ export default function SimplifiedAITherapyPage() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('auth-token');
       const response = await fetch('/api/ai-therapy/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
+        credentials: 'include', // Use cookies for authentication
         body: JSON.stringify({
           message: inputMessage,
           conversationHistory: messages

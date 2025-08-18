@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Target, Calendar, Clock, Zap, Star, Brain, Heart, Shield,
-  ArrowLeft, BarChart3
+  ArrowLeft, BarChart3, RefreshCw
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -82,28 +82,40 @@ export default function ProgressPage() {
 
   const fetchProgressMetrics = async () => {
     try {
+      console.log('Fetching progress metrics for user:', authUser?.email);
+      
       const response = await fetch('/api/progress/metrics', {
         headers: {
           'x-user-email': authUser?.email || ''
         }
       });
+      
+      console.log('Progress API response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Progress data received:', data);
         setMetrics(data);
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Progress API error:', response.status, errorData);
+        // Set error state but don't crash
+        setMetrics(null);
       }
     } catch (error) {
       console.error('Error fetching progress metrics:', error);
+      setMetrics(null);
     } finally {
       setLoading(false);
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-purple-200">Loading progress analytics...</p>
+          <p className="text-purple-200">Initializing authentication...</p>
         </div>
       </div>
     );
@@ -112,8 +124,43 @@ export default function ProgressPage() {
   if (!isAuthenticated || !authUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <Shield className="h-16 w-16 text-cyan-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Authentication Required</h2>
+          <p className="text-gray-300 mb-6">
+            You need to be signed in to view your progress analytics and tracking data.
+          </p>
+          <div className="space-y-3">
+            <Link href="/sign-in">
+              <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
+                <Shield className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-800">
+                Create Account
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="ghost" className="w-full text-gray-400 hover:text-white">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400">Please sign in to view progress</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className="text-purple-200">Loading progress analytics...</p>
+          <p className="text-gray-400 text-sm mt-2">Calculating your transformation metrics...</p>
         </div>
       </div>
     );
@@ -122,11 +169,34 @@ export default function ProgressPage() {
   if (!metrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400">Unable to load progress data</p>
-          <Button onClick={fetchProgressMetrics} className="mt-4 bg-purple-600 hover:bg-purple-700">
-            Retry
-          </Button>
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="mb-6">
+            <BarChart3 className="h-16 w-16 text-red-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-red-400 mb-2">Progress Data Unavailable</h2>
+            <p className="text-gray-300 mb-4">
+              We're having trouble loading your progress metrics. This could be due to:
+            </p>
+            <ul className="text-sm text-gray-400 text-left space-y-1 mb-6">
+              <li>• Database connectivity issues</li>
+              <li>• Incomplete user data setup</li>
+              <li>• Temporary system maintenance</li>
+            </ul>
+          </div>
+          <div className="space-y-3">
+            <Button 
+              onClick={fetchProgressMetrics} 
+              className="w-full bg-purple-600 hover:bg-purple-700"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Retry Loading
+            </Button>
+            <Link href="/dashboard">
+              <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-800">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );

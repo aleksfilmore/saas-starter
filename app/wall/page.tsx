@@ -1,10 +1,9 @@
 'use client';
 
-// Force dynamic rendering for auth-dependent pages
-export const dynamic = 'force-dynamic';
-
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import useSWR from 'swr';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,16 +14,15 @@ import {
   MessageCircle, 
   Users,
   Heart,
-  Zap,
-  Shield,
   RefreshCw,
   ChevronDown,
-  ChevronUp,
-  MoreHorizontal,
-  Flame,
-  Sparkles
+  Shield,
+  ArrowLeft,
+  Sparkles,
+  ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface Post {
   id: string;
@@ -62,76 +60,86 @@ const EMOJI_TAGS = [
   { emoji: '🔮', label: 'Future', category: 'future' }
 ];
 
-export default function SimplifiedWallPage() {
+const fetcher = (url: string) => fetch(url, { credentials: 'include' }).then(res => {
+  if (!res.ok) throw new Error('Failed to fetch');
+  return res.json();
+});
+
+export default function OptimizedWallPage() {
   const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
-  const [mounted, setMounted] = useState(false);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('recent');
   const [postContent, setPostContent] = useState('');
-  const [posting, setPosting] = useState(false);
   const [selectedTag, setSelectedTag] = useState<typeof EMOJI_TAGS[0] | null>(null);
   const [showTagDropdown, setShowTagDropdown] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [filter, setFilter] = useState('recent');
-  const [user, setUser] = useState<{username: string; subscriptionTier: string; streak: number; bytes: number; level: number; noContactDays: number} | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // Mount effect
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Auth effect - only runs after mounting and auth data is available
-  useEffect(() => {
-    if (!mounted || !authUser || !isAuthenticated || authLoading) return;
-
-    try {
-      setUser({
-        username: authUser.username,
-        subscriptionTier: authUser.subscriptionTier,
-        streak: authUser.streak,
-        bytes: authUser.bytes,
-        level: authUser.level,
-        noContactDays: authUser.noContactDays
-      });
-    } catch (error) {
-      console.error('Failed to set user data:', error);
+  const [posting, setPosting] = useState(false);
+  const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({});
+  
+  // Use SWR for intelligent data fetching
+  const { data: feedData, error, isLoading, mutate: refresh } = useSWR(
+    isAuthenticated ? `/api/wall/feed?filter=${filter}` : null,
+    fetcher,
+    {
+      dedupingInterval: 30000, // 30 seconds
+      revalidateOnFocus: false,
+      refreshInterval: 60000, // 1 minute auto-refresh
+      errorRetryCount: 3,
     }
-  }, [mounted, authUser, isAuthenticated, authLoading]);
+  );
 
-  const fetchPosts = useCallback(async () => {
+  const posts: Post[] = feedData?.posts || [];
+
+  // Optimistic reaction handler
+  const handleReaction = async (postId: string, reactionType: string = 'resonate') => {
+    // Optimistically update the reaction count
+    setOptimisticReactions(prev => ({
+      ...prev,
+      [postId]: (prev[postId] || 0) + 1
+    }));
+
     try {
-      const response = await fetch(`/api/wall/feed?filter=${filter}`);
-      
+      const response = await fetch('/api/wall/react', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ postId, reactionType })
+      });
+
       if (response.ok) {
-        const data = await response.json();
-        setPosts(data.posts);
+        // Refresh data in background
+        refresh();
       } else {
-        console.error('Failed to fetch posts');
+        // Revert optimistic update on failure
+        setOptimisticReactions(prev => ({
+          ...prev,
+          [postId]: Math.max(0, (prev[postId] || 0) - 1)
+        }));
+        
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to react to post:', errorData);
+        toast.error('Failed to register reaction');
       }
     } catch (error) {
-      console.error('Error fetching posts:', error);
-    } finally {
-      setLoading(false);
+      // Revert optimistic update on error
+      setOptimisticReactions(prev => ({
+        ...prev,
+        [postId]: Math.max(0, (prev[postId] || 0) - 1)
+      }));
+      
+      console.error('Failed to react to post:', error);
+      toast.error('Failed to register reaction');
     }
-  }, [filter]);
+  };
 
-  useEffect(() => {
-    if (authUser && isAuthenticated && !authLoading) {
-      fetchPosts();
-    }
-  }, [authUser, isAuthenticated, authLoading, fetchPosts]);
-
-  const submitPost = async () => {
-    if (!postContent.trim() || posting || !selectedTag) return;
+  // Post submission handler
+  const handleSubmitPost = async () => {
+    if (!postContent.trim() || !selectedTag || posting) return;
 
     setPosting(true);
     try {
       const response = await fetch('/api/wall/post', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           content: postContent,
           glitchCategory: selectedTag.category,
@@ -143,49 +151,18 @@ export default function SimplifiedWallPage() {
       if (response.ok) {
         setPostContent('');
         setSelectedTag(null);
-        await fetchPosts();
+        refresh(); // Refresh feed after posting
+        toast.success('Post shared successfully!');
       } else {
         const errorData = await response.json();
         console.error('Failed to submit post:', errorData);
-        alert(errorData.error || 'Failed to submit post');
+        toast.error(errorData.error || 'Failed to submit post');
       }
     } catch (error) {
-      console.error('Error submitting post:', error);
-      alert('Network error occurred');
+      console.error('Post submission failed:', error);
+      toast.error('Network error occurred');
     } finally {
       setPosting(false);
-    }
-  };
-
-  const reactToPost = async (postId: string, reactionType: string) => {
-    try {
-      console.log('Attempting to react to post:', { postId, reactionType });
-      
-      const token = localStorage.getItem('auth-token');
-      const response = await fetch('/api/wall/react', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : ''
-        },
-        body: JSON.stringify({
-          postId,
-          reactionType
-        })
-      });
-
-      console.log('Reaction response status:', response.status);
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Reaction result:', result);
-        await fetchPosts();
-      } else {
-        const error = await response.text();
-        console.error('Reaction failed:', error);
-      }
-    } catch (error) {
-      console.error('Error reacting to post:', error);
     }
   };
 
@@ -216,23 +193,13 @@ export default function SimplifiedWallPage() {
     return colors[category] || 'border-gray-500/30';
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      submitPost();
-    }
-  };
-
-  const placeholderText = selectedTag 
-    ? `${selectedTag.emoji} Share your ${selectedTag.label.toLowerCase()} healing journey anonymously...`
-    : 'Click to choose an emotion tag, then share your healing journey...';
-
-  if (!mounted || authLoading || loading) {
+  // Early returns for auth states
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-purple-200">Loading the Wall...</p>
+          <p className="text-purple-200">Initializing connection to the Wall...</p>
         </div>
       </div>
     );
@@ -241,8 +208,31 @@ export default function SimplifiedWallPage() {
   if (!isAuthenticated || !authUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400">Please sign in to access the Wall</p>
+        <div className="text-center max-w-md mx-auto p-6">
+          <Users className="h-16 w-16 text-cyan-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Join the Community</h2>
+          <p className="text-gray-300 mb-6">
+            Sign in to access the Wall of Wounds - our anonymous healing community where you can share your journey and connect with others.
+          </p>
+          <div className="space-y-3">
+            <Link href="/sign-in">
+              <Button className="w-full bg-cyan-600 hover:bg-cyan-700">
+                <Users className="h-4 w-4 mr-2" />
+                Sign In to Join
+              </Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button variant="outline" className="w-full border-gray-600 text-gray-300 hover:bg-gray-800">
+                Create Account
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="ghost" className="w-full text-gray-400 hover:text-white">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -251,198 +241,195 @@ export default function SimplifiedWallPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
         
-        {/* SimplifiedHeader */}
-        <SimplifiedHeader 
-          user={{
-            username: user?.username || 'User',
-            streak: 34,
-            bytes: 730,
-            level: 3,
-            noContactDays: 12,
-            subscriptionTier: (user?.subscriptionTier || 'free') as 'free' | 'premium'
-          }}
-          hasShield={true}
-          onCheckin={() => console.log('Check-in clicked')}
-          onBreathing={() => {
-            // Use dashboard instead of non-existent /breathing route
-            window.location.href = '/dashboard';
-          }}
-          onCrisis={() => window.location.href = '/crisis-support'}
-        />
+      {/* SimplifiedHeader */}
+      <SimplifiedHeader 
+        user={{
+          username: authUser?.username || 'User',
+          streak: 34,
+          bytes: 730,
+          level: 3,
+          noContactDays: 12,
+          subscriptionTier: (authUser?.subscriptionTier || 'free') as 'free' | 'premium'
+        }}
+        hasShield={true}
+        onCheckin={() => console.log('Check-in clicked')}
+        onBreathing={() => {
+          // Use dashboard instead of non-existent /breathing route
+          window.location.href = '/dashboard';
+        }}
+        onCrisis={() => window.location.href = '/crisis-support'}
+      />
+      
+      {/* Main Container */}
+      <div className="max-w-3xl mx-auto px-4 pb-4">
         
-        {/* Main Container */}
-        <div className="max-w-3xl mx-auto px-4 pb-4">
-          
-          {/* Page Title */}
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-white flex items-center">
-              ✨ Wall of Wounds
-            </h1>
-            <div className="flex items-center text-sm text-purple-300">
-              <Users className="h-4 w-4 mr-1" />
-              1.2k healers
-            </div>
+        {/* Page Title */}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-white flex items-center">
+            ✨ Wall of Wounds
+          </h1>
+          <div className="flex items-center text-sm text-purple-300">
+            <Users className="h-4 w-4 mr-1" />
+            {posts.length} posts loaded
           </div>
+        </div>
 
-          {/* Unified Compose Area */}
-          <Card className="bg-gray-800/80 border border-red-500/30 mb-6">
-            <CardContent className="p-6">
-              
-              {/* Emoji Tag Selector */}
-              <div className="mb-4">
-                <div className="relative">
-                  <button
-                    onClick={() => setShowTagDropdown(!showTagDropdown)}
-                    className="flex items-center justify-between w-full p-3 bg-gray-700/50 hover:bg-gray-700/70 border border-gray-600 rounded-lg transition-colors"
-                  >
-                    <div className="flex items-center space-x-2">
-                      {selectedTag ? (
-                        <>
-                          <span className="text-lg">{selectedTag.emoji}</span>
-                          <span className="text-white">{selectedTag.label}</span>
-                        </>
-                      ) : (
-                        <span className="text-gray-400">Choose an emotion tag</span>
-                      )}
-                    </div>
-                    {showTagDropdown ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
-                  </button>
-                  
-                  <AnimatePresence>
-                    {showTagDropdown && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto"
-                      >
-                        {EMOJI_TAGS.map((tag) => (
-                          <button
-                            key={tag.category}
-                            onClick={() => {
-                              setSelectedTag(tag);
-                              setShowTagDropdown(false);
-                              textareaRef.current?.focus();
-                            }}
-                            className="flex items-center space-x-3 w-full p-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
-                          >
-                            <span className="text-lg">{tag.emoji}</span>
-                            <span className="text-white">{tag.label}</span>
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* Textarea */}
-              <div className="space-y-3">
-                <Textarea
-                  ref={textareaRef}
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  onKeyDown={handleKeyPress}
-                  placeholder={placeholderText}
-                  className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 min-h-[120px] resize-none focus:border-red-500/50 focus:ring-red-500/20"
-                  maxLength={500}
-                  disabled={!selectedTag}
-                />
-                
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center text-xs text-gray-400">
-                      <Shield className="h-3 w-3 mr-1" />
-                      Anonymous & encrypted
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {postContent.length}/500
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <div className="text-xs text-gray-500">
-                      Ctrl+Enter to post
-                    </div>
-                    <Button 
-                      onClick={submitPost}
-                      disabled={!postContent.trim() || posting || !selectedTag}
-                      className="bg-red-600 hover:bg-red-700 text-white"
-                      size="sm"
-                    >
-                      {posting ? (
-                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      ) : (
-                        <Send className="h-4 w-4 mr-2" />
-                      )}
-                      Share
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Collapsible Filters */}
-          <div className="mb-4">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center justify-between w-full p-3 bg-gray-800/50 hover:bg-gray-800/70 rounded-lg border border-gray-600/30 transition-colors"
-            >
-              <div className="flex items-center space-x-2">
-                <Sparkles className="h-4 w-4 text-purple-400" />
-                <span className="text-sm font-medium text-white">View Options</span>
-                <Badge variant="secondary" className="bg-purple-600/20 text-purple-300 text-xs">
-                  {filter}
-                </Badge>
-              </div>
-              {showFilters ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
-            </button>
+        {/* Unified Compose Area */}
+        <Card className="bg-gray-800/80 border border-red-500/30 mb-6">
+          <CardContent className="p-6">
             
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="mt-2 p-4 bg-gray-800/30 rounded-lg border border-gray-600/20"
+            {/* Emoji Tag Selector */}
+            <div className="mb-4">
+              <div className="relative">
+                <button
+                  onClick={() => setShowTagDropdown(!showTagDropdown)}
+                  className="flex items-center justify-between w-full p-3 bg-gray-700/50 hover:bg-gray-700/70 border border-gray-600 rounded-lg transition-colors"
                 >
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {[
-                      { key: 'recent', label: 'Recent', icon: '🕒' },
-                      { key: 'viral', label: 'Viral', icon: '🔥' },
-                      { key: 'oracle', label: 'Oracle', icon: '⚡' },
-                      { key: 'pulse', label: 'Pulse', icon: '💖' }
-                    ].map(({ key, label, icon }) => (
-                      <Button
-                        key={key}
-                        variant={filter === key ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setFilter(key)}
-                        className={`${filter === key ? "bg-purple-600" : "text-gray-400 hover:text-white"} justify-start`}
-                      >
-                        <span className="mr-2">{icon}</span>
-                        {label}
-                      </Button>
-                    ))}
+                  <div className="flex items-center space-x-2">
+                    {selectedTag ? (
+                      <>
+                        <span className="text-lg">{selectedTag.emoji}</span>
+                        <span className="text-white">{selectedTag.label}</span>
+                      </>
+                    ) : (
+                      <span className="text-gray-400">Choose an emotion tag</span>
+                    )}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Posts Feed */}
-          {loading ? (
-            <div className="text-center py-12">
-              <RefreshCw className="h-8 w-8 text-gray-400 animate-spin mx-auto mb-4" />
-              <p className="text-gray-400">Loading confessions from the void...</p>
+                  {showTagDropdown ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
+                </button>
+                
+                <AnimatePresence>
+                  {showTagDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto"
+                    >
+                      {EMOJI_TAGS.map((tag) => (
+                        <button
+                          key={tag.category}
+                          onClick={() => {
+                            setSelectedTag(tag);
+                            setShowTagDropdown(false);
+                          }}
+                          className="flex items-center space-x-3 w-full p-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
+                        >
+                          <span className="text-lg">{tag.emoji}</span>
+                          <span className="text-white">{tag.label}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {posts.map((post) => (
-                <Card key={post.id} className={`bg-gray-800/80 border ${getCategoryColor(post.glitchCategory)}`}>
+
+            {/* Textarea */}
+            <div className="space-y-3">
+              <Textarea
+                value={postContent}
+                onChange={(e) => setPostContent(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    handleSubmitPost();
+                  }
+                }}
+                placeholder={selectedTag 
+                  ? `${selectedTag.emoji} Share your ${selectedTag.label.toLowerCase()} healing journey anonymously...`
+                  : 'Click to choose an emotion tag, then share your healing journey...'
+                }
+                className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 min-h-[120px] resize-none focus:border-red-500/50 focus:ring-red-500/20"
+                maxLength={500}
+                disabled={!selectedTag}
+              />
+              
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center text-xs text-gray-400">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Anonymous & encrypted
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {postContent.length}/500
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs text-gray-500">
+                    Ctrl+Enter to post
+                  </div>
+                  <Button 
+                    onClick={handleSubmitPost}
+                    disabled={!postContent.trim() || posting || !selectedTag}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    size="sm"
+                  >
+                    {posting ? (
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4 mr-2" />
+                    )}
+                    Share
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Filter Options */}
+        <div className="mb-4">
+          <div className="flex items-center space-x-2">
+            <Sparkles className="h-4 w-4 text-purple-400" />
+            <span className="text-sm font-medium text-white">View:</span>
+            {['recent', 'viral', 'pulse', 'oracle'].map((filterOption) => (
+              <Button
+                key={filterOption}
+                variant={filter === filterOption ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilter(filterOption)}
+                className={`${filter === filterOption ? "bg-purple-600" : "text-gray-400 hover:text-white"}`}
+              >
+                {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
+              </Button>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => refresh()}
+              className="text-gray-400 hover:text-white"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Posts Feed */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <RefreshCw className="h-8 w-8 text-gray-400 animate-spin mx-auto mb-4" />
+            <p className="text-gray-400">Loading confessions from the void...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-400 mb-4">Failed to load posts</p>
+            <Button onClick={() => refresh()} variant="outline">
+              Try Again
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card className={`bg-gray-800/80 border ${getCategoryColor(post.glitchCategory)}`}>
                   <CardContent className="p-4">
                     
                     {/* Post Header */}
@@ -453,8 +440,7 @@ export default function SimplifiedWallPage() {
                         </Badge>
                         {post.isOraclePost && (
                           <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
-                            <Zap className="h-3 w-3 mr-1" />
-                            Oracle
+                            ⚡ Oracle
                           </Badge>
                         )}
                         {post.isFeatured && (
@@ -469,7 +455,7 @@ export default function SimplifiedWallPage() {
                     {/* Post Content */}
                     <p className="text-white leading-relaxed mb-4">{post.content}</p>
 
-                    {/* Simplified Reactions */}
+                    {/* Reactions */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         {[
@@ -479,7 +465,7 @@ export default function SimplifiedWallPage() {
                         ].map(({ type, count }) => (
                           <button
                             key={type}
-                            onClick={() => reactToPost(post.id, type)}
+                            onClick={() => handleReaction(post.id, type)}
                             className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
                               post.userReaction === type 
                                 ? 'bg-purple-600/30 text-purple-300 border border-purple-500/50' 
@@ -487,7 +473,7 @@ export default function SimplifiedWallPage() {
                             }`}
                           >
                             <span>{getReactionIcon(type)}</span>
-                            <span>{count}</span>
+                            <span>{count + (optimisticReactions[post.id] || 0)}</span>
                           </button>
                         ))}
                       </div>
@@ -497,35 +483,33 @@ export default function SimplifiedWallPage() {
                           <MessageCircle className="h-3 w-3" />
                           <span className="text-xs">{post.commentCount}</span>
                         </div>
-                        <button className="text-gray-400 hover:text-white">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              </motion.div>
+            ))}
 
-              {posts.length === 0 && !loading && (
-                <div className="text-center py-12">
-                  <div className="text-4xl mb-4">✨</div>
-                  <p className="text-gray-400 text-lg">No confessions found</p>
-                  <p className="text-gray-500 text-sm mt-2">Be the first to share your healing journey</p>
-                </div>
-              )}
-            </div>
-          )}
+            {posts.length === 0 && !isLoading && (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-4">✨</div>
+                <p className="text-gray-400 text-lg">No confessions found</p>
+                <p className="text-gray-500 text-sm mt-2">Be the first to share your healing journey</p>
+              </div>
+            )}
+          </div>
+        )}
 
-          {/* Load More */}
-          {posts.length > 0 && (
-            <div className="text-center mt-6">
-              <Button variant="outline" className="border-gray-600 text-gray-400 hover:bg-gray-700">
-                Load More Confessions
-              </Button>
-            </div>
-          )}
+        {/* Load More */}
+        {posts.length > 0 && (
+          <div className="text-center mt-6">
+            <Button variant="outline" className="border-gray-600 text-gray-400 hover:bg-gray-700">
+              Load More Confessions
+            </Button>
+          </div>
+        )}
 
-        </div>
       </div>
+    </div>
   );
 }

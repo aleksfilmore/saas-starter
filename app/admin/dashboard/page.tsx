@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
+import { AdminGuard } from '@/components/admin/AdminGuard';
 import { EmailNotificationAdmin } from '@/components/admin/EmailNotificationAdmin';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -163,7 +164,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AdminGuard>
+      <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
@@ -387,5 +389,6 @@ export default function AdminPage() {
         </Tabs>
       </div>
     </div>
+    </AdminGuard>
   );
 }

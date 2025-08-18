@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
+import { validateRequest } from '@/lib/auth';
 
-// Global storage reference
-declare global {
-  var localUsers: Map<string, any>;
-  var localSessions: Map<string, any>;
-}
-
-// Initialize OpenAI client (you'll need to add your API key)
+// Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || 'your-openai-api-key-here'
 });
@@ -28,23 +23,11 @@ interface ConversationMessage {
 
 export async function POST(request: Request) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const token = authHeader.split(' ')[1];
+    // Use Lucia authentication like other API routes
+    const { user, session } = await validateRequest();
     
-    // Check session
-    const session = global.localSessions?.get(token);
-    if (!session || Date.now() > session.expiresAt) {
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
-    }
-    
-    // Get user
-    const user = global.localUsers?.get(session.userId);
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { message, conversationHistory } = await request.json();
@@ -109,7 +92,7 @@ export async function POST(request: Request) {
       and help them find stability and safety. Focus on regulation techniques and building a coherent narrative.`
     };
 
-    const systemPrompt = archetypePrompts[user.emotional_archetype as keyof typeof archetypePrompts] || 
+    const systemPrompt = archetypePrompts[(user as any).emotional_archetype as keyof typeof archetypePrompts] || 
       archetypePrompts['ARCHITECT'];
 
     const baseSystemPrompt = `${systemPrompt}
@@ -123,7 +106,7 @@ IMPORTANT GUIDELINES:
 - Ask follow-up questions to encourage deeper reflection
 - Validate their emotions while gently challenging unhelpful thought patterns
 
-User's profile: ${user.emotional_archetype} archetype, ${user.tier} tier member.`;
+User's profile: ${(user as any).emotional_archetype} archetype, ${(user as any).tier} tier member.`;
 
     // Build conversation context
     const messages: Message[] = [
@@ -203,7 +186,7 @@ Breakups can bring up so many different emotions at once - sometimes conflicting
 Right now, let's focus on what feels safe and stable for you. Is there a place or activity that helps you feel more grounded? We can start there.`
         };
 
-        const response = mockResponses[user.emotional_archetype as keyof typeof mockResponses] || 
+        const response = mockResponses[(user as any).emotional_archetype as keyof typeof mockResponses] || 
           mockResponses['ARCHITECT'];
 
         // Update quota

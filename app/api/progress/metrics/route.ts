@@ -15,8 +15,11 @@ export async function GET(request: NextRequest) {
     const userEmail = request.headers.get('x-user-email');
     
     if (!userEmail) {
+      console.error('Progress metrics API: No user email provided');
       return NextResponse.json({ error: 'User email required' }, { status: 400 });
     }
+
+    console.log('Progress metrics API: Fetching for user:', userEmail);
 
     // Get user
     const user = await db
@@ -26,11 +29,14 @@ export async function GET(request: NextRequest) {
       .limit(1);
 
     if (user.length === 0) {
+      console.error('Progress metrics API: User not found:', userEmail);
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const userData = user[0];
     const userId = userData.id;
+    
+    console.log('Progress metrics API: Found user ID:', userId);
 
     // Calculate commitment progress
     const commitmentStartDate = userData.createdAt || new Date();
@@ -49,6 +55,8 @@ export async function GET(request: NextRequest) {
     
     // Get achievements
     const achievements = await getUserAchievements(userId, ritualStats);
+
+    console.log('Progress metrics API: Successfully calculated metrics');
 
     // Build response
     const metrics = {
@@ -78,7 +86,7 @@ export async function GET(request: NextRequest) {
       // Gamification
       xp: userData.xp || 0,
       level: userData.level || 1,
-  nextLevelXp: getNextLevelXP(userData.level || 1),
+      nextLevelXp: getNextLevelXP(userData.level || 1),
       achievements,
       
       // Therapy Integration (placeholder)
@@ -94,9 +102,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(metrics);
 
   } catch (error) {
-    console.error('Error fetching progress metrics:', error);
+    console.error('Progress metrics API error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch progress metrics' },
+      { 
+        error: 'Failed to fetch progress metrics',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

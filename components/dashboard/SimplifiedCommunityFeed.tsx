@@ -29,6 +29,7 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshIndex, setRefreshIndex] = useState(0)
+  const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({}) // Track optimistic reactions
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -72,6 +73,12 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
   }, [lastTimestamp, limit]);
 
   const handleReaction = async (postId: string, reactionType: string) => {
+    // Optimistically update the reaction count
+    setOptimisticReactions(prev => ({
+      ...prev,
+      [postId]: (prev[postId] || 0) + 1
+    }));
+
     try {
       const response = await fetch('/api/wall/react', {
         method: 'POST',
@@ -85,7 +92,7 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
       });
 
       if (response.ok) {
-        // Update local state to reflect the reaction
+        // Update local state to reflect the reaction (for permanent sync)
         setPosts(prev => prev.map(post => {
           if (post.id === postId) {
             return {
@@ -96,8 +103,22 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
           }
           return post;
         }));
+      } else {
+        // Revert optimistic update on failure
+        setOptimisticReactions(prev => ({
+          ...prev,
+          [postId]: Math.max(0, (prev[postId] || 0) - 1)
+        }));
+        
+        console.error('Failed to react to post');
       }
     } catch (error) {
+      // Revert optimistic update on error
+      setOptimisticReactions(prev => ({
+        ...prev,
+        [postId]: Math.max(0, (prev[postId] || 0) - 1)
+      }));
+      
       console.error('Failed to react to post:', error);
     }
   };
@@ -149,7 +170,7 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
                     p.userReaction === 'resonate' ? 'text-pink-400' : ''
                   }`}
                 >
-                  ❤️ {p.reactionsCount}
+                  ❤️ {p.reactionsCount + (optimisticReactions[p.id] || 0)}
                 </button>
                 <span className="opacity-60">💬 {p.commentCount || 0}</span>
                 <Link href="/wall" className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-300">Reply</Link>

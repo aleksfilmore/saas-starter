@@ -65,6 +65,7 @@ function AdaptiveDashboard({ user }: Props) {
   const [customInsight, setCustomInsight] = useState<string>('');
   const [noContactEncouragement, setNoContactEncouragement] = useState<string>('');
   const [wallPostContent, setWallPostContent] = useState<string>(''); // Add state for wall post
+  const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({}); // Track optimistic reactions
   const { tasks, markTask, progressFraction } = useDailyTasks();
   const { user: authUser } = useAuth();
   const { 
@@ -76,7 +77,8 @@ function AdaptiveDashboard({ user }: Props) {
     completeRitual, 
     rerollRitual, 
     rerollCooldownHoursLeft,
-    noContact
+    noContact,
+    refresh
   } = useHealingHub();
 
   // Fetch custom daily insight and no-contact encouragement
@@ -173,6 +175,56 @@ function AdaptiveDashboard({ user }: Props) {
       }
     } catch (error) {
       console.error('Failed to post to wall:', error);
+    }
+  };
+
+  // Handle optimistic wall post reactions
+  const handleWallReaction = async (postId: string, reactionType: string = 'resonate') => {
+    // Optimistically update the reaction count
+    setOptimisticReactions(prev => ({
+      ...prev,
+      [postId]: (prev[postId] || 0) + 1
+    }));
+
+    try {
+      const response = await fetch('/api/wall/react', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          postId,
+          reactionType
+        })
+      });
+      
+      if (response.ok) {
+        // Mark community task as completed
+        markTask('community');
+        
+        // Refresh the healing hub data to get updated wall posts
+        refresh();
+      } else {
+        // Revert optimistic update on failure
+        setOptimisticReactions(prev => ({
+          ...prev,
+          [postId]: Math.max(0, (prev[postId] || 0) - 1)
+        }));
+        
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to react to post:', errorData);
+        alert('Failed to register your reaction. Please try again.');
+      }
+    } catch (error) {
+      // Revert optimistic update on error
+      setOptimisticReactions(prev => ({
+        ...prev,
+        [postId]: Math.max(0, (prev[postId] || 0) - 1)
+      }));
+      
+      console.error('Failed to react to post:', error);
+      alert('Failed to register your reaction. Please try again.');
     }
   };
 
@@ -807,44 +859,13 @@ function AdaptiveDashboard({ user }: Props) {
                           variant="ghost" 
                           size="sm" 
                           className="text-slate-400 hover:text-pink-400 text-xs"
-                          onClick={async (e) => {
+                          onClick={(e) => {
                             e.preventDefault();
-                            try {
-                              const response = await fetch('/api/wall/react', {
-                                method: 'POST',
-                                headers: { 
-                                  'Content-Type': 'application/json'
-                                },
-                                credentials: 'include',
-                                body: JSON.stringify({
-                                  postId: post.id,
-                                  reactionType: 'resonate'
-                                })
-                              });
-                              
-                              if (response.ok) {
-                                const result = await response.json();
-                                console.log('Reaction result:', result);
-                                
-                                // Mark community task as completed
-                                markTask('community');
-                                
-                                // Trigger a refresh of the healing hub data to get updated wall posts
-                                // This will re-fetch from /api/dashboard/hub which includes updated reaction counts
-                                window.location.reload();
-                              } else {
-                                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                                console.error('Failed to react to post:', errorData);
-                                alert('Failed to register your reaction. Please try again.');
-                              }
-                            } catch (error) {
-                              console.error('Failed to react to post:', error);
-                              alert('Failed to register your reaction. Please try again.');
-                            }
+                            handleWallReaction(post.id, 'resonate');
                           }}
                         >
                           <Heart className="h-3 w-3 mr-1" />
-                          {post.reactions}
+                          {post.reactions + (optimisticReactions[post.id] || 0)}
                         </Button>
                       </div>
                     </div>
