@@ -33,6 +33,31 @@ const archetypeColors = {
 export function LiveCommunityZone({ posts, onPostSubmit, canPost = true, onEngage }: Props) {
   const [newPost, setNewPost] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userReactions, setUserReactions] = useState<{[key: string]: boolean}>({});
+
+  const handleReaction = async (postId: string) => {
+    if (userReactions[postId]) return; // Prevent duplicate reactions
+
+    try {
+      const response = await fetch('/api/wall/react', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          postId,
+          reactionType: 'resonate'
+        })
+      });
+
+      if (response.ok) {
+        setUserReactions(prev => ({ ...prev, [postId]: true }));
+        onEngage?.();
+      }
+    } catch (error) {
+      console.error('Failed to react to post:', error);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!newPost.trim()) return;
@@ -137,13 +162,16 @@ export function LiveCommunityZone({ posts, onPostSubmit, canPost = true, onEngag
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
-                  onClick={() => {
-                    onEngage?.();
-                  }}
+                  className={`transition-colors ${
+                    userReactions[post.id] 
+                      ? 'text-red-400 hover:text-red-300' 
+                      : 'text-gray-400 hover:text-red-400 hover:bg-red-500/10'
+                  }`}
+                  onClick={() => handleReaction(post.id)}
+                  disabled={userReactions[post.id]}
                 >
-                  <Heart className="h-4 w-4 mr-1" />
-                  {post.reactions}
+                  <Heart className={`h-4 w-4 mr-1 ${userReactions[post.id] ? 'fill-current' : ''}`} />
+                  {post.reactions + (userReactions[post.id] ? 1 : 0)}
                 </Button>
               </div>
               <p className="text-gray-200 leading-relaxed">{post.content}</p>

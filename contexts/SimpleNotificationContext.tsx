@@ -22,12 +22,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setIsSupported('Notification' in window && 'serviceWorker' in navigator)
-      setPermission(Notification.permission)
+      if ('Notification' in window) {
+        setPermission(Notification.permission)
+      }
     }
   }, [])
 
   const requestPermission = async (): Promise<boolean> => {
-    if (!isSupported) return false
+    if (!isSupported || !('Notification' in window)) return false
     
     try {
       const result = await Notification.requestPermission()

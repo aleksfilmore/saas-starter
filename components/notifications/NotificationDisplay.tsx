@@ -140,10 +140,18 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-80 z-[9999]">
-          <Card className="bg-gray-800 border-gray-700 shadow-2xl">
+          <Card className="bg-gray-800/95 backdrop-blur-sm border-gray-700 shadow-2xl">
             <CardContent className="p-0">
               <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h3 className="text-sm font-medium text-white">Notifications</h3>
+                <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                  <Bell className="w-4 h-4" />
+                  Notifications
+                  {unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
+                </h3>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -178,10 +186,10 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer ${
+                      className={`p-3 rounded-lg border transition-all cursor-pointer hover:bg-gray-700/30 ${
                         notification.read 
-                          ? 'bg-gray-700/50 border-gray-600' 
-                          : 'bg-gray-700 border-gray-600 ring-1 ring-purple-500/20'
+                          ? 'bg-gray-700/20 border-gray-600/50' 
+                          : 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 ring-1 ring-purple-500/20'
                       }`}
                       onClick={() => !notification.read && markAsRead(notification.id)}
                     >
@@ -241,20 +249,30 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
               )}
 
               {notifications.length > 0 && (
-                <div className="mt-2 pt-3 border-t border-gray-600 px-4 pb-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      // Mark all as read
-                      notifications.forEach(n => {
-                        if (!n.read) markAsRead(n.id);
-                      });
-                    }}
-                    className="w-full text-xs text-gray-400 hover:text-white"
-                  >
-                    Mark all as read
-                  </Button>
+                <div className="pt-3 border-t border-gray-600 px-4 pb-4">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        notifications.forEach(n => {
+                          if (!n.read) markAsRead(n.id);
+                        });
+                      }}
+                      className="flex-1 text-xs text-gray-400 hover:text-white"
+                      disabled={unreadCount === 0}
+                    >
+                      Mark all read
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsOpen(false)}
+                      className="flex-1 text-xs text-purple-400 hover:text-purple-300"
+                    >
+                      View Settings
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>

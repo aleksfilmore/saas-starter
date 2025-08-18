@@ -71,6 +71,37 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
     return ()=> clearInterval(t);
   }, [lastTimestamp, limit]);
 
+  const handleReaction = async (postId: string, reactionType: string) => {
+    try {
+      const response = await fetch('/api/wall/react', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          postId,
+          reactionType
+        })
+      });
+
+      if (response.ok) {
+        // Update local state to reflect the reaction
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              reactionsCount: post.reactionsCount + 1,
+              userReaction: reactionType
+            };
+          }
+          return post;
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to react to post:', error);
+    }
+  };
+
   const sliced = posts.slice(0, visible)
   const showLoadMore = visible < posts.length
 
@@ -112,7 +143,14 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
                 “{p.content}”
               </p>
               <div className="mt-3 text-[10px] text-gray-400 flex items-center justify-between">
-                <span>❤️ {p.reactionsCount}</span>
+                <button 
+                  onClick={() => handleReaction(p.id, 'resonate')}
+                  className={`transition-colors hover:text-pink-400 ${
+                    p.userReaction === 'resonate' ? 'text-pink-400' : ''
+                  }`}
+                >
+                  ❤️ {p.reactionsCount}
+                </button>
                 <span className="opacity-60">💬 {p.commentCount || 0}</span>
                 <Link href="/wall" className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-300">Reply</Link>
               </div>
