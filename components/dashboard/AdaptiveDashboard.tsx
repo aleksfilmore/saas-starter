@@ -232,36 +232,36 @@ function AdaptiveDashboard({ user }: Props) {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Enhanced Header */}
       <header className="border-b border-purple-500/20 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-8xl mx-auto px-6 py-4">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             
             {/* Left side - Branding */}
             <div className="flex items-center">
-              <div className="flex items-center gap-1 text-xl sm:text-2xl font-extrabold tracking-tight">
+              <div className="flex items-center gap-1 text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight">
                 <span className="text-white">CTRL</span>
                 <span className="text-gray-400">+</span>
                 <span className="text-white">ALT</span>
                 <span className="text-gray-400">+</span>
                 <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-                <span className="text-gray-400 mx-2">–</span>
-                <span className="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="text-gray-400 mx-1 sm:mx-2">–</span>
+                <span className="text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Healing Hub
                 </span>
               </div>
             </div>
             
             {/* Right side - Actions and User */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               
               {/* User Tier Badge */}
-              <div className="hidden sm:flex">
+              <div className="hidden md:flex">
                 {isPremium ? (
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 sm:px-3 py-1 text-xs">
                     <Crown className="h-3 w-3 mr-1" />
                     FIREWALL
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="border-gray-400 text-gray-300 px-3 py-1">
+                  <Badge variant="outline" className="border-gray-400 text-gray-300 px-2 sm:px-3 py-1 text-xs">
                     GHOST
                   </Badge>
                 )}
@@ -274,10 +274,10 @@ function AdaptiveDashboard({ user }: Props) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-teal-300 hover:text-teal-200 hover:bg-teal-500/10 flex items-center gap-1.5 text-xs"
+                  className="text-teal-300 hover:text-teal-200 hover:bg-teal-500/10 flex items-center gap-1 text-xs p-2"
                 >
-                  <Wind className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Breathing</span>
+                  <Wind className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden lg:inline">Breathing</span>
                 </Button>
               </BreathingExercise>
               
@@ -286,10 +286,10 @@ function AdaptiveDashboard({ user }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={() => window.location.href = '/crisis-support'}
-                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 flex items-center gap-1.5 text-xs"
+                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 flex items-center gap-1 text-xs p-2"
               >
-                <AlertTriangle className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Crisis Center</span>
+                <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span className="hidden lg:inline">Crisis</span>
               </Button>
               
               {/* Settings Button */}
@@ -297,10 +297,10 @@ function AdaptiveDashboard({ user }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setActiveModal('settings')}
-                className="text-purple-300 hover:text-white flex items-center gap-1.5 text-xs"
+                className="text-purple-300 hover:text-white flex items-center gap-1 text-xs p-2"
               >
-                <Settings className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Settings</span>
+                <Settings className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span className="hidden lg:inline">Settings</span>
               </Button>
               
               {/* Notifications */}
@@ -318,18 +318,18 @@ function AdaptiveDashboard({ user }: Props) {
                 variant="ghost"
                 size="sm"
                 onClick={handleSignOut}
-                className="text-gray-300 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-1.5 text-xs"
+                className="text-gray-300 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-1 text-xs p-2"
               >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Sign Out</span>
+                <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span className="hidden lg:inline">Sign Out</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-8xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+      <main className="max-w-8xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
           
           {/* Left Sidebar - Reorganized Layout */}
           <div className="xl:col-span-3 space-y-4">
@@ -337,21 +337,21 @@ function AdaptiveDashboard({ user }: Props) {
             {/* Enhanced Today's Progress with Prominent Insight */}
             <Card className="bg-gradient-to-br from-purple-900/60 to-indigo-900/60 border-purple-400/40 shadow-xl">
               <CardHeader className="pb-3">
-                <CardTitle className="text-white flex items-center gap-2 text-xl font-bold">
-                  <Target className="h-5 w-5 text-emerald-400" />
+                <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl font-bold">
+                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400" />
                   Today's Progress
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Progress Display */}
-                <div className="bg-black/20 rounded-lg p-4">
+                <div className="bg-black/20 rounded-lg p-3 sm:p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl font-bold text-white">{completedToday}/{totalTasks}</span>
-                    <Badge className="bg-emerald-500/30 text-emerald-300 border-emerald-400/50 text-sm px-3 py-1">
+                    <span className="text-xl sm:text-2xl font-bold text-white">{completedToday}/{totalTasks}</span>
+                    <Badge className="bg-emerald-500/30 text-emerald-300 border-emerald-400/50 text-xs sm:text-sm px-2 sm:px-3 py-1">
                       {Math.round(progressFraction * 100)}%
                     </Badge>
                   </div>
-                  <Progress value={progressFraction * 100} className="h-3 mb-4" />
+                  <Progress value={progressFraction * 100} className="h-2 sm:h-3 mb-3 sm:mb-4" />
                   <div className="space-y-2">
                     <TaskItem label="Daily Ritual" completed={tasks.ritual} />
                     <TaskItem label="Check-In" completed={tasks.checkIn} />
@@ -362,16 +362,16 @@ function AdaptiveDashboard({ user }: Props) {
                 </div>
                 
                 {/* Today's Insight - More Prominent */}
-                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
+                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-lg p-3 sm:p-4">
+                  <div className="flex items-start gap-2 sm:gap-3">
                     <div className="flex-shrink-0">
-                      <div className="w-8 h-8 bg-yellow-400/20 rounded-full flex items-center justify-center">
-                        <Star className="h-4 w-4 text-yellow-400" />
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-400/20 rounded-full flex items-center justify-center">
+                        <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-semibold text-yellow-300 mb-2">Today's Insight</h4>
-                      <blockquote className="text-sm text-gray-200 leading-relaxed italic border-l-2 border-yellow-400/30 pl-3">
+                      <h4 className="text-xs sm:text-sm font-semibold text-yellow-300 mb-2">Today's Insight</h4>
+                      <blockquote className="text-xs sm:text-sm text-gray-200 leading-relaxed italic border-l-2 border-yellow-400/30 pl-2 sm:pl-3">
                         "{customInsight || dailyInsight || 'Your sensitivity isn\'t a flaw—it\'s a feature to be honored.'}"
                       </blockquote>
                     </div>
@@ -381,7 +381,7 @@ function AdaptiveDashboard({ user }: Props) {
             </Card>
 
             {/* Three Cards Row: Check-In, No-Contact, Upgrade */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               
               {/* Daily Check-In - Compact */}
               <Card className="bg-gradient-to-br from-blue-900/50 to-slate-800/50 border-blue-500/30">
@@ -554,20 +554,10 @@ function AdaptiveDashboard({ user }: Props) {
                           <Button
                             onClick={() => setActiveModal(`ritual-${ritual.id}`)}
                             disabled={ritual.isCompleted}
-                            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                           >
                             <Play className="h-4 w-4 mr-2" />
                             {ritual.isCompleted ? 'Completed' : 'Start Ritual'}
-                          </Button>
-                          <Button
-                            onClick={() => rerollRitual()}
-                            disabled={!canReroll || ritual.isCompleted}
-                            variant="outline"
-                            className="border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
-                            title={!canReroll && (rerollCooldownHoursLeft || 0) > 0 ? `Reroll cooldown: ${rerollCooldownHoursLeft}h remaining` : 'Reroll daily rituals (once per 24h)'}
-                          >
-                            <RefreshCw className="h-4 w-4" />
-                            {!canReroll && (rerollCooldownHoursLeft || 0) > 0 ? `${rerollCooldownHoursLeft}h` : ''}
                           </Button>
                         </div>
                       </div>
@@ -643,18 +633,10 @@ function AdaptiveDashboard({ user }: Props) {
                           <Button
                             onClick={() => setActiveModal(`ritual-${ritual.id}`)}
                             disabled={ritual.isCompleted}
-                            className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800"
+                            className="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800"
                           >
                             <Play className="h-4 w-4 mr-2" />
                             {ritual.isCompleted ? 'Completed' : 'Start Ritual'}
-                          </Button>
-                          <Button
-                            disabled={true}
-                            variant="outline"
-                            className="border-slate-500/50 text-slate-500 cursor-not-allowed opacity-50"
-                            title="Firewall users can re-roll their rituals once per day"
-                          >
-                            <RefreshCw className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
@@ -801,52 +783,52 @@ function AdaptiveDashboard({ user }: Props) {
           </div>
 
           {/* Right Sidebar - Wall of Wounds */}
-          <div className="xl:col-span-3 space-y-6">
+          <div className="xl:col-span-3 space-y-4 sm:space-y-6">
             <Card className="bg-slate-800/50 border-slate-600/30">
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-pink-400" />
-                    Wall of Wounds
+                    <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-pink-400" />
+                    <span className="text-sm sm:text-base">Wall of Wounds</span>
                   </div>
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 {/* Quick Post (Premium) */}
                 {isPremium ? (
                   <div className="space-y-3">
                     <textarea
                       placeholder="Share your healing journey..."
-                      className="w-full p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 text-sm resize-none"
+                      className="w-full p-2 sm:p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 text-xs sm:text-sm resize-none"
                       rows={3}
                       value={wallPostContent}
                       onChange={(e) => setWallPostContent(e.target.value)}
                     />
                     <Button 
                       size="sm" 
-                      className="w-full bg-pink-600 hover:bg-pink-700"
+                      className="w-full bg-pink-600 hover:bg-pink-700 text-xs sm:text-sm"
                       onClick={handleWallPost}
                       disabled={!wallPostContent.trim()}
                     >
-                      <Send className="h-4 w-4 mr-2" />
+                      <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                       Share Anonymously
                     </Button>
                   </div>
                 ) : (
-                  <div className="p-3 bg-gradient-to-r from-pink-600/20 to-purple-600/20 rounded-lg border border-pink-500/30 text-center">
-                    <Lock className="h-6 w-6 mx-auto mb-2 text-pink-400" />
-                    <p className="text-sm text-pink-300 mb-2">Posting requires Premium</p>
-                    <Button size="sm" variant="outline" className="border-pink-500/50 text-pink-300">
+                  <div className="p-2 sm:p-3 bg-gradient-to-r from-pink-600/20 to-purple-600/20 rounded-lg border border-pink-500/30 text-center">
+                    <Lock className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-2 text-pink-400" />
+                    <p className="text-xs sm:text-sm text-pink-300 mb-2">Posting requires Premium</p>
+                    <Button size="sm" variant="outline" className="border-pink-500/50 text-pink-300 text-xs">
                       Upgrade to Share
                     </Button>
                   </div>
                 )}
 
                 {/* Recent Posts */}
-                <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
                   {wallPosts?.slice(0, 8).map((post) => (
-                    <div key={post.id} className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                    <div key={post.id} className="p-2 sm:p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
                       <div className="flex items-center justify-between mb-2">
                         <Badge className="bg-purple-500/20 text-purple-300 text-xs">
                           {post.emotionTag || post.archetype || post.glitchCategory || 'Anonymous'}
