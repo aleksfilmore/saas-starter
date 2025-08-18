@@ -807,14 +807,15 @@ function AdaptiveDashboard({ user }: Props) {
                           variant="ghost" 
                           size="sm" 
                           className="text-slate-400 hover:text-pink-400 text-xs"
-                          onClick={async () => {
+                          onClick={async (e) => {
+                            e.preventDefault();
                             try {
                               const response = await fetch('/api/wall/react', {
                                 method: 'POST',
                                 headers: { 
                                   'Content-Type': 'application/json'
                                 },
-                                credentials: 'include', // Important for cookie-based auth
+                                credentials: 'include',
                                 body: JSON.stringify({
                                   postId: post.id,
                                   reactionType: 'resonate'
@@ -822,22 +823,23 @@ function AdaptiveDashboard({ user }: Props) {
                               });
                               
                               if (response.ok) {
-                                // Refresh wall posts to show updated like count
-                                const wallResponse = await fetch('/api/wall/posts', {
-                                  credentials: 'include'
-                                });
-                                if (wallResponse.ok) {
-                                  const updatedPosts = await wallResponse.json();
-                                  // Update the wallPosts state
-                                  window.location.reload(); // Temporary solution to refresh
-                                }
+                                const result = await response.json();
+                                console.log('Reaction result:', result);
+                                
+                                // Mark community task as completed
                                 markTask('community');
+                                
+                                // Trigger a refresh of the healing hub data to get updated wall posts
+                                // This will re-fetch from /api/dashboard/hub which includes updated reaction counts
+                                window.location.reload();
                               } else {
-                                const errorText = await response.text();
-                                console.error('Failed to like post:', errorText);
+                                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                                console.error('Failed to react to post:', errorData);
+                                alert('Failed to register your reaction. Please try again.');
                               }
                             } catch (error) {
                               console.error('Failed to react to post:', error);
+                              alert('Failed to register your reaction. Please try again.');
                             }
                           }}
                         >

@@ -7,12 +7,15 @@ import { eq } from 'drizzle-orm';
 // Force dynamic rendering for auth-protected pages
 export const dynamic = 'force-dynamic';
 
-export default async function AdminRedirectPage() {
+export default async function SysControlLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user } = await validateRequest();
   
   if (!user) {
-    // Non-authenticated users get redirected to homepage
-    redirect('/');
+    redirect('/sign-in');
   }
 
   // Check if user is admin
@@ -20,10 +23,7 @@ export default async function AdminRedirectPage() {
     const userData = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
     const userRecord = userData[0];
     
-    if (userRecord?.isAdmin) {
-      // Redirect admin users to the secure admin panel
-      redirect('/sys-control');
-    } else {
+    if (!userRecord?.isAdmin) {
       // Redirect non-admin users to regular dashboard
       redirect('/dashboard');
     }
@@ -31,4 +31,6 @@ export default async function AdminRedirectPage() {
     console.error('Admin check error:', error);
     redirect('/dashboard');
   }
+
+  return <>{children}</>;
 }
