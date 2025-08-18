@@ -40,6 +40,18 @@ export async function POST(request: NextRequest) {
         break;
       }
       
+      case 'customer.subscription.paused': {
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionPaused(subscription);
+        break;
+      }
+      
+      case 'customer.subscription.resumed': {
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionResumed(subscription);
+        break;
+      }
+      
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         await handleCheckoutCompleted(session);
@@ -55,6 +67,24 @@ export async function POST(request: NextRequest) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice;
         await handlePaymentFailed(invoice);
+        break;
+      }
+      
+      case 'invoice.payment_action_required': {
+        const invoice = event.data.object as Stripe.Invoice;
+        await handlePaymentActionRequired(invoice);
+        break;
+      }
+      
+      case 'customer.created': {
+        const customer = event.data.object as Stripe.Customer;
+        await handleCustomerCreated(customer);
+        break;
+      }
+      
+      case 'payment_method.attached': {
+        const paymentMethod = event.data.object as Stripe.PaymentMethod;
+        await handlePaymentMethodAttached(paymentMethod);
         break;
       }
       
@@ -188,4 +218,82 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   
   // You might want to send an email notification here
   // or update the user's subscription status to indicate payment issues
+}
+
+async function handleSubscriptionPaused(subscription: Stripe.Subscription) {
+  const userId = subscription.metadata.userId;
+  
+  if (!userId) {
+    console.error('No userId found in subscription metadata');
+    return;
+  }
+
+  try {
+    await db.update(users)
+      .set({
+        subscriptionTier: 'ghost_mode',
+        tier: 'ghost',
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+
+    console.log(`Paused subscription for user ${userId}`);
+  } catch (error) {
+    console.error('Error pausing user subscription:', error);
+  }
+}
+
+async function handleSubscriptionResumed(subscription: Stripe.Subscription) {
+  const userId = subscription.metadata.userId;
+  
+  if (!userId) {
+    console.error('No userId found in subscription metadata');
+    return;
+  }
+
+  try {
+    // Determine subscription tier based on price ID
+    const priceId = subscription.items.data[0]?.price.id;
+    let subscriptionTier = 'ghost_mode';
+    let tier = 'ghost';
+    
+    if (priceId === process.env.STRIPE_FIREWALL_PRICE_ID) {
+      subscriptionTier = 'firewall_mode';
+      tier = 'firewall';
+    }
+
+    await db.update(users)
+      .set({
+        subscriptionTier: subscriptionTier,
+        tier: tier,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+
+    console.log(`Resumed subscription for user ${userId}`);
+  } catch (error) {
+    console.error('Error resuming user subscription:', error);
+  }
+}
+
+async function handlePaymentActionRequired(invoice: Stripe.Invoice) {
+  const customerId = invoice.customer as string;
+  const subscriptionId = (invoice as any).subscription as string;
+  
+  console.log(`Payment action required for subscription ${subscriptionId}`);
+  
+  // Send notification to user about required payment action
+  // This could trigger an email or in-app notification
+}
+
+async function handleCustomerCreated(customer: Stripe.Customer) {
+  console.log(`New Stripe customer created: ${customer.id}`);
+  
+  // You might want to sync customer data or send welcome emails
+}
+
+async function handlePaymentMethodAttached(paymentMethod: Stripe.PaymentMethod) {
+  console.log(`Payment method attached: ${paymentMethod.id} to customer: ${paymentMethod.customer}`);
+  
+  // You might want to update user records or send confirmation
 }
