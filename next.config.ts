@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
   
+  // Exclude mobile directory from Next.js processing
+  webpack: (config, { isServer }) => {
+    // Exclude mobile directory from webpack compilation
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/mobile/**', '**/node_modules/**'],
+    };
+    
+    return config;
+  },
+  
   // Production optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',

@@ -1,10 +1,10 @@
 # Netlify configuration for CTRL+ALT+BLOCK Therapy Platform
 [build]
-command = "rm -rf .next && npm run build"
+command = "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' npm run build"
 publish = ".next"
 
 [build.environment]
-NODE_VERSION = "22.11.0"
+NODE_VERSION = "20.18.0"
 NODE_ENV = "production"
 NPM_FLAGS = "--legacy-peer-deps"
 SECRETS_SCAN_OMIT_PATHS = "test-*.js,*-test.js,*-diagnostic.js,emergency-*.js"
