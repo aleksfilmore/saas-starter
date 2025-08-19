@@ -25,29 +25,13 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Experimental features for better compatibility
+  // Minimal experimental features
   experimental: {
     esmExternals: true,
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
   },
   
-  // Caching configuration
-  onDemandEntries: {
-    maxInactiveAge: 25 * 1000,
-    pagesBufferLength: 2,
-  },
-  
-  // Force all pages to be dynamic by disabling static optimization
-  trailingSlash: false,
-  generateEtags: false,
-  poweredByHeader: false,
+  // Force dynamic rendering to avoid static generation issues
+  output: 'standalone',
   
   // Build configuration to prevent static generation issues
   eslint: {
@@ -56,10 +40,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Output configuration
-  output: 'standalone',
-  distDir: '.next',
 };
 
 export default nextConfig;
