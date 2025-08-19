@@ -9,24 +9,9 @@ NODE_ENV = "production"
 NPM_FLAGS = "--legacy-peer-deps"
 NODE_OPTIONS = "--max-old-space-size=4096"
 NEXT_TELEMETRY_DISABLED = "1"
-# Enable build caching
-NPM_CONFIG_CACHE = ".npm"
-NEXT_CACHE = ".next/cache"
-
-# Clear build cache to fix Internal Server Error
-[build.processing]
-skip_processing = false
-
-# Enhanced Next.js plugin configuration
-[[plugins]]
-package = "@netlify/plugin-nextjs"
-[plugins.inputs]
-# Enable caching for faster builds
-cacheDir = ".next/cache"
 SECRETS_SCAN_OMIT_PATHS = "test-*.js,*-test.js,*-diagnostic.js,emergency-*.js"
 SECRETS_SCAN_OMIT_KEYS = "STRIPE_PUBLISHABLE_KEY,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
 
-# Clear build cache to fix Internal Server Error
 [build.processing]
 skip_processing = false
 
