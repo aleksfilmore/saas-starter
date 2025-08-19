@@ -1,7 +1,7 @@
 {
   "private": true,
   "engines": {
-    "node": ">=22.0.0",
+    "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -106,7 +106,7 @@
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
     "eslint": "^9.32.0",
-    "eslint-config-next": "15.4.5",
+    "eslint-config-next": "15.4.6",
     "sass": "^1.90.0"
   }
 }

@@ -25,22 +25,29 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Disable all experimental features
+  // Experimental features for better compatibility
   experimental: {
     esmExternals: true,
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+  },
+  
+  // Caching configuration
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   },
   
   // Force all pages to be dynamic by disabling static optimization
   trailingSlash: false,
   generateEtags: false,
   poweredByHeader: false,
-  
-  // Disable static page generation timeout
-  staticPageGenerationTimeout: 0,
-  
-  // Skip all redirects and middleware during build
-  skipTrailingSlashRedirect: true,
-  skipMiddlewareUrlNormalize: true,
   
   // Build configuration to prevent static generation issues
   eslint: {
