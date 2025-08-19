@@ -658,24 +658,61 @@ export default function AttachmentQuizPage() {
   const question = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 px-2 sm:px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 px-2 sm:px-4 py-4">
+      {/* Floating Particles */}
+      <div className="particle-system">
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className={`particle ${
+              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
       
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-6">
+          <Link href="/admin" className="inline-block">
+            <div className="text-xl md:text-2xl font-bold text-white tracking-tight mb-2">
+              <span>CTRL+ALT+</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">BLOCK</span>
+            </div>
+          </Link>
+          <div className="flex items-center justify-center mb-4">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-xl shadow-glow-purple">
+              <Brain className="h-5 w-5 text-white" />
+            </div>
+          </div>
+          <h1 className="text-lg sm:text-xl text-brand-glow font-semibold mb-2">Healing Archetype Scan</h1>
+          <p className="text-gray-300 text-sm">Not therapy. Pure optimization.</p>
+        </div>
         
         {/* Progress */}
         <div className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <p className="text-white font-medium text-sm sm:text-base">Prompt {currentQuestion + 1} of {questions.length}</p>
-            <p className="text-gray-400 text-xs sm:text-sm">{Math.round(progress)}% → 100%</p>
+            <p className="text-purple-400 text-xs sm:text-sm font-medium">{Math.round(progress)}% → 100%</p>
           </div>
-          <Progress value={progress} className="h-2 bg-gray-700" />
-          <p className="text-xs text-gray-400 mt-2 text-center">Not therapy. Pure optimization.</p>
+          <div className="w-full bg-gray-800 rounded-full h-3 border border-purple-500/30">
+            <div 
+              className="bg-gradient-to-r from-purple-600 to-pink-600 h-full rounded-full transition-all duration-500 shadow-glow-purple"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
         </div>
 
         {/* Question */}
-        <Card className="bg-gray-800/90 border border-gray-600/50 backdrop-blur-xl">
+        <Card className="card-brand neon-border-purple">
           <CardHeader className="pb-4 sm:pb-6">
-            <CardTitle className="text-white text-lg sm:text-xl md:text-2xl leading-relaxed">
+            <CardTitle className="text-brand-glow text-lg sm:text-xl md:text-2xl leading-relaxed">
               {question.question}
             </CardTitle>
           </CardHeader>
@@ -696,7 +733,7 @@ export default function AttachmentQuizPage() {
                   key={index}
                   onClick={() => handleAnswer(question.id, option.value)}
                   variant="outline"
-                  className={`w-full p-4 sm:p-6 text-left h-auto bg-gray-800/60 ${optionStyle} text-white justify-start transition-all duration-200 group backdrop-blur-sm text-sm sm:text-base leading-relaxed`}
+                  className={`w-full p-4 sm:p-6 text-left h-auto card-brand ${optionStyle} text-white justify-start transition-all duration-300 group hover:scale-102 text-sm sm:text-base leading-relaxed`}
                 >
                   <div className="flex items-center w-full">
                     <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center mr-3 sm:mr-4 transition-colors flex-shrink-0 ${optionStyle.replace('text-', 'border-').replace('-100', '-400')}`}>
@@ -714,7 +751,7 @@ export default function AttachmentQuizPage() {
             <Button
               onClick={() => handleAnswer(question.id, 'SKIP')}
               variant="ghost"
-              className="w-full p-3 sm:p-4 text-center bg-gray-700/30 border border-gray-600/30 hover:bg-gray-600/40 text-gray-400 hover:text-gray-300 transition-all duration-200 text-sm sm:text-base"
+              className="w-full p-3 sm:p-4 text-center bg-gray-800/30 border border-purple-500/30 hover:bg-purple-600/20 text-gray-300 hover:text-white transition-all duration-300 text-sm sm:text-base neon-border-purple"
             >
               <span>Not sure / Skip this question</span>
             </Button>

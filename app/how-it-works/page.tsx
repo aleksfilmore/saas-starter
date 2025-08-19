@@ -16,43 +16,60 @@ export default function HowItWorksPage() {
       title: "Run the 2-Minute System Scan",
       description: "Attachment quiz in disguise. No real names. Just archetypes.",
       icon: <Target className="h-10 w-10" />,
-      gradient: "from-blue-500 to-purple-500"
+      gradient: "bg-gradient-to-br from-purple-600 to-pink-500"
     },
     {
       number: "2️⃣",
       title: "Receive Daily Ritual Protocols",
       description: "3–5 micro-quests dropped at optimal times. Multimedia, XP, and mood slider feedback.",
       icon: <Timer className="h-10 w-10" />,
-      gradient: "from-green-500 to-emerald-500"
+      gradient: "bg-gradient-to-br from-blue-500 to-purple-600"
     },
     {
       number: "3️⃣",
       title: "Level Up via AI & Community",
       description: "Chat with the AI goblin, dump secrets on the Wall, collect Byte loot. Streaks trigger bigger rituals.",
       icon: <Users className="h-10 w-10" />,
-      gradient: "from-purple-500 to-pink-500"
+      gradient: "bg-gradient-to-br from-green-500 to-blue-500"
     },
     {
       number: "4️⃣",
       title: "Break Free & Glow-Up",
       description: "30-Day Reformat or 90-Day Deep Reset. Exit with receipts, badges, and a timeline your ex wishes they kept.",
       icon: <Star className="h-10 w-10" />,
-      gradient: "from-yellow-500 to-orange-500"
+      gradient: "bg-gradient-to-br from-yellow-500 to-orange-500"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+      {/* Floating Particles */}
+      <div className="particle-system">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className={`particle ${
+              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
       {/* Header */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
+      <header className="w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
+            <Link href="/admin" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
               <span>CTRL</span>
               <span className="text-gray-400">+</span>
               <span>ALT</span>
               <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent brand-glitch" data-text="BLOCK">BLOCK</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link href="/admin">
@@ -61,7 +78,7 @@ export default function HowItWorksPage() {
                 </Button>
               </Link>
               <Link href="/quiz">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                <Button className="btn-brand-primary">
                   Start Healing
                 </Button>
               </Link>
@@ -70,9 +87,10 @@ export default function HowItWorksPage() {
         </nav>
       </header>
 
-      {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-        <h1 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+          <h1 className="text-4xl md:text-6xl font-black text-brand-glow leading-tight mb-6">
           Your Healing Journey in 
           <br />
           <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
@@ -177,7 +195,7 @@ export default function HowItWorksPage() {
           <Link href="/quiz">
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg px-12 py-4 text-white border-0 hover:scale-105 transition-all"
+              className="btn-brand-primary text-lg px-12 py-4"
             >
               <Sparkles className="h-5 w-5 mr-2" />
               Start System Scan
@@ -186,6 +204,7 @@ export default function HowItWorksPage() {
           </Link>
         </div>
       </div>
+    </div>
     </div>
   );
 }

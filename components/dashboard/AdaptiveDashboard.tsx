@@ -229,9 +229,26 @@ function AdaptiveDashboard({ user }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+      {/* Floating Particles */}
+      <div className="particle-system">
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className={`particle ${
+              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
       {/* Enhanced Header */}
-      <header className="border-b border-purple-500/20 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-8xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             
@@ -242,9 +259,9 @@ function AdaptiveDashboard({ user }: Props) {
                 <span className="text-gray-400">+</span>
                 <span className="text-white">ALT</span>
                 <span className="text-gray-400">+</span>
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent brand-glitch" data-text="BLOCK">BLOCK</span>
                 <span className="text-gray-400 mx-1 sm:mx-2">–</span>
-                <span className="text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="text-sm sm:text-base md:text-lg font-bold text-brand-glow">
                   Healing Hub
                 </span>
               </div>

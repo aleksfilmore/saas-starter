@@ -24,6 +24,19 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
+
 interface Post {
   id: string;
   content: string;
@@ -228,43 +241,46 @@ export default function OptimizedWallPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="brand-container">
+      <FloatingParticles />
         
       {/* SimplifiedHeader */}
-      <SimplifiedHeader 
-        user={{
-          username: authUser?.username || 'User',
-          streak: 34,
-          bytes: 730,
-          level: 3,
-          noContactDays: 12,
-          subscriptionTier: (authUser?.subscriptionTier || 'free') as 'free' | 'premium'
-        }}
-        hasShield={true}
-        onCheckin={() => console.log('Check-in clicked')}
-        onBreathing={() => {
-          // Use dashboard instead of non-existent /breathing route
-          window.location.href = '/dashboard';
-        }}
-        onCrisis={() => window.location.href = '/crisis-support'}
-      />
+      <div className="relative z-10">
+        <SimplifiedHeader 
+          user={{
+            username: authUser?.username || 'User',
+            streak: 34,
+            bytes: 730,
+            level: 3,
+            noContactDays: 12,
+            subscriptionTier: (authUser?.subscriptionTier || 'free') as 'free' | 'premium'
+          }}
+          hasShield={true}
+          onCheckin={() => console.log('Check-in clicked')}
+          onBreathing={() => {
+            // Use dashboard instead of non-existent /breathing route
+            window.location.href = '/dashboard';
+          }}
+          onCrisis={() => window.location.href = '/crisis-support'}
+        />
+      </div>
       
       {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 pb-4">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 pb-4">
         
         {/* Page Title */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-white flex items-center">
+          <h1 className="text-2xl font-bold text-white flex items-center brand-glow">
             ✨ Wall of Wounds
           </h1>
-          <div className="flex items-center text-sm text-purple-300">
+          <div className="flex items-center text-sm text-brand-primary brand-glow">
             <Users className="h-4 w-4 mr-1" />
             {posts.length} posts loaded
           </div>
         </div>
 
         {/* Unified Compose Area */}
-        <Card className="bg-gray-800/80 border border-red-500/30 mb-6">
+        <Card className="card-brand border-red-500/30 mb-6">
           <CardContent className="p-6">
             
             {/* Emoji Tag Selector */}
@@ -272,7 +288,7 @@ export default function OptimizedWallPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowTagDropdown(!showTagDropdown)}
-                  className="flex items-center justify-between w-full p-3 bg-gray-700/50 hover:bg-gray-700/70 border border-gray-600 rounded-lg transition-colors"
+                  className="flex items-center justify-between w-full p-3 bg-brand-dark/50 hover:bg-brand-dark/70 border border-brand-light neon-border rounded-lg transition-colors"
                 >
                   <div className="flex items-center space-x-2">
                     {selectedTag ? (

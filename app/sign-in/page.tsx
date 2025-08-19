@@ -58,23 +58,45 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
+      {/* Floating Particles */}
+      <div className="particle-system">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className={`particle ${
+              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
+            }`}
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 8}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
-          <Link href="/" className="flex items-center justify-center gap-1 text-2xl font-extrabold tracking-tight text-white mb-4">
+          <Link href="/admin" className="flex items-center justify-center gap-1 text-2xl font-extrabold tracking-tight text-white mb-4">
             <span>CTRL</span>
             <span className="text-gray-400">+</span>
             <span>ALT</span>
             <span className="text-gray-400">+</span>
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent brand-glitch" data-text="BLOCK">BLOCK</span>
           </Link>
           <p className="text-gray-300">Welcome back to your healing journey</p>
         </div>
 
-        <Card className="shadow-xl border border-gray-600/50 bg-gray-800/90 backdrop-blur-xl">
+        <Card className="card-brand neon-border-purple">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl font-bold text-center text-white">Sign In</CardTitle>
-            <CardDescription className="text-center text-gray-400">
+            <div className="flex items-center justify-center mb-4">
+              <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-3 rounded-xl shadow-glow-purple">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-center text-brand-glow">Sign In</CardTitle>
+            <CardDescription className="text-center text-gray-300">
               Continue your personalized healing experience
             </CardDescription>
           </CardHeader>
@@ -100,7 +122,7 @@ export default function SignInPage() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 border-gray-600 bg-gray-700/50 text-white placeholder-gray-400 focus:border-purple-400"
+                    className="pl-10 border-purple-500/30 bg-gray-800/50 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 neon-border-purple"
                     required
                   />
                 </div>
@@ -118,7 +140,7 @@ export default function SignInPage() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 border-gray-600 bg-gray-700/50 text-white placeholder-gray-400 focus:border-purple-400"
+                    className="pl-10 pr-10 border-purple-500/30 bg-gray-800/50 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 neon-border-purple"
                     required
                   />
                   <button
@@ -143,7 +165,7 @@ export default function SignInPage() {
               <Button
                 type="submit"
                 disabled={loading || !email || !password}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium py-2.5"
+                className="w-full btn-brand-primary py-3"
               >
                 {loading ? (
                   <div className="flex items-center space-x-2">

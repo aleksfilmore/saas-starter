@@ -12,6 +12,19 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft, Heart, Shield, CheckCircle, Crown, Ghost } from 'lucide-react'
 import PlanSelection from '@/components/subscription/PlanSelection'
 
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
+
 type Step = 'plan' | 'account' | 'processing'
 type PlanType = 'FREE' | 'PREMIUM'
 
@@ -227,20 +240,21 @@ function SignUpWithPlanContent() {
   // Step 1: Plan Selection
   if (currentStep === 'plan') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-6xl">
+      <div className="brand-container">
+        <FloatingParticles />
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <Heart className="h-6 w-6 text-white" />
+              <div className="w-10 h-10 bg-brand-gradient rounded-lg flex items-center justify-center neon-border">
+                <Heart className="h-6 w-6 text-white brand-glow" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold brand-text-gradient brand-glitch">
                 CTRL+ALT+BLOCK
               </h1>
             </div>
             <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white">Welcome to Your Healing Journey</h2>
-              <p className="text-gray-300">
+              <h2 className="text-3xl font-bold text-white brand-glow">Welcome to Your Healing Journey</h2>
+              <p className="text-brand-light">
                 {fromScan 
                   ? "Your personalized scan is complete! Choose your plan to unlock your results."
                   : "Join thousands on their path to emotional wellness and breaking free from toxic patterns."
@@ -258,7 +272,7 @@ function SignUpWithPlanContent() {
           <div className="flex justify-center mt-8">
             <Button
               onClick={() => setCurrentStep('account')}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-medium px-8 py-3"
+              className="btn-brand-primary"
             >
               Continue with {selectedPlan === 'FREE' ? '👻 Ghost' : '🔥 Firewall'} Mode
               <ArrowRight className="h-4 w-4 ml-2" />
@@ -266,9 +280,9 @@ function SignUpWithPlanContent() {
           </div>
 
           <div className="text-center mt-6">
-            <p className="text-gray-400 text-sm">
+            <p className="text-brand-light text-sm">
               Already have an account?{' '}
-              <Link href="/sign-in" className="text-purple-400 hover:text-purple-300">
+              <Link href="/sign-in" className="text-brand-primary hover:text-brand-secondary brand-glow">
                 Sign in here
               </Link>
             </p>
@@ -281,14 +295,15 @@ function SignUpWithPlanContent() {
   // Step 2: Account Creation
   if (currentStep === 'account') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
+      <div className="brand-container">
+        <FloatingParticles />
+        <div className="relative z-10 w-full max-w-md mx-auto px-4">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <Heart className="h-6 w-6 text-white" />
+              <div className="w-10 h-10 bg-brand-gradient rounded-lg flex items-center justify-center neon-border">
+                <Heart className="h-6 w-6 text-white brand-glow" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold brand-text-gradient brand-glitch">
                 CTRL+ALT+BLOCK
               </h1>
             </div>
@@ -297,34 +312,34 @@ function SignUpWithPlanContent() {
             <div className="flex items-center justify-center gap-2 mb-4">
               {selectedPlan === 'FREE' ? (
                 <>
-                  <Ghost className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-300">👻 Ghost Mode</span>
+                  <Ghost className="h-5 w-5 text-brand-light" />
+                  <span className="text-brand-light">👻 Ghost Mode</span>
                 </>
               ) : (
                 <>
-                  <Crown className="h-5 w-5 text-yellow-400" />
-                  <span className="text-yellow-300">🔥 Firewall Mode</span>
+                  <Crown className="h-5 w-5 text-brand-accent" />
+                  <span className="text-brand-accent">🔥 Firewall Mode</span>
                 </>
               )}
             </div>
           </div>
 
-          <Card className="shadow-xl border border-gray-700 bg-gray-800/90 backdrop-blur-sm">
+          <Card className="card-brand">
             <CardHeader className="space-y-1 pb-6">
               <div className="flex items-center justify-between">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setCurrentStep('plan')}
-                  className="text-gray-400 hover:text-gray-300 p-0"
+                  className="text-brand-light hover:text-brand-primary brand-glow p-0"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" />
                   Back
                 </Button>
-                <div className="text-sm text-gray-400">Step 2 of 2</div>
+                <div className="text-sm text-brand-light">Step 2 of 2</div>
               </div>
-              <CardTitle className="text-2xl font-bold text-center text-white">Create Account</CardTitle>
-              <CardDescription className="text-center text-gray-300">
+              <CardTitle className="text-2xl font-bold text-center text-white brand-glow">Create Account</CardTitle>
+              <CardDescription className="text-center text-brand-light">
                 {selectedPlan === 'PREMIUM' 
                   ? "Create your account and complete payment to unlock Firewall Mode"
                   : "Create your free account to begin your healing journey"
@@ -342,42 +357,42 @@ function SignUpWithPlanContent() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-300 font-medium">
+                  <Label htmlFor="email" className="text-brand-light font-medium">
                     Email Address
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-brand-light" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="pl-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400"
+                      className="pl-10 input-brand"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-300 font-medium">
+                  <Label htmlFor="password" className="text-brand-light font-medium">
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-brand-light" />
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Create a strong password"
                       value={formData.password}
                       onChange={(e) => handleInputChange('password', e.target.value)}
-                      className="pl-10 pr-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400"
+                      className="pl-10 pr-10 input-brand"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-300"
+                      className="absolute right-3 top-3 text-brand-light hover:text-brand-primary brand-glow"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -396,24 +411,24 @@ function SignUpWithPlanContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-gray-300 font-medium">
+                  <Label htmlFor="confirmPassword" className="text-brand-light font-medium">
                     Confirm Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-brand-light" />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your password"
                       value={formData.confirmPassword}
                       onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                      className="pl-10 pr-10 bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400"
+                      className="pl-10 pr-10 input-brand"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-300"
+                      className="absolute right-3 top-3 text-brand-light hover:text-brand-primary brand-glow"
                     >
                       {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -429,15 +444,15 @@ function SignUpWithPlanContent() {
                       id="terms"
                       checked={agreedToTerms}
                       onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-                      className="mt-1 border-gray-600 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                      className="mt-1 border-brand-light data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary neon-border"
                     />
-                    <Label htmlFor="terms" className="text-sm text-gray-300 leading-relaxed">
+                    <Label htmlFor="terms" className="text-sm text-brand-light leading-relaxed">
                       I agree to the{' '}
-                      <Link href="/terms" className="text-purple-400 hover:text-purple-300">
+                      <Link href="/terms" className="text-brand-primary hover:text-brand-secondary brand-glow">
                         Terms of Service
                       </Link>{' '}
                       and{' '}
-                      <Link href="/privacy" className="text-purple-400 hover:text-purple-300">
+                      <Link href="/privacy" className="text-brand-primary hover:text-brand-secondary brand-glow">
                         Privacy Policy
                       </Link>
                     </Label>
@@ -447,9 +462,9 @@ function SignUpWithPlanContent() {
                       id="newsletter"
                       checked={wantsNewsletter}
                       onCheckedChange={(checked) => setWantsNewsletter(checked === true)}
-                      className="mt-1 border-gray-600 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                      className="mt-1 border-brand-light data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary neon-border"
                     />
-                    <Label htmlFor="newsletter" className="text-sm text-gray-300">
+                    <Label htmlFor="newsletter" className="text-sm text-brand-light">
                       Send me helpful tips and updates about my healing journey
                     </Label>
                   </div>
@@ -458,11 +473,11 @@ function SignUpWithPlanContent() {
                 <Button
                   type="submit"
                   disabled={loading || !!validateForm()}
-                  className={`w-full font-medium py-2.5 ${
+                  className={`w-full ${
                     selectedPlan === 'PREMIUM'
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
-                      : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800'
-                  } text-white`}
+                      ? 'btn-brand-primary'
+                      : 'btn-brand-secondary'
+                  }`}
                 >
                   {loading ? (
                     <div className="flex items-center space-x-2">
@@ -479,8 +494,8 @@ function SignUpWithPlanContent() {
               </form>
 
               {selectedPlan === 'PREMIUM' && (
-                <div className="mt-4 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-                  <div className="flex items-center space-x-2 text-purple-400 text-sm">
+                <div className="mt-4 p-3 bg-brand-primary/10 border border-brand-primary/30 rounded-lg neon-border">
+                  <div className="flex items-center space-x-2 text-brand-primary text-sm brand-glow">
                     <Shield className="h-4 w-4" />
                     <span>You'll be redirected to secure Stripe checkout after account creation</span>
                   </div>
@@ -495,13 +510,14 @@ function SignUpWithPlanContent() {
 
   // Step 3: Processing
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 flex items-center justify-center p-4">
-      <div className="text-center">
-        <div className="w-16 h-16 mx-auto mb-6 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
-        <h2 className="text-2xl font-bold text-white mb-2">
+    <div className="brand-container">
+      <FloatingParticles />
+      <div className="relative z-10 text-center">
+        <div className="w-16 h-16 mx-auto mb-6 border-4 border-brand-primary/30 border-t-brand-primary rounded-full animate-spin neon-border"></div>
+        <h2 className="text-2xl font-bold text-white mb-2 brand-glow">
           {selectedPlan === 'PREMIUM' ? 'Setting up your Firewall Mode...' : 'Creating your account...'}
         </h2>
-        <p className="text-gray-300">
+        <p className="text-brand-light">
           {selectedPlan === 'PREMIUM' 
             ? 'You\'ll be redirected to complete your subscription in just a moment.'
             : 'Welcome to your healing journey!'

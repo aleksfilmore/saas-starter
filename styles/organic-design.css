@@ -1,0 +1,227 @@
+/* Enhanced Design Tokens: Breaking the "Mindfulness Tech" Uniform */
+
+:root {
+  /* PRIMARY: Keep purple but make it warmer */
+  --primary-purple: #8B5CF6;
+  --primary-purple-dark: #7C3AED;
+  --primary-purple-light: #A78BFA;
+  
+  /* SECONDARY: Warm counterpoints */
+  --accent-gold: #F59E0B;
+  --accent-gold-soft: #FCD34D;
+  --accent-teal: #14B8A6;
+  --accent-teal-soft: #5EEAD4;
+  --accent-green: #22C55E;
+  --accent-green-soft: #86EFAC;
+  
+  /* NEUTRAL: Better contrast while keeping warmth */
+  --neutral-dark-bg: #1A1A1A;
+  --neutral-warm-dark: #2A2A2A;
+  --neutral-cream: #F9F7F1;
+  --neutral-warm-gray: #A1A1AA;
+  --neutral-light-text: #F4F4F5;
+  
+  /* ORGANIC TEXTURES */
+  --texture-paper: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" opacity="0.03"><circle cx="100" cy="100" r="2" fill="currentColor"/><circle cx="300" cy="150" r="1.5" fill="currentColor"/><circle cx="200" cy="250" r="1" fill="currentColor"/><circle cx="350" cy="300" r="2.5" fill="currentColor"/></svg>');
+  
+  /* ANIMATIONS: Breathing, organic movements */
+  --animation-breathe: breathe 4s ease-in-out infinite;
+  --animation-float: float 6s ease-in-out infinite;
+  --animation-ripple: ripple 2s ease-out;
+}
+
+/* BREATHING ANIMATIONS */
+@keyframes breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  50% { transform: scale(1.05) rotate(1deg); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ORGANIC SHAPES */
+.organic-blob {
+  background: radial-gradient(ellipse at center, 
+    var(--accent-gold) 0%, 
+    transparent 50%);
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  animation: var(--animation-float);
+  filter: blur(40px);
+  opacity: 0.1;
+}
+
+.breath-indicator {
+  animation: var(--animation-breathe);
+}
+
+/* WARM GRADIENTS */
+.gradient-warm-primary {
+  background: linear-gradient(135deg, 
+    var(--primary-purple) 0%, 
+    var(--accent-gold) 100%);
+}
+
+.gradient-warm-secondary {
+  background: linear-gradient(135deg, 
+    var(--accent-teal) 0%, 
+    var(--primary-purple) 100%);
+}
+
+.gradient-warm-accent {
+  background: linear-gradient(135deg, 
+    var(--accent-green) 0%, 
+    var(--accent-teal) 100%);
+}
+
+/* TEXTURED BACKGROUNDS */
+.textured-background {
+  background-image: var(--texture-paper);
+  background-color: var(--neutral-warm-white);
+}
+
+/* CUSTOM BUTTON STYLES */
+.btn-warm-primary {
+  background: var(--gradient-warm-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-warm-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255,255,255,0.2), 
+    transparent);
+  transition: left 0.5s;
+}
+
+.btn-warm-primary:hover::before {
+  left: 100%;
+}
+
+.btn-warm-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+}
+
+/* CARD ENHANCEMENTS */
+.card-organic {
+  background: rgba(254, 253, 248, 0.95);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-organic::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, 
+    var(--accent-gold) 0%, 
+    transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.card-organic:hover::before {
+  opacity: 0.03;
+}
+
+.card-organic:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15);
+}
+
+/* BADGE STYLES */
+.badge-warm {
+  background: linear-gradient(135deg, 
+    var(--accent-gold-soft) 0%, 
+    var(--accent-teal-soft) 100%);
+  color: var(--neutral-charcoal);
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+/* CONFETTI ANIMATION */
+.confetti-burst {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.confetti-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-gold);
+  border-radius: 50%;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg) scale(0);
+    opacity: 0;
+  }
+}
+
+/* MICRO-INTERACTIONS */
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
+  }
+}
+
+/* RESPONSIVE ORGANIC SHAPES */
+@media (max-width: 768px) {
+  .organic-blob {
+    filter: blur(20px);
+    opacity: 0.05;
+  }
+}
+
+/* ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+  .organic-blob,
+  .breath-indicator,
+  .pulse-glow {
+    animation: none;
+  }
+}

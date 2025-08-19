@@ -9,6 +9,19 @@ import {
   AlertTriangle, ArrowRight, Sparkles
 } from 'lucide-react';
 
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
+
 export default function FeaturesPage() {
   const features = [
     {
@@ -50,26 +63,27 @@ export default function FeaturesPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="brand-container">
+      <FloatingParticles />
       {/* Header */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
+      <header className="relative z-10 w-full border-b border-brand-primary/30 bg-brand-dark/60 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
+            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white brand-glitch">
               <span>CTRL</span>
-              <span className="text-gray-400">+</span>
+              <span className="text-brand-light">+</span>
               <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
+              <span className="text-brand-light">+</span>
+              <span className="brand-text-gradient">BLOCK</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link href="/admin">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
+                <Button variant="ghost" className="text-white hover:text-brand-primary brand-glow">
                   Back to Home
                 </Button>
               </Link>
               <Link href="/quiz">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                <Button className="btn-brand-primary">
                   Start Healing
                 </Button>
               </Link>
@@ -79,34 +93,34 @@ export default function FeaturesPage() {
       </header>
 
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-        <h1 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center">
+        <h1 className="text-4xl md:text-6xl font-black text-white leading-tight mb-6 brand-glow">
           Why CTRL+ALT+BLOCK™ 
           <br />
-          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+          <span className="brand-text-gradient brand-glitch">
             Feels Like Wizardry
           </span>
         </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-12">
+        <p className="text-xl text-brand-light max-w-3xl mx-auto leading-relaxed mb-12">
           Revolutionary healing technology that transforms your heartbreak into an engaging journey of self-discovery and growth.
         </p>
       </div>
 
       {/* Features Grid */}
-      <div className="max-w-6xl mx-auto px-6 pb-20">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-gray-800/50 border border-gray-600/50 hover:border-purple-500/50 transition-all duration-300 group">
+            <Card key={index} className="card-brand group hover:neon-border transition-all duration-500">
               <CardContent className="p-8 text-center">
-                <div className={`inline-flex p-6 rounded-full bg-gradient-to-r ${feature.gradient} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <div className="text-white">
+                <div className={`inline-flex p-6 rounded-full bg-brand-gradient mb-6 group-hover:scale-110 transition-transform duration-300 neon-border`}>
+                  <div className="text-white brand-glow">
                     {feature.icon}
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">
+                <h3 className="text-2xl font-bold text-white mb-4 brand-glow">
                   {feature.title}
                 </h3>
-                <p className="text-gray-300 leading-relaxed text-lg">
+                <p className="text-brand-light leading-relaxed text-lg">
                   {feature.description}
                 </p>
               </CardContent>
@@ -116,18 +130,18 @@ export default function FeaturesPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="max-w-4xl mx-auto px-6 py-16 text-center">
-        <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-12 border border-purple-500/30">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-16 text-center">
+        <div className="card-brand p-12 neon-border">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 brand-glow">
             Ready to Experience the Magic?
           </h2>
-          <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+          <p className="text-xl text-brand-light mb-8 leading-relaxed">
             Join thousands who've discovered that healing doesn't have to be boring.
           </p>
           <Link href="/quiz">
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg px-12 py-4 text-white border-0 hover:scale-105 transition-all"
+              className="btn-brand-primary text-lg px-12 py-4 hover:scale-105 transition-all"
             >
               <Sparkles className="h-5 w-5 mr-2" />
               Start Your Healing Journey
