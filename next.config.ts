@@ -17,6 +17,20 @@ const nextConfig: NextConfig = {
       ignored: ['**/mobile/**', '**/node_modules/**'],
     };
     
+    // Also exclude mobile from module resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+    };
+    
+    // Exclude mobile files from compilation
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      };
+    }
+    
     return config;
   },
   
