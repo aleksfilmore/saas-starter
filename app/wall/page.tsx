@@ -101,12 +101,17 @@ export default function OptimizedWallPage() {
 
   const posts: Post[] = feedData?.posts || [];
 
-  // Optimistic heart reaction handler (consistent with dashboard)
+  // Optimistic heart reaction handler (properly handle existing reactions)
   const handleHeartReaction = async (postId: string) => {
+    const currentPost = posts.find(p => p.id === postId);
+    if (!currentPost) return;
+
+    const hasUserReacted = currentPost.userReaction === 'resonate';
+    
     // Optimistically update the heart count
     setOptimisticReactions(prev => ({
       ...prev,
-      [postId]: (prev[postId] || 0) + 1
+      [postId]: hasUserReacted ? -1 : 1 // Remove if already reacted, add if not
     }));
 
     try {
@@ -120,12 +125,17 @@ export default function OptimizedWallPage() {
       if (response.ok) {
         // Refresh data in background
         refresh();
-        toast.success('💖 Reaction added!');
+        const result = await response.json();
+        if (result.action === 'added') {
+          toast.success('💖 Reaction added!');
+        } else if (result.action === 'removed') {
+          toast.success('Reaction removed');
+        }
       } else {
         // Revert optimistic update on failure
         setOptimisticReactions(prev => ({
           ...prev,
-          [postId]: Math.max(0, (prev[postId] || 0) - 1)
+          [postId]: 0
         }));
         
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -136,7 +146,7 @@ export default function OptimizedWallPage() {
       // Revert optimistic update on error
       setOptimisticReactions(prev => ({
         ...prev,
-        [postId]: Math.max(0, (prev[postId] || 0) - 1)
+        [postId]: 0
       }));
       
       console.error('Failed to react to post:', error);
@@ -248,14 +258,14 @@ export default function OptimizedWallPage() {
       <div className="relative z-10">
         <SimplifiedHeader 
           user={{
-            username: authUser?.username || 'User',
-            streak: 34,
-            bytes: 730,
-            level: 3,
-            noContactDays: 12,
-            subscriptionTier: (authUser?.subscriptionTier || 'free') as 'free' | 'premium'
+            username: authUser?.username || authUser?.email?.split('@')[0] || 'Anonymous',
+            streak: authUser?.streak || 0,
+            bytes: authUser?.bytes || 0,
+            level: authUser?.level || 1,
+            noContactDays: authUser?.noContactDays || 0,
+            subscriptionTier: authUser?.subscriptionTier || 'free'
           }}
-          hasShield={true}
+          hasShield={authUser?.noContactDays ? authUser.noContactDays > 0 : false}
           onCheckin={() => console.log('Check-in clicked')}
           onBreathing={() => {
             // Use dashboard instead of non-existent /breathing route
@@ -479,22 +489,19 @@ export default function OptimizedWallPage() {
                           size="sm"
                           onClick={() => handleHeartReaction(post.id)}
                           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                            post.userReaction 
+                            post.userReaction === 'resonate'
                               ? 'text-red-400 bg-red-500/10 hover:bg-red-500/20' 
                               : 'text-gray-400 hover:text-red-400 hover:bg-red-500/10'
                           }`}
                         >
-                          <Heart className={`h-4 w-4 ${post.userReaction ? 'fill-current' : ''}`} />
+                          <Heart className={`h-4 w-4 ${post.userReaction === 'resonate' ? 'fill-current' : ''}`} />
                           <span className="font-medium">
                             {totalReactions + (optimisticReactions[post.id] || 0)}
                           </span>
                         </Button>
                         
-                        <div className="flex items-center space-x-3 text-gray-400">
-                          <div className="flex items-center space-x-1">
-                            <MessageCircle className="h-4 w-4" />
-                            <span className="text-sm">{post.commentCount}</span>
-                          </div>
+                        <div className="text-xs text-gray-500">
+                          {post.timeAgo}
                         </div>
                       </div>
                     </CardContent>

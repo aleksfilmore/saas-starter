@@ -57,39 +57,142 @@ const DUMMY_USERS = [
 ];
 
 const DUMMY_POSTS = [
+  // Heartbreak posts
   {
     content: "Day 45 no contact. Still get phantom vibrations from my phone but I'm not checking anymore. Small win.",
-    glitchCategory: 'memory_leak',
+    glitchCategory: 'heartbreak',
     glitchTitle: 'M3M0RY_L34K_1D3NT1F13D',
     archetype: 'Firewall Builder'
   },
   {
+    content: "Three months since they left. Some days I forget they existed. Other days I remember everything. Today was a remembering day.",
+    glitchCategory: 'heartbreak',
+    glitchTitle: 'BUFF3R_0V3RFL0W_W4RN1NG',
+    archetype: 'Data Flooder'
+  },
+  {
+    content: "Deleted 847 photos today. Each one felt like a small funeral. But my phone storage is lighter now.",
+    glitchCategory: 'heartbreak',
+    glitchTitle: '5Y5T3M_3RR0R_D3T3CT3D',
+    archetype: 'System Optimizer'
+  },
+  
+  // Sadness posts
+  {
     content: "Realized I was trauma-bonding instead of actually connecting. This app helped me see the patterns.",
-    glitchCategory: 'loop_detected', 
+    glitchCategory: 'sadness', 
     glitchTitle: 'L00P_1NF1N1T3_D3T3CT3D',
     archetype: 'System Optimizer'
   },
   {
-    content: "Three months in and I actually laughed today. Real laugh, not the fake ones I used to do.",
-    glitchCategory: 'system_error',
-    glitchTitle: '5Y5T3M_3RR0R_D3T3CT3D',
+    content: "Cried in the grocery store today because I saw their favorite cereal. At least I'm feeling again.",
+    glitchCategory: 'sadness',
+    glitchTitle: 'M3M0RY_L34K_1D3NT1F13D',
+    archetype: 'Explorer'
+  },
+  {
+    content: "My therapist says sadness is just love with nowhere to go. That actually helps somehow.",
+    glitchCategory: 'sadness',
+    glitchTitle: '5YNT4X_3RR0R_L1N3_0',
+    archetype: 'Secure Node'
+  },
+
+  // Anger posts
+  {
+    content: "The audacity of them to act like we never happened. Like 3 years was just a practice round.",
+    glitchCategory: 'anger',
+    glitchTitle: '4CC355_D3N13D_3RR0R_403',
+    archetype: 'Firewall Builder'
+  },
+  {
+    content: "Rage-cleaned my entire apartment at 2am. Everything sparkles now. Still furious but at least it's organized fury.",
+    glitchCategory: 'anger',
+    glitchTitle: '5T4CK_0V3RFL0W_3XC3PT10N',
     archetype: 'Data Flooder'
   },
   {
+    content: "They moved on in 2 weeks. TWO WEEKS. I'm out here processing trauma they gave me and they're posting vacation pics.",
+    glitchCategory: 'anger',
+    glitchTitle: 'NULL_P01NT3R_3XC3PT10N',
+    archetype: 'System Optimizer'
+  },
+
+  // Anxiety posts
+  {
     content: "The urge to text them is like a withdrawal symptom. But each day it gets a little easier to resist.",
-    glitchCategory: 'buffer_overflow',
+    glitchCategory: 'anxiety',
     glitchTitle: 'BUFF3R_0V3RFL0W_W4RN1NG',
     archetype: 'Secure Node'
   },
   {
+    content: "Panic attack at 3am because I dreamed we were still together. My brain needs to update its software.",
+    glitchCategory: 'anxiety',
+    glitchTitle: '5Y5T3M_3RR0R_D3T3CT3D',
+    archetype: 'Explorer'
+  },
+  {
+    content: "Checking their social media is like picking a scab. It feels necessary but just makes everything worse.",
+    glitchCategory: 'anxiety',
+    glitchTitle: 'L00P_1NF1N1T3_D3T3CT3D',
+    archetype: 'Firewall Builder'
+  },
+
+  // Hope posts
+  {
+    content: "Three months in and I actually laughed today. Real laugh, not the fake ones I used to do.",
+    glitchCategory: 'hope',
+    glitchTitle: '5Y5T3M_3RR0R_D3T3CT3D',
+    archetype: 'Data Flooder'
+  },
+  {
     content: "Started therapy again. Turns out I wasn't broken, just running outdated emotional software.",
-    glitchCategory: 'syntax_error',
+    glitchCategory: 'hope',
     glitchTitle: '5YNT4X_3RR0R_L1N3_0',
     archetype: 'Explorer'
   },
   {
     content: "Two weeks streak! The daily rituals actually work when you stick to them consistently.",
-    glitchCategory: 'access_denied',
+    glitchCategory: 'hope',
+    glitchTitle: '4CC355_D3N13D_3RR0R_403',
+    archetype: 'Firewall Builder'
+  },
+
+  // Confusion posts
+  {
+    content: "They said they loved me on Tuesday and blocked me on Friday. Someone explain that logic please.",
+    glitchCategory: 'confusion',
+    glitchTitle: 'NULL_P01NT3R_3XC3PT10N',
+    archetype: 'System Optimizer'
+  },
+  {
+    content: "6 months later and I still don't understand what happened. Was any of it real?",
+    glitchCategory: 'confusion',
+    glitchTitle: 'M3M0RY_L34K_1D3NT1F13D',
+    archetype: 'Data Flooder'
+  },
+  {
+    content: "Everyone keeps asking if I'm over it. How do you get over someone who rewrote your entire operating system?",
+    glitchCategory: 'confusion',
+    glitchTitle: '5T4CK_0V3RFL0W_3XC3PT10N',
+    archetype: 'Secure Node'
+  },
+
+  // Breakthrough posts
+  {
+    content: "Moment of clarity: I wasn't trying to get them back, I was trying to get myself back. Different mission entirely.",
+    glitchCategory: 'breakthrough',
+    glitchTitle: '5Y5T3M_R35T0R3_C0MPL3T3',
+    archetype: 'System Optimizer'
+  },
+  {
+    content: "Realized I can miss the good times without wanting them back. Revolutionary concept for my brain.",
+    glitchCategory: 'breakthrough',
+    glitchTitle: 'UPD4T3_1N5T4LL3D',
+    archetype: 'Explorer'
+  },
+  {
+    content: "The person who can hurt you the most is the person you give the most access to. Access revoked.",
+    glitchCategory: 'breakthrough',
     glitchTitle: '4CC355_D3N13D_3RR0R_403',
     archetype: 'Firewall Builder'
   }
@@ -159,7 +262,7 @@ export class SeedService {
         .from(anonymousPosts)
         .limit(1);
 
-      if (existingPosts.length > 5) {
+      if (existingPosts.length > 15) {
         console.log('✅ Wall posts already exist, skipping dummy creation');
         return;
       }

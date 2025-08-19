@@ -35,17 +35,34 @@ export default function VoiceTherapyPage() {
     checkUserAndSubscription()
   }, [])
 
-  // Premium-only gate
+  // Premium-only gate with purchase option
   if (subscription !== 'premium') {
+    const handlePurchaseSession = async () => {
+      try {
+        const response = await fetch('/api/stripe/voice-therapy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const { url } = await response.json();
+          window.location.href = url;
+        } else {
+          console.error('Failed to create checkout session');
+        }
+      } catch (error) {
+        console.error('Error purchasing voice therapy session:', error);
+      }
+    };
+
     return (
       <div className="max-w-4xl mx-auto p-6">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2 flex items-center justify-center gap-2">
             <Mic className="w-8 h-8 text-violet-400" />
             Voice AI Therapy
-            <Badge className="bg-violet-500/20 text-violet-400">
-              PREMIUM ONLY
-            </Badge>
           </h1>
           <p className="text-gray-300">Real-time voice sessions with AI - $9.99 per 15 minutes</p>
         </div>
@@ -54,28 +71,28 @@ export default function VoiceTherapyPage() {
           <CardContent className="p-0">
             <div className="mb-6">
               <div className="p-6 rounded-full bg-violet-500/20 w-24 h-24 mx-auto flex items-center justify-center mb-4">
-                <Lock className="w-12 h-12 text-violet-400" />
+                <Mic className="w-12 h-12 text-violet-400" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Premium Feature</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Voice AI Therapy</h2>
               <p className="text-gray-300 mb-6">
-                Voice AI Therapy is available exclusively for premium subscribers
+                Experience real-time conversations with AI for personalized therapy sessions
               </p>
             </div>
 
             <div className="bg-violet-900/30 rounded-lg p-6 mb-6 border border-violet-500/30">
-              <h3 className="font-semibold text-violet-300 mb-4">What you get with Premium:</h3>
+              <h3 className="font-semibold text-violet-300 mb-4">What's included in your session:</h3>
               <div className="space-y-3 text-left">
                 <div className="flex items-center gap-3">
                   <Mic className="w-5 h-5 text-violet-400" />
-                  <span className="text-violet-200">Real-time voice conversations with AI</span>
+                  <span className="text-violet-200">15 minutes of real-time voice conversation</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-violet-400" />
-                  <span className="text-violet-200">Minute-based billing at $9.99 per 15 minutes</span>
+                  <span className="text-violet-200">Professional AI therapy guidance</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Crown className="w-5 h-5 text-violet-400" />
-                  <span className="text-violet-200">All 5 AI personas available for voice sessions</span>
+                  <span className="text-violet-200">Personalized for your emotional archetype</span>
                 </div>
               </div>
             </div>
@@ -83,15 +100,24 @@ export default function VoiceTherapyPage() {
             <div className="space-y-4">
               <Button 
                 className="w-full bg-gradient-to-r from-violet-500 to-purple-500 text-white text-lg py-3"
-                onClick={() => window.location.href = '/pricing'}
+                onClick={handlePurchaseSession}
               >
-                <Crown className="w-5 h-5 mr-2" />
-                Upgrade to Premium
+                <DollarSign className="w-5 h-5 mr-2" />
+                Purchase Session - $9.99
               </Button>
               
               <Button 
                 variant="outline"
                 className="w-full border-violet-500/30 text-violet-300 hover:bg-violet-500/10"
+                onClick={() => window.location.href = '/pricing'}
+              >
+                <Crown className="w-5 h-5 mr-2" />
+                Get Premium (Includes Voice Therapy)
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="w-full border-gray-500/30 text-gray-300 hover:bg-gray-500/10"
                 onClick={() => window.location.href = '/ai-therapy'}
               >
                 Try Text Therapy Instead

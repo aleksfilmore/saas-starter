@@ -11,7 +11,6 @@ import { EmailNotificationAdmin } from '@/components/admin/EmailNotificationAdmi
 import { ModerationDashboard } from '@/components/admin/ModerationDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
-  Shield, 
   Users, 
   Settings, 
   Database,
@@ -195,10 +194,15 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Shield className="h-8 w-8 text-blue-600 mr-3" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Admin Control Panel
+              <div className="flex items-center">
+                <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                  CTRL+ALT+<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+                </span>
+                <span className="ml-3 text-lg text-gray-600">Admin</span>
+              </div>
+              <div className="ml-6">
+                <h1 className="text-xl font-bold text-gray-900">
+                  Control Panel
                 </h1>
                 <p className="text-gray-600">
                   System management and analytics

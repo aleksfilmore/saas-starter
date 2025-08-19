@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       message: 'Dummy users and content created successfully',
       details: {
         users: '5 dummy users created',
-        posts: '6 wall posts created',
+        posts: '18+ wall posts created across all emotions',
         badges: 'Premium badges distributed'
       }
     });

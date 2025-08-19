@@ -228,10 +228,15 @@ function AdaptiveDashboard({ user }: Props) {
 
   // Handle optimistic wall post reactions with proper duplicate prevention
   const handleWallReaction = async (postId: string, reactionType: string = 'resonate') => {
+    const currentPost = wallPosts.find(p => p.id === postId);
+    if (!currentPost) return;
+
+    const hasUserReacted = currentPost.userReaction === reactionType;
+    
     // Optimistically update the reaction count
     setOptimisticReactions(prev => ({
       ...prev,
-      [postId]: (prev[postId] || 0) + 1
+      [postId]: hasUserReacted ? -1 : 1 // Remove if already reacted, add if not
     }));
 
     try {

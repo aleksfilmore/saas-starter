@@ -73,10 +73,15 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
   }, [lastTimestamp, limit]);
 
   const handleReaction = async (postId: string, reactionType: string) => {
+    const currentPost = posts.find(p => p.id === postId);
+    if (!currentPost) return;
+
+    const hasUserReacted = currentPost.userReaction === reactionType;
+    
     // Optimistically update the reaction count
     setOptimisticReactions(prev => ({
       ...prev,
-      [postId]: (prev[postId] || 0) + 1
+      [postId]: hasUserReacted ? -1 : 1 // Remove if already reacted, add if not
     }));
 
     try {
@@ -92,13 +97,15 @@ export function SimplifiedCommunityFeed({ className, limit = 6, variant = 'compa
       });
 
       if (response.ok) {
+        const result = await response.json();
+        
         // Update local state to reflect the reaction (for permanent sync)
         setPosts(prev => prev.map(post => {
           if (post.id === postId) {
             return {
               ...post,
-              reactionsCount: post.reactionsCount + 1,
-              userReaction: reactionType
+              reactionsCount: result.updatedCounts?.totalReactions || post.reactionsCount,
+              userReaction: result.userReaction
             };
           }
           return post;

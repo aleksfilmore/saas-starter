@@ -36,26 +36,48 @@ export function LiveCommunityZone({ posts, onPostSubmit, canPost = true, onEngag
   const [userReactions, setUserReactions] = useState<{[key: string]: boolean}>({});
 
   const handleReaction = async (postId: string) => {
-    if (userReactions[postId]) return; // Prevent duplicate reactions
+    // Check if user already reacted to this post
+    if (userReactions[postId]) {
+      // Remove reaction
+      try {
+        const response = await fetch('/api/wall/react', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            postId,
+            reactionType: 'resonate'
+          })
+        });
 
-    try {
-      const response = await fetch('/api/wall/react', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          postId,
-          reactionType: 'resonate'
-        })
-      });
-
-      if (response.ok) {
-        setUserReactions(prev => ({ ...prev, [postId]: true }));
-        onEngage?.();
+        if (response.ok) {
+          setUserReactions(prev => ({ ...prev, [postId]: false }));
+        }
+      } catch (error) {
+        console.error('Failed to remove reaction:', error);
       }
-    } catch (error) {
-      console.error('Failed to react to post:', error);
+    } else {
+      // Add reaction
+      try {
+        const response = await fetch('/api/wall/react', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            postId,
+            reactionType: 'resonate'
+          })
+        });
+
+        if (response.ok) {
+          setUserReactions(prev => ({ ...prev, [postId]: true }));
+          onEngage?.();
+        }
+      } catch (error) {
+        console.error('Failed to react to post:', error);
+      }
     }
   };
 
