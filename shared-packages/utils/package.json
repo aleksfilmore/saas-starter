@@ -1,0 +1,12 @@
+{
+  "name": "@ctrlaltblock/utils",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@ctrlaltblock/shared-types": "file:../shared-types"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
