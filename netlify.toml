@@ -1,6 +1,6 @@
 # Netlify configuration for CTRL+ALT+BLOCK Therapy Platform
 [build]
-command = "rm -rf .next && NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS='--max-old-space-size=4096' npx next build --no-lint"
+command = "rm -rf .next && NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS='--max-old-space-size=4096 --unhandled-rejections=strict --trace-warnings' npm run build"
 publish = ".next"
 
 [build.environment]
