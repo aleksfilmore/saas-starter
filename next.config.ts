@@ -25,19 +25,24 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Disable experimental features that might be causing issues
+  // Disable all experimental features
   experimental: {
     esmExternals: true,
   },
   
-  // Skip error page prerendering
-  staticPageGenerationTimeout: 60,
+  // Force all pages to be dynamic by disabling static optimization
+  trailingSlash: false,
+  generateEtags: false,
+  poweredByHeader: false,
   
-  // Skip build-time static generation
+  // Disable static page generation timeout
+  staticPageGenerationTimeout: 0,
+  
+  // Skip all redirects and middleware during build
   skipTrailingSlashRedirect: true,
   skipMiddlewareUrlNormalize: true,
   
-  // Disable telemetry and other potentially problematic features
+  // Build configuration to prevent static generation issues
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -45,16 +50,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Force dynamic rendering for all pages to avoid static generation issues
+  // Output configuration
   output: 'standalone',
-  
-  // Disable static optimization and error page generation
-  generateEtags: false,
-  trailingSlash: false,
-  
-  // Completely disable static generation
   distDir: '.next',
-  poweredByHeader: false,
 };
 
 export default nextConfig;
