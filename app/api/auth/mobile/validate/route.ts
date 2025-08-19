@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { lucia } from '@/lib/auth';
+
+export async function GET(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { user: null, session: null },
+        { status: 401 }
+      );
+    }
+
+    const sessionId = authHeader.substring(7);
+    const result = await lucia.validateSession(sessionId);
+
+    if (!result.session) {
+      return NextResponse.json(
+        { user: null, session: null },
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.json({
+      user: result.user,
+      session: result.session,
+    });
+
+  } catch (error: any) {
+    console.error('Session validation error:', error);
+    return NextResponse.json(
+      { user: null, session: null },
+      { status: 500 }
+    );
+  }
+}

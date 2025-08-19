@@ -21,7 +21,14 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:verify:clean": "tsx scripts/verify-clean-migrations.ts",
-    "email:test": "npx tsx lib/test-email.ts"
+    "email:test": "npx tsx lib/test-email.ts",
+    "mobile:setup": "cd mobile && npm install",
+    "mobile:start": "cd mobile && expo start",
+    "mobile:ios": "cd mobile && expo start --ios",
+    "mobile:android": "cd mobile && expo start --android",
+    "mobile:build:ios": "cd mobile && eas build --platform ios",
+    "mobile:build:android": "cd mobile && eas build --platform android",
+    "setup:all": "npm install && npm run mobile:setup"
   },
   "dependencies": {
     "@lucia-auth/adapter-drizzle": "^1.1.0",
