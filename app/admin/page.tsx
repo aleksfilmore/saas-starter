@@ -10,7 +10,8 @@ import {
   Brain, Zap, Users, ArrowRight,
   Sparkles, ChevronDown,
   ChevronUp, Quote, Gamepad2, CheckCircle,
-  Star, Heart, Target, Calendar, Timer, MessageCircle
+  Star, Heart, Target, Calendar, Timer, MessageCircle,
+  Shield, MessageSquare, AlertTriangle
 } from 'lucide-react';
 
 // Particle component for floating effects
@@ -46,32 +47,46 @@ const FloatingParticles = () => {
 export default function HomePage() {
   const features = [
     {
-      icon: <Brain className="h-12 w-12 text-purple-400" />,
-      title: "AI Therapy Chat",
-      description: "24/7 access to AI-powered therapeutic conversations with specialized personas tailored to your healing journey.",
-      gradient: "bg-gradient-to-br from-purple-600 to-pink-500",
-      glowColor: "shadow-glow-purple"
-    },
-    {
-      icon: <Calendar className="h-12 w-12 text-blue-400" />,
-      title: "Daily Healing Rituals",
-      description: "Science-backed micro-activities designed to rebuild your confidence and emotional strength systematically.",
-      gradient: "bg-gradient-to-br from-blue-500 to-purple-600",
+      icon: <Shield className="h-12 w-12 text-blue-400" />,
+      title: "🛡️ No-Contact Tracker",
+      description: "Block. Count. Brag. Your anti-relapse streak clocks every ghost-free day and rewards you in Bytes.",
+      gradient: "bg-gradient-to-br from-blue-500 to-purple-500",
       glowColor: "shadow-glow-blue"
     },
     {
-      icon: <Target className="h-12 w-12 text-green-400" />,
-      title: "No-Contact Tracker",
-      description: "Gamified streak tracking to help you maintain healthy boundaries and resist the urge to reconnect.",
-      gradient: "bg-gradient-to-br from-green-500 to-blue-500",
+      icon: <Zap className="h-12 w-12 text-yellow-400" />,
+      title: "⚡ Daily Ritual Engine",
+      description: "Gamified micro-quests—guided breathwork, playlist purges, emoji forecasts—personalized by your attachment archetype.",
+      gradient: "bg-gradient-to-br from-yellow-500 to-orange-500",
+      glowColor: "shadow-glow-yellow"
+    },
+    {
+      icon: <Brain className="h-12 w-12 text-green-400" />,
+      title: "🧠 AI Therapy Console",
+      description: "Text sessions on tap, voice oracle on demand. Not a licensed therapist—more like a brutally honest glitch-sage.",
+      gradient: "bg-gradient-to-br from-green-500 to-emerald-500",
       glowColor: "shadow-glow-green"
     },
     {
-      icon: <Users className="h-12 w-12 text-pink-400" />,
-      title: "Wall of Wounds",
-      description: "Anonymous community space to share your journey, connect with others, and celebrate healing milestones.",
-      gradient: "bg-gradient-to-br from-pink-500 to-purple-600",
+      icon: <MessageSquare className="h-12 w-12 text-pink-400" />,
+      title: "🎭 Wall of Wounds™",
+      description: "Anonymous confessions transformed into shareable confession cards. React, relate, release.",
+      gradient: "bg-gradient-to-br from-red-500 to-pink-500",
       glowColor: "shadow-glow-pink"
+    },
+    {
+      icon: <Gamepad2 className="h-12 w-12 text-purple-400" />,
+      title: "🔥 XP & Byte Economy",
+      description: "Earn XP, hoard Bytes, unlock avatar frames, freeze streaks, or summon the voice oracle. Healing meets RPG grind.",
+      gradient: "bg-gradient-to-br from-purple-500 to-pink-500",
+      glowColor: "shadow-glow-purple"
+    },
+    {
+      icon: <AlertTriangle className="h-12 w-12 text-orange-400" />,
+      title: "🚨 Emergency Protocols",
+      description: "Panic Mode button, Stalk-Resistance Check, crisis links. Because dopamine loops can't fix panic attacks.",
+      gradient: "bg-gradient-to-br from-red-500 to-orange-500",
+      glowColor: "shadow-glow-red"
     }
   ];
 

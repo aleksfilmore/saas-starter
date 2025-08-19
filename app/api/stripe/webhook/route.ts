@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/config';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users, voiceTherapyCredits } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import Stripe from 'stripe';
+import { randomUUID } from 'crypto';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -116,13 +117,25 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       // Handle voice therapy purchase
       const sessionDuration = parseInt(session.metadata?.sessionDuration || '15');
       
-      // Grant voice therapy credits/minutes to the user
-      // You might want to update a voice_credits table or add minutes to user record
       console.log(`Voice therapy purchased for user ${userId}: ${sessionDuration} minutes`);
       
+      // Calculate expiry date (30 days from purchase)
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 30);
+      
       // Add voice therapy credits to user account
-      // This would require a voice_credits table or field in users table
-      // For now, we'll just log it - you can implement the actual credit system
+      await db.insert(voiceTherapyCredits).values({
+        id: randomUUID(),
+        userId: userId,
+        minutesPurchased: sessionDuration,
+        minutesRemaining: sessionDuration,
+        purchaseDate: new Date(),
+        expiryDate: expiryDate,
+        stripeSessionId: session.id,
+        isActive: true
+      });
+      
+      console.log(`✅ Voice therapy credits added: ${sessionDuration} minutes for user ${userId}`);
       
     } else if (productType === 'subscription') {
       // Handle subscription purchases (if any one-time subscription payments)

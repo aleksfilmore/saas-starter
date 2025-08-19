@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
+import { db } from '@/lib/db/drizzle';
+import { voiceTherapyCredits, voiceTherapySessions } from '@/lib/db/schema';
+import { and, eq, gt } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,16 +14,67 @@ export async function POST(request: NextRequest) {
     }
 
     const { duration } = await request.json();
+    const minutesUsed = Math.ceil(duration / 60); // Convert seconds to minutes, round up
 
-    // In a real implementation, you'd:
-    // 1. End the voice session
-    // 2. Update user's remaining credits
-    // 3. Save session data for analytics
+    if (minutesUsed <= 0) {
+      return NextResponse.json({ error: 'Invalid session duration' }, { status: 400 });
+    }
+
+    // Find the user's active credits with the most minutes to deduct from
+    const activeCredits = await db
+      .select()
+      .from(voiceTherapyCredits)
+      .where(
+        and(
+          eq(voiceTherapyCredits.userId, user.id),
+          eq(voiceTherapyCredits.isActive, true),
+          gt(voiceTherapyCredits.minutesRemaining, 0),
+          gt(voiceTherapyCredits.expiryDate, new Date())
+        )
+      )
+      .orderBy(voiceTherapyCredits.minutesRemaining);
+
+    if (activeCredits.length === 0) {
+      return NextResponse.json({ error: 'No active voice therapy credits' }, { status: 400 });
+    }
+
+    // Use the credit with the most minutes (to preserve smaller credits for later)
+    const creditToUse = activeCredits[activeCredits.length - 1];
+    
+    if (creditToUse.minutesRemaining < minutesUsed) {
+      return NextResponse.json({ 
+        error: `Insufficient credits. You have ${creditToUse.minutesRemaining} minutes remaining but used ${minutesUsed} minutes.` 
+      }, { status: 400 });
+    }
+
+    // Deduct minutes from the credit
+    const newMinutesRemaining = creditToUse.minutesRemaining - minutesUsed;
+    
+    await db
+      .update(voiceTherapyCredits)
+      .set({ 
+        minutesRemaining: newMinutesRemaining,
+        isActive: newMinutesRemaining > 0 // Deactivate if no minutes left
+      })
+      .where(eq(voiceTherapyCredits.id, creditToUse.id));
+
+    // Record the session
+    await db.insert(voiceTherapySessions).values({
+      id: randomUUID(),
+      userId: user.id,
+      creditId: creditToUse.id,
+      minutesUsed: minutesUsed,
+      sessionStart: new Date(Date.now() - duration * 1000), // Calculate start time
+      sessionEnd: new Date(),
+      persona: 'default', // Could be passed in request
+      summary: null // Could be generated from session
+    });
     
     return NextResponse.json({
       success: true,
       message: 'Voice therapy session ended',
-      durationUsed: duration || 0
+      minutesUsed: minutesUsed,
+      remainingMinutes: newMinutesRemaining
     });
   } catch (error) {
     console.error('Voice therapy end error:', error);

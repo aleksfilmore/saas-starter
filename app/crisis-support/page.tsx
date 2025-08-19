@@ -8,6 +8,7 @@ import {
   AlertTriangle, Phone, Globe, Heart, 
   ArrowRight, Shield, Sparkles
 } from 'lucide-react';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 
 const FloatingParticles = () => {
   return (
@@ -259,6 +260,8 @@ export default function CrisisSupportPage() {
           </Link>
         </div>
       </div>
+      
+      <SiteFooter />
     </div>
   );
 }

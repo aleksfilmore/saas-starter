@@ -5,10 +5,25 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft, Shield, AlertCircle, CheckCircle, Users, Zap } from 'lucide-react';
+import { SiteFooter } from '@/components/layout/SiteFooter';
+
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
 
 export default function FairUsagePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="brand-container">
+      <FloatingParticles />
       {/* Header */}
       <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -146,10 +161,10 @@ export default function FairUsagePage() {
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-semibold text-pink-400 mb-3">Firewall Mode ($9.99/month)</h3>
+                  <h3 className="text-lg font-semibold text-pink-400 mb-3">Firewall Mode ($3.99/month)</h3>
                   <ul className="text-gray-300 space-y-2 text-sm">
                     <li>• Daily rituals: Unlimited</li>
-                    <li>• AI therapy sessions: Unlimited</li>
+                    <li>• AI therapy sessions: 300 per month</li>
                     <li>• Wall posts: 10 per day</li>
                     <li>• Comments/reactions: Unlimited</li>
                     <li>• Priority support: Included</li>
@@ -249,6 +264,8 @@ export default function FairUsagePage() {
           </div>
         </div>
       </div>
+      
+      <SiteFooter />
     </div>
   );
 }

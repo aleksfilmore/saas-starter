@@ -36,7 +36,8 @@ import {
   Eye,
   Wind,
   AlertTriangle,
-  LogOut
+  LogOut,
+  ChevronDown
 } from 'lucide-react';
 import { BreathingExercise } from '@/components/quick-actions/BreathingExercise';
 import { RitualModal } from '@/components/dashboard/modals/RitualModal';
@@ -53,6 +54,19 @@ interface Props {
   user: User;
 }
 
+const EMOJI_TAGS = [
+  { emoji: '💔', label: 'Heartbreak', category: 'heartbreak', color: 'from-red-500 to-pink-600', border: 'border-red-500/50', bg: 'bg-red-500/10' },
+  { emoji: '😢', label: 'Sadness', category: 'sadness', color: 'from-blue-500 to-indigo-600', border: 'border-blue-500/50', bg: 'bg-blue-500/10' },
+  { emoji: '😤', label: 'Anger', category: 'anger', color: 'from-orange-500 to-red-600', border: 'border-orange-500/50', bg: 'bg-orange-500/10' },
+  { emoji: '😰', label: 'Anxiety', category: 'anxiety', color: 'from-yellow-500 to-orange-600', border: 'border-yellow-500/50', bg: 'bg-yellow-500/10' },
+  { emoji: '🔥', label: 'Rage', category: 'rage', color: 'from-red-600 to-red-700', border: 'border-red-600/50', bg: 'bg-red-600/10' },
+  { emoji: '💭', label: 'Confusion', category: 'confusion', color: 'from-purple-500 to-violet-600', border: 'border-purple-500/50', bg: 'bg-purple-500/10' },
+  { emoji: '🌟', label: 'Hope', category: 'hope', color: 'from-green-500 to-emerald-600', border: 'border-green-500/50', bg: 'bg-green-500/10' },
+  { emoji: '⚡', label: 'Breakthrough', category: 'breakthrough', color: 'from-cyan-500 to-blue-600', border: 'border-cyan-500/50', bg: 'bg-cyan-500/10' },
+  { emoji: '🎭', label: 'Identity', category: 'identity', color: 'from-pink-500 to-purple-600', border: 'border-pink-500/50', bg: 'bg-pink-500/10' },
+  { emoji: '🔮', label: 'Future', category: 'future', color: 'from-indigo-500 to-purple-600', border: 'border-indigo-500/50', bg: 'bg-indigo-500/10' }
+];
+
 const AI_PERSONAS = [
   { id: 'supportive-guide', name: 'Supportive Guide', icon: '🌟', description: 'Gentle, encouraging companion' },
   { id: 'strategic-analyst', name: 'Strategic Analyst', icon: '🧠', description: 'Data-driven insights & patterns' },
@@ -65,7 +79,16 @@ function AdaptiveDashboard({ user }: Props) {
   const [customInsight, setCustomInsight] = useState<string>('');
   const [noContactEncouragement, setNoContactEncouragement] = useState<string>('');
   const [wallPostContent, setWallPostContent] = useState<string>(''); // Add state for wall post
+  const [selectedTag, setSelectedTag] = useState<typeof EMOJI_TAGS[0] | null>(null); // Add emotion tag state
+  const [showTagDropdown, setShowTagDropdown] = useState(false); // Add dropdown state
+  const [posting, setPosting] = useState(false); // Add posting state
   const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({}); // Track optimistic reactions
+  
+  // Helper function to get emotion tag from category
+  const getEmotionTagFromCategory = (category: string) => {
+    return EMOJI_TAGS.find(tag => tag.category === category) || EMOJI_TAGS[0];
+  };
+
   const { tasks, markTask, progressFraction } = useDailyTasks();
   const { user: authUser } = useAuth();
   const { 
@@ -80,6 +103,20 @@ function AdaptiveDashboard({ user }: Props) {
     noContact,
     refresh
   } = useHealingHub();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showTagDropdown) {
+        setShowTagDropdown(false);
+      }
+    };
+
+    if (showTagDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showTagDropdown]);
 
   // Fetch custom daily insight and no-contact encouragement
   useEffect(() => {
@@ -154,31 +191,42 @@ function AdaptiveDashboard({ user }: Props) {
     }
   };
 
-  // Handle wall post submission
+  // Handle wall post submission with emotion tags
   const handleWallPost = async () => {
-    if (!wallPostContent.trim()) return;
+    if (!wallPostContent.trim() || !selectedTag) return;
+    
+    setPosting(true);
     
     try {
-      const response = await fetch('/api/wall/create', {
+      const response = await fetch('/api/wall/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
-          content: wallPostContent,
+          content: wallPostContent.trim(),
+          glitchCategory: selectedTag.category,
+          glitchTitle: selectedTag.label,
           anonymous: true
         })
       });
       
       if (response.ok) {
         setWallPostContent('');
+        setSelectedTag(null);
         markTask('community');
-        // Optionally refresh wall posts here
+        // Refresh the healing hub data to show new post
+        refresh();
+      } else {
+        console.error('Failed to post to wall');
       }
     } catch (error) {
       console.error('Failed to post to wall:', error);
+    } finally {
+      setPosting(false);
     }
   };
 
-  // Handle optimistic wall post reactions
+  // Handle optimistic wall post reactions with proper duplicate prevention
   const handleWallReaction = async (postId: string, reactionType: string = 'resonate') => {
     // Optimistically update the reaction count
     setOptimisticReactions(prev => ({
@@ -812,9 +860,52 @@ function AdaptiveDashboard({ user }: Props) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 sm:space-y-4">
-                {/* Quick Post (Premium) */}
+                {/* Quick Post with Emotion Selector (Premium) */}
                 {isPremium ? (
                   <div className="space-y-3">
+                    {/* Emotion Tag Selector */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowTagDropdown(!showTagDropdown)}
+                        className={`w-full p-2 sm:p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-left flex items-center justify-between text-xs sm:text-sm ${
+                          selectedTag 
+                            ? `bg-gradient-to-r ${selectedTag.color} ${selectedTag.bg} ${selectedTag.border}`
+                            : 'text-slate-400'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {selectedTag ? (
+                            <>
+                              <span className="text-base">{selectedTag.emoji}</span>
+                              <span className="text-white">{selectedTag.label}</span>
+                            </>
+                          ) : (
+                            'Select an emotion...'
+                          )}
+                        </span>
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      
+                      {showTagDropdown && (
+                        <div className="absolute z-50 top-full mt-2 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                          {EMOJI_TAGS.map((tag) => (
+                            <button
+                              key={tag.category}
+                              onClick={() => {
+                                setSelectedTag(tag);
+                                setShowTagDropdown(false);
+                              }}
+                              className={`w-full p-3 text-left hover:bg-slate-700 flex items-center gap-3 text-sm transition-colors border-l-2 ${tag.border}`}
+                            >
+                              <span className="text-lg">{tag.emoji}</span>
+                              <span className="text-white">{tag.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Post Content */}
                     <textarea
                       placeholder="Share your healing journey..."
                       className="w-full p-2 sm:p-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 text-xs sm:text-sm resize-none"
@@ -822,14 +913,25 @@ function AdaptiveDashboard({ user }: Props) {
                       value={wallPostContent}
                       onChange={(e) => setWallPostContent(e.target.value)}
                     />
+                    
+                    {/* Submit Button */}
                     <Button 
                       size="sm" 
                       className="w-full bg-pink-600 hover:bg-pink-700 text-xs sm:text-sm"
                       onClick={handleWallPost}
-                      disabled={!wallPostContent.trim()}
+                      disabled={!wallPostContent.trim() || !selectedTag || posting}
                     >
-                      <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                      Share Anonymously
+                      {posting ? (
+                        <>
+                          <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4 mr-2 animate-spin" />
+                          Posting...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                          Share Anonymously
+                        </>
+                      )}
                     </Button>
                   </div>
                 ) : (
@@ -842,33 +944,42 @@ function AdaptiveDashboard({ user }: Props) {
                   </div>
                 )}
 
-                {/* Recent Posts */}
+                {/* Recent Posts with Emotion-Based Styling */}
                 <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                  {wallPosts?.slice(0, 8).map((post) => (
-                    <div key={post.id} className="p-2 sm:p-3 bg-slate-700/30 rounded-lg border border-slate-600/30">
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge className="bg-purple-500/20 text-purple-300 text-xs">
-                          {post.emotionTag || post.archetype || post.glitchCategory || 'Anonymous'}
-                        </Badge>
-                        <span className="text-xs text-slate-400">{post.timeAgo}</span>
+                  {wallPosts?.slice(0, 8).map((post) => {
+                    const emotionTag = post.glitchCategory ? getEmotionTagFromCategory(post.glitchCategory) : EMOJI_TAGS[0];
+                    return (
+                      <div 
+                        key={post.id} 
+                        className={`p-3 rounded-lg border-l-4 ${emotionTag.border} bg-gradient-to-r ${emotionTag.bg} backdrop-blur-sm`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{emotionTag.emoji}</span>
+                            <Badge className={`${emotionTag.bg} ${emotionTag.border} text-white text-xs`}>
+                              {emotionTag.label}
+                            </Badge>
+                          </div>
+                          <span className="text-xs text-slate-400">{post.timeAgo}</span>
+                        </div>
+                        <p className="text-sm text-slate-200 leading-relaxed mb-3">{post.content}</p>
+                        <div className="flex items-center justify-between">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-slate-400 hover:text-pink-400 text-xs"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleWallReaction(post.id, 'resonate');
+                            }}
+                          >
+                            <Heart className="h-3 w-3 mr-1" />
+                            {post.reactions + (optimisticReactions[post.id] || 0)}
+                          </Button>
+                        </div>
                       </div>
-                      <p className="text-sm text-slate-200 leading-relaxed">{post.content}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-slate-400 hover:text-pink-400 text-xs"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleWallReaction(post.id, 'resonate');
-                          }}
-                        >
-                          <Heart className="h-3 w-3 mr-1" />
-                          {post.reactions + (optimisticReactions[post.id] || 0)}
-                        </Button>
-                      </div>
-                    </div>
-                  )) || (
+                    );
+                  }) || (
                     <div className="text-center py-6 text-slate-400">
                       <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
                       <p className="text-sm">Community is quiet right now</p>

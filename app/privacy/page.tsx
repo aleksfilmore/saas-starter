@@ -8,10 +8,25 @@ import {
   Shield, Lock, Database, Eye, AlertTriangle,
   CheckCircle, Mail, Building
 } from 'lucide-react';
+import { SiteFooter } from '@/components/layout/SiteFooter';
+
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="brand-container">
+      <FloatingParticles />
       {/* Header */}
       <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -467,6 +482,8 @@ export default function PrivacyPage() {
           </div>
         </div>
       </div>
+      
+      <SiteFooter />
     </div>
   );
 }

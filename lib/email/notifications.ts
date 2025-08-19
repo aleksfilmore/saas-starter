@@ -60,7 +60,7 @@ export class EmailNotificationService {
       await resend.emails.send({
         from: process.env.EMAIL_FROM || 'CTRL+ALT+BLOCK <noreply@ctrlaltblock.com>',
         to: user.email,
-        subject: "Your shield is ticking — log in today.",
+        subject: "🛡️ Daily Protocol Active - Your Streak Continues",
         html: this.generateDailyReminderHTML(emailData),
         text: this.generateDailyReminderText(emailData)
       });
@@ -112,177 +112,309 @@ export class EmailNotificationService {
   }
 
   private static generateDailyReminderHTML(data: DailyNotificationData): string {
+    const streakEmoji = data.streakDays >= 30 ? '🏆' : data.streakDays >= 14 ? '🔥' : data.streakDays >= 7 ? '⚡' : '🌱';
+    
+    const emailContent = `
+      <div class="content-card">
+        <h2>DAILY PROTOCOL INITIATED</h2>
+        
+        <p>Hey <span class="neon-text">${data.username}</span>,</p>
+        
+        <p>Your healing protocol continues today. The system has detected it's time to strengthen your digital defenses and maintain your streak.</p>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">${data.streakDays}</div>
+            <div class="stat-label">Day Streak ${streakEmoji}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${data.todayRitual.estimatedTime}</div>
+            <div class="stat-label">Today's Session</div>
+          </div>
+        </div>
+        
+        <div class="ritual-preview">
+          <h3>🎯 TODAY'S RITUAL: ${data.todayRitual.title}</h3>
+          <p><strong>Difficulty:</strong> ${data.todayRitual.difficulty.charAt(0).toUpperCase() + data.todayRitual.difficulty.slice(1)}</p>
+          <p><strong>Estimated Time:</strong> ${data.todayRitual.estimatedTime}</p>
+          <p>Ready to level up your mental defenses? Every ritual completed strengthens your resilience matrix.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" class="btn-brand-primary">
+            🚀 ENTER DASHBOARD
+          </a>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/daily-rituals" class="btn-brand-secondary">
+            📋 VIEW ALL RITUALS
+          </a>
+        </div>
+        
+        <p style="color: #94a3b8; font-size: 14px; text-align: center; margin-top: 30px;">
+          <strong>System Message:</strong> Every small action builds your resilience. The glitch is temporary—your growth is permanent.
+        </p>
+        
+        <div class="unsubscribe-note">
+          <p><strong>Notification Settings:</strong> You can manage your email preferences anytime in your <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings" style="color: #8b5cf6;">dashboard settings</a> or <a href="${data.unsubscribeUrl}" style="color: #ef4444;">unsubscribe from daily reminders</a>.</p>
+        </div>
+      </div>
+    `;
+
     return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Shield is Ticking</title>
+  <title>Daily Protocol - CTRL+ALT+BLOCK</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background-color: #0f0f23;
       margin: 0;
       padding: 0;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+      color: #e2e8f0;
+      line-height: 1.6;
     }
-    .container {
+    .email-container {
       max-width: 600px;
       margin: 0 auto;
-      background-color: #1a1a2e;
-      border-radius: 12px;
+      padding: 20px;
+    }
+    .brand-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 16px;
+      position: relative;
       overflow: hidden;
     }
-    .header {
-      background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
-      padding: 30px 20px;
-      text-align: center;
+    .brand-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: glitch-sweep 3s infinite;
     }
-    .header h1 {
-      color: white;
+    @keyframes glitch-sweep {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    .brand-logo {
+      color: #00ff9f;
+      font-size: 28px;
+      font-weight: bold;
       margin: 0;
-      font-size: 24px;
-      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 159, 0.5);
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 2;
     }
-    .shield-icon {
-      font-size: 40px;
-      margin-bottom: 10px;
+    .brand-tagline {
+      color: #8b5cf6;
+      font-size: 12px;
+      margin: 8px 0 0;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 2;
     }
-    .content {
-      padding: 30px 20px;
-      color: #e2e8f0;
+    .content-card {
+      background: rgba(30, 30, 60, 0.9);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
     }
-    .streak-box {
-      background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
-      padding: 20px;
+    .btn-brand-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+      color: white !important;
+      text-decoration: none;
+      padding: 16px 32px;
       border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
       text-align: center;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      margin: 10px 0;
+    }
+    .btn-brand-secondary {
+      display: inline-block;
+      background: rgba(139, 92, 246, 0.1);
+      color: #8b5cf6 !important;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      margin: 10px 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
       margin: 20px 0;
     }
-    .streak-number {
-      font-size: 36px;
-      font-weight: bold;
-      color: white;
-      margin: 0;
+    .stat-card {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
     }
-    .streak-label {
-      color: #fbbf24;
-      font-weight: 500;
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #00ff9f;
+      text-shadow: 0 0 5px rgba(0, 255, 159, 0.3);
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #8b5cf6;
+      text-transform: uppercase;
       margin-top: 5px;
     }
     .ritual-preview {
-      background: #334155;
+      background: rgba(236, 72, 153, 0.1);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+      border-radius: 8px;
       padding: 20px;
-      border-radius: 8px;
-      border-left: 4px solid #6366f1;
       margin: 20px 0;
     }
-    .ritual-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #f1f5f9;
-      margin: 0 0 8px 0;
-    }
-    .ritual-meta {
-      color: #94a3b8;
-      font-size: 14px;
-    }
-    .cta-button {
-      display: inline-block;
-      background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
-      color: white;
-      padding: 16px 32px;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      text-align: center;
-      margin: 20px 0;
+    .neon-text {
+      color: #00ff9f;
+      text-shadow: 0 0 5px rgba(0, 255, 159, 0.5);
     }
     .footer {
-      padding: 20px;
       text-align: center;
       color: #64748b;
       font-size: 12px;
-      border-top: 1px solid #334155;
+      margin-top: 40px;
+      padding: 20px;
+      border-top: 1px solid rgba(139, 92, 246, 0.2);
     }
-    .unsubscribe {
-      color: #64748b;
+    .footer a {
+      color: #8b5cf6;
       text-decoration: none;
+    }
+    .footer a:hover {
+      color: #00ff9f;
+    }
+    h2 {
+      color: #00ff9f;
+      font-size: 24px;
+      margin: 0 0 20px;
+      text-align: center;
+      text-shadow: 0 0 8px rgba(0, 255, 159, 0.3);
+    }
+    h3 {
+      color: #ec4899;
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+    p {
+      margin: 16px 0;
+      color: #e2e8f0;
+    }
+    .unsubscribe-note {
+      background: rgba(100, 116, 139, 0.1);
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      border-radius: 6px;
+      padding: 15px;
+      margin: 20px 0;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    @media (max-width: 600px) {
+      .email-container {
+        padding: 10px;
+      }
+      .content-card {
+        padding: 20px;
+      }
+      .btn-brand-primary, .btn-brand-secondary {
+        padding: 14px 24px;
+        font-size: 14px;
+        display: block;
+        text-align: center;
+        margin: 10px 0;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="shield-icon">🛡️</div>
-      <h1>Your Shield is Ticking</h1>
-    </div>
+  <div class="email-container">
     
-    <div class="content">
-      <p>Hey ${data.username},</p>
-      
-      <p>Your healing journey continues today. Time to check in and keep your momentum strong.</p>
-      
-      <div class="streak-box">
-        <div class="streak-number">${data.streakDays}</div>
-        <div class="streak-label">Day Streak</div>
-      </div>
-      
-      <div class="ritual-preview">
-        <div class="ritual-title">Today's Ritual: ${data.todayRitual.title}</div>
-        <div class="ritual-meta">
-          ${data.todayRitual.difficulty.charAt(0).toUpperCase() + data.todayRitual.difficulty.slice(1)} • 
-          ${data.todayRitual.estimatedTime}
-        </div>
-      </div>
-      
-      <p>Ready to fortify your defenses? Your dashboard is waiting.</p>
-      
-      <div style="text-align: center;">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" class="cta-button">
-          Enter Dashboard →
-        </a>
-      </div>
-      
-      <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
-        Remember: Every small action builds your resilience. You've got this.
-      </p>
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <h1 class="brand-logo">CTRL+ALT+BLOCK</h1>
+      <p class="brand-tagline">GLITCH-CORE HEALING PROTOCOL</p>
     </div>
-    
+
+    ${emailContent}
+
+    <!-- Footer -->
     <div class="footer">
-      <p>CTRL+ALT+BLOCK - Your Digital Healing Companion</p>
+      <p>This is an automated message from <strong>CTRL+ALT+BLOCK™</strong></p>
+      <p>Your digital healing companion | Built for warriors, by warriors</p>
       <p>
-        <a href="${data.unsubscribeUrl}" class="unsubscribe">Unsubscribe from daily reminders</a>
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">Dashboard</a> | 
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings">Settings</a> | 
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/crisis-support">Crisis Support</a>
       </p>
     </div>
+
   </div>
 </body>
 </html>`;
   }
 
   private static generateDailyReminderText(data: DailyNotificationData): string {
+    const streakEmoji = data.streakDays >= 30 ? '🏆' : data.streakDays >= 14 ? '🔥' : data.streakDays >= 7 ? '⚡' : '🌱';
+    
     return `
-Your Shield is Ticking 🛡️
+CTRL+ALT+BLOCK™ - Daily Protocol Initiated 🛡️
 
 Hey ${data.username},
 
-Your healing journey continues today. Time to check in and keep your momentum strong.
+Your healing protocol continues today. The system has detected it's time to strengthen your digital defenses and maintain your streak.
 
-Current Streak: ${data.streakDays} days
+CURRENT STATS:
+• Streak: ${data.streakDays} days ${streakEmoji}
+• Today's Session: ${data.todayRitual.estimatedTime}
 
-Today's Ritual: ${data.todayRitual.title}
-${data.todayRitual.difficulty.charAt(0).toUpperCase() + data.todayRitual.difficulty.slice(1)} • ${data.todayRitual.estimatedTime}
+TODAY'S RITUAL: ${data.todayRitual.title}
+Difficulty: ${data.todayRitual.difficulty.charAt(0).toUpperCase() + data.todayRitual.difficulty.slice(1)}
+Estimated Time: ${data.todayRitual.estimatedTime}
 
-Ready to fortify your defenses? Visit your dashboard:
-${process.env.NEXT_PUBLIC_APP_URL}/dashboard
+Ready to level up your mental defenses? Every ritual completed strengthens your resilience matrix.
 
-Remember: Every small action builds your resilience. You've got this.
+QUICK ACTIONS:
+• Enter Dashboard: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard
+• View All Rituals: ${process.env.NEXT_PUBLIC_APP_URL}/daily-rituals
+• Crisis Support: ${process.env.NEXT_PUBLIC_APP_URL}/crisis-support
+
+System Message: Every small action builds your resilience. The glitch is temporary—your growth is permanent.
 
 ---
-CTRL+ALT+BLOCK - Your Digital Healing Companion
+CTRL+ALT+BLOCK™ - Glitch-Core Healing Protocol
+Your digital healing companion | Built for warriors, by warriors
 
+Notification Settings: ${process.env.NEXT_PUBLIC_APP_URL}/settings
 Unsubscribe: ${data.unsubscribeUrl}
 `;
   }

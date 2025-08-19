@@ -8,6 +8,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Brain, Heart, Target, CheckCircle, HelpCircle, Sparkles } from 'lucide-react';
 
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
+
 interface Question {
   id: string;
   question: string;
@@ -658,23 +671,8 @@ export default function AttachmentQuizPage() {
   const question = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 px-2 sm:px-4 py-4">
-      {/* Floating Particles */}
-      <div className="particle-system">
-        {[...Array(10)].map((_, i) => (
-          <div
-            key={i}
-            className={`particle ${
-              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${8 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
+    <div className="brand-container px-2 sm:px-4 py-4">
+      <FloatingParticles />
       
       <div className="max-w-2xl mx-auto relative z-10">
         

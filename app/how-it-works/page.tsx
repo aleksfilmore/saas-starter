@@ -8,6 +8,20 @@ import {
   Target, Timer, Users, Star, ArrowRight, 
   Brain, Zap, MessageSquare, Sparkles
 } from 'lucide-react';
+import { SiteFooter } from '@/components/layout/SiteFooter';
+
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
 
 export default function HowItWorksPage() {
   const steps = [
@@ -42,23 +56,8 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      {/* Floating Particles */}
-      <div className="particle-system">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className={`particle ${
-              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${8 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
+    <div className="brand-container">
+      <FloatingParticles />
 
       {/* Header */}
       <header className="w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
@@ -204,7 +203,9 @@ export default function HowItWorksPage() {
           </Link>
         </div>
       </div>
-    </div>
+      </div>
+      
+      <SiteFooter />
     </div>
   );
 }

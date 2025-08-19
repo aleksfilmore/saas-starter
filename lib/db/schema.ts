@@ -323,6 +323,38 @@ export const wallPostComments = pgTable('wall_post_comments', {
 });
 
 // =====================================
+// CONTENT MODERATION TABLES
+// =====================================
+
+export const moderationQueue = pgTable('moderation_queue', {
+  id: text('id').primaryKey(),
+  postId: text('post_id').notNull().references(() => anonymousPosts.id),
+  userId: text('user_id').notNull().references(() => users.id),
+  content: text('content').notNull(),
+  flagReason: text('flag_reason').notNull(),
+  severity: text('severity').notNull(), // 'low', 'medium', 'high'
+  status: text('status').notNull().default('pending'), // 'pending', 'approved', 'rejected', 'edited'
+  suggestedAction: text('suggested_action').notNull(), // 'approve', 'flag', 'reject', 'edit'
+  detectedIssues: text('detected_issues'), // JSON array of issues
+  moderatorId: text('moderator_id').references(() => users.id),
+  moderatorNotes: text('moderator_notes'),
+  moderatedAt: timestamp('moderated_at', { withTimezone: true, mode: 'date' }),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const moderationLogs = pgTable('moderation_logs', {
+  id: text('id').primaryKey(),
+  postId: text('post_id').notNull().references(() => anonymousPosts.id),
+  action: text('action').notNull(), // 'auto_flagged', 'auto_approved', 'manual_approved', 'manual_rejected', 'edited'
+  moderatorId: text('moderator_id').references(() => users.id), // null for auto actions
+  reason: text('reason'),
+  previousContent: text('previous_content'),
+  newContent: text('new_content'),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
 // GAMIFICATION TABLES
 // =====================================
 
@@ -365,6 +397,32 @@ export const byteTransactions = pgTable('byte_transactions', {
   description: text('description').notNull(),
   relatedId: text('related_id'),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
+// VOICE THERAPY TABLES
+// =====================================
+
+export const voiceTherapyCredits = pgTable('voice_therapy_credits', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  minutesPurchased: integer('minutes_purchased').notNull(),
+  minutesRemaining: integer('minutes_remaining').notNull(),
+  purchaseDate: timestamp('purchase_date', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  expiryDate: timestamp('expiry_date', { withTimezone: true, mode: 'date' }).notNull(), // 30 days from purchase
+  stripeSessionId: text('stripe_session_id'),
+  isActive: boolean('is_active').notNull().default(true),
+});
+
+export const voiceTherapySessions = pgTable('voice_therapy_sessions', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  creditId: text('credit_id').notNull().references(() => voiceTherapyCredits.id),
+  minutesUsed: integer('minutes_used').notNull(),
+  sessionStart: timestamp('session_start', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  sessionEnd: timestamp('session_end', { withTimezone: true, mode: 'date' }),
+  persona: text('persona'), // which AI persona was used
+  summary: text('summary'), // session summary
 });
 
 // =====================================
@@ -458,6 +516,10 @@ export type WallPostReaction = typeof wallPostReactions.$inferSelect;
 export type NewWallPostReaction = typeof wallPostReactions.$inferInsert;
 export type WallPostComment = typeof wallPostComments.$inferSelect;
 export type NewWallPostComment = typeof wallPostComments.$inferInsert;
+export type ModerationQueue = typeof moderationQueue.$inferSelect;
+export type NewModerationQueue = typeof moderationQueue.$inferInsert;
+export type ModerationLog = typeof moderationLogs.$inferSelect;
+export type NewModerationLog = typeof moderationLogs.$inferInsert;
 export type Badge = typeof badges.$inferSelect;
 export type NewBadge = typeof badges.$inferInsert;
 export type UserBadge = typeof userBadges.$inferSelect;
@@ -466,6 +528,10 @@ export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type NewXpTransaction = typeof xpTransactions.$inferInsert;
 export type ByteTransaction = typeof byteTransactions.$inferSelect;
 export type NewByteTransaction = typeof byteTransactions.$inferInsert;
+export type VoiceTherapyCredit = typeof voiceTherapyCredits.$inferSelect;
+export type NewVoiceTherapyCredit = typeof voiceTherapyCredits.$inferInsert;
+export type VoiceTherapySession = typeof voiceTherapySessions.$inferSelect;
+export type NewVoiceTherapySession = typeof voiceTherapySessions.$inferInsert;
 export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
 export type NewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
 export type UserSession = typeof userSessions.$inferSelect;

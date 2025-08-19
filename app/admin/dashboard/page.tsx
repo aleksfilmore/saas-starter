@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { EmailNotificationAdmin } from '@/components/admin/EmailNotificationAdmin';
+import { ModerationDashboard } from '@/components/admin/ModerationDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Shield, 
@@ -36,6 +37,9 @@ interface AdminStats {
   pendingPosts: number;
   totalRevenue: number;
   activeSubscriptions: number;
+  pendingModeration: number;
+  flaggedToday: number;
+  activePosts: number;
 }
 
 export default function AdminPage() {
@@ -70,7 +74,10 @@ export default function AdminPage() {
         totalPosts: 234,
         pendingPosts: 12,
         totalRevenue: 2450.00,
-        activeSubscriptions: 45
+        activeSubscriptions: 45,
+        pendingModeration: 0,
+        flaggedToday: 0,
+        activePosts: 222
       };
 
       // Use real revenue data if available
@@ -92,6 +99,21 @@ export default function AdminPage() {
         console.log('User stats API not available, using fallback data');
       }
 
+      // Try to get moderation stats
+      try {
+        const moderationStatsResponse = await fetch('/api/admin/moderation/stats');
+        if (moderationStatsResponse.ok) {
+          const moderationData = await moderationStatsResponse.json();
+          realStats.pendingModeration = moderationData.stats.pendingModeration || 0;
+          realStats.flaggedToday = moderationData.stats.flaggedToday || 0;
+          realStats.totalPosts = moderationData.stats.totalPosts || realStats.totalPosts;
+          realStats.activePosts = moderationData.stats.activePosts || realStats.activePosts;
+          realStats.pendingPosts = moderationData.stats.pendingModeration || realStats.pendingPosts;
+        }
+      } catch (error) {
+        console.log('Moderation stats API not available, using fallback data');
+      }
+
       // Update system status based on API availability
       setSystemStatus(prev => ({
         ...prev,
@@ -111,7 +133,10 @@ export default function AdminPage() {
         totalPosts: 234,
         pendingPosts: 12,
         totalRevenue: 2450.00,
-        activeSubscriptions: 45
+        activeSubscriptions: 45,
+        pendingModeration: 0,
+        flaggedToday: 0,
+        activePosts: 222
       };
       setStats(fallbackStats);
       
@@ -212,9 +237,10 @@ export default function AdminPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="moderation">Moderation</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="system">System</TabsTrigger>
           </TabsList>
@@ -222,7 +248,7 @@ export default function AdminPage() {
           <TabsContent value="overview" className="space-y-6">
             {/* Quick Stats */}
             {stats && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -244,7 +270,22 @@ export default function AdminPage() {
                   <CardContent>
                     <div className="text-2xl font-bold">{stats.totalPosts}</div>
                     <p className="text-xs text-muted-foreground">
-                      {stats.pendingPosts} pending review
+                      {stats.activePosts} active
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className={stats.pendingModeration > 0 ? 'border-yellow-200 bg-yellow-50' : ''}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
+                    <AlertTriangle className={`h-4 w-4 ${stats.pendingModeration > 0 ? 'text-yellow-600' : 'text-muted-foreground'}`} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className={`text-2xl font-bold ${stats.pendingModeration > 0 ? 'text-yellow-700' : ''}`}>
+                      {stats.pendingModeration}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {stats.flaggedToday} flagged today
                     </p>
                   </CardContent>
                 </Card>
@@ -347,6 +388,10 @@ export default function AdminPage() {
 
           <TabsContent value="analytics">
             <AdminDashboard />
+          </TabsContent>
+
+          <TabsContent value="moderation" className="space-y-6">
+            <ModerationDashboard />
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">

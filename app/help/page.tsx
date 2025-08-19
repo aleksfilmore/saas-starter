@@ -8,8 +8,22 @@ import Link from 'next/link';
 import { 
   HelpCircle, ChevronDown, ChevronUp, Search, 
   ArrowLeft, BookOpen, Video, FileText, MessageCircle,
-  Shield, Heart, Zap, Settings
+  Shield, Heart, Zap, Settings, Star, TrendingUp,
+  Users, Lock, CreditCard, LifeBuoy, Play
 } from 'lucide-react';
+
+const FloatingParticles = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="particle particle-1"></div>
+      <div className="particle particle-2"></div>
+      <div className="particle particle-3"></div>
+      <div className="particle particle-4"></div>
+      <div className="particle particle-5"></div>
+      <div className="particle particle-6"></div>
+    </div>
+  )
+}
 
 export default function HelpCenterPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
@@ -18,20 +32,39 @@ export default function HelpCenterPage() {
   const faqCategories = [
     {
       title: "Getting Started",
-      icon: <Heart className="h-5 w-5" />,
+      icon: <Star className="h-5 w-5" />,
+      color: "text-yellow-400",
+      faqs: [
+        {
+          question: "How do I create an account?",
+          answer: "Take the Healing Archetype Scan on the homepage. It builds your profile and unlocks your dashboard."
+        },
+        {
+          question: "How do codenames work?",
+          answer: "We auto-assign one at sign-up. Don't love it? Tap Generate New until it feels right."
+        },
+        {
+          question: "What does Ghost Mode (free) include?",
+          answer: "• No-contact tracker\n• Daily check-in journaling\n• 1 daily ritual (not personalized)\n• Read + like on the Wall\n• Basic badges (limited progress)\n• Progress analytics\n• Optional Chat AI pack ($3.99 / 300 msgs, 30-day validity)"
+        },
+        {
+          question: "What does Firewall include?",
+          answer: "Everything in free, plus:\n• 2 daily rituals (personalized)\n• Unlimited Chat AI therapy\n• Voice AI therapy add-on ($9.99 / 15 min, 30-day validity)\n• Post on the Wall\n• Special badges (unlock secret rituals + shop perks)\n• Advanced progress vibes (still private)"
+        }
+      ]
+    },
+    {
+      title: "Plans & Features",
+      icon: <Star className="h-5 w-5" />,
       color: "text-pink-400",
       faqs: [
         {
-          question: "How do I create my account?",
-          answer: "Click 'Start Free Quiz' on our homepage. The quiz helps us understand your healing journey and creates your personalized account. You'll start in Ghost Mode (free) with access to basic features."
+          question: "Can I switch plans later?",
+          answer: "Yes. Upgrade or cancel anytime. Your access follows your billing period."
         },
         {
-          question: "What's the difference between Ghost Mode and Firewall Mode?",
-          answer: "Ghost Mode is free and includes 1 daily ritual, basic no-contact tracker (24h shield), Wall of Wounds reading/reacting, and 5 AI chat messages daily. Firewall Mode ($9.99/month) includes 2 personalized rituals + rerolls, enhanced tracker (48h + auto-shield), posting on Wall of Wounds, unlimited AI chat, and advanced insights."
-        },
-        {
-          question: "Do I need to provide personal information?",
-          answer: "We prioritize your privacy. You only need an email to get started. You can use a codename instead of your real name, and all data is encrypted and anonymous."
+          question: "Do all users get analytics?",
+          answer: "Yes. One progress page for everyone."
         }
       ]
     },
@@ -41,16 +74,16 @@ export default function HelpCenterPage() {
       color: "text-purple-400",
       faqs: [
         {
-          question: "How do daily rituals work?",
-          answer: "Every day, you receive personalized healing activities based on your emotional archetype and progress. Ghost Mode users get 1 ritual from our free pool, while Firewall Mode users get 2 personalized rituals plus the ability to reroll if needed."
+          question: "How are rituals assigned?",
+          answer: "Ghost: 1/day from the main database (not personalized).\nFirewall: 2/day, personalized to your archetype and recent activity."
         },
         {
-          question: "What if I miss a day?",
-          answer: "No worries! Your healing journey isn't about perfection. You can catch up on missed rituals, and your progress tracking will reflect your overall patterns rather than punishing missed days."
+          question: "Missed a day?",
+          answer: "Keep going. We track patterns, not perfection."
         },
         {
-          question: "Can I suggest new rituals?",
-          answer: "Absolutely! We love community input. Contact us through the Help Center with your suggestions, and our therapy team reviews all submissions for potential inclusion."
+          question: "Can I suggest rituals?",
+          answer: "Yes. Send ideas via Contact Support. If it fits the science, we'll consider it."
         }
       ]
     },
@@ -60,68 +93,233 @@ export default function HelpCenterPage() {
       color: "text-green-400",
       faqs: [
         {
-          question: "How does the no-contact tracker help?",
-          answer: "Our tracker helps you maintain boundaries with your ex. Ghost Mode provides 24-hour shields, while Firewall Mode offers 48-hour shields with automatic activation. It gamifies your healing by showing streak progress and celebrating milestones."
+          question: "What does it track?",
+          answer: "Streaks, slip-ups, milestones. It's feedback, not judgment."
         },
         {
-          question: "What if I break no-contact?",
-          answer: "Breaking no-contact doesn't mean failure - it's part of the healing process. The tracker resets, but your overall progress and insights remain. Use it as a learning opportunity to understand your triggers."
-        },
-        {
-          question: "Can I customize my no-contact goals?",
-          answer: "Yes! Firewall Mode allows custom shield durations and automatic triggers. You can set personalized goals based on your specific situation and healing timeline."
+          question: "I broke no-contact. Now what?",
+          answer: "The streak resets. Your insights don't. Learn the trigger, restart."
         }
       ]
     },
     {
-      title: "AI Chat & Support",
+      title: "AI Therapy: Chat & Voice",
       icon: <MessageCircle className="h-5 w-5" />,
       color: "text-blue-400",
       faqs: [
         {
-          question: "How does the AI chat work?",
-          answer: "Our AI provides personalized emotional support and coping strategies. Ghost Mode includes 5 free messages daily, while Firewall Mode offers unlimited chat with different AI personas (supportive friend, wise mentor, etc.)."
+          question: "How does Chat AI work on free?",
+          answer: "Buy a pack: $3.99 / 300 messages, valid 30 days. Use what you need; packs expire after 30 days."
         },
         {
-          question: "Is the AI chat confidential?",
-          answer: "Yes, all conversations are encrypted and anonymous. Our AI is trained on therapeutic principles but isn't a replacement for professional therapy. For crisis situations, please use our Crisis Support resources."
+          question: "How does Chat AI work on Firewall?",
+          answer: "Unlimited chat is included."
         },
         {
-          question: "When should I seek professional help?",
-          answer: "While our platform provides valuable support, please seek professional help if you're experiencing severe depression, anxiety, suicidal thoughts, or if your situation involves abuse. Our Crisis Support page has immediate resources."
+          question: "Is Voice AI therapy available on free?",
+          answer: "No. Voice AI is an on-demand add-on for Firewall: $9.99 / 15 minutes, valid 30 days from purchase."
+        },
+        {
+          question: "Is this a replacement for therapy?",
+          answer: "No. It's support, not a clinical service. For crisis, use Crisis Support."
+        }
+      ]
+    },
+    {
+      title: "Wall of Wounds",
+      icon: <Users className="h-5 w-5" />,
+      color: "text-orange-400",
+      faqs: [
+        {
+          question: "What can free users do?",
+          answer: "Read and like posts."
+        },
+        {
+          question: "What can Firewall users do?",
+          answer: "Post, read, and like—still anonymous."
+        },
+        {
+          question: "Community rules?",
+          answer: "Be kind, be real, no harm. We moderate for safety."
+        }
+      ]
+    },
+    {
+      title: "Progress & Analytics",
+      icon: <TrendingUp className="h-5 w-5" />,
+      color: "text-cyan-400",
+      faqs: [
+        {
+          question: "What's on the analytics page?",
+          answer: "Ritual completion, mood check-ins, streaks, trendlines. Private to you."
+        },
+        {
+          question: "Can I export my data?",
+          answer: "Ask Support; we'll help where possible."
+        }
+      ]
+    },
+    {
+      title: "Privacy & Codenames",
+      icon: <Lock className="h-5 w-5" />,
+      color: "text-indigo-400",
+      faqs: [
+        {
+          question: "How private is this?",
+          answer: "Conversations are encrypted. You choose what to share. Stay faceless if you want."
+        },
+        {
+          question: "Can I change my codename later?",
+          answer: "You can generate during sign-up; post-sign-up changes are limited—ask Support if needed."
+        }
+      ]
+    },
+    {
+      title: "Billing & Cancellations",
+      icon: <CreditCard className="h-5 w-5" />,
+      color: "text-emerald-400",
+      faqs: [
+        {
+          question: "Firewall price?",
+          answer: "$3.99/month."
+        },
+        {
+          question: "Chat AI pack price?",
+          answer: "$3.99 / 300 messages, valid 30 days."
+        },
+        {
+          question: "Voice AI price (Firewall)?",
+          answer: "$9.99 / 15 minutes, valid 30 days."
+        },
+        {
+          question: "Cancel anytime?",
+          answer: "Yes. You keep access until the end of the billing period."
+        }
+      ]
+    },
+    {
+      title: "Crisis Support",
+      icon: <LifeBuoy className="h-5 w-5" />,
+      color: "text-red-400",
+      faqs: [
+        {
+          question: "When should I use it?",
+          answer: "Severe depression, anxiety, suicidal thoughts, abuse, or anything that feels urgent. You deserve real-time help."
+        }
+      ]
+    },
+    {
+      title: "Contact Support",
+      icon: <MessageCircle className="h-5 w-5" />,
+      color: "text-purple-400",
+      faqs: [
+        {
+          question: "What can you help with?",
+          answer: "Billing, account hiccups, bug reports, feature ideas, ritual feedback, data requests."
         }
       ]
     }
   ];
 
-  const tutorials = [
+  const helpTiles = [
     {
-      title: "Setting Up Your Profile",
-      description: "Learn how to personalize your healing journey",
-      type: "video",
-      duration: "3 min",
-      link: "/tutorials/profile-setup"
+      title: "Getting Started",
+      description: "Start here: scan, codenames, basics.",
+      icon: <Star className="h-6 w-6" />,
+      color: "text-yellow-400",
+      bgColor: "bg-yellow-900/20",
+      borderColor: "border-yellow-500/30",
+      hoverColor: "hover:border-yellow-400"
     },
     {
-      title: "Maximizing Daily Rituals",
-      description: "Get the most out of your daily healing activities",
-      type: "guide",
-      duration: "5 min read",
-      link: "/tutorials/daily-rituals"
+      title: "Plans & Features", 
+      description: "Ghost vs Firewall, what you get.",
+      icon: <Zap className="h-6 w-6" />,
+      color: "text-pink-400",
+      bgColor: "bg-pink-900/20",
+      borderColor: "border-pink-500/30",
+      hoverColor: "hover:border-pink-400"
     },
     {
-      title: "Understanding Your Progress",
-      description: "How to read your analytics and insights",
-      type: "guide",
-      duration: "4 min read",
-      link: "/tutorials/progress-tracking"
+      title: "Daily Rituals",
+      description: "How rituals work. Personalized vs. not.",
+      icon: <Heart className="h-6 w-6" />,
+      color: "text-purple-400",
+      bgColor: "bg-purple-900/20",
+      borderColor: "border-purple-500/30",
+      hoverColor: "hover:border-purple-400"
     },
     {
-      title: "Using the Wall of Wounds",
-      description: "Connect with the community safely and effectively",
-      type: "video",
-      duration: "6 min",
-      link: "/tutorials/wall-of-wounds"
+      title: "No-Contact Tracker",
+      description: "Boundaries, streaks, milestones.",
+      icon: <Shield className="h-6 w-6" />,
+      color: "text-green-400",
+      bgColor: "bg-green-900/20",
+      borderColor: "border-green-500/30",
+      hoverColor: "hover:border-green-400"
+    },
+    {
+      title: "AI Therapy: Chat & Voice",
+      description: "Chat packs, unlimited Firewall, voice add-on.",
+      icon: <MessageCircle className="h-6 w-6" />,
+      color: "text-blue-400",
+      bgColor: "bg-blue-900/20",
+      borderColor: "border-blue-500/30",
+      hoverColor: "hover:border-blue-400"
+    },
+    {
+      title: "Wall of Wounds",
+      description: "Read/like vs. posting rights.",
+      icon: <Users className="h-6 w-6" />,
+      color: "text-orange-400",
+      bgColor: "bg-orange-900/20",
+      borderColor: "border-orange-500/30",
+      hoverColor: "hover:border-orange-400"
+    },
+    {
+      title: "Progress & Analytics",
+      description: "Your data, your trends, your pace.",
+      icon: <TrendingUp className="h-6 w-6" />,
+      color: "text-cyan-400",
+      bgColor: "bg-cyan-900/20",
+      borderColor: "border-cyan-500/30",
+      hoverColor: "hover:border-cyan-400"
+    },
+    {
+      title: "Privacy & Codenames",
+      description: "Anonymity and encryption, renamed on demand.",
+      icon: <Lock className="h-6 w-6" />,
+      color: "text-indigo-400",
+      bgColor: "bg-indigo-900/20",
+      borderColor: "border-indigo-500/30",
+      hoverColor: "hover:border-indigo-400"
+    },
+    {
+      title: "Billing & Cancellations",
+      description: "Prices, renewals, refunds basics.",
+      icon: <CreditCard className="h-6 w-6" />,
+      color: "text-emerald-400",
+      bgColor: "bg-emerald-900/20",
+      borderColor: "border-emerald-500/30",
+      hoverColor: "hover:border-emerald-400"
+    },
+    {
+      title: "Crisis Support",
+      description: "Serious help, right now.",
+      icon: <LifeBuoy className="h-6 w-6" />,
+      color: "text-red-400",
+      bgColor: "bg-red-900/20",
+      borderColor: "border-red-500/30",
+      hoverColor: "hover:border-red-400"
+    },
+    {
+      title: "Contact Support",
+      description: "Can't find it? Ask us.",
+      icon: <MessageCircle className="h-6 w-6" />,
+      color: "text-purple-400",
+      bgColor: "bg-purple-900/20",
+      borderColor: "border-purple-500/30",
+      hoverColor: "hover:border-purple-400"
     }
   ];
 
@@ -134,7 +332,9 @@ export default function HelpCenterPage() {
   })).filter(category => category.faqs.length > 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900">
+    <div className="brand-container">
+      <FloatingParticles />
+      
       {/* Header */}
       <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,18 +365,34 @@ export default function HelpCenterPage() {
             <HelpCircle className="h-10 w-10 mr-3 text-purple-400" />
             Help Center
           </h1>
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-lg mb-8">
             Find answers, tutorials, and support for your healing journey
           </p>
+          
+          {/* Top Actions */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link href="/crisis-support">
+              <Button variant="outline" className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white">
+                <LifeBuoy className="h-4 w-4 mr-2" />
+                Crisis Support
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Contact Support
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Search */}
-        <div className="mb-8">
+        <div className="mb-12">
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <input
               type="text"
-              placeholder="Search help articles..."
+              placeholder="Search help articles…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -184,71 +400,19 @@ export default function HelpCenterPage() {
           </div>
         </div>
 
-        {/* Quick Links */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="bg-gray-800/50 border-gray-600 hover:border-purple-500 transition-colors cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Settings className="h-8 w-8 text-purple-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Account Settings</h3>
-              <p className="text-gray-400 text-sm">Manage your profile and preferences</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800/50 border-gray-600 hover:border-green-500 transition-colors cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Shield className="h-8 w-8 text-green-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Privacy & Security</h3>
-              <p className="text-gray-400 text-sm">Learn about our privacy practices</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800/50 border-gray-600 hover:border-pink-500 transition-colors cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <MessageCircle className="h-8 w-8 text-pink-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Contact Support</h3>
-              <p className="text-gray-400 text-sm">Get help from our team</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800/50 border-gray-600 hover:border-red-500 transition-colors cursor-pointer">
-            <CardContent className="p-6 text-center">
-              <Heart className="h-8 w-8 text-red-400 mx-auto mb-3" />
-              <h3 className="text-white font-semibold mb-2">Crisis Support</h3>
-              <p className="text-gray-400 text-sm">Immediate help resources</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tutorials Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-            <BookOpen className="h-6 w-6 mr-3 text-blue-400" />
-            Tutorials & Guides
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {tutorials.map((tutorial, index) => (
-              <Card key={index} className="bg-gray-800/50 border-gray-600 hover:border-blue-400 transition-colors">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center">
-                      {tutorial.type === 'video' ? (
-                        <Video className="h-5 w-5 text-blue-400 mr-2" />
-                      ) : (
-                        <FileText className="h-5 w-5 text-green-400 mr-2" />
-                      )}
-                      <span className="text-xs text-gray-400 uppercase">{tutorial.type}</span>
-                    </div>
-                    <span className="text-xs text-gray-400">{tutorial.duration}</span>
-                  </div>
-                  <h3 className="text-white font-semibold mb-2">{tutorial.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{tutorial.description}</p>
-                  <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:text-white">
-                    {tutorial.type === 'video' ? 'Watch Tutorial' : 'Read Guide'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        {/* Help Tiles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+          {helpTiles.map((tile, index) => (
+            <Card key={index} className={`${tile.bgColor} ${tile.borderColor} ${tile.hoverColor} transition-all duration-300 cursor-pointer hover:scale-105`}>
+              <CardContent className="p-6 text-center">
+                <div className={`${tile.color} mx-auto mb-3`}>
+                  {tile.icon}
+                </div>
+                <h3 className="text-white font-semibold mb-2">{tile.title}</h3>
+                <p className="text-gray-400 text-sm">{tile.description}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* FAQ Section */}
@@ -285,7 +449,7 @@ export default function HelpCenterPage() {
                         
                         {expandedFaq === globalIndex && (
                           <div className="px-6 pb-6">
-                            <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
+                            <div className="text-gray-300 leading-relaxed whitespace-pre-line">{faq.answer}</div>
                           </div>
                         )}
                       </CardContent>
@@ -308,11 +472,13 @@ export default function HelpCenterPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/contact">
                   <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <MessageCircle className="h-4 w-4 mr-2" />
                     Contact Support
                   </Button>
                 </Link>
                 <Link href="/crisis-support">
                   <Button variant="outline" className="border-red-500 text-red-400 hover:bg-red-500 hover:text-white">
+                    <LifeBuoy className="h-4 w-4 mr-2" />
                     Crisis Support
                   </Button>
                 </Link>

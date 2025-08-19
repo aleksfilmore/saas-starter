@@ -3,6 +3,7 @@ import { validateRequest } from '@/lib/auth';
 import { createWallPost } from '@/lib/wall/wall-service';
 import { AnalyticsService } from '@/lib/analytics/service';
 import { AnalyticsEvents } from '@/lib/analytics/events';
+import { ContentModerationService } from '@/lib/moderation/content-moderation';
 
 // Content moderation keywords
 const SENSITIVE_KEYWORDS = [
@@ -29,21 +30,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Content too long (max 500 characters)' }, { status: 400 });
     }
 
-    // Check for crisis content
-    const lowerContent = content.toLowerCase();
-    const hasCrisisLanguage = SENSITIVE_KEYWORDS.some(keyword => 
-      lowerContent.includes(keyword)
-    );
+    // Enhanced content moderation
+    const moderationResult = await ContentModerationService.moderateContent(content, session.userId);
 
-    if (hasCrisisLanguage) {
+    // Check if content is allowed
+    if (!moderationResult.isAllowed) {
+      if (moderationResult.detectedIssues.includes('Crisis/self-harm language detected')) {
+        return NextResponse.json({
+          error: 'Crisis content detected',
+          message: 'Your post contains concerning language. Please reach out for support.',
+          resources: {
+            crisis: 'text HOME to 741741',
+            suicide: '988',
+            emergency: '911'
+          }
+        }, { status: 400 });
+      }
+
       return NextResponse.json({
-        error: 'Crisis content detected',
-        message: 'Your post contains concerning language. Please reach out for support.',
-        resources: {
-          crisis: 'text HOME to 741741',
-          suicide: '988',
-          emergency: '911'
-        }
+        error: 'Content moderation failed',
+        message: 'Your post contains content that needs review. It has been flagged for moderation.',
+        reason: moderationResult.flagReason,
+        severity: moderationResult.severity
       }, { status: 400 });
     }
 
@@ -52,13 +60,38 @@ export async function POST(request: Request) {
     const finalCategory = category || detectedCategory;
 
     const post = await createWallPost({ userId: session.userId, content: content.trim(), isAnonymous, category: finalCategory });
+    
+    // Run auto-moderation after post creation if content requires review
+    if (moderationResult.requiresReview) {
+      await ContentModerationService.autoModeratePost(post.id, content.trim(), session.userId);
+    }
+    
     // Fire and forget analytics
     AnalyticsService.track({
       userId: session.userId,
       event: AnalyticsEvents.WALL_POST_CREATED,
-      properties: { postId: post.id, category: finalCategory, anonymous: isAnonymous }
+      properties: { 
+        postId: post.id, 
+        category: finalCategory, 
+        anonymous: isAnonymous,
+        moderated: moderationResult.requiresReview,
+        severity: moderationResult.severity
+      }
     });
-    return NextResponse.json({ success: true, post, message: 'Confession transmitted to the void' });
+
+    const message = moderationResult.requiresReview && moderationResult.severity !== 'low' 
+      ? 'Confession transmitted - under review' 
+      : 'Confession transmitted to the void';
+
+    return NextResponse.json({ 
+      success: true, 
+      post, 
+      message,
+      moderation: {
+        requiresReview: moderationResult.requiresReview,
+        severity: moderationResult.severity
+      }
+    });
 
   } catch (error) {
     console.error('Wall post error:', error);
