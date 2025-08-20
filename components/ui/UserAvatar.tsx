@@ -27,9 +27,20 @@ export function UserAvatar({
   const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Check if user is premium
+  const userAny = user as any;
+  const isPremium = userAny?.subscription_tier === 'premium' || 
+                   userAny?.tier === 'firewall' ||
+                   userAny?.ritual_tier === 'firewall';
+
   useEffect(() => {
-    loadUserBadge();
-  }, [user.id]);
+    // Only load badge for premium users
+    if (isPremium) {
+      loadUserBadge();
+    } else {
+      setLoading(false);
+    }
+  }, [user.id, isPremium]);
 
   const loadUserBadge = async () => {
     try {
@@ -64,8 +75,8 @@ export function UserAvatar({
     );
   }
 
-  if (selectedBadge) {
-    // Show badge as avatar
+  // For premium users, show badge if available
+  if (isPremium && selectedBadge) {
     return (
       <button
         onClick={onProfileClick}
@@ -81,14 +92,18 @@ export function UserAvatar({
     );
   }
 
-  // Fallback to initials
+  // For Ghost users or premium users without badges, show initials with appropriate styling
   const initials = (user.email || 'U').charAt(0).toUpperCase();
   
   return (
     <button
       onClick={onProfileClick}
-      className={`${sizeClass} rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold hover:from-purple-400 hover:to-pink-400 transition-colors ${className}`}
-      title="Click to select a badge as your avatar"
+      className={`${sizeClass} rounded-full ${
+        isPremium 
+          ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400' 
+          : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600'
+      } flex items-center justify-center text-white font-bold transition-colors ${className}`}
+      title={isPremium ? "Premium user - Click to manage badges" : "Ghost user - Upgrade to unlock badges"}
     >
       {initials}
     </button>

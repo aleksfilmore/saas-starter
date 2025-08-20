@@ -39,18 +39,21 @@ export function UpgradeModal({ onClose }: UpgradeModalProps) {
                 const res = await fetch('/api/stripe/checkout', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ tier: 'premium' })
+                  body: JSON.stringify({ tier: 'PREMIUM' })
                 });
                 const data = await res.json();
+                
                 if (res.ok && data.url) {
                   window.location.href = data.url;
                 } else if (data.checkoutUrl) {
                   window.location.href = data.checkoutUrl;
                 } else {
-                  console.error('Checkout creation failed', data);
+                  console.error('Checkout creation failed:', data);
+                  alert('Failed to start checkout. Please try again.');
                 }
               } catch (e) {
-                console.error('Upgrade error', e);
+                console.error('Upgrade error:', e);
+                alert('An error occurred. Please try again.');
               }
             }}
           >

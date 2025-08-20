@@ -390,6 +390,17 @@ function AdaptiveDashboard({ user }: Props) {
                 </Button>
               </BreathingExercise>
               
+              {/* Mindfulness Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setActiveModal('mindfulness')}
+                className="text-blue-300 hover:text-blue-200 hover:bg-blue-500/10 flex items-center gap-1 text-xs p-2"
+              >
+                <Brain className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span className="hidden lg:inline">Mindfulness</span>
+              </Button>
+              
               {/* Crisis Center Button */}
               <Button
                 variant="ghost"
@@ -959,7 +970,12 @@ function AdaptiveDashboard({ user }: Props) {
                   <div className="p-2 sm:p-3 bg-gradient-to-r from-pink-600/20 to-purple-600/20 rounded-lg border border-pink-500/30 text-center">
                     <Lock className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-2 text-pink-400" />
                     <p className="text-xs sm:text-sm text-pink-300 mb-2">Posting requires Premium</p>
-                    <Button size="sm" variant="outline" className="border-pink-500/50 text-pink-300 text-xs">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="border-pink-500/50 text-pink-300 text-xs"
+                      onClick={() => setActiveModal('upgrade')}
+                    >
                       Upgrade to Share
                     </Button>
                   </div>
@@ -967,7 +983,7 @@ function AdaptiveDashboard({ user }: Props) {
 
                 {/* Recent Posts with Emotion-Based Styling */}
                 <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                  {wallPosts?.slice(0, 8).map((post) => {
+                  {wallPosts?.slice(0, 12).map((post) => {
                     const emotionTag = post.glitchCategory ? getEmotionTagFromCategory(post.glitchCategory) : EMOJI_TAGS[0];
                     return (
                       <div 
@@ -1127,6 +1143,63 @@ function AdaptiveDashboard({ user }: Props) {
 
       {activeModal === 'upgrade' && (
         <UpgradeModal onClose={() => setActiveModal(null)} />
+      )}
+      
+      {activeModal === 'mindfulness' && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full border border-blue-500/30">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <Brain className="h-5 w-5 text-blue-400" />
+                Quick Mindfulness
+              </h3>
+              <Button variant="ghost" size="sm" onClick={() => setActiveModal(null)}>
+                ×
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <p className="text-gray-300 text-sm">
+                Take a moment to center yourself with these quick mindfulness exercises:
+              </p>
+              <div className="space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-left"
+                  onClick={() => {
+                    setActiveModal(null);
+                    // Could open a dedicated mindfulness modal
+                    alert('🧘‍♀️ Take 5 deep breaths. Notice your surroundings. You are here, you are safe, you are healing.');
+                  }}
+                >
+                  <span className="mr-2">🧘‍♀️</span>
+                  5-Minute Grounding
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-left"
+                  onClick={() => {
+                    setActiveModal(null);
+                    alert('💭 Notice your thoughts without judgment. They are just thoughts, not facts. Let them pass like clouds.');
+                  }}
+                >
+                  <span className="mr-2">💭</span>
+                  Thought Awareness
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start text-left"
+                  onClick={() => {
+                    setActiveModal(null);
+                    alert('❤️ Place your hand on your heart. Feel it beating. Thank your body for carrying you through this healing journey.');
+                  }}
+                >
+                  <span className="mr-2">❤️</span>
+                  Self-Compassion
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       
       {activeModal === 'voice-therapy' && (
