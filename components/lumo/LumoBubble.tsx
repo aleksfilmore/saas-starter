@@ -34,6 +34,12 @@ const PERSONAS = {
     avatar: '🧠',
     color: 'from-gray-500 to-blue-500',
     description: 'Stoic CBT reframer'
+  },
+  support: {
+    name: 'Customer Support',
+    avatar: '💜',
+    color: 'from-blue-500 to-purple-500',
+    description: 'Platform help & guidance'
   }
 };
 
@@ -129,7 +135,9 @@ export function LumoBubble() {
     chatHistory, 
     isLoading,
     notifications,
-    clearNotifications
+    clearNotifications,
+    isOnboardingMode,
+    setOnboardingComplete
   } = useLumo();
   
   const [message, setMessage] = useState('');
@@ -218,13 +226,13 @@ export function LumoBubble() {
                         <button
                           key={key}
                           onClick={() => {
-                            setPersona(key as 'core' | 'gremlin' | 'analyst');
+                            setPersona(key as 'core' | 'gremlin' | 'analyst' | 'support');
                             setShowPersonaDropdown(false);
                           }}
                           className={`w-full px-3 py-2 text-left hover:bg-gray-700 transition-colors ${
                             key === persona ? 'bg-gray-700' : ''
                           }`}
-                          disabled={tier === 'ghost' && key !== 'core'}
+                          disabled={tier === 'ghost' && key !== 'core' && key !== 'support'}
                         >
                           <div className="flex items-center space-x-2">
                             <span>{p.avatar}</span>
@@ -232,7 +240,10 @@ export function LumoBubble() {
                               <div className="text-white text-sm">{p.name}</div>
                               <div className="text-gray-400 text-xs">{p.description}</div>
                             </div>
-                            {tier === 'ghost' && key !== 'core' && (
+                            {key === 'support' && (
+                              <Badge variant="default" className="ml-auto text-xs bg-blue-600">Free</Badge>
+                            )}
+                            {tier === 'ghost' && key !== 'core' && key !== 'support' && (
                               <Badge variant="secondary" className="ml-auto text-xs">Pro</Badge>
                             )}
                           </div>
@@ -331,6 +342,21 @@ export function LumoBubble() {
                   </Button>
                 )}
               </div>
+
+              {/* Onboarding completion */}
+              {isOnboardingMode && (
+                <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3">
+                  <div className="text-sm text-purple-300 text-center mb-2">
+                    Setup complete? Let me switch to support mode!
+                  </div>
+                  <Button 
+                    onClick={setOnboardingComplete}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                  >
+                    ✓ Complete Onboarding
+                  </Button>
+                </div>
+              )}
               
               <div className="text-xs text-gray-500 text-center">
                 {message.length}/280 chars

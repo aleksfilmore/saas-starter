@@ -144,10 +144,10 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-96 z-[9999]">
-          <Card className="bg-gray-900/98 backdrop-blur-lg border border-gray-600/50 shadow-2xl max-h-[70vh] flex flex-col">
+          <Card className="bg-gray-900/95 backdrop-blur-xl border border-gray-600/50 shadow-2xl max-h-[70vh] flex flex-col overflow-hidden">
             <CardContent className="p-0 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-600/50 bg-gray-800/50">
+              <div className="flex items-center justify-between p-4 border-b border-gray-600/50 bg-gray-800/50 shrink-0">
                 <h3 className="text-base font-semibold text-white flex items-center gap-2">
                   <Bell className="w-5 h-5 text-purple-400" />
                   Notifications
@@ -168,7 +168,7 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
               </div>
 
               {/* Content */}
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto">
                 {loading && (
                   <div className="flex flex-col items-center justify-center py-12 px-4">
                     <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mb-3" />
@@ -202,79 +202,77 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                 )}
                 
                 {!loading && !loadError && notifications.length > 0 && (
-                  <div className="overflow-y-auto max-h-80">
-                    <div className="space-y-1 p-3">
-                      {notifications.map((notification, index) => (
-                        <div
-                          key={notification.id}
-                          className={`group relative p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
-                            notification.read 
-                              ? 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-700/40' 
-                              : 'bg-gradient-to-r from-purple-500/15 to-pink-500/15 border-purple-500/40 hover:border-purple-400/60 shadow-lg shadow-purple-500/10'
-                          }`}
-                          onClick={() => !notification.read && markAsRead(notification.id)}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 mt-0.5">
-                              {getNotificationIcon(notification.type)}
-                            </div>
-                            
-                            <div className="flex-1 min-w-0 pr-8">
-                              <h4 className={`text-sm font-medium leading-snug ${
-                                notification.read ? 'text-gray-300' : 'text-white'
-                              }`}>
-                                {notification.title}
-                              </h4>
-                              
-                              <p className={`text-sm mt-1 leading-relaxed ${
-                                notification.read ? 'text-gray-400' : 'text-gray-300'
-                              }`}>
-                                {notification.message}
-                              </p>
-                              
-                              <div className="flex items-center justify-between mt-3">
-                                <span className="text-xs text-gray-500 font-medium">
-                                  {formatTimestamp(notification.timestamp)}
-                                </span>
-                                
-                                {notification.actionUrl && notification.actionText && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      window.location.href = notification.actionUrl!;
-                                    }}
-                                    className="text-xs py-1.5 px-3 h-auto border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/20 hover:border-purple-400/50"
-                                  >
-                                    {notification.actionText}
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                dismissNotification(notification.id);
-                              }}
-                              className="absolute top-2 right-2 text-gray-500 hover:text-gray-300 hover:bg-gray-700/50 p-1.5 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </Button>
+                  <div className="space-y-2 p-3">
+                    {notifications.map((notification, index) => (
+                      <div
+                        key={notification.id}
+                        className={`group relative p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                          notification.read 
+                            ? 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-700/40' 
+                            : 'bg-gradient-to-r from-purple-500/15 to-pink-500/15 border-purple-500/40 hover:border-purple-400/60 shadow-lg shadow-purple-500/10'
+                        }`}
+                        onClick={() => !notification.read && markAsRead(notification.id)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 mt-0.5">
+                            {getNotificationIcon(notification.type)}
                           </div>
+                          
+                          <div className="flex-1 min-w-0 pr-8">
+                            <h4 className={`text-sm font-medium leading-snug ${
+                              notification.read ? 'text-gray-300' : 'text-white'
+                            }`}>
+                              {notification.title}
+                            </h4>
+                            
+                            <p className={`text-sm mt-1 leading-relaxed ${
+                              notification.read ? 'text-gray-400' : 'text-gray-300'
+                            }`}>
+                              {notification.message}
+                            </p>
+                            
+                            <div className="flex items-center justify-between mt-3">
+                              <span className="text-xs text-gray-500 font-medium">
+                                {formatTimestamp(notification.timestamp)}
+                              </span>
+                              
+                              {notification.actionUrl && notification.actionText && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.location.href = notification.actionUrl!;
+                                  }}
+                                  className="text-xs py-1.5 px-3 h-auto border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/20 hover:border-purple-400/50"
+                                >
+                                  {notification.actionText}
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dismissNotification(notification.id);
+                            }}
+                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-300 hover:bg-gray-700/50 p-1.5 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </Button>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
 
               {/* Footer */}
               {notifications.length > 0 && (
-                <div className="border-t border-gray-600/50 bg-gray-800/30 p-3">
+                <div className="border-t border-gray-600/50 bg-gray-800/30 p-3 shrink-0">
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"

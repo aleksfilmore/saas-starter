@@ -12,22 +12,12 @@ interface Props {
   onComplete: () => void;
 }
 
-const moodEmojis = ['�', '�😢', '�', '😐', '🙂', '😊', '�'];
-const moodLabels = ['System Crash', 'Processing Pain', 'Glitching', 'Running Stable', 'Optimizing', 'High Performance', 'System Upgraded'];
-const moodColors = ['text-red-400', 'text-orange-400', 'text-yellow-400', 'text-blue-400', 'text-green-400', 'text-purple-400', 'text-pink-400'];
-const moodDescriptions = [
-  'Full emotional meltdown mode',
-  'Heavy grief but functional', 
-  'Unstable but not broken',
-  'Neutral system state',
-  'Good day, building momentum',
-  'Feeling strong and confident',
-  'Peak performance, unstoppable'
-];
+const moodEmojis = ['😢', '😔', '😐', '🙂', '😊', '😄', '🥰', '✨', '🌟', '🚀'];
+const moodLabels = ['Struggling', 'Low', 'Meh', 'Okay', 'Good', 'Great', 'Amazing', 'Fantastic', 'Incredible', 'Unstoppable'];
 
 export function CheckInModal({ onClose, onComplete }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [mood, setMood] = useState([5]);
+  const [mood, setMood] = useState(5); // Changed from array to number
   const [gratitude, setGratitude] = useState('');
   const [challenge, setChallenge] = useState('');
   const [intention, setIntention] = useState('');
@@ -39,32 +29,27 @@ export function CheckInModal({ onClose, onComplete }: Props) {
       component: (
         <div className="space-y-6 text-center">
           <div className="text-6xl mb-4">
-            {moodEmojis[mood[0] - 1]}
+            {moodEmojis[mood - 1]}
           </div>
-          <div>
-            <h3 className={`text-xl font-medium mb-2 ${moodColors[mood[0] - 1]}`}>
-              {moodLabels[mood[0] - 1]}
-            </h3>
-            <p className="text-gray-400 text-sm">
-              {moodDescriptions[mood[0] - 1]}
-            </p>
-          </div>
-          <div className="grid grid-cols-4 gap-2">
+          <h3 className="text-xl text-white font-medium">
+            {moodLabels[mood - 1]}
+          </h3>
+          <div className="grid grid-cols-5 gap-2">
             {moodEmojis.map((emoji, index) => (
               <Button
                 key={index}
-                variant={mood[0] === index + 1 ? "default" : "outline"}
+                variant={mood === index + 1 ? "default" : "outline"}
                 size="sm"
-                onClick={() => setMood([index + 1])}
-                className={mood[0] === index + 1 ? "bg-purple-600" : "border-gray-600"}
+                onClick={() => setMood(index + 1)}
+                className={mood === index + 1 ? "bg-purple-600" : "border-gray-600"}
               >
                 {emoji}
               </Button>
             ))}
           </div>
           <div className="flex justify-between text-gray-400 text-sm">
-            <span>� System Crash</span>
-            <span>� System Upgraded</span>
+            <span>😢 Struggling</span>
+            <span>🚀 Unstoppable</span>
           </div>
         </div>
       )
@@ -139,7 +124,7 @@ export function CheckInModal({ onClose, onComplete }: Props) {
       
       // In real app, send data to API
       const checkInData = {
-        mood: mood[0],
+        mood: mood,
         gratitude,
         challenge,
         intention,

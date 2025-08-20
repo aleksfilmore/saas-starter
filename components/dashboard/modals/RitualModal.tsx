@@ -118,38 +118,28 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
                   </div>
                 )}
 
-                {/* Timer Controls */}
-                <div className="flex justify-center space-x-2">
-                  {timeLeft === 0 ? (
+                {/* Timer Controls - Only show pause/reset if timer is running */}
+                {timeLeft > 0 && (
+                  <div className="flex justify-center space-x-2">
                     <Button
-                      onClick={() => startTimer(ritualSteps[currentStep]!.duration!)}
-                      className="bg-green-600 hover:bg-green-700"
+                      onClick={() => setIsActive(!isActive)}
+                      variant="outline"
+                      className="border-gray-600"
                     >
-                      <Play className="h-4 w-4 mr-2" />
-                      Start
+                      {isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                     </Button>
-                  ) : (
-                    <>
-                      <Button
-                        onClick={() => setIsActive(!isActive)}
-                        variant="outline"
-                        className="border-gray-600"
-                      >
-                        {isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setTimeLeft(0);
-                          setIsActive(false);
-                        }}
-                        variant="outline"
-                        className="border-gray-600"
-                      >
-                        <RotateCcw className="h-4 w-4" />
-                      </Button>
-                    </>
-                  )}
-                </div>
+                    <Button
+                      onClick={() => {
+                        setTimeLeft(0);
+                        setIsActive(false);
+                      }}
+                      variant="outline"
+                      className="border-gray-600"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

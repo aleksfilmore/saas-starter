@@ -3,6 +3,7 @@ import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
+import { generateSupportResponse, isCustomerSupportQuery } from '@/lib/lumo/openai-support';
 
 interface ChatMessage {
   role: 'user' | 'lumo';
@@ -12,7 +13,7 @@ interface ChatMessage {
 
 interface ChatRequest {
   message: string;
-  persona: 'core' | 'gremlin' | 'analyst';
+  persona: 'core' | 'gremlin' | 'analyst' | 'support';
   history: ChatMessage[];
 }
 
@@ -31,7 +32,11 @@ const PERSONA_PROMPTS = {
   analyst: `You are Void Analyst, a stoic CBT-style therapist helping people reframe their breakup thoughts. 
     You're analytical, logical, and help identify cognitive distortions. 
     Focus on facts over feelings, provide practical frameworks, and challenge irrational thoughts.
-    Be direct but supportive. Keep responses clinical but caring. 1-3 sentences.`
+    Be direct but supportive. Keep responses clinical but caring. 1-3 sentences.`,
+
+  support: `You are LUMO Customer Support - a helpful, professional assistant for platform-related questions.
+    Provide clear information about features, billing, troubleshooting, and community guidelines.
+    Keep responses helpful and concise. Direct complex issues to human support when needed. 💜`
 };
 
 // Mock responses for different personas (replace with actual AI integration)
@@ -63,8 +68,8 @@ const MOCK_RESPONSES = {
 
 export async function POST(request: NextRequest) {
   try {
-  const { user } = await validateRequest();
-  const body: ChatRequest = await request.json();
+    const { user } = await validateRequest();
+    const body: ChatRequest = await request.json();
     const { message, persona, history } = body;
 
     // Validate input
@@ -83,27 +88,73 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Pull minimal context for adaptive encouragement
+    // Get user info for context and tier
+    let userTier: 'ghost' | 'firewall' = 'ghost';
     let contextPrefix = '';
+    
     if (user) {
       const [u] = await db.select({
         ritual_streak: users.ritual_streak,
         last_ritual: users.last_ritual,
-        xp: users.xp
+        xp: users.xp,
+        tier: users.tier
       }).from(users).where(eq(users.id, user.id)).limit(1);
+      
       if (u) {
+        userTier = (u.tier as 'ghost' | 'firewall') || 'ghost';
         const lastHours = u.last_ritual ? Math.round((Date.now() - new Date(u.last_ritual).getTime())/36e5) : 'many';
-        contextPrefix = `UserContext: streak=${u.ritual_streak} lastRitualHoursAgo=${lastHours} xp=${u.xp}. Respond with subtle and supportive tone adjusted for streak (higher streak => reinforce identity; low streak => encourage first win).\n`;
+        contextPrefix = `UserContext: streak=${u.ritual_streak} lastRitualHoursAgo=${lastHours} xp=${u.xp} tier=${userTier}. `;
       }
     }
 
-    // For now, use mock responses
-    // TODO: Replace with actual AI integration (OpenAI, Claude, etc.)
-    const responses = MOCK_RESPONSES[persona];
+    // Handle Customer Support mode with OpenAI
+    if (persona === 'support' || isCustomerSupportQuery(message)) {
+      try {
+        const supportResponse = await generateSupportResponse(
+          message,
+          user?.id || 'anonymous',
+          userTier,
+          history
+        );
+        
+        // Log customer support interaction
+        console.log(`LUMO Support (${userTier}):`, {
+          userMessage: message.substring(0, 50) + '...',
+          fromKnowledgeBase: supportResponse.fromKnowledgeBase,
+          tokensUsed: supportResponse.usage?.total_tokens || 0,
+          timestamp: new Date().toISOString()
+        });
+
+        return NextResponse.json({
+          response: supportResponse.response,
+          persona: 'support',
+          timestamp: new Date().toISOString(),
+          messageId: Date.now().toString(),
+          usage: supportResponse.usage,
+          fromKnowledgeBase: supportResponse.fromKnowledgeBase
+        });
+        
+      } catch (error) {
+        console.error('Customer support error:', error);
+        // Fallback to basic support message
+        return NextResponse.json({
+          response: "I'm having trouble accessing support information right now. Please contact our human support team at support@healinghearts.app or try again in a few minutes. 💜",
+          persona: 'support',
+          timestamp: new Date().toISOString(),
+          messageId: Date.now().toString()
+        });
+      }
+    }
+
+    // Continue with existing persona logic for emotional support
+
+    // For emotional support personas, use mock responses
+    // TODO: Could also integrate OpenAI for these in the future
+    const responses = MOCK_RESPONSES[persona as keyof typeof MOCK_RESPONSES];
     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
     // Add some contextual responses based on keywords
-  let contextualResponse = randomResponse;
+    let contextualResponse = randomResponse;
     
     const lowerMessage = message.toLowerCase();
     if (lowerMessage.includes('panic') || lowerMessage.includes('anxiety')) {
@@ -129,7 +180,7 @@ export async function POST(request: NextRequest) {
     // Simulate AI processing delay
     await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
 
-    // Log for analytics (replace with actual analytics)
+    // Log for analytics
     console.log(`LUMO ${persona} chat:`, {
       userMessage: message.substring(0, 50) + '...',
       responseGenerated: true,
@@ -137,7 +188,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      response: contextPrefix ? `${contextPrefix}${contextualResponse}` : contextualResponse,
+      response: contextPrefix + contextualResponse,
       persona,
       timestamp: new Date().toISOString(),
       messageId: Date.now().toString()

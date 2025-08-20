@@ -17,8 +17,8 @@ interface LumoContextType {
   open: () => void;
   close: () => void;
   isOpen: boolean;
-  persona: 'core' | 'gremlin' | 'analyst';
-  setPersona: (persona: 'core' | 'gremlin' | 'analyst') => void;
+  persona: 'core' | 'gremlin' | 'analyst' | 'support';
+  setPersona: (persona: 'core' | 'gremlin' | 'analyst' | 'support') => void;
   quotaLeft: number;
   tier: 'ghost' | 'firewall';
   notify: (type: 'info' | 'error' | 'warning' | 'success', message: string) => void;
@@ -27,6 +27,8 @@ interface LumoContextType {
   sendMessage: (message: string) => Promise<void>;
   chatHistory: Array<{ role: 'user' | 'lumo'; content: string; timestamp: string }>;
   isLoading: boolean;
+  isOnboardingMode: boolean;
+  setOnboardingComplete: () => void;
 }
 
 const LumoContext = createContext<LumoContextType | undefined>(undefined);
@@ -44,12 +46,13 @@ export function LumoProvider({
 }: LumoProviderProps) {
   const isClient = useIsClient();
   const [isOpen, setIsOpen] = useState(false);
-  const [persona, setPersona] = useState<'core' | 'gremlin' | 'analyst'>('core');
+  const [persona, setPersona] = useState<'core' | 'gremlin' | 'analyst' | 'support'>('core');
   const [quotaLeft, setQuotaLeft] = useState(initialQuota);
   const [notifications, setNotifications] = useState<LumoNotification[]>([]);
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'lumo'; content: string; timestamp: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [isOnboardingMode, setIsOnboardingMode] = useState(true);
 
   const addWelcomeMessage = () => {
     if (!isClient) return;
@@ -57,6 +60,23 @@ export function LumoProvider({
     setChatHistory([{
       role: 'lumo',
       content: `Welcome, ${userAlias}. I'm Lumo—your break-up co-pilot. Need a hand finishing setup?`,
+      timestamp: new Date().toISOString()
+    }]);
+  };
+
+  const setOnboardingComplete = () => {
+    if (!isClient) return;
+    setIsOnboardingMode(false);
+    setHasCompletedOnboarding(true);
+    localStorage.setItem('lumo.completedOnboard', 'true');
+    
+    // Switch to support mode after onboarding
+    setPersona('support');
+    
+    // Add transition message
+    setChatHistory(prev => [...prev, {
+      role: 'lumo',
+      content: "Great job completing your setup! I'm now here as your customer support assistant. Ask me anything about the platform features, billing, or if you need help. 💜",
       timestamp: new Date().toISOString()
     }]);
   };
@@ -72,23 +92,35 @@ export function LumoProvider({
     }
   }, [isClient]);
 
-  // Check for first-time user
+  // Check for first-time user and onboarding status
   useEffect(() => {
     if (!isClient) return;
     
     const skipOnboard = localStorage.getItem('lumo.skipOnboard');
     const completedOnboard = localStorage.getItem('lumo.completedOnboard');
     
-    if (!skipOnboard && !completedOnboard) {
-      // Show first-time flow after a brief delay
+    if (completedOnboard) {
+      // User has completed onboarding - switch to support mode
+      setIsOnboardingMode(false);
+      setHasCompletedOnboarding(true);
+      setPersona('support');
+    } else if (!skipOnboard) {
+      // Show first-time onboarding flow after a brief delay
+      setIsOnboardingMode(true);
       setTimeout(() => {
         setIsOpen(true);
         addWelcomeMessage();
       }, 2000);
+    } else {
+      // User skipped onboarding - default to support mode
+      setIsOnboardingMode(false);
+      setPersona('support');
     }
     
-    // Check for contextual nudges
-    checkForNudges();
+    // Check for contextual nudges (only if onboarding complete)
+    if (completedOnboard) {
+      checkForNudges();
+    }
   }, [checkForNudges, isClient]);
 
   const isStreakAtRisk = () => {
@@ -193,7 +225,9 @@ export function LumoProvider({
     clearNotifications,
     sendMessage,
     chatHistory,
-    isLoading
+    isLoading,
+    isOnboardingMode,
+    setOnboardingComplete
   };
 
   return (

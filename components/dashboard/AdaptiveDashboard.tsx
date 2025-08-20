@@ -1162,39 +1162,52 @@ function AdaptiveDashboard({ user }: Props) {
                 Take a moment to center yourself with these quick mindfulness exercises:
               </p>
               <div className="space-y-3">
+                <div className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/50">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">🧘‍♀️</span>
+                    <span className="text-white font-medium">5-Minute Grounding</span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    Take 5 deep breaths. Notice your surroundings. You are here, you are safe, you are healing.
+                  </p>
+                  <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300">
+                    💙 Practice box breathing: In for 4, hold for 4, out for 4, hold for 4
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/50">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">💭</span>
+                    <span className="text-white font-medium">Thought Awareness</span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    Notice your thoughts without judgment. They are just thoughts, not facts. Let them pass like clouds.
+                  </p>
+                  <div className="mt-3 p-3 bg-purple-500/10 border border-purple-500/30 rounded text-xs text-purple-300">
+                    🌙 Observe, acknowledge, release. You are not your thoughts.
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/50">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">❤️</span>
+                    <span className="text-white font-medium">Self-Compassion</span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    Place your hand on your heart. Feel it beating. Thank your body for carrying you through this healing journey.
+                  </p>
+                  <div className="mt-3 p-3 bg-pink-500/10 border border-pink-500/30 rounded text-xs text-pink-300">
+                    💝 You deserve the same kindness you give others
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-center mt-6">
                 <Button 
-                  variant="outline" 
-                  className="w-full justify-start text-left"
-                  onClick={() => {
-                    setActiveModal(null);
-                    // Could open a dedicated mindfulness modal
-                    alert('🧘‍♀️ Take 5 deep breaths. Notice your surroundings. You are here, you are safe, you are healing.');
-                  }}
+                  onClick={() => setActiveModal(null)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <span className="mr-2">🧘‍♀️</span>
-                  5-Minute Grounding
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start text-left"
-                  onClick={() => {
-                    setActiveModal(null);
-                    alert('💭 Notice your thoughts without judgment. They are just thoughts, not facts. Let them pass like clouds.');
-                  }}
-                >
-                  <span className="mr-2">💭</span>
-                  Thought Awareness
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start text-left"
-                  onClick={() => {
-                    setActiveModal(null);
-                    alert('❤️ Place your hand on your heart. Feel it beating. Thank your body for carrying you through this healing journey.');
-                  }}
-                >
-                  <span className="mr-2">❤️</span>
-                  Self-Compassion
+                  Continue Healing 🌟
                 </Button>
               </div>
             </div>

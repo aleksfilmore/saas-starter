@@ -108,7 +108,7 @@ export default function OptimizedWallPage() {
 
     const hasUserReacted = currentPost.userReaction === 'resonate';
     
-    // Optimistically update the heart count
+    // Optimistically update the UI state immediately
     setOptimisticReactions(prev => ({
       ...prev,
       [postId]: hasUserReacted ? -1 : 1 // Remove if already reacted, add if not
@@ -123,9 +123,18 @@ export default function OptimizedWallPage() {
       });
 
       if (response.ok) {
-        // Refresh data in background
-        refresh();
         const result = await response.json();
+        
+        // Clear optimistic state and refresh actual data
+        setOptimisticReactions(prev => {
+          const newState = { ...prev };
+          delete newState[postId];
+          return newState;
+        });
+        
+        // Force refresh the data to get updated userReaction state
+        await refresh();
+        
         if (result.action === 'added') {
           toast.success('💖 Reaction added!');
         } else if (result.action === 'removed') {
@@ -133,10 +142,11 @@ export default function OptimizedWallPage() {
         }
       } else {
         // Revert optimistic update on failure
-        setOptimisticReactions(prev => ({
-          ...prev,
-          [postId]: 0
-        }));
+        setOptimisticReactions(prev => {
+          const newState = { ...prev };
+          delete newState[postId];
+          return newState;
+        });
         
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         console.error('Failed to react to post:', errorData);
@@ -144,10 +154,11 @@ export default function OptimizedWallPage() {
       }
     } catch (error) {
       // Revert optimistic update on error
-      setOptimisticReactions(prev => ({
-        ...prev,
-        [postId]: 0
-      }));
+      setOptimisticReactions(prev => {
+        const newState = { ...prev };
+        delete newState[postId];
+        return newState;
+      });
       
       console.error('Failed to react to post:', error);
       toast.error('Failed to register reaction');
