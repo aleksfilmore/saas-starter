@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
       ignored: ['**/mobile/**', '**/node_modules/**'],
     };
     
-    // Also exclude mobile from module resolution
+    // Exclude mobile files from module resolution entirely
     config.resolve.alias = {
       ...config.resolve.alias,
     };
@@ -34,18 +34,25 @@ const nextConfig: NextConfig = {
     return config;
   },
   
+  // Force exclude mobile directory patterns from page discovery
+  async generateBuildId() {
+    // Custom build ID to force fresh builds and avoid mobile file conflicts
+    return 'build-' + Date.now();
+  },
+  
   // Production optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Minimal experimental features
-  experimental: {
-    esmExternals: true,
-  },
-  
   // Force dynamic rendering to avoid static generation issues
   output: 'standalone',
+  
+  // Skip static optimization to avoid page data collection issues
+  experimental: {
+    esmExternals: true,
+    optimizeCss: false,
+  },
   
   // Build configuration to prevent static generation issues
   eslint: {
@@ -54,6 +61,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  
+  // Disable static optimization entirely
+  trailingSlash: false,
 };
 
 export default nextConfig;

@@ -1,0 +1,15 @@
+# Mobile app directory
+mobile/**
+mobile/
+
+# Build directories
+.next/
+dist/
+build/
+
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
