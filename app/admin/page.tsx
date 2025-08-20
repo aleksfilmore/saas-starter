@@ -9,9 +9,9 @@ import Link from 'next/link';
 import {
   Brain, Zap, Users, ArrowRight,
   Sparkles, ChevronDown,
-  ChevronUp, Quote, Gamepad2, CheckCircle,
+  ChevronUp, Gamepad2, CheckCircle,
   Star, Heart, Target, Calendar, Timer, MessageCircle,
-  Shield, MessageSquare, AlertTriangle
+  Shield, MessageSquare
 } from 'lucide-react';
 
 // Particle component for floating effects
@@ -47,70 +47,32 @@ const FloatingParticles = () => {
 export default function HomePage() {
   const features = [
     {
-      icon: <Shield className="h-12 w-12 text-blue-400" />,
-      title: "🛡️ No-Contact Tracker",
+      icon: <Shield className="h-6 w-6 text-blue-400" />,
+      title: "No-Contact Tracker",
       description: "Block. Count. Brag. Your anti-relapse streak clocks every ghost-free day and rewards you in Bytes.",
       gradient: "bg-gradient-to-br from-blue-500 to-purple-500",
       glowColor: "shadow-glow-blue"
     },
     {
-      icon: <Zap className="h-12 w-12 text-yellow-400" />,
-      title: "⚡ Daily Ritual Engine",
+      icon: <Zap className="h-6 w-6 text-yellow-400" />,
+      title: "Daily Ritual Engine",
       description: "Gamified micro-quests—guided breathwork, playlist purges, emoji forecasts—personalized by your attachment archetype.",
       gradient: "bg-gradient-to-br from-yellow-500 to-orange-500",
       glowColor: "shadow-glow-yellow"
     },
     {
-      icon: <Brain className="h-12 w-12 text-green-400" />,
-      title: "🧠 AI Therapy Console",
+      icon: <Brain className="h-6 w-6 text-green-400" />,
+      title: "AI Therapy Console",
       description: "Text sessions on tap, voice oracle on demand. Not a licensed therapist—more like a brutally honest glitch-sage.",
       gradient: "bg-gradient-to-br from-green-500 to-emerald-500",
       glowColor: "shadow-glow-green"
     },
     {
-      icon: <MessageSquare className="h-12 w-12 text-pink-400" />,
-      title: "🎭 Wall of Wounds™",
+      icon: <MessageSquare className="h-6 w-6 text-pink-400" />,
+      title: "Wall of Wounds™",
       description: "Anonymous confessions transformed into shareable confession cards. React, relate, release.",
       gradient: "bg-gradient-to-br from-red-500 to-pink-500",
       glowColor: "shadow-glow-pink"
-    },
-    {
-      icon: <Gamepad2 className="h-12 w-12 text-purple-400" />,
-      title: "🔥 XP & Byte Economy",
-      description: "Earn XP, hoard Bytes, unlock avatar frames, freeze streaks, or summon the voice oracle. Healing meets RPG grind.",
-      gradient: "bg-gradient-to-br from-purple-500 to-pink-500",
-      glowColor: "shadow-glow-purple"
-    },
-    {
-      icon: <AlertTriangle className="h-12 w-12 text-orange-400" />,
-      title: "🚨 Emergency Protocols",
-      description: "Panic Mode button, Stalk-Resistance Check, crisis links. Because dopamine loops can't fix panic attacks.",
-      gradient: "bg-gradient-to-br from-red-500 to-orange-500",
-      glowColor: "shadow-glow-red"
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "exile_ghost",
-      timeframe: "3 months post-breakup",
-      content: "This app literally saved my sanity. The AI therapy chat felt more understanding than my real therapist sometimes.",
-      streak: "47 days no contact",
-      badge: "Digital Fortress"
-    },
-    {
-      name: "phoenix_rising",
-      timeframe: "6 months post-breakup",
-      content: "The gamification is genius. I'm competitive, so turning healing into achievements kept me motivated when nothing else could.",
-      streak: "180 days no contact",
-      badge: "Legendary Survivor"
-    },
-    {
-      name: "rebuilt_stronger",
-      timeframe: "1 year post-breakup",
-      content: "The community is incredible. Reading other stories made me feel less alone and more hopeful about the future.",
-      streak: "365 days no contact",
-      badge: "Master of Recovery"
     }
   ];
 
@@ -193,27 +155,20 @@ export default function HomePage() {
           </h1>
 
           <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            The first AI-powered platform that gamifies your healing journey. Track progress,
-            unlock achievements, and connect with a supportive community—all while maintaining complete anonymity.
+            Reformat heartbreak with AI + psychology: scan your attachment style, lock your no-contact streak, run personalized rituals and journal prompts, and vent—anonymously—on the Wall of Wounds. Stop texting your ex; start stacking wins.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Link href="/quiz">
               <Button className="btn-brand-primary px-8 py-4 text-lg">
-                <span className="hidden sm:inline">Discover Your Healing Archetype</span>
-                <span className="sm:hidden">Start Your Healing Scan</span>
+                START YOUR HEALING JOURNEY
                 <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </Link>
-            <Link href="#features">
-              <Button className="btn-brand-secondary px-8 py-4 text-lg">
-                Free to start
               </Button>
             </Link>
           </div>
 
           <p className="text-sm text-gray-400">
-            No card required • Cancel anytime • <span className="text-purple-400 font-medium">5,000+ recovering hearts</span>
+            Start free • No card required • Cancel anytime • <span className="text-purple-400 font-medium">Join thousands of recovering hearts</span>
           </p>
         </div>
       </section>
@@ -235,46 +190,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="card-brand group">
-                <div className={`p-6 rounded-xl ${feature.gradient} mb-6 w-fit ${feature.glowColor}`}>
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div className="section-divider"></div>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-br from-purple-900 to-gray-800">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-brand-glow mb-6">
-              Healing Stories from Our <span className="text-brand-gradient">Community</span>
-            </h2>
-            <p className="text-xl text-gray-300">
-              Real progress from real people (anonymously shared)
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="card-brand">
                 <div className="flex items-center mb-4">
-                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {testimonial.badge}
-                  </div>
+                  {feature.icon}
+                  <h3 className="text-xl font-bold text-white ml-3">{feature.title}</h3>
                 </div>
-                <Quote className="h-8 w-8 text-purple-400 mb-4" />
-                <p className="text-gray-300 mb-6 leading-relaxed">"{testimonial.content}"</p>
-                <div className="border-t border-purple-500/20 pt-4">
-                  <p className="text-purple-300 font-semibold">{testimonial.name}</p>
-                  <p className="text-gray-400 text-sm">{testimonial.timeframe}</p>
-                  <p className="text-green-400 text-sm font-medium mt-1">{testimonial.streak}</p>
-                </div>
+                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -304,19 +224,23 @@ export default function HomePage() {
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Basic AI therapy chat
-                </li>
-                <li className="flex items-center text-gray-300">
-                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Daily ritual suggestions
-                </li>
-                <li className="flex items-center text-gray-300">
-                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
                   No-contact tracker
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Anonymous community access
+                  Daily Journaling
+                </li>
+                <li className="flex items-center text-gray-300">
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  1 Daily Healing Ritual
+                </li>
+                <li className="flex items-center text-gray-300">
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  Read Wall of Wounds posts
+                </li>
+                <li className="flex items-center text-gray-300">
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  Forever free
                 </li>
               </ul>
               
@@ -348,23 +272,19 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Advanced AI therapy chat
+                  2 Personalized Daily Healing Rituals
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Personalized healing rituals
+                  Advanced AI Therapy Chat
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Achievement system & gamification
+                  Post on Wall of Wounds
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Crisis support features
-                </li>
-                <li className="flex items-center text-gray-300">
-                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Priority support
+                  Earn badges to unlock exclusive features
                 </li>
               </ul>
               
@@ -426,9 +346,9 @@ export default function HomePage() {
               <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4 w-fit mx-auto">
                 Step 3
               </div>
-              <h3 className="text-xl font-bold text-white mb-4">Level Up & Unlock</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Glow Up & Unlock</h3>
               <p className="text-gray-300 leading-relaxed">
-                Track progress, earn achievements, maintain no-contact streaks, and connect with a supportive anonymous community.
+                Track your progress, earn badges, maintain no-contact streaks, and connect with a supportive anonymous community.
               </p>
             </div>
           </div>
