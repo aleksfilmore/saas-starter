@@ -1,6 +1,7 @@
 import "./globals.css";
 import ClientProviders from '@/components/ClientProviders';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     default: 'CTRL+ALT+BLOCK™ - Break Toxic Patterns, Build Self-Worth',
     template: '%s | CTRL+ALT+BLOCK™'
   },
-  description: 'Evidence-based digital healing platform combining neuroscience, gamification, and AI therapy to help you break toxic relationship patterns and build unshakeable self-worth.',
+  description: 'Evidence-based digital healing platform combining neuroscience, gamification, and AI therapy to help you break toxic relationship patterns and build unshakeable self-worth. Get personalized healing rituals, AI therapy, and anonymous community support.',
   keywords: [
     'toxic relationships',
     'no contact',
@@ -19,11 +20,23 @@ export const metadata: Metadata = {
     'breakup recovery',
     'emotional healing',
     'relationship trauma',
-    'self improvement'
+    'self improvement',
+    'narcissistic abuse recovery',
+    'emotional trauma healing',
+    'mental health app',
+    'breakup support',
+    'toxic relationship recovery',
+    'self-love journey',
+    'healing journey',
+    'digital therapy platform',
+    'relationship recovery app',
+    'emotional wellness'
   ],
   authors: [{ name: 'CTRL+ALT+BLOCK Team' }],
   creator: 'CTRL+ALT+BLOCK',
   publisher: 'CTRL+ALT+BLOCK',
+  category: 'Mental Health & Wellness',
+  classification: 'Health Application',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://ctrlaltblock.com'),
   alternates: {
     canonical: '/',
@@ -33,27 +46,31 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: '/',
     title: 'CTRL+ALT+BLOCK™ - Break Toxic Patterns, Build Self-Worth',
-    description: 'Evidence-based digital healing platform combining neuroscience, gamification, and AI therapy to help you break toxic relationship patterns.',
+    description: 'Evidence-based digital healing platform combining neuroscience, gamification, and AI therapy to help you break toxic relationship patterns and build unshakeable self-worth.',
     siteName: 'CTRL+ALT+BLOCK',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'CTRL+ALT+BLOCK - Digital Healing Platform',
+        alt: 'CTRL+ALT+BLOCK - Digital Healing Platform for Toxic Relationship Recovery',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'CTRL+ALT+BLOCK™ - Break Toxic Patterns, Build Self-Worth',
-    description: 'Evidence-based digital healing platform combining neuroscience, gamification, and AI therapy.',
+    description: 'Evidence-based digital healing platform combining neuroscience, gamification, and AI therapy to help you break toxic relationship patterns.',
     images: ['/twitter-image.png'],
     creator: '@ctrlaltblock',
+    site: '@ctrlaltblock',
   },
   robots: {
     index: true,
     follow: true,
+    noarchive: false,
+    nosnippet: false,
+    noimageindex: false,
     googleBot: {
       index: true,
       follow: true,
@@ -64,6 +81,13 @@ export const metadata: Metadata = {
   },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
+    yandex: process.env.YANDEX_VERIFICATION,
+    yahoo: process.env.YAHOO_VERIFICATION,
+  },
+  other: {
+    'msapplication-TileColor': '#8B5FE6',
+    'msapplication-config': '/browserconfig.xml',
+    'google-analytics': 'G-XC7EY4PTX0',
   },
 };
 
@@ -87,6 +111,7 @@ export default function RootLayout({
         <meta name="background-color" content="#1A1A1F" />
       </head>
       <body>
+        <GoogleAnalytics />
         <ErrorBoundary>
           <ClientProviders>
             {children}

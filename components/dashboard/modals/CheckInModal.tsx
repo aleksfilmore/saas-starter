@@ -12,8 +12,18 @@ interface Props {
   onComplete: () => void;
 }
 
-const moodEmojis = ['😢', '😔', '😐', '🙂', '😊', '😄', '🥰', '✨', '🌟', '🚀'];
-const moodLabels = ['Struggling', 'Low', 'Meh', 'Okay', 'Good', 'Great', 'Amazing', 'Fantastic', 'Incredible', 'Unstoppable'];
+const moodEmojis = ['�', '�😢', '�', '😐', '🙂', '😊', '�'];
+const moodLabels = ['System Crash', 'Processing Pain', 'Glitching', 'Running Stable', 'Optimizing', 'High Performance', 'System Upgraded'];
+const moodColors = ['text-red-400', 'text-orange-400', 'text-yellow-400', 'text-blue-400', 'text-green-400', 'text-purple-400', 'text-pink-400'];
+const moodDescriptions = [
+  'Full emotional meltdown mode',
+  'Heavy grief but functional', 
+  'Unstable but not broken',
+  'Neutral system state',
+  'Good day, building momentum',
+  'Feeling strong and confident',
+  'Peak performance, unstoppable'
+];
 
 export function CheckInModal({ onClose, onComplete }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -31,10 +41,15 @@ export function CheckInModal({ onClose, onComplete }: Props) {
           <div className="text-6xl mb-4">
             {moodEmojis[mood[0] - 1]}
           </div>
-          <h3 className="text-xl text-white font-medium">
-            {moodLabels[mood[0] - 1]}
-          </h3>
-          <div className="grid grid-cols-5 gap-2">
+          <div>
+            <h3 className={`text-xl font-medium mb-2 ${moodColors[mood[0] - 1]}`}>
+              {moodLabels[mood[0] - 1]}
+            </h3>
+            <p className="text-gray-400 text-sm">
+              {moodDescriptions[mood[0] - 1]}
+            </p>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
             {moodEmojis.map((emoji, index) => (
               <Button
                 key={index}
@@ -48,8 +63,8 @@ export function CheckInModal({ onClose, onComplete }: Props) {
             ))}
           </div>
           <div className="flex justify-between text-gray-400 text-sm">
-            <span>😢 Struggling</span>
-            <span>🚀 Unstoppable</span>
+            <span>� System Crash</span>
+            <span>� System Upgraded</span>
           </div>
         </div>
       )

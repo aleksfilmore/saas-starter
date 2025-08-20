@@ -348,7 +348,10 @@ export function SubscriptionManager() {
                   Billing Portal Unavailable
                 </Button>
                 <p className="text-xs text-gray-500 text-center">
-                  Your subscription is active but billing portal is not available in development mode.
+                  {process.env.NODE_ENV === 'development' 
+                    ? 'Billing portal is not available in development mode.'
+                    : 'Unable to connect to billing portal. Please contact support if this issue persists.'
+                  }
                 </p>
               </div>
             )}

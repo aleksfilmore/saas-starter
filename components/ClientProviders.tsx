@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { NotificationProvider } from '@/contexts/SimpleNotificationContext';
 import { HealingHubProvider } from '@/contexts/HealingHubContext';
+import { SmartLumoProvider } from '@/components/lumo/SmartLumo';
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
@@ -18,7 +19,9 @@ export default function ClientProviders({ children }: { children: React.ReactNod
     <AuthProvider>
       <NotificationProvider>
         <HealingHubProvider>
-          {children}
+          <SmartLumoProvider>
+            {children}
+          </SmartLumoProvider>
         </HealingHubProvider>
       </NotificationProvider>
     </AuthProvider>

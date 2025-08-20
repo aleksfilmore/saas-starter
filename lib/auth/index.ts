@@ -36,6 +36,7 @@ export const lucia = new Lucia(adapter, {
       is_verified: attributes.is_verified,
       subscription_status: attributes.subscription_status,
       subscription_expires: attributes.subscription_expires,
+      onboardingCompleted: attributes.onboarding_completed,
       created_at: attributes.created_at,
       updated_at: attributes.updated_at,
     };
@@ -114,6 +115,7 @@ interface DatabaseUserAttributes {
   is_verified: boolean;
   subscription_status: string | null;
   subscription_expires: Date | null;
+  onboarding_completed: boolean;
   created_at: Date;
   updated_at: Date;
 }

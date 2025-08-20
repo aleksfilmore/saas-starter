@@ -1,4 +1,4 @@
-# 📱 Healing Journey Mobile App
+# 📱 CTRL+ALT+BLOCK™ Mobile App
 
 React Native mobile app that shares 80%+ codebase with the web platform, providing a seamless cross-platform experience.
 
@@ -146,7 +146,7 @@ EXPO_PUBLIC_ENVIRONMENT=production
 
 ### App Store Metadata
 - **Bundle ID**: `com.healingjourney.app`
-- **App Name**: Healing Journey
+- **App Name**: CTRL+ALT+BLOCK
 - **Category**: Health & Fitness
 - **Privacy Policy**: Required for store approval
 
@@ -188,10 +188,10 @@ EXPO_PUBLIC_ENVIRONMENT=production
 ## 🎨 Design System
 
 Uses same brand identity as web platform:
-- **Primary**: `#8B5FE6` (Purple)
-- **Secondary**: `#FF1B7A` (Pink)
-- **Accent**: `#00D4FF` (Cyan)
-- **Success**: `#00FF88` (Green)
+- **Primary**: `#EC4899` (Hot Pink)
+- **Secondary**: `#8B45FF` (Purple)
+- **Accent**: `#0EA5E9` (Electric Blue)
+- **Success**: `#22C55E` (Green)
 - **Background**: `#080F20` (Dark)
 
 ## 🧪 Testing

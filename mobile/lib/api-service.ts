@@ -190,6 +190,83 @@ class ApiService {
     });
     return response.data;
   }
+
+  // =====================================
+  // QUICKACTIONS APIs (for cross-platform sync)
+  // =====================================
+
+  // Mood Check-in APIs
+  async logMoodCheckIn(moodData: any) {
+    const response = await this.client.post<ApiResponse>('/api/quickactions/mood', moodData);
+    return response.data;
+  }
+
+  async getMoodHistory(days: number = 7) {
+    const response = await this.client.get<ApiResponse>(`/api/quickactions/mood?days=${days}`);
+    return response.data;
+  }
+
+  // Breathing Exercise APIs
+  async logBreathingExercise(exerciseData: any) {
+    const response = await this.client.post<ApiResponse>('/api/quickactions/breathing', exerciseData);
+    return response.data;
+  }
+
+  async getBreathingHistory(days: number = 7) {
+    const response = await this.client.get<ApiResponse>(`/api/quickactions/breathing?days=${days}`);
+    return response.data;
+  }
+
+  // Mindfulness Exercise APIs
+  async logMindfulnessExercise(exerciseData: any) {
+    const response = await this.client.post<ApiResponse>('/api/quickactions/mindfulness', exerciseData);
+    return response.data;
+  }
+
+  async getMindfulnessHistory(days: number = 7) {
+    const response = await this.client.get<ApiResponse>(`/api/quickactions/mindfulness?days=${days}`);
+    return response.data;
+  }
+
+  // Gratitude Journal APIs
+  async logGratitudeJournal(journalData: any) {
+    const response = await this.client.post<ApiResponse>('/api/quickactions/gratitude', journalData);
+    return response.data;
+  }
+
+  async getGratitudeHistory(days: number = 7) {
+    const response = await this.client.get<ApiResponse>(`/api/quickactions/gratitude?days=${days}`);
+    return response.data;
+  }
+
+  // =====================================
+  // LUMO APIs (for cross-platform sync)
+  // =====================================
+
+  // Lumo Onboarding APIs
+  async getLumoOnboardingState() {
+    const response = await this.client.get<ApiResponse>('/api/lumo/onboarding');
+    return response.data;
+  }
+
+  async updateLumoOnboardingState(action: string, data?: any) {
+    const response = await this.client.post<ApiResponse>('/api/lumo/onboarding', { action, data });
+    return response.data;
+  }
+
+  // Lumo Chat APIs (if implemented)
+  async sendLumoMessage(message: string, persona?: string) {
+    const response = await this.client.post<ApiResponse>('/api/lumo/chat', { 
+      message, 
+      persona: persona || 'core' 
+    });
+    return response.data;
+  }
+
+  async getLumoChatHistory() {
+    const response = await this.client.get<ApiResponse>('/api/lumo/chat');
+    return response.data;
+  }
 }
 
 export const apiService = new ApiService();

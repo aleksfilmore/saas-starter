@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { X, Sparkles, Target, Shield, Heart, MessageCircle, Crown } from 'lucide-react'
+import { useLumo } from '@/components/lumo/LumoProvider'
 
 interface LumoOnboardingProps {
   isFirstTimeUser: boolean
@@ -188,10 +189,11 @@ export function LumoOnboarding({ isFirstTimeUser, onDismiss, onStartNoContact, o
   )
 }
 
-// Hook to manage LUMO state
-export function useLumo() {
+// Hook to manage LUMO onboarding state
+export function useLumoOnboarding() {
   const [showLumo, setShowLumo] = useState(false)
   const [isFirstTimeUser, setIsFirstTimeUser] = useState(false)
+  const { open: openLumo } = useLumo()
 
   useEffect(() => {
     // Check if user has seen onboarding
@@ -212,8 +214,25 @@ export function useLumo() {
     }
   }, [])
 
-  const dismissLumo = () => {
-    setShowLumo(false)
+  const dismissLumo = async () => {
+    setShowLumo(false);
+    
+    try {
+      // Sync with API for cross-platform support
+      await fetch('/api/lumo/onboarding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'dismiss',
+          data: { timestamp: Date.now() }
+        })
+      });
+    } catch (error) {
+      console.error('Failed to sync Lumo onboarding state:', error);
+    }
+    
     localStorage.setItem('lumo-onboarding-seen', 'true')
     localStorage.setItem('lumo-last-show', Date.now().toString())
   }
@@ -232,11 +251,17 @@ export function useLumo() {
     }
   }
 
+  const openChat = () => {
+    dismissLumo()
+    openLumo() // Use the main Lumo context
+  }
+
   return {
     showLumo,
     isFirstTimeUser,
     dismissLumo,
     startNoContact,
-    viewRituals
+    viewRituals,
+    openChat
   }
 }

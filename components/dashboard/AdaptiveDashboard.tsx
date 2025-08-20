@@ -40,6 +40,10 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { BreathingExercise } from '@/components/quick-actions/BreathingExercise';
+import { LumoProvider } from '@/components/lumo/LumoProvider';
+import Lumo from '@/components/lumo/LumoBubble';
+import SmartLumo from '@/components/lumo/SmartLumo';
+import { LumoOnboarding, useLumoOnboarding } from '@/components/onboarding/LumoOnboarding';
 import { RitualModal } from '@/components/dashboard/modals/RitualModal';
 import { CheckInModal } from '@/components/dashboard/modals/CheckInModal';
 import AITherapyModal from '@/components/dashboard/modals/AITherapyModal';
@@ -68,9 +72,33 @@ const EMOJI_TAGS = [
 ];
 
 const AI_PERSONAS = [
-  { id: 'supportive-guide', name: 'Supportive Guide', icon: '🌟', description: 'Gentle, encouraging companion' },
-  { id: 'strategic-analyst', name: 'Strategic Analyst', icon: '🧠', description: 'Data-driven insights & patterns' },
-  { id: 'emotional-healer', name: 'Emotional Healer', icon: '💝', description: 'Deep emotional understanding' }
+  { 
+    id: 'supportive-guide', 
+    name: 'Supportive Guide', 
+    icon: '🌟', 
+    description: 'Gentle, encouraging companion',
+    color: 'from-pink-500/20 to-rose-500/20',
+    border: 'border-pink-500/40',
+    accent: 'text-pink-400'
+  },
+  { 
+    id: 'strategic-analyst', 
+    name: 'Strategic Analyst', 
+    icon: '🧠', 
+    description: 'Data-driven insights & patterns',
+    color: 'from-blue-500/20 to-cyan-500/20',
+    border: 'border-blue-500/40', 
+    accent: 'text-blue-400'
+  },
+  { 
+    id: 'emotional-healer', 
+    name: 'Emotional Healer', 
+    icon: '💝', 
+    description: 'Deep emotional understanding',
+    color: 'from-purple-500/20 to-violet-500/20',
+    border: 'border-purple-500/40',
+    accent: 'text-purple-400'
+  }
 ];
 
 function AdaptiveDashboard({ user }: Props) {
@@ -103,6 +131,16 @@ function AdaptiveDashboard({ user }: Props) {
     noContact,
     refresh
   } = useHealingHub();
+
+  // Lumo onboarding integration
+  const { 
+    showLumo: showOnboarding, 
+    isFirstTimeUser, 
+    dismissLumo: dismissOnboarding, 
+    startNoContact: navigateToNoContact, 
+    viewRituals: scrollToRituals,
+    openChat: openLumoChat
+  } = useLumoOnboarding();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -282,23 +320,24 @@ function AdaptiveDashboard({ user }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      {/* Floating Particles */}
-      <div className="particle-system">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className={`particle ${
-              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
-            }`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${8 + Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
+    <LumoProvider>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+        {/* Floating Particles */}
+        <div className="particle-system">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className={`particle ${
+                ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
+              }`}
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 8}s`,
+                animationDuration: `${8 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+        </div>
 
       {/* Enhanced Header */}
       <header className="border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
@@ -404,34 +443,16 @@ function AdaptiveDashboard({ user }: Props) {
           {/* Left Sidebar - Reorganized Layout */}
           <div className="xl:col-span-3 space-y-4">
 
-            {/* Enhanced Today's Progress with Prominent Insight */}
+            {/* Enhanced Today's Healing Journey with Prominent Mindset Goal */}
             <Card className="bg-gradient-to-br from-purple-900/60 to-indigo-900/60 border-purple-400/40 shadow-xl">
               <CardHeader className="pb-3">
                 <CardTitle className="text-white flex items-center gap-2 text-lg sm:text-xl font-bold">
                   <Target className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400" />
-                  Today's Progress
+                  Today's Healing Journey
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Progress Display */}
-                <div className="bg-black/20 rounded-lg p-3 sm:p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xl sm:text-2xl font-bold text-white">{completedToday}/{totalTasks}</span>
-                    <Badge className="bg-emerald-500/30 text-emerald-300 border-emerald-400/50 text-xs sm:text-sm px-2 sm:px-3 py-1">
-                      {Math.round(progressFraction * 100)}%
-                    </Badge>
-                  </div>
-                  <Progress value={progressFraction * 100} className="h-2 sm:h-3 mb-3 sm:mb-4" />
-                  <div className="space-y-2">
-                    <TaskItem label="Daily Ritual" completed={tasks.ritual} />
-                    <TaskItem label="Check-In" completed={tasks.checkIn} />
-                    <TaskItem label="AI Therapy" completed={tasks.aiTherapy} premium={!isPremium} />
-                    <TaskItem label="No-Contact" completed={tasks.noContact} />
-                    <TaskItem label="Wall Interaction" completed={tasks.community} />
-                  </div>
-                </div>
-                
-                {/* Today's Insight - More Prominent */}
+                {/* Mindset Goal - More Prominent */}
                 <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-400/30 rounded-lg p-3 sm:p-4">
                   <div className="flex items-start gap-2 sm:gap-3">
                     <div className="flex-shrink-0">
@@ -440,20 +461,38 @@ function AdaptiveDashboard({ user }: Props) {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-xs sm:text-sm font-semibold text-yellow-300 mb-2">Today's Insight</h4>
+                      <h4 className="text-xs sm:text-sm font-semibold text-yellow-300 mb-2">Mindset Goal</h4>
                       <blockquote className="text-xs sm:text-sm text-gray-200 leading-relaxed italic border-l-2 border-yellow-400/30 pl-2 sm:pl-3">
                         "{customInsight || dailyInsight || 'Your sensitivity isn\'t a flaw—it\'s a feature to be honored.'}"
                       </blockquote>
                     </div>
                   </div>
                 </div>
+
+                {/* Progress Display */}
+                <div className="bg-black/20 rounded-lg p-3 sm:p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xl sm:text-2xl font-bold text-white">{Math.round(progressFraction * 100)}%</span>
+                    <Badge className="bg-emerald-500/30 text-emerald-300 border-emerald-400/50 text-xs sm:text-sm px-2 sm:px-3 py-1">
+                      Activities
+                    </Badge>
+                  </div>
+                  <Progress value={progressFraction * 100} className="h-2 sm:h-3 mb-3 sm:mb-4" />
+                  <div className="space-y-2">
+                    <TaskItem label="Daily Check-In" completed={tasks.checkIn} />
+                    <TaskItem label="Track No-Contact" completed={tasks.noContact} />
+                    <TaskItem label="Perform Healing Rituals" completed={tasks.ritual} />
+                    <TaskItem label="Use the AI Therapy" completed={tasks.aiTherapy} premium={!isPremium} />
+                    <TaskItem label="Like Wall posts to encourage others" completed={tasks.community} />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Three Cards Row: Check-In, No-Contact, Upgrade */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Two Cards Row: Check-In, No-Contact */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
-              {/* Daily Check-In - Compact */}
+              {/* Daily Check-In - Improved Layout */}
               <Card className="bg-gradient-to-br from-blue-900/50 to-slate-800/50 border-blue-500/30">
                 <CardContent className="pt-4 pb-4">
                   <div className="text-center space-y-2">
@@ -473,7 +512,7 @@ function AdaptiveDashboard({ user }: Props) {
                 </CardContent>
               </Card>
 
-              {/* No-Contact Streak - Compact */}
+              {/* No-Contact Streak - Improved Layout */}
               <Card 
                 className="bg-gradient-to-br from-emerald-900/50 to-slate-800/50 border-emerald-500/30 cursor-pointer hover:border-emerald-400/50 transition-colors"
                 onClick={() => setActiveModal('no-contact')}
@@ -498,43 +537,28 @@ function AdaptiveDashboard({ user }: Props) {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Upgrade Card - Compact */}
-              {!isPremium ? (
-                <Card className="border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 to-slate-800/50">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="text-center space-y-2">
-                      <Crown className="h-6 w-6 mx-auto text-yellow-400" />
-                      <div>
-                        <h3 className="text-sm font-semibold text-white">Firewall</h3>
-                        <p className="text-xs text-yellow-200">Upgrade</p>
-                      </div>
-                      <Button 
-                        onClick={() => setActiveModal('upgrade')}
-                        className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold text-xs h-7"
-                      >
-                        Upgrade
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card className="border-purple-500/30 bg-gradient-to-br from-purple-900/20 to-slate-800/50">
-                  <CardContent className="pt-4 pb-4">
-                    <div className="text-center space-y-2">
-                      <Crown className="h-6 w-6 mx-auto text-purple-400" />
-                      <div>
-                        <h3 className="text-sm font-semibold text-white">Firewall</h3>
-                        <p className="text-xs text-purple-200">Active</p>
-                      </div>
-                      <Badge className="bg-purple-500/20 text-purple-300 text-xs">
-                        Premium Member
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
+
+            {/* Upgrade Card - Separate Row for Non-Premium Users */}
+            {!isPremium && (
+              <Card className="border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 to-slate-800/50">
+                <CardContent className="pt-4 pb-4">
+                  <div className="text-center space-y-2">
+                    <Crown className="h-6 w-6 mx-auto text-yellow-400" />
+                    <div>
+                      <h3 className="text-sm font-semibold text-white">Firewall</h3>
+                      <p className="text-xs text-yellow-200">Upgrade</p>
+                    </div>
+                    <Button 
+                      onClick={() => setActiveModal('upgrade')}
+                      className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold text-xs h-7"
+                    >
+                      Upgrade
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Daily Encouragement for No-Contact (if exists) */}
             {noContactEncouragement && (
@@ -580,17 +604,9 @@ function AdaptiveDashboard({ user }: Props) {
             {/* Daily Rituals Section */}
             <Card className="bg-gradient-to-br from-purple-900/60 to-pink-900/40 border-purple-500/40 shadow-2xl">
               <CardHeader>
-                <CardTitle className="text-white flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Flame className="h-6 w-6 text-orange-400" />
-                    {isPremium ? "Today's Healing Rituals" : "Today's Healing Ritual"}
-                  </div>
-                  {isPremium && (
-                    <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1">
-                      <Crown className="h-3 w-3 mr-1" />
-                      Premium
-                    </Badge>
-                  )}
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Flame className="h-6 w-6 text-orange-400" />
+                  {isPremium ? "Today's Healing Rituals" : "Today's Healing Ritual"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -773,7 +789,7 @@ function AdaptiveDashboard({ user }: Props) {
                             setActiveModal('ai-therapy');
                           }}
                           variant={selectedPersona === persona.id ? "default" : "outline"}
-                          className="h-auto p-4 flex flex-col items-center text-center space-y-2 relative"
+                          className={`h-auto p-4 flex flex-col items-center text-center space-y-2 relative bg-gradient-to-br ${persona.color} border ${persona.border} hover:bg-opacity-80 transition-all`}
                         >
                           <div className="absolute top-2 right-2">
                             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs px-1 py-0">
@@ -782,8 +798,8 @@ function AdaptiveDashboard({ user }: Props) {
                           </div>
                           <span className="text-2xl">{persona.icon}</span>
                           <div>
-                            <div className="font-medium text-sm">{persona.name}</div>
-                            <div className="text-xs opacity-75">{persona.description}</div>
+                            <div className={`font-medium text-sm ${persona.accent}`}>{persona.name}</div>
+                            <div className="text-xs text-slate-300">{persona.description}</div>
                             <div className="text-xs text-green-400 mt-1">Unlimited Chat</div>
                           </div>
                         </Button>
@@ -1178,7 +1194,22 @@ function AdaptiveDashboard({ user }: Props) {
           </div>
         </div>
       )}
+      
+      {/* Lumo AI Assistant */}
+      <Lumo />
+      <SmartLumo />
+      
+      {/* Lumo Onboarding */}
+      {showOnboarding && (
+        <LumoOnboarding
+          isFirstTimeUser={isFirstTimeUser}
+          onDismiss={dismissOnboarding}
+          onStartNoContact={navigateToNoContact}
+          onViewRituals={scrollToRituals}
+        />
+      )}
     </div>
+    </LumoProvider>
   );
 }
 

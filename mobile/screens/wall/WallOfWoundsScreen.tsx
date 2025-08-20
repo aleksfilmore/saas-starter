@@ -412,7 +412,7 @@ export function WallOfWoundsScreen({ navigation }: Props) {
     if (intensity >= 8) return '#FF1B7A';
     if (intensity >= 6) return '#FF9500';
     if (intensity >= 4) return '#00D4FF';
-    return '#00FF88';
+    return '#22C55E';
   };
 
   const addWound = () => {
@@ -567,7 +567,7 @@ export function WallOfWoundsScreen({ navigation }: Props) {
                     <Ionicons
                       name={wound.isHealed ? 'heart' : 'heart-outline'}
                       size={24}
-                      color={wound.isHealed ? '#00FF88' : '#64748B'}
+                      color={wound.isHealed ? '#22C55E' : '#64748B'}
                     />
                   </TouchableOpacity>
                 </View>
@@ -595,7 +595,7 @@ export function WallOfWoundsScreen({ navigation }: Props) {
                   </View>
                   {wound.isHealed && (
                     <View style={styles.healedBadge}>
-                      <Ionicons name="checkmark" size={12} color="#00FF88" />
+                      <Ionicons name="checkmark" size={12} color="#22C55E" />
                       <Text style={styles.healedText}>Healing</Text>
                     </View>
                   )}

@@ -72,7 +72,7 @@ export function SignInScreen({ navigation }: Props) {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
               >
-                <Ionicons name="arrow-back" size={24} color="#8B5FE6" />
+                <Ionicons name="arrow-back" size={24} color="#EC4899" />
               </TouchableOpacity>
               <Text style={styles.title}>Welcome Back</Text>
               <Text style={styles.subtitle}>
@@ -134,7 +134,7 @@ export function SignInScreen({ navigation }: Props) {
                 disabled={isLoading}
               >
                 <LinearGradient
-                  colors={isLoading ? ['#6B7280', '#6B7280'] : ['#8B5FE6', '#6D3ED1']}
+                  colors={isLoading ? ['#6B7280', '#6B7280'] : ['#EC4899', '#BE185D']}
                   style={styles.buttonGradient}
                 >
                   <Text style={styles.signInButtonText}>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     fontSize: 14,
-    color: '#8B5FE6',
+    color: '#EC4899',
     fontWeight: '600',
   },
   signInButton: {
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   linkText: {
-    color: '#8B5FE6',
+    color: '#EC4899',
     fontWeight: '600',
   },
 });

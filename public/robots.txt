@@ -1,4 +1,4 @@
-# Robots.txt for Uninstall Your Ex Platform
+# Robots.txt for CTRL+ALT+BLOCK Platform
 # Allow search engines to crawl public marketing pages
 User-agent: *
 
@@ -9,6 +9,8 @@ Allow: /pricing
 Allow: /privacy
 Allow: /terms
 Allow: /crisis-support
+Allow: /blog
+Allow: /blog/*
 
 # Disallow crawling of private/user areas
 Disallow: /dashboard
@@ -40,5 +42,8 @@ Disallow: /_next/*
 Disallow: /logs
 Disallow: /logs/*
 
-# Sitemap location (you may want to create this later)
-# Sitemap: https://yourdomain.com/sitemap.xml
+# Crawl delay for polite crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://ctrlaltblock.com/sitemap.xml

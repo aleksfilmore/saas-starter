@@ -9,6 +9,7 @@ import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { EmailNotificationAdmin } from '@/components/admin/EmailNotificationAdmin';
 import { ModerationDashboard } from '@/components/admin/ModerationDashboard';
+import { MobileAppDashboard } from '@/components/admin/MobileAppDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Users, 
@@ -241,9 +242,10 @@ export default function AdminPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="mobile">Mobile Apps</TabsTrigger>
             <TabsTrigger value="moderation">Moderation</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="system">System</TabsTrigger>
@@ -414,6 +416,10 @@ export default function AdminPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="mobile" className="space-y-6">
+            <MobileAppDashboard />
           </TabsContent>
 
           <TabsContent value="system" className="space-y-6">

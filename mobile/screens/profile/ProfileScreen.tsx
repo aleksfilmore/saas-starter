@@ -91,10 +91,10 @@ export function ProfileScreen() {
     },
     {
       id: 'about',
-      title: 'About Healing Journey',
+      title: 'About CTRL+ALT+BLOCK',
       subtitle: 'Version 1.0.0',
       icon: 'information-circle-outline',
-      action: () => Alert.alert('About', 'Healing Journey v1.0.0\nYour companion for emotional healing'),
+      action: () => Alert.alert('About', 'CTRL+ALT+BLOCK v1.0.0\nYour companion for emotional healing'),
       showArrow: true,
     },
   ];

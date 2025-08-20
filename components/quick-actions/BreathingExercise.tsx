@@ -108,6 +108,23 @@ export function BreathingExercise({ onComplete, children }: BreathingExercisePro
           // Exercise complete
           setIsActive(false);
           setIsComplete(true);
+          
+          // Sync with API for cross-platform support
+          fetch('/api/quickactions/breathing', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              pattern: selectedPattern,
+              cycles: selectedPattern.cycles,
+              duration: selectedPattern.cycles * (selectedPattern.inhale + selectedPattern.hold + selectedPattern.exhale),
+              difficulty: selectedPattern.difficulty
+            })
+          }).catch(error => {
+            console.error('Failed to sync breathing exercise:', error);
+          });
+          
           onComplete?.(selectedPattern, selectedPattern.cycles);
         } else {
           // Next cycle

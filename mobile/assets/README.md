@@ -15,10 +15,10 @@
 
 ## Brand Colors Used in Mobile App
 
-- **Primary Purple**: `#8B5FE6`
-- **Secondary Pink**: `#FF1B7A` 
-- **Accent Cyan**: `#00D4FF`
-- **Success Green**: `#00FF88`
+- **Primary Hot Pink**: `#EC4899`
+- **Secondary Purple**: `#8B45FF` 
+- **Accent Electric Blue**: `#0EA5E9`
+- **Success Green**: `#22C55E`
 - **Dark Background**: `#080F20`
 - **Card Background**: `#1F2937`
 - **Border Color**: `#374151`

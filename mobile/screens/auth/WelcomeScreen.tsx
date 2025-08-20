@@ -27,9 +27,9 @@ export function WelcomeScreen({ navigation }: Props) {
           {/* Logo Section */}
           <View style={styles.logoSection}>
             <View style={styles.logoContainer}>
-              <Ionicons name="heart" size={60} color="#8B5FE6" />
+              <Ionicons name="heart" size={60} color="#EC4899" />
             </View>
-            <Text style={styles.appName}>Healing Journey</Text>
+            <Text style={styles.appName}>CTRL+ALT+BLOCK</Text>
             <Text style={styles.tagline}>
               Transform your healing process with AI-powered support
             </Text>
@@ -46,7 +46,7 @@ export function WelcomeScreen({ navigation }: Props) {
             </View>
 
             <View style={styles.featureItem}>
-              <Ionicons name="calendar-outline" size={32} color="#00FF88" />
+              <Ionicons name="calendar-outline" size={32} color="#22C55E" />
               <Text style={styles.featureTitle}>Daily Rituals</Text>
               <Text style={styles.featureDescription}>
                 Build healing habits with guided daily practices
@@ -54,7 +54,7 @@ export function WelcomeScreen({ navigation }: Props) {
             </View>
 
             <View style={styles.featureItem}>
-              <Ionicons name="trending-up" size={32} color="#FF1B7A" />
+              <Ionicons name="trending-up" size={32} color="#EC4899" />
               <Text style={styles.featureTitle}>Progress Tracking</Text>
               <Text style={styles.featureDescription}>
                 Monitor your emotional growth and celebrate milestones
@@ -69,7 +69,7 @@ export function WelcomeScreen({ navigation }: Props) {
               onPress={() => navigation.navigate('SignUp')}
             >
               <LinearGradient
-                colors={['#8B5FE6', '#6D3ED1']}
+                colors={['#EC4899', '#BE185D']}
                 style={styles.buttonGradient}
               >
                 <Text style={styles.primaryButtonText}>Get Started</Text>
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#8B5FE6',
+    color: '#EC4899',
   },
   footer: {
     alignItems: 'center',

@@ -100,9 +100,31 @@ export function GratitudeJournal({ onComplete }: GratitudeJournalProps) {
     setShowPrompts(false);
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (entries.length > 0) {
       setIsComplete(true);
+      
+      try {
+        // Calculate total word count
+        const totalWordCount = entries.reduce((total, entry) => 
+          total + entry.text.split(/\s+/).length, 0
+        );
+        
+        // Sync with API for cross-platform support
+        await fetch('/api/quickactions/gratitude', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entries: entries,
+            totalWordCount: totalWordCount
+          })
+        });
+      } catch (error) {
+        console.error('Failed to sync gratitude journal:', error);
+      }
+      
       onComplete?.(entries);
       
       // Auto-close after 4 seconds

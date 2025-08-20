@@ -186,13 +186,32 @@ export function MindfulnessMoment({ onComplete }: MindfulnessMomentProps) {
     }
   };
 
-  const completeExercise = () => {
+  const completeExercise = async () => {
     if (state.currentExercise) {
       setState(prev => ({
         ...prev,
         isActive: false,
         isComplete: true
       }));
+      
+      try {
+        // Sync with API for cross-platform support
+        await fetch('/api/quickactions/mindfulness', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            exercise: state.currentExercise,
+            duration: state.currentExercise.duration,
+            steps: state.currentExercise.steps,
+            reflection: null // Could add reflection input later
+          })
+        });
+      } catch (error) {
+        console.error('Failed to sync mindfulness exercise:', error);
+      }
+      
       onComplete?.(state.currentExercise);
     }
   };

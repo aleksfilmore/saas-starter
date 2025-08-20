@@ -60,19 +60,19 @@ export function NoContactModal({ onClose, onComplete }: Props) {
   };
 
   const getStreakColor = () => {
-    if (currentStreak < 7) return 'text-yellow-400';
-    if (currentStreak < 30) return 'text-orange-400';
-    return 'text-green-400';
+    if (currentStreak < 7) return 'text-amber-400';
+    if (currentStreak < 30) return 'text-emerald-400';
+    return 'text-cyan-400';
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'success':
-        return <CheckCircle className="h-4 w-4 text-green-400" />;
+        return <CheckCircle className="h-4 w-4 text-emerald-400" />;
       case 'struggle':
-        return <AlertTriangle className="h-4 w-4 text-yellow-400" />;
+        return <AlertTriangle className="h-4 w-4 text-amber-400" />;
       case 'failure':
-        return <Heart className="h-4 w-4 text-red-400" />;
+        return <Heart className="h-4 w-4 text-rose-400" />;
       default:
         return null;
     }
@@ -93,10 +93,10 @@ export function NoContactModal({ onClose, onComplete }: Props) {
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-800 border-gray-700 text-white max-w-lg">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <Shield className="h-5 w-5 text-blue-400" />
+            <Shield className="h-5 w-5 text-cyan-400" />
             <span>No Contact Tracker</span>
           </DialogTitle>
         </DialogHeader>
@@ -104,24 +104,24 @@ export function NoContactModal({ onClose, onComplete }: Props) {
         <div className="space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-2 gap-4">
-            <Card className="bg-gray-700 border-gray-600">
+            <Card className="bg-slate-800 border-slate-600">
               <CardContent className="p-4 text-center">
                 <div className={`text-2xl font-bold ${getStreakColor()}`}>
                   {currentStreak}
                 </div>
-                <div className="text-sm text-gray-400 flex items-center justify-center">
+                <div className="text-sm text-slate-400 flex items-center justify-center">
                   <Calendar className="h-4 w-4 mr-1" />
                   Current Streak
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-gray-700 border-gray-600">
+            <Card className="bg-slate-800 border-slate-600">
               <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-purple-400">
+                <div className="text-2xl font-bold text-cyan-400">
                   {totalDays}
                 </div>
-                <div className="text-sm text-gray-400 flex items-center justify-center">
+                <div className="text-sm text-slate-400 flex items-center justify-center">
                   <Clock className="h-4 w-4 mr-1" />
                   Total Days
                 </div>
@@ -131,14 +131,14 @@ export function NoContactModal({ onClose, onComplete }: Props) {
 
           {/* Today's Check-in */}
     {!hasCheckedToday ? (
-            <Card className="bg-gray-700 border-gray-600">
+            <Card className="bg-slate-800 border-slate-600">
               <CardHeader>
                 <CardTitle className="text-center text-lg">How did today go?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button
                   onClick={() => handleDailyCheckIn('success')}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
       disabled={!noContact?.canCheckIn}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
@@ -147,7 +147,7 @@ export function NoContactModal({ onClose, onComplete }: Props) {
                 
                 <Button
                   onClick={() => handleDailyCheckIn('struggle')}
-                  className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
       disabled={!noContact?.canCheckIn}
                 >
                   <AlertTriangle className="h-4 w-4 mr-2" />
@@ -156,7 +156,7 @@ export function NoContactModal({ onClose, onComplete }: Props) {
                 
                 <Button
                   onClick={() => handleDailyCheckIn('failure')}
-                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  className="w-full bg-rose-600 hover:bg-rose-700 text-white"
       disabled={!noContact?.canCheckIn}
                 >
                   <Heart className="h-4 w-4 mr-2" />
@@ -165,46 +165,26 @@ export function NoContactModal({ onClose, onComplete }: Props) {
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-green-900/20 border-green-600">
+            <Card className="bg-emerald-900/30 border-emerald-600">
               <CardContent className="p-4 text-center">
-                <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <div className="text-green-400 font-semibold">Today's check-in complete!</div>
-                <div className="text-sm text-gray-400">Keep up the amazing work</div>
+                <CheckCircle className="h-8 w-8 text-emerald-400 mx-auto mb-2" />
+                <div className="text-emerald-400 font-semibold">Today's check-in complete!</div>
+                <div className="text-sm text-slate-400">Keep up the amazing work</div>
               </CardContent>
             </Card>
           )}
 
-          {/* Recent History */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-400 mb-3">Recent History</h3>
-            <div className="space-y-2">
-              {recentEntries.map((entry, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    {getStatusIcon(entry.status)}
-                    <span className="text-sm">{entry.date}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="outline" className="text-xs">
-                      {getStatusLabel(entry.status)}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Motivation */}
-          <Card className="bg-blue-900/20 border-blue-600">
+          <Card className="bg-cyan-900/30 border-cyan-600">
             <CardContent className="p-4">
               <div className="text-center">
-                <div className="text-blue-400 font-semibold mb-1">
+                <div className="text-cyan-400 font-semibold mb-1">
                   {currentStreak >= 30 ? "You're a No Contact Champion!" :
                    currentStreak >= 14 ? "Two weeks strong - incredible progress!" :
                    currentStreak >= 7 ? "One week milestone reached!" :
                    "Every day is progress - keep going!"}
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-slate-400">
                   Remember: Each day of no contact is a step toward healing and self-respect.
                 </div>
               </div>

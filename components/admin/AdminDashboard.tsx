@@ -16,8 +16,11 @@ import {
   Target,
   Clock,
   Award,
-  Zap
+  Zap,
+  Smartphone
 } from 'lucide-react';
+import { ModerationDashboard } from './ModerationDashboard';
+import { MobileAppDashboard } from './MobileAppDashboard';
 
 interface AnalyticsMetrics {
   revenue: {
@@ -195,6 +198,7 @@ export function AdminDashboard() {
           <TabsTrigger value="retention">User Retention</TabsTrigger>
           <TabsTrigger value="features">Feature Usage</TabsTrigger>
           <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
+          <TabsTrigger value="mobile">Mobile Apps</TabsTrigger>
         </TabsList>
 
         <TabsContent value="conversion" className="space-y-4">
@@ -387,6 +391,10 @@ export function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="mobile" className="space-y-4">
+          <MobileAppDashboard />
         </TabsContent>
       </Tabs>
     </div>

@@ -4,6 +4,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Head from 'next/head';
 import { 
   Target, Timer, Users, Star, ArrowRight, 
   Brain, Zap, MessageSquare, Sparkles
@@ -24,6 +25,40 @@ const FloatingParticles = () => {
 }
 
 export default function HowItWorksPage() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to heal from toxic relationships using CTRL+ALT+BLOCK",
+    "description": "Step-by-step process for breaking free from toxic relationship patterns using AI therapy and neuroscience",
+    "image": "https://ctrlaltblock.com/how-it-works-image.png",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Take the Healing Archetype Scan",
+        "text": "Complete our AI-powered assessment to discover your unique healing archetype and get personalized recommendations.",
+        "image": "https://ctrlaltblock.com/step1-scan.png"
+      },
+      {
+        "@type": "HowToStep", 
+        "name": "Receive Daily Healing Rituals",
+        "text": "Get 3-5 personalized micro-activities delivered at optimal times to rebuild confidence and emotional resilience.",
+        "image": "https://ctrlaltblock.com/step2-rituals.png"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Track Progress and Connect",
+        "text": "Monitor your no-contact streak, earn badges, chat with AI therapy, and connect with anonymous community support.",
+        "image": "https://ctrlaltblock.com/step3-progress.png"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Break Free and Glow Up",
+        "text": "Transform toxic patterns into healthy boundaries and build unshakeable self-worth through consistent practice.",
+        "image": "https://ctrlaltblock.com/step4-freedom.png"
+      }
+    ]
+  };
+
   const steps = [
     {
       number: "1️⃣",
@@ -56,7 +91,16 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="brand-container">
+    <>
+      <Head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData)
+          }}
+        />
+      </Head>
+      <div className="brand-container">
       <FloatingParticles />
 
       {/* Header */}
@@ -209,5 +253,6 @@ export default function HowItWorksPage() {
       
       <SiteFooter />
     </div>
+    </>
   );
 }

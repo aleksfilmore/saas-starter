@@ -88,7 +88,7 @@ export function SignUpScreen({ navigation }: Props) {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
               >
-                <Ionicons name="arrow-back" size={24} color="#8B5FE6" />
+                <Ionicons name="arrow-back" size={24} color="#EC4899" />
               </TouchableOpacity>
               <Text style={styles.title}>Create Account</Text>
               <Text style={styles.subtitle}>
@@ -181,7 +181,7 @@ export function SignUpScreen({ navigation }: Props) {
                 disabled={isLoading}
               >
                 <LinearGradient
-                  colors={isLoading ? ['#6B7280', '#6B7280'] : ['#8B5FE6', '#6D3ED1']}
+                  colors={isLoading ? ['#6B7280', '#6B7280'] : ['#EC4899', '#BE185D']}
                   style={styles.buttonGradient}
                 >
                   <Text style={styles.signUpButtonText}>

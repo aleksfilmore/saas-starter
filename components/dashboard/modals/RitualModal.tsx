@@ -126,7 +126,7 @@ export function RitualModal({ ritualId, rituals, onClose, onComplete }: Props) {
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Play className="h-4 w-4 mr-2" />
-                      Start ({Math.floor(ritualSteps[currentStep]!.duration! / 60)}m)
+                      Start
                     </Button>
                   ) : (
                     <>

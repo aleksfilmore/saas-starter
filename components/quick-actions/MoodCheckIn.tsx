@@ -124,9 +124,28 @@ export function MoodCheckIn({ onComplete }: MoodCheckInProps) {
     setSelectedMood(mood);
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (selectedMood) {
       setIsComplete(true);
+      
+      try {
+        // Send mood data to API for cross-platform synchronization
+        await fetch('/api/quickactions/mood', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            mood: selectedMood,
+            notes: notes.trim() || null,
+            suggestions: selectedMood.suggestions
+          })
+        });
+      } catch (error) {
+        console.error('Failed to sync mood check-in:', error);
+        // Still complete locally even if sync fails
+      }
+      
       onComplete?.(selectedMood);
       
       // Auto-close after 3 seconds

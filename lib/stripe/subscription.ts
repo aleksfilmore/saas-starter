@@ -127,7 +127,7 @@ export async function getUserSubscription(userId: string) {
 
         if (customers.data.length === 0) {
           // User marked as paid but no Stripe customer found
-          // In development or if Stripe is misconfigured, treat as premium but with limited portal access
+          console.warn(`Premium user ${userId} (${userData.email}) has no Stripe customer record`);
           return {
             tier: 'PREMIUM',
             status: 'active',
@@ -199,7 +199,7 @@ export async function getUserSubscription(userId: string) {
           customerId: customer.id
         };
       } catch (stripeError) {
-        console.error('Stripe API error:', stripeError);
+        console.error('Stripe API error for user', userId, ':', stripeError);
         // If Stripe fails but user is marked as firewall, show them as premium with error status
         // This handles cases like wrong API keys, network issues, etc.
         return {
