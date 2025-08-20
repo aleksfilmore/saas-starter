@@ -22,7 +22,8 @@
         "NSFaceIDUsageDescription": "Use Face ID to securely access CTRL+ALT+BLOCK",
         "NSCameraUsageDescription": "Camera access is needed for profile photos and ritual documentation",
         "NSMicrophoneUsageDescription": "Microphone access is needed for voice journaling features",
-        "NSPhotoLibraryUsageDescription": "Photo library access is needed for sharing your healing progress"
+        "NSPhotoLibraryUsageDescription": "Photo library access is needed for sharing your healing progress",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
