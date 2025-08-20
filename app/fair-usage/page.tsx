@@ -165,7 +165,7 @@ export default function FairUsagePage() {
                 </div>
                 
                 <div>
-                  <h3 className="text-lg font-semibold text-pink-400 mb-3">Firewall Mode ($3.99/month)</h3>
+                  <h3 className="text-lg font-semibold text-pink-400 mb-3">Firewall Mode ($9.99/month)</h3>
                   <ul className="text-gray-300 space-y-2 text-sm">
                     <li>• Daily rituals: Unlimited</li>
                     <li>• AI therapy sessions: 300 per month</li>

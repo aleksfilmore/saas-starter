@@ -129,7 +129,7 @@ export default function PricingPage() {
               </div>
               <CardHeader className="pt-8">
                 <CardTitle className="text-3xl font-bold text-white brand-glow">Firewall Mode</CardTitle>
-                <div className="text-5xl font-black text-white mb-2 brand-glow">$3.99</div>
+                <div className="text-5xl font-black text-white mb-2 brand-glow">$9.99</div>
                 <p className="text-brand-light">Per month • Complete protection suite</p>
               </CardHeader>
               <CardContent className="space-y-6">
