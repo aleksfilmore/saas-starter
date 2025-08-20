@@ -128,26 +128,31 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-400 hover:text-white"
+        className={`relative p-2.5 rounded-xl transition-all duration-200 ${
+          unreadCount > 0 
+            ? 'text-purple-400 hover:text-purple-300 hover:bg-purple-500/20 ring-1 ring-purple-500/30' 
+            : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+        }`}
       >
-        <Bell className="w-5 h-5" />
+        <Bell className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'scale-110' : ''}`} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium shadow-lg animate-pulse">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </Button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 z-[9999]">
-          <Card className="bg-gray-800/95 backdrop-blur-sm border-gray-700 shadow-2xl">
-            <CardContent className="p-0">
-              <div className="flex items-center justify-between p-4 border-b border-gray-700">
-                <h3 className="text-sm font-medium text-white flex items-center gap-2">
-                  <Bell className="w-4 h-4" />
+        <div className="absolute right-0 top-full mt-2 w-96 z-[9999]">
+          <Card className="bg-gray-900/98 backdrop-blur-lg border border-gray-600/50 shadow-2xl max-h-[70vh] flex flex-col">
+            <CardContent className="p-0 flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-600/50 bg-gray-800/50">
+                <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-purple-400" />
                   Notifications
                   {unreadCount > 0 && (
-                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                       {unreadCount}
                     </span>
                   )}
@@ -156,53 +161,98 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-white p-1 h-6 w-6"
+                  className="text-gray-400 hover:text-white hover:bg-gray-700/50 p-2 h-8 w-8"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
 
-              {loading && (
-                <div className="text-center py-8 px-4">
-                  <div className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                  <p className="text-xs text-gray-400">Loading notifications...</p>
-                </div>
-              )}
-              {!loading && loadError && (
-                <div className="text-center py-6 px-4">
-                  <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                  <p className="text-xs text-red-300 mb-2">{loadError}</p>
-                  <Button size="sm" variant="outline" className="text-xs" onClick={fetchNotifications}>Retry</Button>
-                </div>
-              )}
-              {!loading && !loadError && notifications.length === 0 ? (
-                <div className="text-center py-8 px-4">
-                  <Bell className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-                  <p className="text-sm text-gray-400">No notifications yet</p>
-                </div>
-              ) : null}
-              {!loading && !loadError && notifications.length > 0 && (
-                <div className="space-y-1 max-h-96 overflow-y-auto p-2">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`p-3 rounded-lg border transition-all cursor-pointer hover:bg-gray-700/30 ${
-                        notification.read 
-                          ? 'bg-gray-700/20 border-gray-600/50' 
-                          : 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/30 ring-1 ring-purple-500/20'
-                      }`}
-                      onClick={() => !notification.read && markAsRead(notification.id)}
+              {/* Content */}
+              <div className="flex-1 overflow-hidden">
+                {loading && (
+                  <div className="flex flex-col items-center justify-center py-12 px-4">
+                    <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mb-3" />
+                    <p className="text-sm text-gray-400">Loading notifications...</p>
+                  </div>
+                )}
+                
+                {!loading && loadError && (
+                  <div className="flex flex-col items-center justify-center py-12 px-4">
+                    <AlertTriangle className="w-10 h-10 text-red-400 mb-3" />
+                    <p className="text-sm text-red-300 mb-3 text-center">{loadError}</p>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-xs border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700/50" 
+                      onClick={fetchNotifications}
                     >
-                      <div className="flex items-start gap-3">
-                        {getNotificationIcon(notification.type)}
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <h4 className={`text-sm font-medium ${
-                              notification.read ? 'text-gray-300' : 'text-white'
-                            }`}>
-                              {notification.title}
-                            </h4>
+                      Retry
+                    </Button>
+                  </div>
+                )}
+                
+                {!loading && !loadError && notifications.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-12 px-4">
+                    <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center mb-3">
+                      <Bell className="w-6 h-6 text-gray-500" />
+                    </div>
+                    <p className="text-sm text-gray-400 text-center">No notifications yet</p>
+                    <p className="text-xs text-gray-500 text-center mt-1">We'll notify you about important updates</p>
+                  </div>
+                )}
+                
+                {!loading && !loadError && notifications.length > 0 && (
+                  <div className="overflow-y-auto max-h-80">
+                    <div className="space-y-1 p-3">
+                      {notifications.map((notification, index) => (
+                        <div
+                          key={notification.id}
+                          className={`group relative p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                            notification.read 
+                              ? 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-700/40' 
+                              : 'bg-gradient-to-r from-purple-500/15 to-pink-500/15 border-purple-500/40 hover:border-purple-400/60 shadow-lg shadow-purple-500/10'
+                          }`}
+                          onClick={() => !notification.read && markAsRead(notification.id)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 mt-0.5">
+                              {getNotificationIcon(notification.type)}
+                            </div>
+                            
+                            <div className="flex-1 min-w-0 pr-8">
+                              <h4 className={`text-sm font-medium leading-snug ${
+                                notification.read ? 'text-gray-300' : 'text-white'
+                              }`}>
+                                {notification.title}
+                              </h4>
+                              
+                              <p className={`text-sm mt-1 leading-relaxed ${
+                                notification.read ? 'text-gray-400' : 'text-gray-300'
+                              }`}>
+                                {notification.message}
+                              </p>
+                              
+                              <div className="flex items-center justify-between mt-3">
+                                <span className="text-xs text-gray-500 font-medium">
+                                  {formatTimestamp(notification.timestamp)}
+                                </span>
+                                
+                                {notification.actionUrl && notification.actionText && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.location.href = notification.actionUrl!;
+                                    }}
+                                    className="text-xs py-1.5 px-3 h-auto border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/20 hover:border-purple-400/50"
+                                  >
+                                    {notification.actionText}
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                            
                             <Button
                               variant="ghost"
                               size="sm"
@@ -210,46 +260,21 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                                 e.stopPropagation();
                                 dismissNotification(notification.id);
                               }}
-                              className="text-gray-400 hover:text-white p-1 ml-2"
+                              className="absolute top-2 right-2 text-gray-500 hover:text-gray-300 hover:bg-gray-700/50 p-1.5 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <X className="w-3 h-3" />
+                              <X className="w-3.5 h-3.5" />
                             </Button>
                           </div>
-                          
-                          <p className={`text-xs mt-1 ${
-                            notification.read ? 'text-gray-400' : 'text-gray-300'
-                          }`}>
-                            {notification.message}
-                          </p>
-                          
-                          <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-gray-500">
-                              {formatTimestamp(notification.timestamp)}
-                            </span>
-                            
-                            {notification.actionUrl && notification.actionText && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.location.href = notification.actionUrl!;
-                                }}
-                                className="text-xs py-1 px-2 h-auto"
-                              >
-                                {notification.actionText}
-                              </Button>
-                            )}
-                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
 
+              {/* Footer */}
               {notifications.length > 0 && (
-                <div className="pt-3 border-t border-gray-600 px-4 pb-4">
+                <div className="border-t border-gray-600/50 bg-gray-800/30 p-3">
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"
@@ -259,7 +284,7 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                           if (!n.read) markAsRead(n.id);
                         });
                       }}
-                      className="flex-1 text-xs text-gray-400 hover:text-white"
+                      className="flex-1 text-xs text-gray-400 hover:text-white hover:bg-gray-700/50 py-2"
                       disabled={unreadCount === 0}
                     >
                       Mark all read
@@ -267,10 +292,13 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setIsOpen(false)}
-                      className="flex-1 text-xs text-purple-400 hover:text-purple-300"
+                      onClick={() => {
+                        setIsOpen(false);
+                        window.location.href = '/settings';
+                      }}
+                      className="flex-1 text-xs text-purple-400 hover:text-purple-300 hover:bg-purple-500/20 py-2"
                     >
-                      View Settings
+                      Settings
                     </Button>
                   </div>
                 </div>
