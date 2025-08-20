@@ -28,6 +28,7 @@ const FloatingParticles = () => {
 export default function HelpCenterPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const faqCategories = [
     {
@@ -323,6 +324,19 @@ export default function HelpCenterPage() {
     }
   ];
 
+  const handleTileClick = (tileTitle: string) => {
+    setSelectedCategory(tileTitle);
+    setSearchQuery(''); // Clear search when clicking a tile
+    
+    // Scroll to the FAQ section for this category
+    setTimeout(() => {
+      const element = document.getElementById(`faq-${tileTitle.toLowerCase().replace(/[^a-z0-9]/g, '-')}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
   const filteredFaqs = faqCategories.map(category => ({
     ...category,
     faqs: category.faqs.filter(faq => 
@@ -336,26 +350,28 @@ export default function HelpCenterPage() {
       <FloatingParticles />
       
       {/* Header */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </Link>
-            <div className="flex items-center space-x-4">
+      <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+                <span className="hidden sm:inline">CTRL+ALT+</span>
+                <span className="sm:hidden">CAB+</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Link href="/">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
+                <Button variant="ghost" className="text-white hover:text-purple-400 text-xs sm:text-sm px-2 sm:px-3">
+                  <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               </Link>
             </div>
           </div>
-        </nav>
+        </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-6 py-12">
@@ -403,7 +419,11 @@ export default function HelpCenterPage() {
         {/* Help Tiles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
           {helpTiles.map((tile, index) => (
-            <Card key={index} className={`${tile.bgColor} ${tile.borderColor} ${tile.hoverColor} transition-all duration-300 cursor-pointer hover:scale-105`}>
+            <Card 
+              key={index} 
+              className={`${tile.bgColor} ${tile.borderColor} ${tile.hoverColor} transition-all duration-300 cursor-pointer hover:scale-105 ${selectedCategory === tile.title ? 'ring-2 ring-purple-400' : ''}`}
+              onClick={() => handleTileClick(tile.title)}
+            >
               <CardContent className="p-6 text-center">
                 <div className={`${tile.color} mx-auto mb-3`}>
                   {tile.icon}
@@ -423,7 +443,11 @@ export default function HelpCenterPage() {
           </h2>
           
           {filteredFaqs.map((category, categoryIndex) => (
-            <div key={categoryIndex} className="mb-8">
+            <div 
+              key={categoryIndex} 
+              className="mb-8"
+              id={`faq-${category.title.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
+            >
               <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
                 <span className={category.color}>{category.icon}</span>
                 <span className="ml-2">{category.title}</span>

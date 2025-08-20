@@ -74,30 +74,32 @@ export default function TermsPage() {
     <div className="brand-container">
       <FloatingParticles />
       {/* Header */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link href="/admin">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  Back to Home
+      <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+                <span className="hidden sm:inline">CTRL+ALT+</span>
+                <span className="sm:hidden">CAB+</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/quiz">
+                <Button className="btn-brand-primary px-3 sm:px-6 text-xs sm:text-sm">
+                  <span className="hidden sm:inline">Start Healing</span>
+                  <span className="sm:hidden">Start</span>
                 </Button>
               </Link>
-              <Link href="/quiz">
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                  Start Healing
+              <Link href="/sign-in">
+                <Button className="btn-brand-secondary px-3 sm:px-4 text-xs sm:text-sm">
+                  Sign In
                 </Button>
               </Link>
             </div>
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* Hero Section */}

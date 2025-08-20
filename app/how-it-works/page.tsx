@@ -60,30 +60,32 @@ export default function HowItWorksPage() {
       <FloatingParticles />
 
       {/* Header */}
-      <header className="w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/admin" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent brand-glitch" data-text="BLOCK">BLOCK</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link href="/admin">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  Back to Home
+      <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+                <span className="hidden sm:inline">CTRL+ALT+</span>
+                <span className="sm:hidden">CAB+</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/quiz">
+                <Button className="btn-brand-primary px-3 sm:px-6 text-xs sm:text-sm">
+                  <span className="hidden sm:inline">Start Healing Journey</span>
+                  <span className="sm:hidden">Start Journey</span>
                 </Button>
               </Link>
-              <Link href="/quiz">
-                <Button className="btn-brand-primary">
-                  Start Healing
+              <Link href="/sign-in">
+                <Button className="btn-brand-secondary px-3 sm:px-4 text-xs sm:text-sm">
+                  Sign In
                 </Button>
               </Link>
             </div>
           </div>
-        </nav>
+        </div>
       </header>
 
       <div className="relative z-10">
@@ -93,11 +95,11 @@ export default function HowItWorksPage() {
           Your Healing Journey in 
           <br />
           <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Four Glitchy Steps
+            Four Simple Steps
           </span>
         </h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-12">
-          From heartbreak to breakthrough—here's how we guide you through the transformation process.
+          Transform your heartbreak into a structured healing journey with AI psychology and gamified progress.
         </p>
       </div>
 
@@ -186,7 +188,7 @@ export default function HowItWorksPage() {
       <div className="max-w-4xl mx-auto px-6 py-16 text-center">
         <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-12 border border-purple-500/30">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Begin Your Journey?
+            Ready to Start Your Healing Journey?
           </h2>
           <p className="text-xl text-gray-300 mb-8 leading-relaxed">
             Take the first step and discover your unique healing path.
@@ -197,7 +199,7 @@ export default function HowItWorksPage() {
               className="btn-brand-primary text-lg px-12 py-4"
             >
               <Sparkles className="h-5 w-5 mr-2" />
-              Start System Scan
+              Start Healing Journey
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </Link>

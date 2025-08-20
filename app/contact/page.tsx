@@ -74,24 +74,28 @@ export default function ContactSupportPage() {
         <FloatingParticles />
         
         {/* Header */}
-        <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
-          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="w-full py-4 flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-                <span>CTRL</span>
-                <span className="text-gray-400">+</span>
-                <span>ALT</span>
-                <span className="text-gray-400">+</span>
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-              </Link>
-              <Link href="/">
-                <Button variant="ghost" className="text-white hover:text-purple-400">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
-                </Button>
-              </Link>
+        <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+                  <span className="hidden sm:inline">CTRL+ALT+</span>
+                  <span className="sm:hidden">CAB+</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <Link href="/">
+                  <Button variant="ghost" className="text-white hover:text-purple-400 text-xs sm:text-sm px-2 sm:px-3">
+                    <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Back to Home</span>
+                    <span className="sm:hidden">Back</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </nav>
+          </div>
         </header>
 
         {/* Success Message */}
@@ -134,24 +138,28 @@ export default function ContactSupportPage() {
       <FloatingParticles />
       
       {/* Header */}
-      <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white">
-              <span>CTRL</span>
-              <span className="text-gray-400">+</span>
-              <span>ALT</span>
-              <span className="text-gray-400">+</span>
-              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" className="text-white hover:text-purple-400">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
-              </Button>
-            </Link>
+      <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+                <span className="hidden sm:inline">CTRL+ALT+</span>
+                <span className="sm:hidden">CAB+</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/">
+                <Button variant="ghost" className="text-white hover:text-purple-400 text-xs sm:text-sm px-2 sm:px-3">
+                  <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                  <span className="sm:hidden">Back</span>
+                </Button>
+              </Link>
+            </div>
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* Contact Form */}

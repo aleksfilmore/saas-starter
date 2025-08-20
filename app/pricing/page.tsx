@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Check, Star, Zap, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { SiteFooter } from '@/components/layout/SiteFooter';
@@ -24,26 +25,32 @@ export default function PricingPage() {
     <div className="brand-container">
       <FloatingParticles />
       {/* Header */}
-      <header className="relative z-10 w-full border-b border-brand-primary/30 bg-brand-dark/60 backdrop-blur-xl">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-1 text-xl font-extrabold tracking-tight text-white brand-glitch">
-              <span>CTRL</span>
-              <span className="text-brand-light">+</span>
-              <span>ALT</span>
-              <span className="text-brand-light">+</span>
-              <span className="brand-text-gradient">BLOCK</span>
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link href="/sign-in" className="text-brand-primary hover:text-brand-secondary brand-glow">
-                Sign In
+      <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
+                <span className="hidden sm:inline">CTRL+ALT+</span>
+                <span className="sm:hidden">CAB+</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/quiz">
+                <Button className="btn-brand-primary px-3 sm:px-6 text-xs sm:text-sm">
+                  <span className="hidden sm:inline">Start Healing Journey</span>
+                  <span className="sm:hidden">Start Journey</span>
+                </Button>
               </Link>
-              <Link href="/sign-up" className="btn-brand-primary">
-                Get Started
+              <Link href="/sign-in">
+                <Button className="btn-brand-secondary px-3 sm:px-4 text-xs sm:text-sm">
+                  Sign In
+                </Button>
               </Link>
             </div>
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -53,10 +60,10 @@ export default function PricingPage() {
           {/* Hero Section */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-7xl font-black text-white mb-6 brand-glow">
-              Choose Your <span className="brand-text-gradient brand-glitch">Protection</span>
+              Choose Your <span className="brand-text-gradient brand-glitch">Healing Plan</span>
             </h1>
             <p className="text-xl text-brand-light max-w-3xl mx-auto">
-              Whether you need basic boundaries or full defensive protocols, we have the right plan for your healing journey.
+              Whether you need basic support or comprehensive AI therapy, we have the right plan for your healing journey.
             </p>
           </div>
 
@@ -101,10 +108,10 @@ export default function PricingPage() {
                   </li>
                 </ul>
                 <Link 
-                  href="/sign-up"
+                  href="/quiz"
                   className="btn-brand-secondary w-full"
                 >
-                  Start Free
+                  Start Healing Journey
                 </Link>
               </CardContent>
             </Card>
@@ -153,10 +160,10 @@ export default function PricingPage() {
                   </li>
                 </ul>
                 <Link 
-                  href="/sign-up"
+                  href="/quiz"
                   className="btn-brand-primary w-full"
                 >
-                  Start Firewall Mode
+                  Start Healing Journey
                 </Link>
               </CardContent>
             </Card>
@@ -241,16 +248,16 @@ export default function PricingPage() {
           <div className="mt-24 text-center">
             <div className="card-brand border-brand-primary/30 p-8 max-w-2xl mx-auto neon-border">
               <h2 className="text-3xl font-bold text-white mb-4 brand-glow">
-                Ready to Break the Cycle?
+                Ready to Start Your Healing Journey?
               </h2>
               <p className="text-brand-light mb-6">
                 Join thousands of people already healing their attachment patterns with CTRL+ALT+BLOCK
               </p>
               <Link 
-                href="/sign-up"
+                href="/quiz"
                 className="btn-brand-primary text-lg px-8 py-3"
               >
-                Start Your Journey Today
+                Start Healing Journey
               </Link>
             </div>
           </div>

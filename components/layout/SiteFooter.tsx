@@ -26,7 +26,7 @@ export function SiteFooter() {
             <ul className="space-y-2 text-brand-light text-sm">
               <li><Link href="/features" className="hover:text-brand-primary brand-glow transition-colors">Features</Link></li>
               <li><Link href="/how-it-works" className="hover:text-brand-primary brand-glow transition-colors">How It Works</Link></li>
-              <li><Link href="/quiz" className="hover:text-brand-primary brand-glow transition-colors">Start Free Quiz</Link></li>
+              <li><Link href="/quiz" className="hover:text-brand-primary brand-glow transition-colors">Start Healing Journey</Link></li>
               <li><Link href="/pricing" className="hover:text-brand-primary brand-glow transition-colors">Pricing</Link></li>
             </ul>
           </div>
