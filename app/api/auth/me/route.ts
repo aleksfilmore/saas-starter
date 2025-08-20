@@ -56,7 +56,8 @@ export async function GET(request: NextRequest) {
         no_contact_streak: dbUser.no_contact_streak || 0,
         is_verified: dbUser.is_verified || false,
         subscription_status: dbUser.subscription_status || 'free',
-        subscriptionTier: subscriptionTier
+        subscriptionTier: subscriptionTier,
+        isAdmin: dbUser.isAdmin || false // Add admin status
       }
     });
 

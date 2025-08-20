@@ -12,6 +12,7 @@ interface User {
   bytes: number
   noContactDays: number
   streak: number
+  isAdmin?: boolean
 }
 
 interface AuthContextType {
@@ -34,8 +35,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await fetch('/api/auth/me')
       if (response.ok) {
-        const userData = await response.json()
-        setUser(userData)
+        const data = await response.json()
+        const userData = data.user
+        // Map the API response to our User interface
+        const user: User = {
+          id: userData.id,
+          email: userData.email,
+          username: userData.username,
+          subscriptionTier: userData.subscriptionTier,
+          level: userData.level,
+          xp: userData.xp,
+          bytes: userData.bytes,
+          noContactDays: userData.no_contact_streak || 0,
+          streak: userData.ritual_streak || 0,
+          isAdmin: userData.isAdmin || false
+        }
+        setUser(user)
         setIsAuthenticated(true)
       } else {
         setUser(null)

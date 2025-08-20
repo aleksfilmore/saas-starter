@@ -23,8 +23,11 @@ export function AdminGuard({ children }: AdminGuardProps) {
         return;
       }
 
+      // Check both email and isAdmin flag for admin access
+      const isAdminUser = user.email === ADMIN_EMAIL || user.isAdmin;
+      
       // If authenticated but not the admin, redirect to dashboard
-      if (user.email !== ADMIN_EMAIL) {
+      if (!isAdminUser) {
         router.push('/dashboard');
         return;
       }
@@ -65,7 +68,8 @@ export function AdminGuard({ children }: AdminGuardProps) {
   }
 
   // Wrong user (not admin)
-  if (user.email !== ADMIN_EMAIL) {
+  const isAdminUser = user.email === ADMIN_EMAIL || user.isAdmin;
+  if (!isAdminUser) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
