@@ -3,9 +3,6 @@ import ClientProviders from '@/components/ClientProviders';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { Metadata } from 'next';
 
-// Force dynamic rendering for all routes to avoid static page data collection errors
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = {
   title: {
     default: 'CTRL+ALT+BLOCK™ - Break Toxic Patterns, Build Self-Worth',

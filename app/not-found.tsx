@@ -1,40 +1,157 @@
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Home, 
+  Shield, 
+  MessageSquare, 
+  Brain, 
+  BarChart3, 
+  Heart,
+  ArrowLeft,
+  Search
+} from 'lucide-react';
+
 export default function NotFound() {
   return (
-    <html>
-      <head>
-        <title>404 - Page Not Found</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
-      <body style={{
-        margin: 0,
-        padding: 0,
-        fontFamily: 'system-ui, sans-serif',
-        backgroundColor: '#0f0f23',
-        color: '#ffffff',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        flexDirection: 'column',
-        gap: '20px'
-      }}>
-        <h1 style={{ fontSize: '2rem', margin: 0 }}>404: Page Not Found</h1>
-        <p style={{ margin: 0, color: '#9ca3af' }}>The page you are looking for doesn't exist.</p>
-        <a 
-          href="/" 
-          style={{ 
-            padding: '10px 20px', 
-            backgroundColor: '#6366f1', 
-            color: 'white', 
-            textDecoration: 'none',
-            borderRadius: '6px',
-            fontSize: '14px',
-            fontWeight: '500'
-          }}
-        >
-          Go Home
-        </a>
-      </body>
-    </html>
-  )
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto text-center">
+          
+          {/* 404 Header */}
+          <div className="mb-12">
+            <div className="text-8xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+              404
+            </div>
+            <h1 className="text-4xl font-bold text-white mb-4">
+              Page Not Found
+            </h1>
+            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+              Looks like this page took the no-contact rule a little too seriously. 
+              Don't worry – we've got plenty of other healing resources for you.
+            </p>
+            
+            <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/30 px-4 py-2 text-sm">
+              Error 404 • Page Not Found
+            </Badge>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            
+            {/* Dashboard */}
+            <Card className="bg-gradient-to-br from-purple-900/50 to-slate-800/50 border-purple-500/30 hover:border-purple-400/50 transition-colors">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Home className="h-6 w-6 text-purple-400" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">Dashboard</h3>
+                <p className="text-gray-300 text-sm mb-4">Your healing hub</p>
+                <Link href="/dashboard">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    Go to Dashboard
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* No Contact Tracker */}
+            <Card className="bg-gradient-to-br from-emerald-900/50 to-slate-800/50 border-emerald-500/30 hover:border-emerald-400/50 transition-colors">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">No Contact</h3>
+                <p className="text-gray-300 text-sm mb-4">Track your streak</p>
+                <Link href="/no-contact">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                    Check Streak
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Wall of Wounds */}
+            <Card className="bg-gradient-to-br from-pink-900/50 to-slate-800/50 border-pink-500/30 hover:border-pink-400/50 transition-colors">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-pink-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="h-6 w-6 text-pink-400" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">Wall of Wounds</h3>
+                <p className="text-gray-300 text-sm mb-4">Share & connect</p>
+                <Link href="/wall">
+                  <Button className="w-full bg-pink-600 hover:bg-pink-700">
+                    Join Community
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* AI Therapy */}
+            <Card className="bg-gradient-to-br from-indigo-900/50 to-slate-800/50 border-indigo-500/30 hover:border-indigo-400/50 transition-colors">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <Brain className="h-6 w-6 text-indigo-400" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">AI Therapy</h3>
+                <p className="text-gray-300 text-sm mb-4">Get support now</p>
+                <Link href="/ai-therapy">
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    Start Session
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Links */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <Link href="/dashboard/progress" className="text-gray-300 hover:text-purple-400 transition-colors flex items-center gap-2 justify-center p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50">
+              <BarChart3 className="h-4 w-4" />
+              Progress
+            </Link>
+            <Link href="/daily-rituals" className="text-gray-300 hover:text-purple-400 transition-colors flex items-center gap-2 justify-center p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50">
+              <Heart className="h-4 w-4" />
+              Rituals
+            </Link>
+            <Link href="/pricing" className="text-gray-300 hover:text-purple-400 transition-colors flex items-center gap-2 justify-center p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50">
+              <Search className="h-4 w-4" />
+              Pricing
+            </Link>
+            <Link href="/how-it-works" className="text-gray-300 hover:text-purple-400 transition-colors flex items-center gap-2 justify-center p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50">
+              <Heart className="h-4 w-4" />
+              How It Works
+            </Link>
+          </div>
+
+          {/* Home Button */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/">
+              <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Home
+              </Button>
+            </Link>
+            
+            <Link href="/dashboard">
+              <Button size="lg" variant="outline" className="border-purple-400/30 text-purple-300 hover:bg-purple-500/10 px-8">
+                <Home className="h-4 w-4 mr-2" />
+                Go to Dashboard
+              </Button>
+            </Link>
+          </div>
+
+          {/* Footer Message */}
+          <div className="mt-16 text-center">
+            <p className="text-gray-400 text-sm">
+              Lost? That's okay – healing isn't always a straight path. 
+              <br />
+              Choose any option above to get back on track with your journey.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

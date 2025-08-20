@@ -21,19 +21,14 @@ process.on('unhandledRejection', (error) => {
 function run(cmd, args) {
   return new Promise((resolve, reject) => {
     console.log(`Running: ${cmd} ${args.join(' ')}`);
-  const p = spawn(cmd, args, { 
-      stdio: 'inherit', 
+    const p = spawn(cmd, args, {
+      stdio: 'inherit',
       shell: process.platform === 'win32',
       env: {
         ...process.env,
-    // Improve diagnostics for mysterious build failures
-    NODE_OPTIONS: '--max-old-space-size=4096 --unhandled-rejections=strict --trace-uncaught',
-    // Enable verbose Next.js internal logging
-    DEBUG: 'next:*'
+        NODE_OPTIONS: '--max-old-space-size=4096 --unhandled-rejections=strict'
       }
-    });
-    
-    p.on('exit', code => {
+    });    p.on('exit', code => {
       console.log(`Command completed with exit code: ${code}`);
       if (code === 0) {
         resolve(0);
