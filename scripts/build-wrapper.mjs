@@ -21,12 +21,15 @@ process.on('unhandledRejection', (error) => {
 function run(cmd, args) {
   return new Promise((resolve, reject) => {
     console.log(`Running: ${cmd} ${args.join(' ')}`);
-    const p = spawn(cmd, args, { 
+  const p = spawn(cmd, args, { 
       stdio: 'inherit', 
       shell: process.platform === 'win32',
       env: {
         ...process.env,
-        NODE_OPTIONS: '--max-old-space-size=4096 --unhandled-rejections=strict'
+    // Improve diagnostics for mysterious build failures
+    NODE_OPTIONS: '--max-old-space-size=4096 --unhandled-rejections=strict --trace-uncaught',
+    // Enable verbose Next.js internal logging
+    DEBUG: 'next:*'
       }
     });
     
