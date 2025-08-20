@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CTRL+ALT+BLOCK",
-    "slug": "ctrl-alt-block",
+    "slug": "ctrlaltblock",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -38,7 +38,9 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "USE_FINGERPRINT",
-        "USE_BIOMETRIC"
+        "USE_BIOMETRIC",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ]
     },
     "web": {
@@ -64,9 +66,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "ctrl-alt-block-mobile"
+        "projectId": "5ab247f8-bca5-4374-8485-f1867ac907bf"
       }
     },
-    "owner": "ctrl-alt-block"
+    "owner": "ctrlaltblock"
   }
 }
