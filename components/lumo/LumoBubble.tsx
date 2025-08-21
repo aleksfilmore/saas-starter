@@ -5,12 +5,8 @@ import { useLumo } from './LumoProvider';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/              {/* Support status */}
-              <div className="flex items-center justify-center text-xs">
-                <span className="text-gray-400">
-                  Customer Support - Always Available
-                </span>
-              </div> { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { 
   X, 
   Send, 
@@ -248,8 +244,6 @@ export function LumoBubble() {
                               <Badge variant="default" className="ml-auto text-xs bg-blue-600">Free</Badge>
                             )}
                             {/* All personas available for customer support */}
-                              <Badge variant="secondary" className="ml-auto text-xs">Pro</Badge>
-                            )}
                           </div>
                         </button>
                       ))}
