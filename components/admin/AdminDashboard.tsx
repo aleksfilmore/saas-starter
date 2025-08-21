@@ -20,7 +20,7 @@ import {
   Smartphone
 } from 'lucide-react';
 import { ModerationDashboard } from './ModerationDashboard';
-import { MobileAppDashboard } from './MobileAppDashboard';
+import { WebAnalyticsDashboard } from './MobileAppDashboard';
 
 interface AnalyticsMetrics {
   revenue: {
@@ -394,7 +394,7 @@ export function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="mobile" className="space-y-4">
-          <MobileAppDashboard />
+          <WebAnalyticsDashboard />
         </TabsContent>
       </Tabs>
     </div>

@@ -34,6 +34,13 @@ function EmailVerificationContent() {
   useEffect(() => {
     const success = searchParams?.get('success');
     const errorParam = searchParams?.get('error');
+    const token = searchParams?.get('token');
+    
+    // If there's a token in the URL, automatically verify it
+    if (token && !success && !errorParam) {
+      handleTokenVerification(token);
+      return;
+    }
     
     if (success === 'verified') {
       setMessage('🎉 Email verified successfully! You earned 50 bonus XP points.');
@@ -49,6 +56,41 @@ function EmailVerificationContent() {
       setError('Server error occurred. Please try again later.');
     }
   }, [searchParams]);
+
+  const handleTokenVerification = async (token: string) => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/auth/verify-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.alreadyVerified) {
+          setMessage('✅ Your email is already verified.');
+        } else {
+          setMessage('🎉 Email verified successfully! You earned 50 bonus XP points.');
+        }
+        // Clear the form since verification is complete
+        setEmail('');
+      } else {
+        setError(data.error || 'Verification failed');
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+      setError('Failed to verify email. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSendVerification = async (e: React.FormEvent) => {
     e.preventDefault();

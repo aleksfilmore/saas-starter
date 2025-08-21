@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { sql } from 'drizzle-orm';
 import { getUser } from '@/lib/db/queries';
-import { RITUAL_BANK, getRandomRitual, type Ritual } from '@/lib/rituals/ritual-bank';
+import { FREE_RITUALS, PREMIUM_RITUALS, ALL_RITUALS, getRandomRituals, type Ritual } from '@/lib/ritual-bank';
 
 export const runtime = 'nodejs';
 
@@ -19,13 +19,15 @@ export async function GET(request: NextRequest) {
 
     console.log('🔮 Getting today\'s ritual for user:', user.id);
 
-    // Determine user tier for ritual selection
+    // Determine if user has premium access
     const isPremium = (user as any)?.subscription_tier === 'premium' || 
                      (user as any)?.tier === 'firewall' ||
                      (user as any)?.ritual_tier === 'firewall';
     
-    const userTier = isPremium ? 'firewall' : 'ghost';
-    console.log('👤 User tier determined as:', userTier, 'isPremium:', isPremium);
+    console.log('👤 User premium status:', isPremium);
+
+    // Select ritual bank based on user tier
+    const availableRituals = isPremium ? ALL_RITUALS : FREE_RITUALS;
 
     // Check for current ritual assignment
     const currentRitual = await db.execute(sql`
@@ -47,18 +49,19 @@ export async function GET(request: NextRequest) {
 
     if (currentRitual.length > 0 && currentRitual[0].ritual_key) {
       // Find the ritual from the ritual bank
-      const foundRitual = RITUAL_BANK.find(r => r.id === currentRitual[0].ritual_key);
+      const foundRitual = availableRituals.find(r => r.id === currentRitual[0].ritual_key);
       if (foundRitual) {
         selectedRitual = foundRitual;
         console.log('📋 Found existing ritual assignment:', selectedRitual.title);
       } else {
-        // Fallback if ritual key not found in bank
-        selectedRitual = getRandomRitual(userTier);
+        // Fallback if ritual key not found in bank - get random ritual
+        const randomRituals = getRandomRituals(undefined, 1);
+        selectedRitual = randomRituals[0];
         isNewAssignment = true;
       }
     } else {
       // No current ritual, assign a new one
-      console.log('🎲 No current ritual, assigning new one for tier:', userTier);
+      console.log('🎲 No current ritual, assigning new one');
       
       // Get rituals user hasn't done today
       const todaysCompletedRituals = await db.execute(sql`
@@ -72,16 +75,12 @@ export async function GET(request: NextRequest) {
       const completedKeys = todaysCompletedRituals.map(r => r.ritual_key);
       console.log('✅ Already completed today:', completedKeys);
 
-      // Filter available rituals by tier and exclude completed ones
-      const tierHierarchy = { 'ghost': 0, 'firewall': 1 };
-      const userTierLevel = tierHierarchy[userTier];
-      
-      const availableRituals = RITUAL_BANK.filter(ritual => {
-        const ritualTierLevel = tierHierarchy[ritual.tier];
-        return ritualTierLevel <= userTierLevel && !completedKeys.includes(ritual.id);
-      });
+      // Filter available rituals to exclude completed ones
+      const uncompletedRituals = availableRituals.filter(ritual => 
+        !completedKeys.includes(ritual.id)
+      );
 
-      if (availableRituals.length === 0) {
+      if (uncompletedRituals.length === 0) {
         // User has completed all available rituals for their tier today
         return NextResponse.json({
           error: 'No available rituals',
@@ -89,8 +88,8 @@ export async function GET(request: NextRequest) {
         }, { status: 404 });
       }
 
-      // Select random ritual from available ones
-      selectedRitual = availableRituals[Math.floor(Math.random() * availableRituals.length)];
+      // Select random ritual from uncompleted ones
+      selectedRitual = uncompletedRituals[Math.floor(Math.random() * uncompletedRituals.length)];
       isNewAssignment = true;
 
       // Record the assignment
@@ -105,27 +104,39 @@ export async function GET(request: NextRequest) {
     // Check if ritual is completed
     const isCompleted = currentRitual.length > 0 && currentRitual[0].completed_at;
 
+    // Calculate XP and byte rewards based on difficulty
+    const difficultyXP = {
+      'easy': 25,
+      'medium': 50,
+      'hard': 100
+    };
+
+    const difficultyBytes = {
+      'easy': 15,
+      'medium': 30,
+      'hard': 60
+    };
+
     return NextResponse.json({
       ritual: {
         id: selectedRitual.id,
         title: selectedRitual.title,
         description: selectedRitual.description,
-        steps: selectedRitual.instructions.map((instruction, index) => ({
-          title: `Step ${index + 1}`,
-          description: instruction,
-          duration: Math.ceil(selectedRitual.difficultyLevel)
-        })),
-        difficulty: selectedRitual.difficultyLevel <= 2 ? 'easy' : 
-                   selectedRitual.difficultyLevel <= 4 ? 'medium' : 'hard',
-        xpReward: selectedRitual.xpReward,
-        byteReward: selectedRitual.byteReward,
-        estimatedTime: selectedRitual.estimatedTime,
+        steps: [{
+          title: selectedRitual.title,
+          description: selectedRitual.description,
+          duration: parseInt(selectedRitual.duration.replace(/\D/g, '')) || 15
+        }],
+        difficulty: selectedRitual.difficulty,
+        xpReward: difficultyXP[selectedRitual.difficulty],
+        byteReward: difficultyBytes[selectedRitual.difficulty],
+        estimatedTime: selectedRitual.duration,
         category: selectedRitual.category,
-        tier: selectedRitual.tier,
+        tier: isPremium ? 'firewall' : 'ghost',
         deliveredAt: isNewAssignment ? new Date().toISOString() : currentRitual[0]?.assigned_at,
         completedAt: currentRitual[0]?.completed_at || null,
         isCompleted: !!isCompleted,
-        tags: selectedRitual.tags
+        isPremium: selectedRitual.isPremium || false
       }
     });
 

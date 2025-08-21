@@ -6,12 +6,10 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { 
   X, 
   Send, 
-  ChevronDown, 
-  ShoppingCart
+  ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -179,7 +177,9 @@ export function LumoBubble() {
   };
 
   const currentPersona = PERSONAS[persona];
-  const quotaPercent = 100; // LUMO support is unlimited for all users
+  
+  // LUMO customer support is unlimited for all users
+  const isUnlimited = true;
 
   if (!isOpen) return null;
 
@@ -326,19 +326,11 @@ export function LumoBubble() {
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2">
                   <span className="text-gray-400">
-                    {tier === 'ghost' ? `${quotaLeft} / 5 free msgs left` : '∞ messages'}
+                    ∞ customer support messages
                   </span>
-                  {tier === 'ghost' && (
-                    <Progress value={quotaPercent} className="w-16 h-1" />
-                  )}
                 </div>
                 
-                {quotaLeft <= 2 && tier === 'ghost' && (
-                  <Button variant="outline" size="sm" className="border-purple-500 text-purple-400 text-xs">
-                    <ShoppingCart className="h-3 w-3 mr-1" />
-                    Buy 25 Bytes
-                  </Button>
-                )}
+                {/* Remove buy button since LUMO support is unlimited */}
               </div>
 
               {/* Onboarding completion */}

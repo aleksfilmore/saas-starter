@@ -207,6 +207,23 @@ Right now, let's focus on what feels safe and stable for you. Is there a place o
       const aiResponse = completion.choices[0]?.message?.content || 
         "I'm having trouble responding right now. Please try again in a moment.";
 
+      // Track OpenAI API usage
+      const tokensUsed = completion.usage?.total_tokens || 0;
+      const estimatedCost = Math.round(tokensUsed * 0.0001 * 100); // Estimate: $0.0001 per token in cents
+      
+      try {
+        const { ApiUsageTracker } = await import('@/lib/api-usage-tracker');
+        await ApiUsageTracker.trackOpenAI(
+          user.id,
+          'ai-therapy-chat',
+          tokensUsed,
+          estimatedCost,
+          true
+        );
+      } catch (trackingError) {
+        console.error('Failed to track API usage:', trackingError);
+      }
+
       // Update quota
       quota.used += 1;
       userQuotas.set(user.id, quota);

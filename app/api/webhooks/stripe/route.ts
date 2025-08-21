@@ -57,6 +57,19 @@ export async function POST(request: NextRequest) {
           
           console.log(`Added 300 AI therapy messages to user ${userId}`);
           
+          // Track Stripe transaction
+          try {
+            const { ApiUsageTracker } = await import('@/lib/api-usage-tracker');
+            await ApiUsageTracker.trackStripe(
+              userId,
+              'checkout-session-completed',
+              true,
+              session.amount_total || 0
+            );
+          } catch (trackingError) {
+            console.error('Failed to track Stripe usage:', trackingError);
+          }
+          
           // In production, you would update the database here
           try {
             // For paid sessions, we track them differently than quota usage

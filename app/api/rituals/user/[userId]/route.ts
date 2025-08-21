@@ -3,7 +3,8 @@ import { validateRequest } from '@/lib/auth';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 import { RITUAL_BANK, getRandomRitual } from '@/lib/rituals/ritual-bank';
 import { db } from '@/lib/db/drizzle';
-import { sql } from 'drizzle-orm';
+import { users } from '@/lib/db/schema';
+import { sql, eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
@@ -16,8 +17,16 @@ export async function GET(
     }
 
     // Users can only access their own rituals unless they're admin
-    if (sessionUser.id !== params.userId && sessionUser.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (sessionUser.id !== params.userId) {
+      const adminCheck = await db
+        .select({ isAdmin: users.isAdmin })
+        .from(users)
+        .where(eq(users.id, sessionUser.id))
+        .limit(1);
+      
+      if (!adminCheck.length || !adminCheck[0].isAdmin) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     // Get user's tier for ritual filtering

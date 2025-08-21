@@ -71,8 +71,11 @@ export const users = pgTable('users', {
   isBanned: boolean('is_banned').notNull().default(false),
   lastActiveAt: timestamp('last_active_at', { withTimezone: true, mode: 'date' }),
   
-  // Email Preferences
+  // Email Preferences & Verification
   emailNotifications: boolean('email_notifications').notNull().default(true),
+  emailVerified: boolean('email_verified').notNull().default(false),
+  emailVerificationToken: text('email_verification_token'),
+  emailVerificationSentAt: timestamp('email_verification_sent_at', { withTimezone: true, mode: 'date' }),
   
   // Timestamps
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
@@ -491,6 +494,47 @@ export const subscriptionEvents = pgTable('subscription_events', {
 });
 
 // =====================================
+// BLOG POSTS
+// =====================================
+
+export const blogPosts = pgTable('blog_posts', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  slug: text('slug').notNull().unique(),
+  title: text('title').notNull(),
+  excerpt: text('excerpt'),
+  content: text('content').notNull(),
+  author_id: text('author_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  status: text('status').notNull().default('draft'), // 'draft' | 'published' | 'archived'
+  featured_image: text('featured_image'),
+  meta_title: text('meta_title'),
+  meta_description: text('meta_description'),
+  tags: text('tags').array(), // Array of tag strings
+  category: text('category'),
+  reading_time: integer('reading_time'), // in minutes
+  published_at: timestamp('published_at', { withTimezone: true, mode: 'date' }),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
+// API USAGE TRACKING
+// =====================================
+
+export const apiUsage = pgTable('api_usage', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  service: text('service').notNull(), // 'openai', 'stripe', 'resend', etc.
+  endpoint: text('endpoint'),
+  user_id: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  tokens_used: integer('tokens_used'),
+  cost_cents: integer('cost_cents'), // cost in cents
+  request_data: text('request_data'), // JSON string
+  response_data: text('response_data'), // JSON string
+  status: text('status'), // 'success', 'error', 'timeout'
+  error_message: text('error_message'),
+  created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// =====================================
 // TYPE EXPORTS
 // =====================================
 
@@ -550,3 +594,11 @@ export type JournalDraft = typeof journalDrafts.$inferSelect;
 export type NewJournalDraft = typeof journalDrafts.$inferInsert;
 export type WeeklySummary = typeof weeklySummaries.$inferSelect;
 export type NewWeeklySummary = typeof weeklySummaries.$inferInsert;
+
+// Blog types
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type NewBlogPost = typeof blogPosts.$inferInsert;
+
+// API usage types
+export type ApiUsage = typeof apiUsage.$inferSelect;
+export type NewApiUsage = typeof apiUsage.$inferInsert;

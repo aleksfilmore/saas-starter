@@ -55,3 +55,9 @@ postgres_data/
 /mobile/build/
 /mobile/.next/
 /mobile/*.tsbuildinfo
+
+# iOS Development Credentials (NEVER COMMIT THESE)
+/mobile/credentials/*.p8
+/mobile/credentials/*.p12
+/mobile/credentials/*.mobileprovision
+/mobile/credentials.json

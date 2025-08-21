@@ -112,6 +112,7 @@ function AdaptiveDashboard({ user }: Props) {
   const [showTagDropdown, setShowTagDropdown] = useState(false); // Add dropdown state
   const [posting, setPosting] = useState(false); // Add posting state
   const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({}); // Track optimistic reactions
+  const [particles, setParticles] = useState<Array<{left: string, animationDelay: string, animationDuration: string, className: string}>>([]);
   
   // Helper function to get emotion tag from category
   const getEmotionTagFromCategory = (category: string) => {
@@ -132,6 +133,18 @@ function AdaptiveDashboard({ user }: Props) {
     noContact,
     refresh
   } = useHealingHub();
+
+  // Initialize particles on client side only to avoid hydration mismatch
+  useEffect(() => {
+    const particleTypes = ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'];
+    const newParticles = [...Array(12)].map((_, i) => ({
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 8}s`,
+      animationDuration: `${8 + Math.random() * 4}s`,
+      className: particleTypes[i % 4]
+    }));
+    setParticles(newParticles);
+  }, []);
 
   // Lumo onboarding integration
   const { 
@@ -270,7 +283,7 @@ function AdaptiveDashboard({ user }: Props) {
     const currentPost = wallPosts.find(p => p.id === postId);
     if (!currentPost) return;
 
-    const hasUserReacted = currentPost.userReaction === reactionType;
+    const hasUserReacted = false; // TODO: Add user reaction tracking
     
     // Optimistically update the reaction count
     setOptimisticReactions(prev => ({
@@ -325,16 +338,14 @@ function AdaptiveDashboard({ user }: Props) {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
         {/* Floating Particles */}
         <div className="particle-system">
-          {[...Array(12)].map((_, i) => (
+          {particles.map((particle, i) => (
             <div
               key={i}
-              className={`particle ${
-                ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
-              }`}
+              className={`particle ${particle.className}`}
               style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 8}s`,
-                animationDuration: `${8 + Math.random() * 4}s`
+                left: particle.left,
+                animationDelay: particle.animationDelay,
+                animationDuration: particle.animationDuration
               }}
             />
           ))}

@@ -598,6 +598,298 @@ export const FREE_RITUALS: Ritual[] = [
   }
 ]
 
+// Premium User Ritual Bank (30+ advanced AI-style rituals)
+export const PREMIUM_RITUALS: Ritual[] = [
+  // Premium Grief Cycle (5 rituals)
+  {
+    id: "premium-grief-001",
+    title: "Deep Shadow Work Integration",
+    description: "An advanced 45-minute process to explore the hidden aspects of your grief. Includes guided meditation, journaling prompts, and energy release techniques designed to transform pain into wisdom.",
+    duration: "45 min",
+    category: "grief-cycle",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-grief-002",
+    title: "Ancestral Healing Ritual",
+    description: "Connect with your lineage to understand inherited patterns of love and loss. This ritual combines visualization, breathwork, and symbolic actions to heal generational wounds.",
+    duration: "35 min",
+    category: "grief-cycle",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-grief-003",
+    title: "Somatic Grief Release",
+    description: "Use body-based techniques to release trapped grief energy. Combines gentle movement, breathing, and tension release to help your nervous system process loss.",
+    duration: "30 min",
+    category: "grief-cycle",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-grief-004",
+    title: "Future Self Dialogue",
+    description: "A powerful visualization technique where you connect with your healed future self. Receive wisdom, comfort, and guidance from the version of you who has moved through this pain.",
+    duration: "25 min",
+    category: "grief-cycle",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-grief-005",
+    title: "Grief Alchemy Transformation",
+    description: "Transform your pain into creative power through this advanced ritual combining art therapy, energy work, and intention setting to alchemize suffering into strength.",
+    duration: "40 min",
+    category: "grief-cycle",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Petty Purge (5 rituals)
+  {
+    id: "premium-petty-001",
+    title: "Digital Detox Ceremony",
+    description: "A comprehensive digital cleansing ritual that goes beyond unfollowing. Clear your energetic attachment to past connections through mindful technology use and boundary setting.",
+    duration: "50 min",
+    category: "petty-purge",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-petty-002",
+    title: "Energetic Cord Cutting Ritual",
+    description: "Use advanced visualization and energetic techniques to cut psychic cords with people who no longer serve your highest good. Includes protection and blessing practices.",
+    duration: "30 min",
+    category: "petty-purge",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-petty-003",
+    title: "Resentment Release Matrix",
+    description: "A systematic approach to identifying and releasing all forms of resentment. Combines cognitive restructuring with emotional release techniques for complete liberation.",
+    duration: "35 min",
+    category: "petty-purge",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-petty-004",
+    title: "Forgiveness Frequency Attunement",
+    description: "Tune into the vibrational frequency of forgiveness through sound healing, breathwork, and heart-centered meditation. Release grudges at the cellular level.",
+    duration: "25 min",
+    category: "petty-purge",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-petty-005",
+    title: "Toxic Pattern Interrupt Protocol",
+    description: "Identify and interrupt unconscious patterns that keep you connected to toxic dynamics. Includes NLP techniques and somatic awareness practices.",
+    duration: "40 min",
+    category: "petty-purge",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Glow-Up Forge (5 rituals)
+  {
+    id: "premium-glow-001",
+    title: "Magnetic Presence Activation",
+    description: "Develop an irresistible personal magnetism through confidence-building exercises, posture work, voice training, and energetic alignment practices.",
+    duration: "45 min",
+    category: "glow-up-forge",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-glow-002",
+    title: "Beauty Frequency Embodiment",
+    description: "Align with your natural beauty frequency through mirror work, self-love practices, and energetic beauty enhancement techniques that work from the inside out.",
+    duration: "30 min",
+    category: "glow-up-forge",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-glow-003",
+    title: "Confidence DNA Reconstruction",
+    description: "Rebuild your confidence blueprint through deep subconscious reprogramming, power pose sequences, and victory state anchoring techniques.",
+    duration: "35 min",
+    category: "glow-up-forge",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-glow-004",
+    title: "Charisma Cultivation Laboratory",
+    description: "Develop magnetic charisma through communication skills practice, presence exercises, and social confidence building in a structured environment.",
+    duration: "40 min",
+    category: "glow-up-forge",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-glow-005",
+    title: "Radiance Ritual Mastery",
+    description: "Master the art of inner radiance through energy cultivation, emotional regulation, and authentic self-expression practices that make you shine from within.",
+    duration: "50 min",
+    category: "glow-up-forge",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Level-Up Labs (5 rituals)
+  {
+    id: "premium-level-001",
+    title: "Quantum Goal Achievement System",
+    description: "Harness quantum principles for manifestation. Includes visualization techniques, frequency alignment, and reality-shifting practices for accelerated goal achievement.",
+    duration: "45 min",
+    category: "level-up-labs",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-level-002",
+    title: "Neural Pathway Optimization",
+    description: "Rewire your brain for success through neuroplasticity exercises, cognitive enhancement techniques, and learning acceleration methods.",
+    duration: "35 min",
+    category: "level-up-labs",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-level-003",
+    title: "High-Performance Mindset Installation",
+    description: "Install the mindset of elite performers through mental conditioning, peak state training, and excellence habit formation techniques.",
+    duration: "40 min",
+    category: "level-up-labs",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-level-004",
+    title: "Abundance Frequency Calibration",
+    description: "Calibrate your internal frequency to match abundance and success through energy work, belief restructuring, and prosperity consciousness activation.",
+    duration: "30 min",
+    category: "level-up-labs",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-level-005",
+    title: "Limitless Potential Activation",
+    description: "Break through perceived limitations and access your full potential through advanced consciousness techniques and reality expansion practices.",
+    duration: "50 min",
+    category: "level-up-labs",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Ego Armor (3 rituals)
+  {
+    id: "premium-ego-001",
+    title: "Unshakeable Self-Worth Foundation",
+    description: "Build an unshakeable foundation of self-worth through deep inner work, childhood healing, and self-value anchoring techniques.",
+    duration: "45 min",
+    category: "ego-armor",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-ego-002",
+    title: "Criticism Immunity Shield",
+    description: "Develop immunity to criticism and negative opinions through resilience training, boundary work, and inner critic transformation.",
+    duration: "35 min",
+    category: "ego-armor",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-ego-003",
+    title: "Authentic Power Reclamation",
+    description: "Reclaim your authentic power through shadow integration, false self-dissolution, and true self-empowerment practices.",
+    duration: "40 min",
+    category: "ego-armor",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Fuck-Around Therapy (3 rituals)
+  {
+    id: "premium-therapy-001",
+    title: "Sacred Rebellion Ritual",
+    description: "Channel rebellious energy into sacred activism and authentic self-expression through creative destruction and reconstruction practices.",
+    duration: "35 min",
+    category: "fuck-around-therapy",
+    difficulty: "medium",
+    isPremium: true
+  },
+  {
+    id: "premium-therapy-002",
+    title: "Chaos Magic for Healing",
+    description: "Use chaos magic principles to break through stagnation and create breakthrough healing through unconventional magical practices.",
+    duration: "40 min",
+    category: "fuck-around-therapy",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-therapy-003",
+    title: "Wild Self Liberation",
+    description: "Liberate your wild, untamed self through primal expression, instinctual reconnection, and societal conditioning release.",
+    duration: "45 min",
+    category: "fuck-around-therapy",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Mindful Mayhem (2 rituals)
+  {
+    id: "premium-mindful-001",
+    title: "Transcendent Chaos Meditation",
+    description: "Achieve transcendent states through controlled chaos meditation, paradox integration, and consciousness expansion techniques.",
+    duration: "30 min",
+    category: "mindful-mayhem",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-mindful-002",
+    title: "Divine Madness Integration",
+    description: "Integrate the wisdom of divine madness through shamanic practices, ecstatic techniques, and sacred disruption methods.",
+    duration: "50 min",
+    category: "mindful-mayhem",
+    difficulty: "hard",
+    isPremium: true
+  },
+
+  // Premium Revenge Body (2 rituals)
+  {
+    id: "premium-revenge-001",
+    title: "Phoenix Body Transformation",
+    description: "Transform your body into a phoenix through advanced fitness psychology, body image healing, and physical empowerment practices.",
+    duration: "60 min",
+    category: "revenge-body",
+    difficulty: "hard",
+    isPremium: true
+  },
+  {
+    id: "premium-revenge-002",
+    title: "Goddess/God Body Activation",
+    description: "Activate your divine body template through sacred sexuality practices, body worship rituals, and physical sovereignty reclamation.",
+    duration: "45 min",
+    category: "revenge-body",
+    difficulty: "hard",
+    isPremium: true
+  }
+]
+
+// Combined ritual arrays
+export const ALL_RITUALS = [...FREE_RITUALS, ...PREMIUM_RITUALS]
+
 // Ritual management functions
 export function getRandomRituals(category?: RitualCategory, count: number = 2): Ritual[] {
   const rituals = category 

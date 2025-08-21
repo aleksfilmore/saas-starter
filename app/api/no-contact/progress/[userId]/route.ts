@@ -15,8 +15,16 @@ export async function GET(
     }
 
     // Users can only access their own progress unless they're admin
-    if (sessionUser.id !== params.userId && sessionUser.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    if (sessionUser.id !== params.userId) {
+      const adminCheck = await db
+        .select({ isAdmin: users.isAdmin })
+        .from(users)
+        .where(eq(users.id, sessionUser.id))
+        .limit(1);
+      
+      if (!adminCheck.length || !adminCheck[0].isAdmin) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     const userData = await db

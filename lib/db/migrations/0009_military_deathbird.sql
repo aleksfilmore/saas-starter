@@ -1,3 +1,0 @@
--- Deprecated destructive migration (0009_military_deathbird) intentionally replaced with no-op to preserve data.
--- Original contents dropped tables and altered many columns. Safe forward migrations supersede it.
--- This placeholder ensures the migration id is recorded without executing destructive SQL.

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/actual-schema';
+import { db } from '@/lib/db';
+import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { generateId } from '@/lib/utils';
 import { sendEmailVerificationEmail } from '@/lib/email/email-service';
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already verified
-    if (user.email_verified) {
+    if (user.emailVerified) {
       return NextResponse.json(
         { success: true, message: 'Email already verified' },
         { status: 200 }
@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check rate limiting - don't send if sent within last 5 minutes
-    if (user.email_verification_sent_at) {
+    if (user.emailVerificationSentAt) {
       const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-      if (user.email_verification_sent_at > fiveMinutesAgo) {
+      if (user.emailVerificationSentAt > fiveMinutesAgo) {
         return NextResponse.json(
           { success: false, error: 'Verification email was sent recently. Please wait 5 minutes before requesting another.' },
           { status: 429 }
@@ -56,9 +56,9 @@ export async function POST(request: NextRequest) {
     await db
       .update(users)
       .set({
-        email_verification_token: verificationToken,
-        email_verification_sent_at: new Date(),
-        updated_at: new Date()
+        emailVerificationToken: verificationToken,
+        emailVerificationSentAt: new Date(),
+        updatedAt: new Date()
       })
       .where(eq(users.id, user.id));
 

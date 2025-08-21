@@ -2,6 +2,7 @@ import { Resend } from 'resend';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { sendDailyReminderEmail } from './enhanced-templates';
 
 const resend = process.env.EMAIL_API_KEY ? new Resend(process.env.EMAIL_API_KEY) : null;
 
@@ -50,22 +51,15 @@ export class EmailNotificationService {
       const unsubscribeToken = await this.generateUnsubscribeToken(userId);
       const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?token=${unsubscribeToken}`;
 
-      const emailData: DailyNotificationData = {
-        username: user.username || 'Warrior',
-        streakDays: user.streakDays || 0,
-        todayRitual,
-        unsubscribeUrl
-      };
+      // Use enhanced daily reminder template
+      const result = await sendDailyReminderEmail(
+        user.email,
+        user.username || 'warrior',
+        user.streakDays || 0,
+        [todayRitual]
+      );
 
-      await resend.emails.send({
-        from: process.env.EMAIL_FROM || 'CTRL+ALT+BLOCK <noreply@ctrlaltblock.com>',
-        to: user.email,
-        subject: "🛡️ Daily Protocol Active - Your Streak Continues",
-        html: this.generateDailyReminderHTML(emailData),
-        text: this.generateDailyReminderText(emailData)
-      });
-
-      return true;
+      return result.success;
     } catch (error) {
       console.error('Failed to send daily reminder:', error);
       return false;

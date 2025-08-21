@@ -15,8 +15,17 @@ export async function GET(
     }
 
     // Users can only access their own data unless they're admin
-    if (sessionUser.id !== params.id && sessionUser.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Need to check isAdmin from database since session doesn't include it
+    if (sessionUser.id !== params.id) {
+      const adminCheck = await db
+        .select({ isAdmin: users.isAdmin })
+        .from(users)
+        .where(eq(users.id, sessionUser.id))
+        .limit(1);
+      
+      if (!adminCheck.length || !adminCheck[0].isAdmin) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     const userData = await db
@@ -38,7 +47,7 @@ export async function GET(
         email: user.email,
         username: user.username,
         tier: user.tier,
-        archetype: user.emotional_archetype,
+        archetype: user.emotionalArchetype,
         archetype_details: null,
         xp: user.xp,
         bytes: user.bytes,

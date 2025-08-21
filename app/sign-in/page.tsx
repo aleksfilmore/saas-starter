@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,7 +16,20 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [particles, setParticles] = useState<Array<{left: string, animationDelay: string, animationDuration: string, className: string}>>([])
   const router = useRouter()
+
+  // Initialize particles on client side only to avoid hydration mismatch
+  useEffect(() => {
+    const particleTypes = ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'];
+    const newParticles = [...Array(15)].map((_, i) => ({
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 8}s`,
+      animationDuration: `${8 + Math.random() * 4}s`,
+      className: particleTypes[i % 4]
+    }));
+    setParticles(newParticles);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -44,8 +57,13 @@ export default function SignInPage() {
           localStorage.setItem('user-email', data.user.email);
         }
         
-        // Redirect to dashboard
-        router.push('/dashboard')
+        // Check if this is the system admin and redirect to admin dashboard
+        if (data.user && data.user.email === 'system_admin@ctrlaltblock.com') {
+          router.push('/admin/dashboard')
+        } else {
+          // Redirect to regular dashboard for all other users
+          router.push('/dashboard')
+        }
       } else {
         setError(data.error || 'Login failed')
       }
@@ -61,16 +79,14 @@ export default function SignInPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
       {/* Floating Particles */}
       <div className="particle-system">
-        {[...Array(15)].map((_, i) => (
+        {particles.map((particle, i) => (
           <div
             key={i}
-            className={`particle ${
-              ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
-            }`}
+            className={`particle ${particle.className}`}
             style={{
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 8}s`,
-              animationDuration: `${8 + Math.random() * 4}s`
+              left: particle.left,
+              animationDelay: particle.animationDelay,
+              animationDuration: particle.animationDuration
             }}
           />
         ))}

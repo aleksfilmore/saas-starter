@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface BrandLayoutProps {
@@ -11,18 +11,30 @@ interface BrandLayoutProps {
 }
 
 const FloatingParticles = () => {
+  const [particles, setParticles] = useState<Array<{left: string, animationDelay: string, animationDuration: string, className: string}>>([]);
+  
+  // Initialize particles on client side only to avoid hydration mismatch
+  useEffect(() => {
+    const particleTypes = ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'];
+    const newParticles = [...Array(15)].map((_, i) => ({
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 8}s`,
+      animationDuration: `${8 + Math.random() * 4}s`,
+      className: particleTypes[i % 4]
+    }));
+    setParticles(newParticles);
+  }, []);
+  
   return (
     <div className="particle-system">
-      {[...Array(15)].map((_, i) => (
+      {particles.map((particle, i) => (
         <div
           key={i}
-          className={`particle ${
-            ['particle-purple', 'particle-pink', 'particle-blue', 'particle-green'][i % 4]
-          }`}
+          className={`particle ${particle.className}`}
           style={{
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 8}s`,
-            animationDuration: `${8 + Math.random() * 4}s`
+            left: particle.left,
+            animationDelay: particle.animationDelay,
+            animationDuration: particle.animationDuration
           }}
         />
       ))}

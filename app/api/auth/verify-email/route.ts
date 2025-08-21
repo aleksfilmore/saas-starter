@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/actual-schema';
+import { db } from '@/lib/db';
+import { users } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.email_verification_token, token))
+      .where(eq(users.emailVerificationToken, token))
       .limit(1);
 
     if (!user) {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already verified
-    if (user.email_verified) {
+    if (user.emailVerified) {
       return NextResponse.json(
         { success: true, message: 'Email already verified', alreadyVerified: true },
         { status: 200 }
@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if token is expired (24 hours)
-    if (user.email_verification_sent_at) {
+    if (user.emailVerificationSentAt) {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      if (user.email_verification_sent_at < twentyFourHoursAgo) {
+      if (user.emailVerificationSentAt < twentyFourHoursAgo) {
         return NextResponse.json(
           { success: false, error: 'Verification token has expired. Please request a new one.' },
           { status: 400 }
@@ -52,11 +52,11 @@ export async function POST(request: NextRequest) {
     await db
       .update(users)
       .set({
-        email_verified: true,
-        email_verification_token: null,
-        email_verification_sent_at: null,
-        xp_points: (user.xp_points || 0) + bonusXP,
-        updated_at: new Date()
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationSentAt: null,
+        xpPoints: (user.xpPoints || 0) + bonusXP,
+        updatedAt: new Date()
       })
       .where(eq(users.id, user.id));
 
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
       user: {
         id: user.id,
         email: user.email,
-        email_verified: true,
-        xp_points: (user.xp_points || 0) + bonusXP
+        emailVerified: true,
+        xpPoints: (user.xpPoints || 0) + bonusXP
       }
     });
 
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.email_verification_token, token))
+      .where(eq(users.emailVerificationToken, token))
       .limit(1);
 
     if (!user) {
@@ -104,14 +104,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if already verified
-    if (user.email_verified) {
+    if (user.emailVerified) {
       return NextResponse.redirect(new URL('/verify-email?success=already_verified', request.url));
     }
 
     // Check if token is expired (24 hours)
-    if (user.email_verification_sent_at) {
+    if (user.emailVerificationSentAt) {
       const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      if (user.email_verification_sent_at < twentyFourHoursAgo) {
+      if (user.emailVerificationSentAt < twentyFourHoursAgo) {
         return NextResponse.redirect(new URL('/verify-email?error=expired_token', request.url));
       }
     }
@@ -121,11 +121,11 @@ export async function GET(request: NextRequest) {
     await db
       .update(users)
       .set({
-        email_verified: true,
-        email_verification_token: null,
-        email_verification_sent_at: null,
-        xp_points: (user.xp_points || 0) + bonusXP,
-        updated_at: new Date()
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationSentAt: null,
+        xpPoints: (user.xpPoints || 0) + bonusXP,
+        updatedAt: new Date()
       })
       .where(eq(users.id, user.id));
 

@@ -41,13 +41,13 @@ interface LumoProviderProps {
 
 export function LumoProvider({ 
   children, 
-  initialQuota = 5, 
+  initialQuota = 5, // Legacy parameter - LUMO support is now unlimited
   userTier = 'ghost' 
 }: LumoProviderProps) {
   const isClient = useIsClient();
   const [isOpen, setIsOpen] = useState(false);
   const [persona, setPersona] = useState<'core' | 'gremlin' | 'analyst' | 'support'>('core');
-  const [quotaLeft, setQuotaLeft] = useState(initialQuota);
+  const [quotaLeft] = useState(999); // Always show unlimited for display purposes
   const [notifications, setNotifications] = useState<LumoNotification[]>([]);
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'lumo'; content: string; timestamp: string }>>([]);
   const [isLoading, setIsLoading] = useState(false);
