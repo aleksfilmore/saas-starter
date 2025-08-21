@@ -195,6 +195,66 @@ const DUMMY_POSTS = [
     glitchCategory: 'breakthrough',
     glitchTitle: '4CC355_D3N13D_3RR0R_403',
     archetype: 'Firewall Builder'
+  },
+
+  // Rage posts
+  {
+    content: "The ABSOLUTE RAGE when they said 'we can still be friends.' Like no, we can't. You don't get to keep me as a backup.",
+    glitchCategory: 'rage',
+    glitchTitle: 'CR1T1C4L_3RR0R_D3T3CT3D',
+    archetype: 'Firewall Builder'
+  },
+  {
+    content: "Destroyed a whole punching bag today. Every hit was their face. Expensive therapy but worth every penny.",
+    glitchCategory: 'rage',
+    glitchTitle: '5Y5T3M_0V3RL04D_W4RN1NG',
+    archetype: 'Data Flooder'
+  },
+  {
+    content: "White hot fury when I found out they were already seeing someone new while lying to me about 'needing space.'",
+    glitchCategory: 'rage',
+    glitchTitle: 'F4T4L_3XC3PT10N_3RR0R',
+    archetype: 'System Optimizer'
+  },
+
+  // Identity posts  
+  {
+    content: "I forgot who I was before them. Now I'm slowly remembering - and I actually like this person more.",
+    glitchCategory: 'identity',
+    glitchTitle: 'ID3NT1TY_R35T0R4T10N',
+    archetype: 'Explorer'
+  },
+  {
+    content: "They said I was 'too much.' Turns out that was just me being authentically myself. Their loss.",
+    glitchCategory: 'identity',
+    glitchTitle: 'S3LF_1MPL3M3NT4T10N',
+    archetype: 'Secure Node'
+  },
+  {
+    content: "Rediscovering hobbies I abandoned for them. Amazing how much personality I compressed to fit their preferences.",
+    glitchCategory: 'identity',
+    glitchTitle: 'C0R3_D4T4_R3C0V3RY',
+    archetype: 'System Optimizer'
+  },
+
+  // Future posts
+  {
+    content: "First time in months I'm excited about tomorrow instead of dreading it. Small but significant shift.",
+    glitchCategory: 'future',
+    glitchTitle: 'H0P3_PR0T0C0L_4CT1V3',
+    archetype: 'Data Flooder'
+  },
+  {
+    content: "Made plans for next year that don't include them. Weird but liberating to design a future just for me.",
+    glitchCategory: 'future',
+    glitchTitle: 'T1M3L1N3_UPD4T3D',
+    archetype: 'Explorer'
+  },
+  {
+    content: "The future I was building with them crumbled. But now I'm building something even better - just for me.",
+    glitchCategory: 'future',
+    glitchTitle: 'N3W_P4TH_1N1T14L1Z3D',
+    archetype: 'Firewall Builder'
   }
 ];
 
