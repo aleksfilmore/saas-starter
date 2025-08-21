@@ -8,7 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { SimplifiedHeader } from '@/components/dashboard/SimplifiedHeader';
+import { UserAvatar } from '@/components/ui/UserAvatar';
+import { BreathingExercise } from '@/components/quick-actions/BreathingExercise';
+import { NotificationDisplay } from '@/components/notifications/NotificationDisplay';
 import { 
   Send, 
   MessageCircle, 
@@ -19,7 +21,16 @@ import {
   Shield,
   ArrowLeft,
   Sparkles,
-  ChevronUp
+  ChevronUp,
+  Settings,
+  User as UserIcon,
+  Coins,
+  Star,
+  LogOut,
+  Wind,
+  Brain,
+  Crown,
+  AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -86,6 +97,30 @@ export default function OptimizedWallPage() {
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [posting, setPosting] = useState(false);
   const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({});
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+
+  // User premium status
+  const isPremium = authUser?.subscriptionTier === 'premium' || 
+                     (authUser as any)?.subscription_tier === 'premium' || 
+                     (authUser as any)?.tier === 'firewall' ||
+                     (authUser as any)?.ritual_tier === 'firewall';
+
+  // Handle sign out
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        localStorage.clear();
+        window.location.href = '/';
+      }
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
   
   // Use SWR for intelligent data fetching
   const { data: feedData, error, isLoading, mutate: refresh } = useSWR(
@@ -265,25 +300,116 @@ export default function OptimizedWallPage() {
     <div className="brand-container">
       <FloatingParticles />
         
-      {/* SimplifiedHeader */}
+      {/* Dashboard Header */}
       <div className="relative z-10">
-        <SimplifiedHeader 
-          user={{
-            username: authUser?.username || authUser?.email?.split('@')[0] || 'Anonymous',
-            streak: authUser?.streak || 0,
-            bytes: authUser?.bytes || 0,
-            level: authUser?.level || 1,
-            noContactDays: authUser?.noContactDays || 0,
-            subscriptionTier: authUser?.subscriptionTier || 'free'
-          }}
-          hasShield={authUser?.noContactDays ? authUser.noContactDays > 0 : false}
-          onCheckin={() => console.log('Check-in clicked')}
-          onBreathing={() => {
-            // Use dashboard instead of non-existent /breathing route
-            window.location.href = '/dashboard';
-          }}
-          onCrisis={() => window.location.href = '/crisis-support'}
-        />
+        <header className="border-b border-purple-500/20 bg-black/80 backdrop-blur-xl sticky top-0 z-50">
+          <div className="max-w-8xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between">
+              
+              {/* Left side - Branding */}
+              <div className="flex items-center">
+                <div className="flex items-center gap-1 text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight">
+                  <span className="text-white">CTRL</span>
+                  <span className="text-gray-400">+</span>
+                  <span className="text-white">ALT</span>
+                  <span className="text-gray-400">+</span>
+                  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent brand-glitch" data-text="BLOCK">BLOCK</span>
+                  <span className="text-gray-400 mx-1 sm:mx-2">–</span>
+                  <span className="text-sm sm:text-base md:text-lg font-bold text-brand-glow">
+                    Wall of Wounds
+                  </span>
+                </div>
+              </div>
+              
+              {/* Right side - Actions and User */}
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                
+                {/* User Tier Badge */}
+                <div className="hidden md:flex">
+                  {isPremium ? (
+                    <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1.5 text-xs font-semibold shadow-lg border border-purple-400/50">
+                      <Crown className="h-3 w-3 mr-1.5" />
+                      FIREWALL MODE
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="border-gray-500 text-gray-300 px-3 py-1.5 text-xs font-medium bg-gray-800/50">
+                      <span className="text-gray-400 mr-1">👻</span>
+                      GHOST MODE
+                    </Badge>
+                  )}
+                </div>
+                
+                {/* Breathing Exercise Button */}
+                <BreathingExercise onComplete={(pattern, cycles) => {
+                  console.log(`Completed ${pattern.name} breathing exercise with ${cycles} cycles`);
+                }}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-teal-300 hover:text-teal-200 hover:bg-teal-500/10 flex items-center gap-1 text-xs p-2"
+                  >
+                    <Wind className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    <span className="hidden lg:inline">Breathing</span>
+                  </Button>
+                </BreathingExercise>
+                
+                {/* Dashboard Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.location.href = '/dashboard'}
+                  className="text-blue-300 hover:text-blue-200 hover:bg-blue-500/10 flex items-center gap-1 text-xs p-2"
+                >
+                  <Brain className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden lg:inline">Dashboard</span>
+                </Button>
+                
+                {/* Crisis Center Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.location.href = '/crisis-support'}
+                  className="text-red-300 hover:text-red-200 hover:bg-red-500/10 flex items-center gap-1 text-xs p-2"
+                >
+                  <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden lg:inline">Crisis</span>
+                </Button>
+                
+                {/* Settings Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveModal('settings')}
+                  className="text-purple-300 hover:text-white flex items-center gap-1 text-xs p-2"
+                >
+                  <Settings className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden lg:inline">Settings</span>
+                </Button>
+                
+                {/* Notifications */}
+                <NotificationDisplay className="hidden sm:block" />
+                
+                {/* User Avatar */}
+                <UserAvatar 
+                  user={authUser as any} 
+                  size="md" 
+                  onProfileClick={() => setActiveModal('settings')}
+                />
+                
+                {/* Sign Out Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="text-gray-300 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-1 text-xs p-2"
+                >
+                  <LogOut className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  <span className="hidden lg:inline">Sign Out</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
       </div>
       
       {/* Main Container */}
@@ -510,10 +636,6 @@ export default function OptimizedWallPage() {
                             {totalReactions + (optimisticReactions[post.id] || 0)}
                           </span>
                         </Button>
-                        
-                        <div className="text-xs text-gray-500">
-                          {post.timeAgo}
-                        </div>
                       </div>
                     </CardContent>
                   </Card>

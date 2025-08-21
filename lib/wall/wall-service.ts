@@ -120,8 +120,12 @@ export async function getWallFeed(opts: { userId: string; page: number; limit: n
   const { userId, page, limit, filter, category } = opts;
   const offset = (page - 1) * limit;
   let rows = await db.select().from(anonymousPosts).orderBy(anonymousPosts.createdAt).limit(500);
+  
+  // First sort by creation time, then apply randomization
   rows = rows.sort((a,b) => b.createdAt!.getTime() - a.createdAt!.getTime());
+  
   if (category) rows = rows.filter(r => r.glitchCategory === category);
+  
   switch (filter) {
     case 'viral':
       rows = rows.filter(r => totalReactions(r) >= 50).sort((a,b)=> totalReactions(b)- totalReactions(a));
@@ -133,8 +137,39 @@ export async function getWallFeed(opts: { userId: string; page: number; limit: n
       const oneDay = Date.now() - 24*60*60*1000;
       rows = rows.filter(r => r.createdAt && r.createdAt.getTime() > oneDay).sort((a,b)=> totalReactions(b)- totalReactions(a));
       break;
-    default: break;
+    default: 
+      // For 'recent' filter, add some randomization while keeping recent posts visible
+      // Shuffle posts within categories to avoid "3 per category, one after another"
+      const categories: Record<string, any[]> = {};
+      rows.forEach(row => {
+        if (!categories[row.glitchCategory]) categories[row.glitchCategory] = [];
+        categories[row.glitchCategory].push(row);
+      });
+      
+      // Shuffle each category internally
+      Object.keys(categories).forEach(cat => {
+        categories[cat] = categories[cat].sort(() => Math.random() - 0.5);
+      });
+      
+      // Interleave posts from different categories for better distribution
+      const shuffledRows: any[] = [];
+      const categoryKeys = Object.keys(categories);
+      const maxLength = Math.max(...Object.values(categories).map(arr => arr.length));
+      
+      for (let i = 0; i < maxLength; i++) {
+        // Randomize category order for each round
+        const shuffledKeys = [...categoryKeys].sort(() => Math.random() - 0.5);
+        shuffledKeys.forEach(key => {
+          if (categories[key][i]) {
+            shuffledRows.push(categories[key][i]);
+          }
+        });
+      }
+      
+      rows = shuffledRows;
+      break;
   }
+  
   const paginated = rows.slice(offset, offset + limit);
   const postIds = paginated.map(p=>p.id);
   const userReactions: Record<string,string> = {};
