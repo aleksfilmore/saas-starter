@@ -7,6 +7,9 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "cache": {
+        "disabled": false
+      },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://ctrlaltblock.com/api",
         "EXPO_PUBLIC_APP_URL": "https://ctrlaltblock.com",
@@ -17,6 +20,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "cache": {
+        "disabled": false
+      },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://ctrlaltblock.com/api",
         "EXPO_PUBLIC_APP_URL": "https://ctrlaltblock.com",
@@ -27,6 +33,9 @@
     },
     "production": {
       "autoIncrement": true,
+      "cache": {
+        "disabled": false
+      },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://ctrlaltblock.com/api",
         "EXPO_PUBLIC_APP_URL": "https://ctrlaltblock.com",
