@@ -1,5 +1,5 @@
 // Complete Database Schema for SaaS Starter with Gamification
-import { pgTable, text, timestamp, integer, boolean, varchar, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, boolean, varchar, index, json, real } from 'drizzle-orm/pg-core';
 import { randomUUID } from 'crypto';
 
 // =====================================
@@ -598,6 +598,264 @@ export type NewWeeklySummary = typeof weeklySummaries.$inferInsert;
 // Blog types
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type NewBlogPost = typeof blogPosts.$inferInsert;
+
+// =====================================
+// SHOP & BYTE ECONOMY TABLES
+// =====================================
+
+export const shopProducts = pgTable('shop_products', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  category: text('category').notNull(), // digital | physical
+  type: text('type').notNull(), // audiobook | ebook | mug | hoodie | blanket | signed_book
+  
+  // Pricing
+  bytePrice: integer('byte_price'), // Price in Bytes (null if not available for Bytes)
+  cashPrice: integer('cash_price'), // Price in cents (null if Bytes-only)
+  
+  // Product Details
+  variants: text('variants'), // JSON string for colors, sizes, etc.
+  digitalContent: text('digital_content'), // URL or file path for digital products
+  printifyProductId: text('printify_product_id'), // For physical products
+  
+  // Availability
+  isActive: boolean('is_active').notNull().default(true),
+  isDigital: boolean('is_digital').notNull().default(false),
+  requiresShipping: boolean('requires_shipping').notNull().default(false),
+  
+  // Metadata
+  tags: text('tags'), // JSON array of tags
+  images: text('images'), // JSON array of image URLs
+  sortOrder: integer('sort_order').default(0),
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const shopOrders = pgTable('shop_orders', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  
+  // Order Details
+  orderNumber: text('order_number').notNull().unique(),
+  status: text('status').notNull().default('pending'), // pending | processing | shipped | delivered | cancelled
+  paymentMethod: text('payment_method').notNull(), // bytes | stripe
+  
+  // Pricing
+  totalBytes: integer('total_bytes').default(0),
+  totalCash: integer('total_cash').default(0), // in cents
+  
+  // Shipping (for physical products)
+  shippingName: text('shipping_name'),
+  shippingEmail: text('shipping_email'),
+  shippingAddress1: text('shipping_address_1'),
+  shippingAddress2: text('shipping_address_2'),
+  shippingCity: text('shipping_city'),
+  shippingState: text('shipping_state'),
+  shippingZip: text('shipping_zip'),
+  shippingCountry: text('shipping_country'),
+  
+  // Stripe Integration
+  stripeSessionId: text('stripe_session_id'),
+  stripePaymentIntentId: text('stripe_payment_intent_id'),
+  
+  // Fulfillment
+  trackingNumber: text('tracking_number'),
+  shippedAt: timestamp('shipped_at', { withTimezone: true, mode: 'date' }),
+  deliveredAt: timestamp('delivered_at', { withTimezone: true, mode: 'date' }),
+  
+  // Metadata
+  notes: text('notes'),
+  metadata: text('metadata'), // JSON for additional data
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const shopOrderItems = pgTable('shop_order_items', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  orderId: text('order_id').notNull().references(() => shopOrders.id),
+  productId: text('product_id').notNull().references(() => shopProducts.id),
+  
+  // Item Details
+  quantity: integer('quantity').notNull().default(1),
+  variant: text('variant'), // JSON for selected variant (color, size, etc.)
+  
+  // Pricing at time of purchase
+  bytePricePerItem: integer('byte_price_per_item'),
+  cashPricePerItem: integer('cash_price_per_item'),
+  
+  // Fulfillment
+  status: text('status').notNull().default('pending'), // pending | processing | shipped | delivered
+  printifyOrderId: text('printify_order_id'), // For physical product tracking
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const byteEarningRules = pgTable('byte_earning_rules', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  activity: text('activity').notNull(), // ritual_complete | daily_checkin | wall_post | ai_chat | etc.
+  byteReward: integer('byte_reward').notNull(),
+  dailyLimit: integer('daily_limit'), // null = no limit
+  description: text('description').notNull(),
+  isActive: boolean('is_active').notNull().default(true),
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const userByteHistory = pgTable('user_byte_history', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  
+  // Transaction Details
+  type: text('type').notNull(), // earned | spent | bonus | penalty
+  activity: text('activity').notNull(), // What action triggered this
+  amount: integer('amount').notNull(), // Positive for earned, negative for spent
+  balanceBefore: integer('balance_before').notNull(),
+  balanceAfter: integer('balance_after').notNull(),
+  
+  // Context
+  relatedId: text('related_id'), // ID of ritual, order, etc.
+  description: text('description').notNull(),
+  metadata: text('metadata'), // JSON for additional context
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const streakBonuses = pgTable('streak_bonuses', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  
+  // Streak Details
+  streakType: text('streak_type').notNull(), // ritual | no_contact | checkin
+  streakDays: integer('streak_days').notNull(),
+  bonusBytes: integer('bonus_bytes').notNull(),
+  badgeAwarded: text('badge_awarded'), // Badge ID if awarded
+  
+  // Metadata
+  description: text('description').notNull(),
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const digitalProductAccess = pgTable('digital_product_access', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  productId: text('product_id').notNull().references(() => shopProducts.id),
+  
+  // Access Details
+  accessType: text('access_type').notNull(), // purchased | earned | granted
+  orderId: text('order_id').references(() => shopOrders.id), // If purchased
+  
+  // Access Control
+  isActive: boolean('is_active').notNull().default(true),
+  expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }), // null = permanent
+  
+  // Usage Tracking
+  firstAccessedAt: timestamp('first_accessed_at', { withTimezone: true, mode: 'date' }),
+  lastAccessedAt: timestamp('last_accessed_at', { withTimezone: true, mode: 'date' }),
+  accessCount: integer('access_count').notNull().default(0),
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// === ACHIEVEMENT SYSTEM TABLES ===
+
+// User Achievements - tracks which achievements users have earned
+export const userAchievements = pgTable('user_achievements', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  achievementId: text('achievement_id').notNull(), // References achievements.ts
+  awardedAt: timestamp('awarded_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  byteReward: integer('byte_reward').notNull().default(0),
+  
+  // Additional tracking
+  // Using text instead of json here to avoid build-time JSON parsing issues; store stringified JSON
+  metadata: text('metadata'), // JSON string with extra data about how achievement was earned
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// User Multipliers - tracks active byte multipliers for users
+export const userMultipliers = pgTable('user_multipliers', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  multiplierId: text('multiplier_id').notNull(), // References achievements.ts MULTIPLIERS
+  
+  // Multiplier details
+  multiplier: real('multiplier').notNull(), // e.g., 1.5, 2.0, 3.0
+  activatedAt: timestamp('activated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+  isActive: boolean('is_active').notNull().default(true),
+  
+  // Tracking
+  sourceAchievementId: text('source_achievement_id'), // Which achievement unlocked this
+  usageCount: integer('usage_count').notNull().default(0), // How many times it's been applied
+  totalBytesMultiplied: integer('total_bytes_multiplied').notNull().default(0),
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// Achievement Progress - track progress toward achievements that aren't earned yet
+export const achievementProgress = pgTable('achievement_progress', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  achievementId: text('achievement_id').notNull(),
+  
+  // Progress tracking
+  currentValue: integer('current_value').notNull().default(0), // Current count/streak/total
+  targetValue: integer('target_value').notNull(), // Target needed for achievement
+  progressPercentage: real('progress_percentage').notNull().default(0),
+  
+  // Metadata
+  lastUpdated: timestamp('last_updated', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  firstProgressAt: timestamp('first_progress_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+// Add indexes for performance
+export const idxShopOrdersUserId = index('idx_shop_orders_user_id').on(shopOrders.userId);
+export const idxShopOrdersStatus = index('idx_shop_orders_status').on(shopOrders.status);
+export const idxShopOrderItemsOrderId = index('idx_shop_order_items_order_id').on(shopOrderItems.orderId);
+export const idxUserByteHistoryUserId = index('idx_user_byte_history_user_id').on(userByteHistory.userId);
+export const idxUserByteHistoryCreatedAt = index('idx_user_byte_history_created_at').on(userByteHistory.createdAt);
+export const idxDigitalProductAccessUserId = index('idx_digital_product_access_user_id').on(digitalProductAccess.userId);
+export const idxStreakBonusesUserId = index('idx_streak_bonuses_user_id').on(streakBonuses.userId);
+
+// Achievement system indexes
+export const idxUserAchievementsUserId = index('idx_user_achievements_user_id').on(userAchievements.userId);
+export const idxUserAchievementsAwardedAt = index('idx_user_achievements_awarded_at').on(userAchievements.awardedAt);
+export const idxUserMultipliersUserId = index('idx_user_multipliers_user_id').on(userMultipliers.userId);
+export const idxUserMultipliersActive = index('idx_user_multipliers_active').on(userMultipliers.isActive, userMultipliers.expiresAt);
+export const idxAchievementProgressUserId = index('idx_achievement_progress_user_id').on(achievementProgress.userId);
+export const idxAchievementProgressAchievement = index('idx_achievement_progress_achievement').on(achievementProgress.achievementId);
+
+// New type exports for shop system
+export type ShopProduct = typeof shopProducts.$inferSelect;
+export type NewShopProduct = typeof shopProducts.$inferInsert;
+export type ShopOrder = typeof shopOrders.$inferSelect;
+export type NewShopOrder = typeof shopOrders.$inferInsert;
+export type ShopOrderItem = typeof shopOrderItems.$inferSelect;
+export type NewShopOrderItem = typeof shopOrderItems.$inferInsert;
+export type ByteEarningRule = typeof byteEarningRules.$inferSelect;
+export type NewByteEarningRule = typeof byteEarningRules.$inferInsert;
+export type UserByteHistory = typeof userByteHistory.$inferSelect;
+export type NewUserByteHistory = typeof userByteHistory.$inferInsert;
+export type StreakBonus = typeof streakBonuses.$inferSelect;
+export type NewStreakBonus = typeof streakBonuses.$inferInsert;
+export type DigitalProductAccess = typeof digitalProductAccess.$inferSelect;
+export type NewDigitalProductAccess = typeof digitalProductAccess.$inferInsert;
+
+// Achievement system type exports
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type NewUserAchievement = typeof userAchievements.$inferInsert;
+export type UserMultiplier = typeof userMultipliers.$inferSelect;
+export type NewUserMultiplier = typeof userMultipliers.$inferInsert;
+export type AchievementProgress = typeof achievementProgress.$inferSelect;
+export type NewAchievementProgress = typeof achievementProgress.$inferInsert;
 
 // API usage types
 export type ApiUsage = typeof apiUsage.$inferSelect;

@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // GET /api/admin/blog - Get all blog posts
 export async function GET(request: NextRequest) {

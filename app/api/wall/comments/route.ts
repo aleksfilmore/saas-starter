@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { wallPostComments, anonymousPosts } from '@/lib/db';
 import { eq, and, isNull, sql } from 'drizzle-orm';
 import { AnalyticsService } from '@/lib/analytics/service';
+import { ByteService } from '@/lib/shop/ByteService';
 
 // Simple in-memory (per instance) throttle map as stopgap until unified service extended
 const lastCommentAt: Record<string, number> = {};
@@ -30,11 +31,42 @@ export async function POST(req: NextRequest) {
     const id = crypto.randomUUID();
     await db.insert(wallPostComments).values({ id, postId, userId: session.userId, content: content.trim(), parentCommentId });
     // increment comment count
-  await db.execute(sql`UPDATE anonymous_posts SET comment_count = comment_count + 1 WHERE id = ${postId}`);
+    await db.execute(sql`UPDATE anonymous_posts SET comment_count = comment_count + 1 WHERE id = ${postId}`);
+
+    // 🎯 BYTE ECONOMY: Award bytes for helpful replies
+    let bytesAwarded = 0;
+    try {
+      const byteService = new ByteService(session.userId);
+      const byteTransaction = await byteService.awardBytes(
+        8, // Helpful reply reward (from BYTE_EARNING_ACTIVITIES)
+        'helpful_reply',
+        `Replied to wall post: ${content.substring(0, 50)}...`,
+        { commentId: id, postId, isReply: !!parentCommentId }
+      );
+      
+      if (byteTransaction) {
+        bytesAwarded = byteTransaction.byteChange;
+        console.log(`💰 Awarded ${bytesAwarded} Bytes for helpful reply`);
+      }
+    } catch (byteError) {
+      console.warn('⚠️ Byte award failed (non-blocking):', byteError);
+      // Continue with comment creation even if byte award fails
+    }
 
     AnalyticsService.track({ userId: session.userId, event: 'wall_post_commented', properties: { postId, parentCommentId: parentCommentId || null } });
 
-    return NextResponse.json({ success: true, comment: { id, postId, content: content.trim(), parentCommentId, createdAt: new Date(), userId: session.userId } });
+    return NextResponse.json({ 
+      success: true, 
+      comment: { 
+        id, 
+        postId, 
+        content: content.trim(), 
+        parentCommentId, 
+        createdAt: new Date(), 
+        userId: session.userId 
+      },
+      bytesAwarded // Include bytes in response
+    });
   } catch (e) {
     console.error('Create comment error', e);
     return NextResponse.json({ error: 'Failed to create comment' }, { status: 500 });

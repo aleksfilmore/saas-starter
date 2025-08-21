@@ -4,6 +4,7 @@ import { db } from '@/lib/db/drizzle';
 import { sql } from 'drizzle-orm';
 import { getUser } from '@/lib/db/queries';
 import { RITUAL_BANK } from '@/lib/rituals/ritual-bank';
+import { ByteService } from '@/lib/shop/ByteService';
 
 export const runtime = 'nodejs';
 
@@ -71,6 +72,57 @@ export async function POST(request: NextRequest) {
     const xpReward = ritual.xpReward;
     const byteReward = ritual.byteReward;
 
+    // 🎯 BYTE ECONOMY: Award bytes for ritual completion
+    let actualBytesAwarded = 0;
+    let streakBonus = 0;
+    try {
+      const byteService = new ByteService(user.id);
+      
+      // Award base ritual completion bytes
+      const byteTransaction = await byteService.awardBytes(
+        25, // Base ritual completion reward (from BYTE_EARNING_ACTIVITIES)
+        'ritual_completion',
+        `Completed ritual: ${ritual.title}`,
+        { ritualId, difficulty: ritual.difficulty || difficulty }
+      );
+      
+      if (byteTransaction) {
+        actualBytesAwarded = byteTransaction.byteChange;
+        console.log(`💰 Awarded ${actualBytesAwarded} Bytes for ritual completion`);
+      }
+
+      // 🏆 STREAK BONUS: Check for streak milestones and award bonus
+      const currentStreakCount = newRitualStreak;
+      
+      // Award streak bonuses at specific milestones
+      if (currentStreakCount === 2) {
+        const streakTransaction = await byteService.awardStreakBonus(currentStreakCount, 'ritual_completion');
+        if (streakTransaction) {
+          streakBonus = streakTransaction.bonusBytes;
+          actualBytesAwarded += streakBonus;
+          console.log(`🔥 2-day streak bonus: ${streakBonus} Bytes`);
+        }
+      } else if (currentStreakCount === 7) {
+        const streakTransaction = await byteService.awardStreakBonus(currentStreakCount, 'ritual_completion');
+        if (streakTransaction) {
+          streakBonus = streakTransaction.bonusBytes;
+          actualBytesAwarded += streakBonus;
+          console.log(`🔥 7-day streak bonus: ${streakBonus} Bytes`);
+        }
+      } else if (currentStreakCount === 30) {
+        const streakTransaction = await byteService.awardStreakBonus(currentStreakCount, 'ritual_completion');
+        if (streakTransaction) {
+          streakBonus = streakTransaction.bonusBytes;
+          actualBytesAwarded += streakBonus;
+          console.log(`🔥 30-day streak bonus: ${streakBonus} Bytes`);
+        }
+      }
+      
+    } catch (byteError) {
+      console.warn('⚠️ Byte award failed (non-blocking):', byteError);
+      // Continue with ritual completion even if byte award fails
+    }
+
     // Update user stats
     const currentUserData = await db.execute(sql`
       SELECT xp, level, ritual_streak FROM users WHERE id = ${user.id}
@@ -120,7 +172,7 @@ export async function POST(request: NextRequest) {
       console.warn('⚠️ Badge check-in failed (non-blocking):', badgeError);
     }
 
-    console.log('✅ Ritual completed:', ritual.title, 'XP:', xpReward, 'Bytes:', byteReward);
+    console.log('✅ Ritual completed:', ritual.title, 'XP:', xpReward, 'Bytes:', actualBytesAwarded);
 
     return NextResponse.json({
       success: true,
@@ -131,7 +183,8 @@ export async function POST(request: NextRequest) {
       },
       rewards: {
         xp: xpReward,
-        bytes: byteReward,
+        bytes: actualBytesAwarded, // Return actual bytes awarded
+        streakBonus: streakBonus, // Include streak bonus info
         leveledUp,
         newLevel
       },

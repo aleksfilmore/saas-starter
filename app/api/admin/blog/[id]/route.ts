@@ -5,6 +5,7 @@ import { blogPosts } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 // PUT /api/admin/blog/[id] - Update blog post
 export async function PUT(

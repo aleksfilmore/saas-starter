@@ -4,6 +4,7 @@ import { createWallPost } from '@/lib/wall/wall-service';
 import { AnalyticsService } from '@/lib/analytics/service';
 import { AnalyticsEvents } from '@/lib/analytics/events';
 import { ContentModerationService } from '@/lib/moderation/content-moderation';
+import { ByteService } from '@/lib/shop/ByteService';
 
 // Content moderation keywords
 const SENSITIVE_KEYWORDS = [
@@ -61,6 +62,26 @@ export async function POST(request: Request) {
 
     const post = await createWallPost({ userId: session.userId, content: content.trim(), isAnonymous, category: finalCategory });
     
+    // 🎯 BYTE ECONOMY: Award bytes for wall post creation
+    let bytesAwarded = 0;
+    try {
+      const byteService = new ByteService(session.userId);
+      const byteTransaction = await byteService.awardBytes(
+        15, // Wall post reward (from BYTE_EARNING_ACTIVITIES)
+        'wall_post',
+        `Posted to wall: ${content.substring(0, 50)}...`,
+        { postId: post.id, category: finalCategory, isAnonymous }
+      );
+      
+      if (byteTransaction) {
+        bytesAwarded = byteTransaction.byteChange;
+        console.log(`💰 Awarded ${bytesAwarded} Bytes for wall post`);
+      }
+    } catch (byteError) {
+      console.warn('⚠️ Byte award failed (non-blocking):', byteError);
+      // Continue with wall post creation even if byte award fails
+    }
+    
     // Run auto-moderation after post creation if content requires review
     if (moderationResult.requiresReview) {
       await ContentModerationService.autoModeratePost(post.id, content.trim(), session.userId);
@@ -81,12 +102,15 @@ export async function POST(request: Request) {
 
     const message = moderationResult.requiresReview && moderationResult.severity !== 'low' 
       ? 'Confession transmitted - under review' 
-      : 'Confession transmitted to the void';
+      : bytesAwarded > 0 
+        ? `Confession transmitted to the void (+${bytesAwarded} Bytes)` 
+        : 'Confession transmitted to the void';
 
     return NextResponse.json({ 
       success: true, 
       post, 
       message,
+      bytesAwarded, // Include bytes in response
       moderation: {
         requiresReview: moderationResult.requiresReview,
         severity: moderationResult.severity

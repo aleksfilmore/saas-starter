@@ -5,6 +5,9 @@ import { validateRequest } from '@/lib/auth';
 import { getUserId } from '@/lib/utils';
 import { sql, count, desc, gte, eq } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(request: NextRequest) {
   try {
     const { user } = await validateRequest();
