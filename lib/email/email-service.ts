@@ -210,6 +210,102 @@ const createEmailTemplate = (content: string, title: string = 'CTRL+ALT+BLOCK') 
 </html>`;
 };
 
+export async function sendEmailVerificationEmail(email: string, verificationToken: string, name?: string) {
+  const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+  
+  const emailContent = `
+    <div class="content-card">
+      <h2>✨ VERIFY YOUR EMAIL & UNLOCK REWARDS</h2>
+      
+      <div class="alert-info">
+        <p><strong>🎯 VERIFICATION BONUS:</strong> Verify your email to unlock exclusive healing features and boost your progress!</p>
+      </div>
+
+      <p>${name ? `Hey <span class="neon-text">${name}</span>,` : 'Hey there,'}</p>
+
+      <p>Welcome to <span class="neon-text">CTRL+ALT+BLOCK</span>! You're already on your healing journey, but verifying your email unlocks even more powerful features:</p>
+
+      <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; padding: 20px; margin: 20px 0;">
+        <h3 style="color: #00ff9f; margin: 0 0 15px; font-size: 18px;">🚀 Verification Rewards:</h3>
+        <ul style="color: #e2e8f0; margin: 0; padding-left: 20px;">
+          <li>+50 bonus XP points for your healing journey</li>
+          <li>Unlock exclusive verified-user badges</li>
+          <li>Priority customer support access</li>
+          <li>Email notifications for your healing milestones</li>
+          <li>Account recovery protection</li>
+        </ul>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${verificationUrl}" class="btn-brand-primary">
+          ✅ VERIFY EMAIL & CLAIM REWARDS
+        </a>
+      </div>
+
+      <div class="code-block">
+        <strong>VERIFICATION TOKEN:</strong> ${verificationToken.substring(0, 8)}...
+        <br><strong>EXPIRES:</strong> 24 hours from now
+      </div>
+
+      <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; border-radius: 8px; padding: 15px; margin: 20px 0;">
+        <p style="margin: 0; color: #3b82f6;"><strong>💡 No pressure!</strong> You can continue using CTRL+ALT+BLOCK without verification, but you'll miss out on these exclusive perks and security features.</p>
+      </div>
+
+      <p>Questions? Our support team is here to help via LUMO chat in your dashboard!</p>
+    </div>
+  `;
+
+  try {
+    console.log('🔧 Sending verification email to:', email);
+
+    const result = await resend.emails.send({
+      from: process.env.EMAIL_FROM!,
+      to: email,
+      subject: '✨ Verify Your Email & Unlock Healing Rewards - CTRL+ALT+BLOCK',
+      html: createEmailTemplate(emailContent, 'Email Verification - CTRL+ALT+BLOCK'),
+      text: `
+CTRL+ALT+BLOCK™ - Email Verification
+
+${name ? `Hey ${name},` : 'Hey there,'}
+
+Welcome to CTRL+ALT+BLOCK! Verify your email to unlock exclusive features:
+
+VERIFICATION REWARDS:
+- +50 bonus XP points
+- Exclusive verified-user badges  
+- Priority customer support
+- Email notifications for milestones
+- Account recovery protection
+
+Click here to verify: ${verificationUrl}
+
+This link expires in 24 hours.
+
+No pressure! You can continue using the platform without verification, but you'll miss out on these perks.
+
+Questions? Use LUMO chat in your dashboard for support.
+
+CTRL+ALT+BLOCK™ - Glitch-Core Healing Protocol
+      `,
+      tags: [{ name: 'category', value: 'email_verification' }],
+      headers: {
+        'X-Resend-Track-Links': 'false',
+        'X-Resend-Track-Opens': 'false'
+      }
+    });
+
+    console.log('✅ Verification email sent successfully:', result);
+    return { success: true, messageId: result.data?.id };
+
+  } catch (error) {
+    console.error('❌ Failed to send verification email:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+}
+
 export async function sendPasswordResetEmail(email: string, resetToken: string, name?: string) {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
   

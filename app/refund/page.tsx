@@ -83,10 +83,11 @@ export default function RefundPage() {
                       Ghost Mode (Free)
                     </h3>
                     <ul className="text-sm space-y-1">
-                      <li>• 1 daily ritual from free pool</li>
-                      <li>• Basic no-contact tracker (24h shield)</li>
-                      <li>• Wall of Wounds: read + react only</li>
-                      <li>• AI chat: 5 free messages/day</li>
+                      <li>• 1 Daily healing ritual</li>
+                      <li>• No-contact tracker</li>
+                      <li>• Daily check-ins & journaling</li>
+                      <li>• Read Wall of Wounds posts</li>
+                      <li>• Customer support via LUMO</li>
                       <li>• Basic progress tracking</li>
                     </ul>
                   </CardContent>
@@ -99,11 +100,13 @@ export default function RefundPage() {
                       Firewall Mode ($9.99/month)
                     </h3>
                     <ul className="text-sm space-y-1">
-                      <li>• 2 personalized daily rituals + reroll</li>
-                      <li>• Enhanced no-contact tracker (48h + auto-shield)</li>
-                      <li>• Wall of Wounds: read + react + post</li>
-                      <li>• Unlimited AI chat with personas</li>
-                      <li>• Advanced pattern analysis & insights</li>
+                      <li>• Everything in Ghost Mode</li>
+                      <li>• 2 Personalized daily healing rituals</li>
+                      <li>• Unlimited AI therapy chat</li>
+                      <li>• Post on Wall of Wounds</li>
+                      <li>• Advanced progress tracking</li>
+                      <li>• Exclusive badges & features</li>
+                      <li>• Priority customer support</li>
                     </ul>
                   </CardContent>
                 </Card>

@@ -214,7 +214,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Ghost Mode */}
-            <div className="card-brand border-gray-500">
+            <div className="card-brand border-gray-500 h-auto">
               <div className="text-center mb-6">
                 <h3 className="text-2xl font-bold text-white mb-2">Ghost Mode</h3>
                 <div className="text-4xl font-bold text-white mb-1">Free</div>
@@ -228,15 +228,19 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Daily Journaling
+                  Daily check-ins & journaling
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  1 Daily Healing Ritual
+                  1 Daily healing ritual
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
                   Read Wall of Wounds posts
+                </li>
+                <li className="flex items-center text-gray-300">
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  Unlimited customer support via LUMO
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
@@ -252,14 +256,14 @@ export default function HomePage() {
             </div>
 
             {/* Firewall Mode */}
-            <div className="card-brand border-purple-500 relative">
+            <div className="card-brand border-purple-500 relative min-h-[520px]">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Most Popular
+                  MOST POPULAR
                 </span>
               </div>
               
-              <div className="text-center mb-6">
+              <div className="text-center mb-6 pt-4">
                 <h3 className="text-2xl font-bold text-white mb-2">Firewall Mode</h3>
                 <div className="text-4xl font-bold text-white mb-1">$9.99</div>
                 <p className="text-gray-300">per month</p>
@@ -272,11 +276,11 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  2 Personalized Daily Healing Rituals
+                  2 Personalized daily healing rituals
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Advanced AI Therapy Chat
+                  Unlimited AI therapy chat
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
@@ -284,15 +288,25 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center text-gray-300">
                   <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                  Earn badges to unlock exclusive features
+                  Advanced progress tracking
+                </li>
+                <li className="flex items-center text-gray-300">
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  Unlock exclusive badges & features
+                </li>
+                <li className="flex items-center text-gray-300">
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  Priority customer support
                 </li>
               </ul>
               
-              <Link href="/quiz">
-                <Button className="btn-brand-primary w-full py-3">
-                  Start Healing Journey
-                </Button>
-              </Link>
+              <div className="mt-auto">
+                <Link href="/quiz">
+                  <Button className="btn-brand-primary w-full py-3">
+                    Start Healing Journey
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -57,7 +57,8 @@ export async function GET(request: NextRequest) {
         is_verified: dbUser.is_verified || false,
         subscription_status: dbUser.subscription_status || 'free',
         subscriptionTier: subscriptionTier,
-        isAdmin: dbUser.isAdmin || false // Add admin status
+        isAdmin: dbUser.isAdmin || false, // Add admin status
+        emailVerified: dbUser.emailVerified || false
       }
     });
 

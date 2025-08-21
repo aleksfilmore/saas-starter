@@ -84,19 +84,23 @@ export default function PricingPage() {
                 <ul className="space-y-4">
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    1 daily ritual from free pool
+                    1 Daily healing ritual
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Basic no-contact tracker (24h shield)
+                    No-contact tracker
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Wall of Wounds: read + react only
+                    Daily check-ins & journaling
                   </li>
-                  <li className="flex items-center text-gray-500">
-                    <Shield className="h-5 w-5 text-gray-500 mr-3" />
-                    <span className="line-through">AI Therapy Chat</span>
+                  <li className="flex items-center text-brand-light">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Read Wall of Wounds posts
+                  </li>
+                  <li className="flex items-center text-brand-light">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Customer support via LUMO
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
@@ -140,23 +144,27 @@ export default function PricingPage() {
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    2 personalized daily rituals + reroll
+                    2 Personalized daily healing rituals
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Enhanced no-contact tracker (48h + auto-shield)
+                    Unlimited AI therapy chat
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Wall of Wounds: read + react + post
-                  </li>
-                  <li className="flex items-center text-brand-light">
-                    <Check className="h-5 w-5 text-brand-primary mr-3" />
-                    <strong>AI Therapy Chat: 300 messages/month</strong>
+                    Post on Wall of Wounds
                   </li>
                   <li className="flex items-center text-brand-light">
                     <Check className="h-5 w-5 text-green-400 mr-3" />
-                    Advanced pattern analysis & insights
+                    Advanced progress tracking
+                  </li>
+                  <li className="flex items-center text-brand-light">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Unlock exclusive badges & features
+                  </li>
+                  <li className="flex items-center text-brand-light">
+                    <Check className="h-5 w-5 text-green-400 mr-3" />
+                    Priority customer support
                   </li>
                 </ul>
                 <Link 
@@ -187,30 +195,30 @@ export default function PricingPage() {
                   <tr>
                     <td className="py-4 text-gray-300">Daily healing rituals</td>
                     <td className="text-center py-4 text-gray-500">1 ritual/day</td>
-                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="text-center py-4 text-gray-300">2 personalized rituals/day</td>
                   </tr>
                   <tr>
                     <td className="py-4 text-gray-300">No-contact tracker</td>
-                    <td className="text-center py-4 text-gray-500">24h shield</td>
-                    <td className="text-center py-4 text-gray-300">48h + auto-shield</td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
                   </tr>
                   <tr>
-                    <td className="py-4 text-gray-300">AI chat messages</td>
-                    <td className="text-center py-4 text-gray-500">5/day</td>
+                    <td className="py-4 text-gray-300">AI therapy chat</td>
+                    <td className="text-center py-4 text-gray-500">—</td>
                     <td className="text-center py-4 text-gray-300">Unlimited</td>
                   </tr>
                   <tr>
                     <td className="py-4 text-gray-300">Wall of Wounds posting</td>
-                    <td className="text-center py-4 text-gray-500">—</td>
+                    <td className="text-center py-4 text-gray-500">Read only</td>
                     <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
                   </tr>
                   <tr>
-                    <td className="py-4 text-gray-300">Ritual rerolls</td>
-                    <td className="text-center py-4 text-gray-500">—</td>
-                    <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
+                    <td className="py-4 text-gray-300">Customer support</td>
+                    <td className="text-center py-4 text-gray-300">LUMO support</td>
+                    <td className="text-center py-4 text-gray-300">Priority LUMO support</td>
                   </tr>
                   <tr>
-                    <td className="py-4 text-gray-300">Advanced analytics</td>
+                    <td className="py-4 text-gray-300">Badges & exclusive features</td>
                     <td className="text-center py-4 text-gray-500">—</td>
                     <td className="text-center py-4"><Check className="h-5 w-5 text-green-400 mx-auto" /></td>
                   </tr>

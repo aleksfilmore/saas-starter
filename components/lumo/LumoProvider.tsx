@@ -159,11 +159,9 @@ export function LumoProvider({
   const clearNotifications = () => setNotifications([]);
 
   const sendMessage = async (message: string) => {
-    if (quotaLeft <= 0 && userTier === 'ghost') {
-      notify('error', 'Out of messages! Upgrade to continue chatting.');
-      return;
-    }
-
+    // LUMO is for customer support - no message limits for genuine support/help topics
+    // All users (Ghost and Firewall) have unlimited access to customer support
+    
     setIsLoading(true);
     
     // Add user message
@@ -176,7 +174,7 @@ export function LumoProvider({
     setChatHistory(prev => [...prev, userMessage]);
 
     try {
-      // Mock API call - replace with actual Lumo chat endpoint
+      // API call to Lumo chat endpoint for customer support
       const response = await fetch('/api/lumo/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -200,10 +198,7 @@ export function LumoProvider({
       
       setChatHistory(prev => [...prev, lumoMessage]);
       
-      // Decrease quota for free users
-      if (userTier === 'ghost') {
-        setQuotaLeft(prev => Math.max(0, prev - 1));
-      }
+      // No quota reduction - LUMO support is unlimited for all users
       
     } catch (error) {
       notify('error', 'Failed to send message. Please try again.');

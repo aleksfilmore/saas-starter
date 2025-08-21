@@ -29,6 +29,8 @@ interface ProgressStats {
   weeklyStreak: number;
   completedTasks: number;
   totalTasks: number;
+  userTier: 'ghost' | 'firewall';
+  hasUnlimitedAccess: boolean;
 }
 
 export function DashboardScreen() {
@@ -66,6 +68,8 @@ export function DashboardScreen() {
     weeklyStreak: 5,
     completedTasks: 12,
     totalTasks: 18,
+    userTier: 'ghost',
+    hasUnlimitedAccess: false,
   });
 
   const onRefresh = React.useCallback(() => {

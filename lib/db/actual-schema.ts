@@ -9,6 +9,10 @@ export const users = pgTable('users', {
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   username: text('username').unique(),
+  // Email verification fields
+  email_verified: boolean('email_verified').default(false),
+  email_verification_token: text('email_verification_token'),
+  email_verification_sent_at: timestamp('email_verification_sent_at', { withTimezone: true }),
   // Add other columns that actually exist
   avatar: text('avatar'),
   onboarding_completed: boolean('onboarding_completed').default(false),

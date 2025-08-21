@@ -20,16 +20,21 @@ export function UpgradeModal({ onClose }: UpgradeModalProps) {
         </button>
         <div className="flex items-center space-x-2 mb-4">
           <Sparkles className="h-5 w-5 text-pink-400" />
-          <h2 className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Go Premium</h2>
+          <h2 className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Upgrade to Firewall Mode</h2>
+        </div>
+        <div className="text-center mb-4">
+          <div className="text-2xl font-bold text-white">$9.99<span className="text-sm text-gray-400">/month</span></div>
         </div>
         <p className="text-sm text-gray-300 leading-relaxed mb-4">
-          Unlock AI Therapy sessions, extra quick wins, deeper insights, and priority support. Upgrade now and accelerate your healing momentum.
+          Unlock advanced healing features, unlimited AI therapy, and personalized daily rituals. Cancel anytime.
         </p>
         <ul className="space-y-2 text-sm text-gray-200 mb-6">
-          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Unlimited AI Therapy conversations</span></li>
-          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Advanced daily insights & pattern tracking</span></li>
-          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Expanded ritual library & premium quick wins</span></li>
-          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Priority badge progression boosts</span></li>
+          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>2 Personalized daily healing rituals</span></li>
+          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Unlimited AI therapy chat</span></li>
+          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Post on Wall of Wounds</span></li>
+          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Advanced progress tracking</span></li>
+          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Exclusive badges & features</span></li>
+          <li className="flex items-start space-x-2"><span className="text-pink-400">•</span><span>Priority customer support</span></li>
         </ul>
         <div className="space-y-3">
           <button
@@ -39,7 +44,7 @@ export function UpgradeModal({ onClose }: UpgradeModalProps) {
                 const res = await fetch('/api/stripe/checkout', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ tier: 'PREMIUM' })
+                  body: JSON.stringify({ tier: 'firewall' })
                 });
                 const data = await res.json();
                 

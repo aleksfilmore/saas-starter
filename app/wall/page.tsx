@@ -150,7 +150,7 @@ export default function OptimizedWallPage() {
         
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         console.error('Failed to react to post:', errorData);
-        toast.error('Failed to register reaction');
+        toast.error('Failed to register reaction - please try again');
       }
     } catch (error) {
       // Revert optimistic update on error
@@ -161,7 +161,7 @@ export default function OptimizedWallPage() {
       });
       
       console.error('Failed to react to post:', error);
-      toast.error('Failed to register reaction');
+      toast.error('Connection error - reaction not saved');
     }
   };
 
@@ -187,15 +187,15 @@ export default function OptimizedWallPage() {
         setPostContent('');
         setSelectedTag(null);
         refresh(); // Refresh feed after posting
-        toast.success('Post shared successfully!');
+        toast.success('Your healing story has been shared with the community 💜');
       } else {
         const errorData = await response.json();
         console.error('Failed to submit post:', errorData);
-        toast.error(errorData.error || 'Failed to submit post');
+        toast.error(errorData.error || 'Unable to share post - please try again');
       }
     } catch (error) {
       console.error('Post submission failed:', error);
-      toast.error('Network error occurred');
+      toast.error('Connection issue - your post was not shared');
     } finally {
       setPosting(false);
     }

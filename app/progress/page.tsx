@@ -176,7 +176,7 @@ export default function ProgressPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Progress Dashboard</h1>
-            <p className="text-gray-300">Track your healing journey and celebrate milestones</p>
+            <p className="text-gray-300">Track your healing journey with advanced insights and milestone celebrations</p>
           </div>
           
           <div className="flex items-center space-x-4">

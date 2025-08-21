@@ -8,13 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
-import { ArrowLeft, Settings, User, Bell, Shield, Palette, Database, Download, Trash2, LogOut } from 'lucide-react';
+import { ArrowLeft, Settings, User, Bell, Shield, Palette, Database, Download, Trash2, LogOut, Mail, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
 import { NotificationSettings } from '@/components/notifications/NotificationSettings';
 
 export default function SettingsPage() {
   const [mounted, setMounted] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState('');
 
   // Handle hydration
   useEffect(() => {
@@ -87,6 +89,35 @@ export default function SettingsPage() {
     window.location.href = '/';
   };
 
+  const handleSendVerification = async () => {
+    if (!authUser?.email) return;
+    
+    setVerificationLoading(true);
+    setVerificationMessage('');
+    
+    try {
+      const response = await fetch('/api/auth/send-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: authUser.email }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setVerificationMessage('📧 Verification email sent! Check your inbox.');
+      } else {
+        setVerificationMessage(data.error || 'Failed to send verification email');
+      }
+    } catch (error) {
+      setVerificationMessage('Network error. Please try again.');
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
+
   // Show loading during SSR/hydration
   if (!mounted) {
     return (
@@ -155,9 +186,79 @@ export default function SettingsPage() {
                 Account Security
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-gray-300 text-sm">
-              <p>Profile editing & theme customization have been temporarily removed to streamline the settings experience.</p>
-              <p>Need changes? Contact support.</p>
+            <CardContent className="space-y-4">
+              
+              {/* Email Verification Status */}
+              <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-5 w-5 text-blue-400" />
+                  <div>
+                    <h3 className="font-bold text-white flex items-center">
+                      Email Verification
+                      {authUser?.emailVerified ? (
+                        <CheckCircle className="h-4 w-4 ml-2 text-green-400" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4 ml-2 text-yellow-400" />
+                      )}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      {authUser?.email} - {authUser?.emailVerified ? 'Verified' : 'Not verified'}
+                    </p>
+                    {!authUser?.emailVerified && (
+                      <p className="text-xs text-purple-300 mt-1">
+                        Verify to unlock +50 XP and exclusive rewards
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                {authUser?.emailVerified ? (
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="h-4 w-4 text-yellow-400" />
+                    <span className="text-green-400 font-medium text-sm">Verified</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-end space-y-2">
+                    <Button 
+                      onClick={handleSendVerification}
+                      disabled={verificationLoading}
+                      className="bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                    >
+                      {verificationLoading ? (
+                        <div className="flex items-center">
+                          <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                          Sending...
+                        </div>
+                      ) : (
+                        <>
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Get Rewards
+                        </>
+                      )}
+                    </Button>
+                    <Link href="/verify-email">
+                      <Button variant="outline" className="bg-transparent border-purple-400/50 text-purple-300 hover:bg-purple-500/10 text-xs">
+                        Learn More
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
+              {verificationMessage && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  verificationMessage.includes('sent') 
+                    ? 'bg-green-500/10 border border-green-500/30 text-green-300'
+                    : 'bg-red-500/10 border border-red-500/30 text-red-300'
+                }`}>
+                  {verificationMessage}
+                </div>
+              )}
+
+              <div className="text-gray-300 text-sm">
+                <p>Profile editing & theme customization have been temporarily removed to streamline the settings experience.</p>
+                <p>Need changes? Contact support.</p>
+              </div>
             </CardContent>
           </Card>
 

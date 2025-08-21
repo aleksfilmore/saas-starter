@@ -46,22 +46,22 @@ function shuffleArray<T>(array: T[]): T[] {
 const baseQuestions = [
   {
     id: "q1_no_text_back",
-    question: "When someone you're dating doesn't text back for hours, what's your first mental tab that opens?",
+    question: "When someone you're dating doesn't text back for hours, what's your first mental reaction?",
     options: [
-      { text: "'They're probably losing interest, and I need to fix it now.'", value: "A", style: "anxious" as const, originalIndex: 0 },
-      { text: "'They must be busy. I'll focus on my own stuff until they reply.'", value: "B", style: "secure" as const, originalIndex: 1 },
-      { text: "'I should pull back before they pull away.'", value: "C", style: "avoidant" as const, originalIndex: 2 },
-      { text: "'It's fine… but I'm also drafting an exit plan just in case.'", value: "D", style: "disorganized" as const, originalIndex: 3 }
+      { text: "'They're losing interest, and I need to do something about it now.'", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "'They're probably busy. I'll focus on my own things until they reply.'", value: "B", style: "secure" as const, originalIndex: 1 },
+      { text: "'Good, I should pull back before they do.'", value: "C", style: "avoidant" as const, originalIndex: 2 },
+      { text: "'It's fine... but I'm also mentally preparing for them to ghost me.'", value: "D", style: "disorganized" as const, originalIndex: 3 }
     ]
   },
   {
     id: "q2_cancelled_plans",
-    question: "Imagine your partner cancels plans last-minute. How do you process it?",
+    question: "Your partner cancels plans last-minute. What's your honest reaction?",
     options: [
-      { text: "'I feel hurt and start wondering what I did wrong.'", value: "A", style: "anxious" as const, originalIndex: 0 },
-      { text: "'I'm annoyed, but it's not the end of the world.'", value: "B", style: "secure" as const, originalIndex: 1 },
-      { text: "'That's why I keep my walls up.'", value: "C", style: "avoidant" as const, originalIndex: 2 },
-      { text: "'I act like it's fine, but deep down I'm bracing for a breakup.'", value: "D", style: "disorganized" as const, originalIndex: 3 }
+      { text: "'I feel hurt and immediately wonder what I did wrong.'", value: "A", style: "anxious" as const, originalIndex: 0 },
+      { text: "'I'm disappointed but understand things come up.'", value: "B", style: "secure" as const, originalIndex: 1 },
+      { text: "'This is exactly why I don't get my hopes up.'", value: "C", style: "avoidant" as const, originalIndex: 2 },
+      { text: "'I say it's fine, but I'm secretly planning my emotional exit.'", value: "D", style: "disorganized" as const, originalIndex: 3 }
     ]
   },
   {

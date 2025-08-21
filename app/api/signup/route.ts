@@ -8,6 +8,7 @@ import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { generateId } from '@/lib/utils';
 import { generateUniqueUsername } from '@/lib/username-generator';
+import { sendEmailVerificationEmail } from '@/lib/email/email-service';
 
 export interface SignupResponse {
   error?: string | null;
@@ -106,6 +107,26 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
     });
 
     console.log('✅ User created successfully:', email);
+
+    // Send email verification (optional, non-blocking)
+    try {
+      const verificationToken = generateId() + generateId(); // Double token for extra security
+      
+      // Update user with verification token
+      await db.update(users)
+        .set({
+          email_verification_token: verificationToken,
+          email_verification_sent_at: new Date()
+        })
+        .where(eq(users.id, userId));
+
+      // Send verification email (don't block signup if this fails)
+      await sendEmailVerificationEmail(email.toLowerCase(), verificationToken);
+      console.log('📧 Verification email sent to:', email);
+    } catch (emailError) {
+      console.error('⚠️ Failed to send verification email (non-blocking):', emailError);
+      // Don't return error - account creation should still succeed
+    }
 
     // Create session using Lucia
     const session = await lucia.createSession(userId, {

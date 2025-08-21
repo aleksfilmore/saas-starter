@@ -53,6 +53,7 @@ import { UpgradeModal } from './modals/UpgradeModal';
 import { VoiceTherapyModal } from './modals/VoiceTherapyModal';
 import { NotificationDisplay } from '@/components/notifications/NotificationDisplay';
 import { UserAvatar } from '@/components/ui/UserAvatar';
+import { EmailVerificationPrompt } from '@/components/dashboard/EmailVerificationPrompt';
 
 interface Props {
   user: User;
@@ -365,13 +366,14 @@ function AdaptiveDashboard({ user }: Props) {
               {/* User Tier Badge */}
               <div className="hidden md:flex">
                 {isPremium ? (
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 sm:px-3 py-1 text-xs">
-                    <Crown className="h-3 w-3 mr-1" />
-                    FIREWALL
+                  <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1.5 text-xs font-semibold shadow-lg border border-purple-400/50">
+                    <Crown className="h-3 w-3 mr-1.5" />
+                    FIREWALL MODE
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="border-gray-400 text-gray-300 px-2 sm:px-3 py-1 text-xs">
-                    GHOST
+                  <Badge variant="outline" className="border-gray-500 text-gray-300 px-3 py-1.5 text-xs font-medium bg-gray-800/50">
+                    <span className="text-gray-400 mr-1">👻</span>
+                    GHOST MODE
                   </Badge>
                 )}
               </div>
@@ -449,6 +451,15 @@ function AdaptiveDashboard({ user }: Props) {
       </header>
 
       <main className="max-w-8xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {/* Email Verification Prompt - Show if not verified */}
+        {!user.emailVerified && (
+          <div className="mb-6">
+            <EmailVerificationPrompt 
+              userEmail={user.email} 
+            />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8">
           
           {/* Left Sidebar - Reorganized Layout */}
@@ -552,19 +563,22 @@ function AdaptiveDashboard({ user }: Props) {
 
             {/* Upgrade Card - Separate Row for Non-Premium Users */}
             {!isPremium && (
-              <Card className="border-yellow-500/30 bg-gradient-to-br from-yellow-900/20 to-slate-800/50">
-                <CardContent className="pt-4 pb-4">
-                  <div className="text-center space-y-2">
-                    <Crown className="h-6 w-6 mx-auto text-yellow-400" />
+              <Card className="border-purple-500/40 bg-gradient-to-br from-purple-900/30 to-pink-900/20 hover:border-purple-400/60 transition-all duration-300">
+                <CardContent className="pt-6 pb-6">
+                  <div className="text-center space-y-3">
+                    <div className="relative">
+                      <Crown className="h-8 w-8 mx-auto text-purple-400 drop-shadow-lg" />
+                      <div className="absolute inset-0 bg-purple-400/20 blur-xl rounded-full"></div>
+                    </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-white">Firewall</h3>
-                      <p className="text-xs text-yellow-200">Upgrade</p>
+                      <h3 className="text-sm font-bold text-white">Firewall Mode</h3>
+                      <p className="text-xs text-purple-300">Unlock Premium Features</p>
                     </div>
                     <Button 
                       onClick={() => setActiveModal('upgrade')}
-                      className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-semibold text-xs h-7"
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold text-xs h-8 shadow-lg"
                     >
-                      Upgrade
+                      Upgrade Now
                     </Button>
                   </div>
                 </CardContent>

@@ -5,8 +5,12 @@ import { useLumo } from './LumoProvider';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/              {/* Support status */}
+              <div className="flex items-center justify-center text-xs">
+                <span className="text-gray-400">
+                  Customer Support - Always Available
+                </span>
+              </div> { Progress } from '@/components/ui/progress';
 import { 
   X, 
   Send, 
@@ -179,7 +183,7 @@ export function LumoBubble() {
   };
 
   const currentPersona = PERSONAS[persona];
-  const quotaPercent = tier === 'ghost' ? (quotaLeft / 5) * 100 : 100;
+  const quotaPercent = 100; // LUMO support is unlimited for all users
 
   if (!isOpen) return null;
 
@@ -232,7 +236,7 @@ export function LumoBubble() {
                           className={`w-full px-3 py-2 text-left hover:bg-gray-700 transition-colors ${
                             key === persona ? 'bg-gray-700' : ''
                           }`}
-                          disabled={tier === 'ghost' && key !== 'core' && key !== 'support'}
+                          disabled={false} // All users can access all support personas
                         >
                           <div className="flex items-center space-x-2">
                             <span>{p.avatar}</span>
@@ -243,7 +247,7 @@ export function LumoBubble() {
                             {key === 'support' && (
                               <Badge variant="default" className="ml-auto text-xs bg-blue-600">Free</Badge>
                             )}
-                            {tier === 'ghost' && key !== 'core' && key !== 'support' && (
+                            {/* All personas available for customer support */}
                               <Badge variant="secondary" className="ml-auto text-xs">Pro</Badge>
                             )}
                           </div>
@@ -313,11 +317,11 @@ export function LumoBubble() {
                   placeholder={`Message ${currentPersona.name}...`}
                   className="bg-gray-800 border-gray-600 text-white flex-1"
                   maxLength={280}
-                  disabled={isLoading || (quotaLeft <= 0 && tier === 'ghost')}
+                  disabled={isLoading}
                 />
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!message.trim() || isLoading || (quotaLeft <= 0 && tier === 'ghost')}
+                  disabled={!message.trim() || isLoading}
                   className="bg-purple-600 hover:bg-purple-700"
                 >
                   <Send className="h-4 w-4" />

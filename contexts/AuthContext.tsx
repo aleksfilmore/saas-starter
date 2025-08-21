@@ -13,6 +13,7 @@ interface User {
   noContactDays: number
   streak: number
   isAdmin?: boolean
+  emailVerified?: boolean
 }
 
 interface AuthContextType {
@@ -48,7 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           bytes: userData.bytes,
           noContactDays: userData.no_contact_streak || 0,
           streak: userData.ritual_streak || 0,
-          isAdmin: userData.isAdmin || false
+          isAdmin: userData.isAdmin || false,
+          emailVerified: userData.emailVerified || false
         }
         setUser(user)
         setIsAuthenticated(true)

@@ -156,22 +156,26 @@ export default function FairUsagePage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-400 mb-3">Ghost Mode (Free)</h3>
                   <ul className="text-gray-300 space-y-2 text-sm">
-                    <li>• Daily rituals: Unlimited</li>
-                    <li>• AI therapy sessions: 10 per month</li>
-                    <li>• Wall posts: 3 per day</li>
+                    <li>• Daily healing rituals: 1 per day</li>
+                    <li>• No-contact tracker: Available</li>
+                    <li>• Daily check-ins & journaling: Unlimited</li>
+                    <li>• Wall posts: Read only</li>
                     <li>• Comments/reactions: Unlimited</li>
-                    <li>• Progress tracking: Full access</li>
+                    <li>• LUMO customer support: Available</li>
+                    <li>• Progress tracking: Basic</li>
                   </ul>
                 </div>
                 
                 <div>
                   <h3 className="text-lg font-semibold text-pink-400 mb-3">Firewall Mode ($9.99/month)</h3>
                   <ul className="text-gray-300 space-y-2 text-sm">
-                    <li>• Daily rituals: Unlimited</li>
-                    <li>• AI therapy sessions: 300 per month</li>
-                    <li>• Wall posts: 10 per day</li>
+                    <li>• Daily healing rituals: 2 personalized per day</li>
+                    <li>• AI therapy chat: Unlimited</li>
+                    <li>• Wall posts: Full posting access</li>
                     <li>• Comments/reactions: Unlimited</li>
-                    <li>• Priority support: Included</li>
+                    <li>• Exclusive badges & features: Available</li>
+                    <li>• Priority LUMO support: Included</li>
+                    <li>• Progress tracking: Advanced</li>
                   </ul>
                 </div>
               </div>
