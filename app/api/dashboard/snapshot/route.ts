@@ -5,7 +5,6 @@ import { anonymousPosts, wallPostReactions, wallPostComments, ritualEntries, use
 import { sql } from 'drizzle-orm';
 import { logSchemaWarning } from '@/lib/db/schema-health-logger';
 import { eq, and, gte, count } from 'drizzle-orm';
-import { getLevelProgressSnapshot } from '@/lib/gamification/leveling';
 
 export const runtime = 'nodejs';
 
@@ -43,21 +42,29 @@ export async function GET(req: NextRequest) {
         : Promise.resolve([{ c: 0 }])
     ]);
 
-    const levelSnapshot = getLevelProgressSnapshot(dbUser.xp, dbUser.level);
+    // Calculate level based on Bytes (every 1000 bytes = 1 level)
+    const level = Math.floor((dbUser.bytes || 0) / 1000) + 1;
+    const currentLevelBytes = (dbUser.bytes || 0) % 1000;
+    const nextLevelBytes = 1000;
 
     return NextResponse.json({
       user: {
         id: dbUser.id,
         username: dbUser.username || dbUser.email?.split('@')[0] || 'agent',
-        level: dbUser.level,
-        xp: dbUser.xp,
+        level: level,
+        xp: dbUser.bytes, // Use bytes as XP for compatibility
         bytes: dbUser.bytes,
         noContactStreak: dbUser.noContactDays,
         ritualStreak: dbUser.streak,
         longestStreak: dbUser.longestStreak,
         subscriptionTier: dbUser.tier,
       },
-      level: levelSnapshot,
+      level: {
+        current: level,
+        progress: currentLevelBytes,
+        progressMax: nextLevelBytes,
+        progressPercent: Math.floor((currentLevelBytes / nextLevelBytes) * 100)
+      },
       today: {
         posts: todayPosts[0]?.c || 0,
         reactions: todayReactions[0]?.c || 0,

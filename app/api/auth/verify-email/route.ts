@@ -47,30 +47,30 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Update user as verified and award bonus XP
-    const bonusXP = 50;
+    // Update user as verified and award bonus Bytes
+    const bonusBytes = 50;
     await db
       .update(users)
       .set({
         emailVerified: true,
         emailVerificationToken: null,
         emailVerificationSentAt: null,
-        xpPoints: (user.xpPoints || 0) + bonusXP,
+        bytes: (user.bytes || 0) + bonusBytes,
         updatedAt: new Date()
       })
       .where(eq(users.id, user.id));
 
-    console.log(`✅ Email verified for user ${user.id}, awarded ${bonusXP} XP`);
+    console.log(`✅ Email verified for user ${user.id}, awarded ${bonusBytes} Bytes`);
 
     return NextResponse.json({
       success: true,
-      message: 'Email verified successfully! You earned 50 bonus XP.',
-      bonusXP,
+      message: 'Email verified successfully! You earned 50 bonus Bytes.',
+      bonusBytes,
       user: {
         id: user.id,
         email: user.email,
         emailVerified: true,
-        xpPoints: (user.xpPoints || 0) + bonusXP
+        bytes: (user.bytes || 0) + bonusBytes
       }
     });
 
@@ -116,20 +116,20 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Update user as verified and award bonus XP
-    const bonusXP = 50;
+    // Update user as verified and award bonus Bytes
+    const bonusBytes = 50;
     await db
       .update(users)
       .set({
         emailVerified: true,
         emailVerificationToken: null,
         emailVerificationSentAt: null,
-        xpPoints: (user.xpPoints || 0) + bonusXP,
+        bytes: (user.bytes || 0) + bonusBytes,
         updatedAt: new Date()
       })
       .where(eq(users.id, user.id));
 
-    console.log(`✅ Email verified for user ${user.id}, awarded ${bonusXP} XP`);
+    console.log(`✅ Email verified for user ${user.id}, awarded ${bonusBytes} Bytes`);
 
     return NextResponse.redirect(new URL('/verify-email?success=verified', request.url));
 

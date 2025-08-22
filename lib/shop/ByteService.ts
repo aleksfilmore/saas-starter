@@ -48,7 +48,7 @@ export class ByteService {
       }
 
       // Check weekly limits for AI therapy
-      if (rule.weeklyLimit && activity === 'AI_THERAPY_SESSION') {
+      if ('weeklyLimit' in rule && rule.weeklyLimit && activity === 'AI_THERAPY_SESSION') {
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
         

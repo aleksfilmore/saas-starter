@@ -27,14 +27,12 @@ export async function POST(request: NextRequest) {
 
     const user = userData[0];
 
-    // Award XP and Bytes for mood check-in
-    const xpEarned = 10;
-    const bytesEarned = 5;
+    // Award Bytes for mood check-in
+    const bytesEarned = 15; // Increased since no separate XP
 
     await db
       .update(users)
       .set({
-        xp: sql`${users.xp} + ${xpEarned}`,
         bytes: sql`${users.bytes} + ${bytesEarned}`,
       })
       .where(eq(users.id, user.id));
@@ -44,7 +42,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      xpEarned,
       bytesEarned,
       message: 'Mood logged successfully'
     });

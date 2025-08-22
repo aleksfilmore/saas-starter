@@ -159,7 +159,7 @@ export default function StandaloneProgressPage() {
           username: user?.username || user?.email?.split('@')[0] || 'User',
           streak: 0, // Could be fetched from progress data
           bytes: 100, // Could be fetched from progress data
-          level: 1, // Could be fetched from progress data
+          badges: 0, // Default value for progress page
           noContactDays: 0, // Could be fetched from progress data
           subscriptionTier: 'free' // Could be determined from user data
         }}

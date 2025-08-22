@@ -34,21 +34,18 @@ export async function POST(request: NextRequest) {
 
     const user = userData[0];
 
-    // Award XP and Bytes based on exercise difficulty and completion
-    const baseXP = 25;
+    // Award Bytes based on exercise difficulty and completion
     const baseBytes = 15;
     
     // Bonus for difficulty
     const difficultyMultiplier = pattern.difficulty === 'advanced' ? 1.5 : 
                                  pattern.difficulty === 'intermediate' ? 1.2 : 1;
     
-    const xpEarned = Math.floor(baseXP * difficultyMultiplier);
     const bytesEarned = Math.floor(baseBytes * difficultyMultiplier);
 
     await db
       .update(users)
       .set({
-        xp: sql`${users.xp} + ${xpEarned}`,
         bytes: sql`${users.bytes} + ${bytesEarned}`,
       })
       .where(eq(users.id, user.id));
@@ -57,7 +54,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      xpEarned,
       bytesEarned,
       message: `${pattern.name} completed successfully`
     });

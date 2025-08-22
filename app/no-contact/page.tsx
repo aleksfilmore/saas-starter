@@ -212,7 +212,14 @@ export default function SimplifiedNoContactPage() {
       
       {/* Simplified Header */}
       <SimplifiedHeader
-        user={authUser}
+        user={{
+          username: authUser.username || authUser.email?.split('@')[0] || 'User',
+          streak: authUser.streak || 0,
+          bytes: authUser.bytes || 0,
+          badges: 0, // Default value since badges aren't part of auth user
+          noContactDays: authUser.noContactDays || 0,
+          subscriptionTier: authUser.subscriptionTier || 'free'
+        }}
         hasShield={data.hasShield}
         onCheckin={handleCheckin}
         onBreathing={() => {}}

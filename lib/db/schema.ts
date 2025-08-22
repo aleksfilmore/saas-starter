@@ -33,6 +33,8 @@ export const users = pgTable('users', {
   avatarStyle: text('avatar_style'),
   
   // Gamification & Progress
+  xp: integer('xp').notNull().default(0),
+  level: integer('level').notNull().default(1),
   bytes: integer('bytes').notNull().default(100),
   streak: integer('streak').notNull().default(0),
   streakDays: integer('streak_days').notNull().default(0),
