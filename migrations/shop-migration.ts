@@ -88,7 +88,7 @@ async function seedShopProducts() {
       category: product.category,
       type: product.type,
       bytePrice: product.bytePrice,
-      cashPrice: product.cashPrice,
+      cashPrice: null,
       variants: typeof product.variants === 'string' ? product.variants : JSON.stringify(product.variants || null),
       digitalContent: (product as any).digitalContent || null,
       printifyProductId: (product as any).printifyProductId || null,

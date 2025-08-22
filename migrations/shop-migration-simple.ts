@@ -211,7 +211,7 @@ async function seedShopProducts() {
           ${product.category},
           ${product.type},
           ${product.bytePrice || null},
-          ${product.cashPrice || null},
+          null,
           ${typeof product.variants === 'string' ? product.variants : JSON.stringify(product.variants || null)},
           ${(product as any).digitalContent || null},
           ${(product as any).printifyProductId || null},

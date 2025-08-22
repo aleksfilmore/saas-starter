@@ -216,7 +216,6 @@ export default function ShopPage() {
                       {canAfford(heroProduct) ? 'Unlock with Bytes' : `Need ${formatBytes(heroProduct.bytePrice - userBytes)} More`}
                     </Button>
                   </div>
-                  </div>
                 </div>
               </div>
               
