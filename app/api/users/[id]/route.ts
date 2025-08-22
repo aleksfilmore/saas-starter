@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user: sessionUser } = await validateRequest();
@@ -14,9 +14,10 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const resolvedParams = await params;
     // Users can only access their own data unless they're admin
     // Need to check isAdmin from database since session doesn't include it
-    if (sessionUser.id !== params.id) {
+    if (sessionUser.id !== resolvedParams.id) {
       const adminCheck = await db
         .select({ isAdmin: users.isAdmin })
         .from(users)
@@ -31,7 +32,7 @@ export async function GET(
     const userData = await db
       .select()
       .from(users)
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, resolvedParams.id))
       .limit(1);
 
     if (!userData.length) {
@@ -75,7 +76,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user: sessionUser } = await validateRequest();
@@ -83,8 +84,10 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const resolvedParams = await params;
+
     // Users can only update their own data
-    if (sessionUser.id !== params.id) {
+    if (sessionUser.id !== resolvedParams.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -102,7 +105,7 @@ export async function PUT(
     await db
       .update(users)
       .set(updateData)
-      .where(eq(users.id, params.id));
+      .where(eq(users.id, resolvedParams.id));
 
     return NextResponse.json({
       success: true,

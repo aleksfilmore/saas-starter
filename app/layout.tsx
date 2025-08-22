@@ -1,5 +1,5 @@
 import "./globals.css";
-import ClientProviders from '@/components/ClientProviders';
+import { ClientProviders } from '@/components/ClientProviders';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 import { Metadata } from 'next';

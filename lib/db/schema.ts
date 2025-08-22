@@ -69,6 +69,7 @@ export const users = pgTable('users', {
   // Admin & Status
   isAdmin: boolean('is_admin').notNull().default(false),
   isBanned: boolean('is_banned').notNull().default(false),
+  isActive: boolean('is_active').notNull().default(true),
   lastActiveAt: timestamp('last_active_at', { withTimezone: true, mode: 'date' }),
   
   // Email Preferences & Verification
@@ -691,6 +692,19 @@ export const shopOrderItems = pgTable('shop_order_items', {
   printifyOrderId: text('printify_order_id'), // For physical product tracking
   
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
+export const shopCart = pgTable('shop_cart', {
+  id: text('id').primaryKey().$defaultFn(() => randomUUID()),
+  userId: text('user_id').notNull().references(() => users.id),
+  productId: text('product_id').notNull().references(() => shopProducts.id),
+  
+  // Item Details
+  quantity: integer('quantity').notNull().default(1),
+  variant: text('variant'), // JSON for selected variant (color, size, etc.)
+  
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 });
 
 export const byteEarningRules = pgTable('byte_earning_rules', {

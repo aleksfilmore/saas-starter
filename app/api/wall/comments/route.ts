@@ -36,16 +36,19 @@ export async function POST(req: NextRequest) {
     // 🎯 BYTE ECONOMY: Award bytes for helpful replies
     let bytesAwarded = 0;
     try {
-      const byteService = new ByteService(session.userId);
-      const byteTransaction = await byteService.awardBytes(
-        8, // Helpful reply reward (from BYTE_EARNING_ACTIVITIES)
-        'helpful_reply',
-        `Replied to wall post: ${content.substring(0, 50)}...`,
-        { commentId: id, postId, isReply: !!parentCommentId }
+      const byteTransaction = await ByteService.awardBytes(
+        session.userId,
+        'WALL_REACTION',
+        {
+          description: `Replied to wall post: ${content.substring(0, 50)}...`,
+          commentId: id, 
+          postId, 
+          isReply: !!parentCommentId
+        }
       );
       
       if (byteTransaction) {
-        bytesAwarded = byteTransaction.byteChange;
+        bytesAwarded = byteTransaction.bytesAwarded;
         console.log(`💰 Awarded ${bytesAwarded} Bytes for helpful reply`);
       }
     } catch (byteError) {

@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 // PUT /api/admin/rituals/[id] - Update ritual
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user, session } = await validateRequest();
@@ -22,6 +22,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
+    const resolvedParams = await params;
     const body = await request.json();
     const {
       title,
@@ -53,7 +54,7 @@ export async function PUT(
         is_premium,
         is_active,
       })
-      .where(eq(ritualLibrary.id, params.id))
+      .where(eq(ritualLibrary.id, resolvedParams.id))
       .returning();
 
     if (updatedRitual.length === 0) {
@@ -70,7 +71,7 @@ export async function PUT(
 // DELETE /api/admin/rituals/[id] - Delete ritual
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user, session } = await validateRequest();
@@ -83,8 +84,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
+    const resolvedParams = await params;
     const deletedRitual = await db.delete(ritualLibrary)
-      .where(eq(ritualLibrary.id, params.id))
+      .where(eq(ritualLibrary.id, resolvedParams.id))
       .returning();
 
     if (deletedRitual.length === 0) {

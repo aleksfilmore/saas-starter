@@ -44,7 +44,7 @@ const FloatingParticles = () => {
   );
 };
 
-export default function HomePage() {
+export default function AdminHomePage() {
   const features = [
     {
       icon: <Shield className="h-6 w-6 text-blue-400" />,

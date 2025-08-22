@@ -1206,5 +1206,3 @@ export const freeRitualBank = [
     tier_requirement: 'freemium'
   }
 ];
-
-export default freeRitualBank;

@@ -26,7 +26,7 @@ function run(cmd, args) {
       shell: process.platform === 'win32',
       env: {
         ...process.env,
-        NODE_OPTIONS: '--max-old-space-size=4096 --unhandled-rejections=strict'
+        NODE_OPTIONS: '--max-old-space-size=4096 --unhandled-rejections=warn'
       }
     });    p.on('exit', code => {
       console.log(`Command completed with exit code: ${code}`);

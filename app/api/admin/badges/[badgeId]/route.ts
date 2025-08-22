@@ -6,10 +6,10 @@ let badges: any[] = [];
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { badgeId: string } }
+  { params }: { params: Promise<{ badgeId: string }> }
 ) {
   try {
-    const { badgeId } = params;
+    const { badgeId } = await params;
     const data = await request.json();
 
     // Find and update the badge
@@ -44,10 +44,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { badgeId: string } }
+  { params }: { params: Promise<{ badgeId: string }> }
 ) {
   try {
-    const { badgeId } = params;
+    const { badgeId } = await params;
 
     // Find and remove the badge
     const badgeIndex = badges.findIndex(badge => badge.id === badgeId);

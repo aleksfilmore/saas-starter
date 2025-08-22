@@ -23,9 +23,8 @@ export default function SettingsPage() {
     setMounted(true);
   }, []);
 
-  // Only try to use auth after component is mounted
-  const auth = mounted ? useAuth() : null;
-  const { user: authUser, isAuthenticated, isLoading: authLoading, logout } = auth || {};
+  // Call hooks unconditionally
+  const { user: authUser, isAuthenticated, isLoading: authLoading, logout } = useAuth();
 
   const handleExportData = async () => {
     setExportLoading(true);

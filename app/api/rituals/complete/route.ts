@@ -76,47 +76,23 @@ export async function POST(request: NextRequest) {
     let actualBytesAwarded = 0;
     let streakBonus = 0;
     try {
-      const byteService = new ByteService(user.id);
-      
-      // Award base ritual completion bytes
-      const byteTransaction = await byteService.awardBytes(
-        25, // Base ritual completion reward (from BYTE_EARNING_ACTIVITIES)
-        'ritual_completion',
-        `Completed ritual: ${ritual.title}`,
-        { ritualId, difficulty: ritual.difficulty || difficulty }
+      // Award base ritual completion bytes - use DAILY_RITUAL_1 for now
+      const byteTransaction = await ByteService.awardBytes(
+        user.id,
+        'DAILY_RITUAL_1',
+        {
+          ritualId,
+          difficulty: difficulty,
+          description: `Completed ritual: ${ritual.title}`
+        }
       );
       
       if (byteTransaction) {
-        actualBytesAwarded = byteTransaction.byteChange;
+        actualBytesAwarded = byteTransaction.bytesAwarded;
         console.log(`💰 Awarded ${actualBytesAwarded} Bytes for ritual completion`);
       }
 
-      // 🏆 STREAK BONUS: Check for streak milestones and award bonus
-      const currentStreakCount = newRitualStreak;
-      
-      // Award streak bonuses at specific milestones
-      if (currentStreakCount === 2) {
-        const streakTransaction = await byteService.awardStreakBonus(currentStreakCount, 'ritual_completion');
-        if (streakTransaction) {
-          streakBonus = streakTransaction.bonusBytes;
-          actualBytesAwarded += streakBonus;
-          console.log(`🔥 2-day streak bonus: ${streakBonus} Bytes`);
-        }
-      } else if (currentStreakCount === 7) {
-        const streakTransaction = await byteService.awardStreakBonus(currentStreakCount, 'ritual_completion');
-        if (streakTransaction) {
-          streakBonus = streakTransaction.bonusBytes;
-          actualBytesAwarded += streakBonus;
-          console.log(`🔥 7-day streak bonus: ${streakBonus} Bytes`);
-        }
-      } else if (currentStreakCount === 30) {
-        const streakTransaction = await byteService.awardStreakBonus(currentStreakCount, 'ritual_completion');
-        if (streakTransaction) {
-          streakBonus = streakTransaction.bonusBytes;
-          actualBytesAwarded += streakBonus;
-          console.log(`🔥 30-day streak bonus: ${streakBonus} Bytes`);
-        }
-      }
+      // 🏆 STREAK BONUS: Check for streak milestones and award bonus after getting the streak count
       
     } catch (byteError) {
       console.warn('⚠️ Byte award failed (non-blocking):', byteError);
@@ -132,6 +108,38 @@ export async function POST(request: NextRequest) {
     const newXP = (currentUser?.xp || 0) + xpReward;
     const newLevel = Math.floor(newXP / 1000) + 1;
     const newRitualStreak = (currentUser?.ritual_streak || 0) + 1;
+
+    // Award streak bonuses after we have the streak count
+    try {
+      const currentStreakCount = newRitualStreak;
+      
+      // Award streak bonuses at specific milestones
+      if (currentStreakCount === 2) {
+        const streakTransaction = await ByteService.awardStreakBonus(user.id, 'ritual', currentStreakCount);
+        if (streakTransaction && streakTransaction.success && streakTransaction.bytesAwarded) {
+          streakBonus = streakTransaction.bytesAwarded;
+          actualBytesAwarded += streakBonus;
+          console.log(`🔥 2-day streak bonus: ${streakBonus} Bytes`);
+        }
+      } else if (currentStreakCount === 7) {
+        const streakTransaction = await ByteService.awardStreakBonus(user.id, 'ritual', currentStreakCount);
+        if (streakTransaction && streakTransaction.success && streakTransaction.bytesAwarded) {
+          streakBonus = streakTransaction.bytesAwarded;
+          actualBytesAwarded += streakBonus;
+          console.log(`🔥 7-day streak bonus: ${streakBonus} Bytes`);
+        }
+      } else if (currentStreakCount === 30) {
+        const streakTransaction = await ByteService.awardStreakBonus(user.id, 'ritual', currentStreakCount);
+        if (streakTransaction && streakTransaction.success && streakTransaction.bytesAwarded) {
+          streakBonus = streakTransaction.bytesAwarded;
+          actualBytesAwarded += streakBonus;
+          console.log(`🔥 30-day streak bonus: ${streakBonus} Bytes`);
+        }
+      }
+      
+    } catch (streakError) {
+      console.warn('⚠️ Streak bonus failed (non-blocking):', streakError);
+    }
 
     await db.execute(sql`
       UPDATE users 

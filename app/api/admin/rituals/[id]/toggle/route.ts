@@ -9,7 +9,7 @@ export const runtime = 'nodejs';
 // PATCH /api/admin/rituals/[id]/toggle - Toggle ritual active status
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user, session } = await validateRequest();
@@ -22,12 +22,13 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
+    const resolvedParams = await params;
     const body = await request.json();
     const { is_active } = body;
 
     const updatedRitual = await db.update(ritualLibrary)
       .set({ is_active })
-      .where(eq(ritualLibrary.id, params.id))
+      .where(eq(ritualLibrary.id, resolvedParams.id))
       .returning();
 
     if (updatedRitual.length === 0) {

@@ -46,8 +46,7 @@ export async function POST() {
             steps: [ritual.description], // Convert description to steps array
             is_premium: ritual.isPremium || false,
             is_active: true,
-            created_at: new Date(),
-            updated_at: new Date()
+            created_at: new Date()
           });
           importedCount++;
           

@@ -261,5 +261,3 @@ export const webPushManager = new WebPushManager(DEFAULT_VAPID_PUBLIC_KEY);
 if (typeof window !== 'undefined') {
   webPushManager.initialize().catch(console.error);
 }
-
-export default WebPushManager;

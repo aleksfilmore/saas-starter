@@ -9,7 +9,7 @@ function UnsubscribeContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams?.get('token');
 
   useEffect(() => {
     const handleUnsubscribe = async () => {

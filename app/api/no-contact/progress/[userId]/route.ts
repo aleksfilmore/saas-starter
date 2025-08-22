@@ -6,16 +6,17 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const { user: sessionUser } = await validateRequest();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Users can only access their own progress unless they're admin
-    if (sessionUser.id !== params.userId) {
+    if (sessionUser.id !== resolvedParams.userId) {
       const adminCheck = await db
         .select({ isAdmin: users.isAdmin })
         .from(users)
@@ -30,7 +31,7 @@ export async function GET(
     const userData = await db
       .select()
       .from(users)
-      .where(eq(users.id, params.userId))
+      .where(eq(users.id, resolvedParams.userId))
       .limit(1);
 
     if (!userData.length) {

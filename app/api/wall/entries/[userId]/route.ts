@@ -3,9 +3,10 @@ import { validateRequest } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const { user: sessionUser } = await validateRequest();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -23,7 +24,7 @@ export async function GET(
         reactions: { heart: 5, fire: 2, cry: 1 },
         userReaction: null,
         createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        userId: params.userId
+        userId: resolvedParams.userId
       },
       {
         id: '2', 
@@ -34,7 +35,7 @@ export async function GET(
         reactions: { heart: 0, fire: 0, cry: 0 },
         userReaction: null,
         createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-        userId: params.userId
+        userId: resolvedParams.userId
       }
     ];
 
@@ -54,16 +55,17 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const { user: sessionUser } = await validateRequest();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Users can only create entries for themselves
-    if (sessionUser.id !== params.userId) {
+    if (sessionUser.id !== resolvedParams.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -85,7 +87,7 @@ export async function POST(
       reactions: { heart: 0, fire: 0, cry: 0 },
       userReaction: null,
       createdAt: new Date().toISOString(),
-      userId: params.userId
+      userId: resolvedParams.userId
     };
 
     return NextResponse.json({

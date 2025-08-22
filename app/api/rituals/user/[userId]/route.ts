@@ -8,7 +8,7 @@ import { sql, eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const { user: sessionUser } = await validateRequest();
@@ -16,8 +16,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const resolvedParams = await params;
     // Users can only access their own rituals unless they're admin
-    if (sessionUser.id !== params.userId) {
+    if (sessionUser.id !== resolvedParams.userId) {
       const adminCheck = await db
         .select({ isAdmin: users.isAdmin })
         .from(users)
@@ -30,7 +31,7 @@ export async function GET(
     }
 
     // Get user's tier for ritual filtering
-    const subscription = await getUserSubscription(params.userId);
+    const subscription = await getUserSubscription(resolvedParams.userId);
     const isPremium = subscription.tier === 'PREMIUM';
     const userTier = isPremium ? 'firewall' : 'ghost';
 
@@ -42,7 +43,7 @@ export async function GET(
         completed_at,
         rerolled
       FROM user_ritual_assignments
-      WHERE user_id = ${params.userId}
+      WHERE user_id = ${resolvedParams.userId}
         AND DATE(assigned_at) = CURRENT_DATE
         AND rerolled = false
       ORDER BY assigned_at DESC
@@ -52,7 +53,7 @@ export async function GET(
     const completedRituals = await db.execute(sql`
       SELECT DISTINCT ritual_key 
       FROM user_ritual_assignments
-      WHERE user_id = ${params.userId} 
+      WHERE user_id = ${resolvedParams.userId} 
         AND completed_at IS NOT NULL
     `);
 

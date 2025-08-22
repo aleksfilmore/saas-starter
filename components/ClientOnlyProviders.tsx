@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 import { SafeNotificationProvider } from '@/contexts/SafeNotificationContext';
 
 const AuthProvider = dynamic(
-  () => import('@/contexts/AuthContext').then(mod => ({ default: mod.AuthProvider })),
+  () => import('@/contexts/AuthContext').then(mod => mod.AuthProvider),
   { ssr: false }
 );
 

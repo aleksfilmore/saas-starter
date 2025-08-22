@@ -3,7 +3,7 @@ import { validateRequest } from '@/lib/auth';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user } = await validateRequest();
@@ -11,7 +11,8 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const notificationId = params.id;
+    const resolvedParams = await params;
+    const notificationId = resolvedParams.id;
 
     // In a real implementation, you would update the notification in the database
     // For now, we'll just return success

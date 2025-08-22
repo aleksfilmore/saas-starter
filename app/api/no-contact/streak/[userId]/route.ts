@@ -6,16 +6,17 @@ import { eq, sql } from 'drizzle-orm';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     const { user: sessionUser } = await validateRequest();
     if (!sessionUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Users can only update their own streak
-    if (sessionUser.id !== params.userId) {
+    if (sessionUser.id !== resolvedParams.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -25,7 +26,7 @@ export async function POST(
     const userData = await db
       .select()
       .from(users)
-      .where(eq(users.id, params.userId))
+      .where(eq(users.id, resolvedParams.userId))
       .limit(1);
 
     if (!userData.length) {

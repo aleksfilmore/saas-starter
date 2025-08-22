@@ -101,13 +101,13 @@ export async function GET(request: NextRequest) {
     const verificationStats = await db
       .select({
         totalSent: count(),
-        totalVerified: count(users.email_verified),
+        totalVerified: count(users.emailVerified),
       })
       .from(users)
       .where(
         and(
           gte(users.createdAt, startDate),
-          eq(users.email_verified, true)
+          eq(users.emailVerified, true)
         )
       );
 

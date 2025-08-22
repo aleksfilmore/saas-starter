@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user: sessionUser } = await validateRequest();
@@ -14,8 +14,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const resolvedParams = await params;
     // Users can only access their own stats unless they're admin
-    if (sessionUser.id !== params.id) {
+    if (sessionUser.id !== resolvedParams.id) {
       const adminCheck = await db
         .select({ isAdmin: users.isAdmin })
         .from(users)
@@ -30,7 +31,7 @@ export async function GET(
     const userData = await db
       .select()
       .from(users)
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, resolvedParams.id))
       .limit(1);
 
     if (!userData.length) {

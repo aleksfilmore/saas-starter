@@ -6,6 +6,14 @@ import { sendDailyReminderEmail } from './enhanced-templates';
 
 const resend = process.env.EMAIL_API_KEY ? new Resend(process.env.EMAIL_API_KEY) : null;
 
+// Safe environment variable access with fallbacks
+const getEnvVar = (key: string, fallback: string = '') => {
+  const value = process.env[key];
+  return (value && value !== 'undefined') ? value : fallback;
+};
+
+const APP_URL = getEnvVar('NEXT_PUBLIC_APP_URL', 'https://ctrlaltblock.com');
+
 interface DailyNotificationData {
   username: string;
   streakDays: number;
@@ -49,7 +57,7 @@ export class EmailNotificationService {
       
       // Generate unsubscribe token
       const unsubscribeToken = await this.generateUnsubscribeToken(userId);
-      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?token=${unsubscribeToken}`;
+      const unsubscribeUrl = `${APP_URL}/unsubscribe?token=${unsubscribeToken}`;
 
       // Use enhanced daily reminder template
       const result = await sendDailyReminderEmail(
@@ -69,17 +77,31 @@ export class EmailNotificationService {
   private static async getTodaysRitualPreview(userId: string) {
     // Get today's assigned ritual or generate one
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/rituals/today`, {
+      // During build time, return fallback ritual to avoid fetch calls
+      if (process.env.NODE_ENV === 'production' && !process.env.RUNTIME_PHASE) {
+        console.log('🏗️ Build time detected, returning fallback ritual');
+        return {
+          title: 'Mindful Check-in',
+          difficulty: 'easy',
+          estimatedTime: '3 min'
+        };
+      }
+
+      // Only fetch rituals during runtime
+      const response = await fetch(`${APP_URL}/api/rituals/today`, {
         headers: { 'x-user-id': userId }
       });
       
       if (response.ok) {
-        const data = await response.json();
-        return {
-          title: data.ritual?.title || 'Mindful Check-in',
-          difficulty: data.ritual?.difficulty || 'easy',
-          estimatedTime: data.ritual?.estimatedTime || '3 min'
-        };
+        const responseText = await response.text();
+        if (responseText) {
+          const data = JSON.parse(responseText);
+          return {
+            title: data.ritual?.title || 'Mindful Check-in',
+            difficulty: data.ritual?.difficulty || 'easy',
+            estimatedTime: data.ritual?.estimatedTime || '3 min'
+          };
+        }
       }
     } catch (error) {
       console.error('Failed to fetch ritual preview:', error);
@@ -135,13 +157,13 @@ export class EmailNotificationService {
         </div>
         
         <div style="text-align: center; margin: 30px 0;">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" class="btn-brand-primary">
+          <a href="${APP_URL}/dashboard" class="btn-brand-primary">
             🚀 ENTER DASHBOARD
           </a>
         </div>
         
         <div style="text-align: center; margin: 20px 0;">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/daily-rituals" class="btn-brand-secondary">
+          <a href="${APP_URL}/daily-rituals" class="btn-brand-secondary">
             📋 VIEW ALL RITUALS
           </a>
         </div>
@@ -151,7 +173,7 @@ export class EmailNotificationService {
         </p>
         
         <div class="unsubscribe-note">
-          <p><strong>Notification Settings:</strong> You can manage your email preferences anytime in your <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings" style="color: #8b5cf6;">dashboard settings</a> or <a href="${data.unsubscribeUrl}" style="color: #ef4444;">unsubscribe from daily reminders</a>.</p>
+          <p><strong>Notification Settings:</strong> You can manage your email preferences anytime in your <a href="${APP_URL}/settings" style="color: #8b5cf6;">dashboard settings</a> or <a href="${data.unsubscribeUrl}" style="color: #ef4444;">unsubscribe from daily reminders</a>.</p>
         </div>
       </div>
     `;
@@ -366,9 +388,9 @@ export class EmailNotificationService {
       <p>This is an automated message from <strong>CTRL+ALT+BLOCK™</strong></p>
       <p>Your digital healing companion | Built for warriors, by warriors</p>
       <p>
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard">Dashboard</a> | 
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings">Settings</a> | 
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/crisis-support">Crisis Support</a>
+        <a href="${APP_URL}/dashboard">Dashboard</a> | 
+        <a href="${APP_URL}/settings">Settings</a> | 
+        <a href="${APP_URL}/crisis-support">Crisis Support</a>
       </p>
     </div>
 
@@ -398,9 +420,9 @@ Estimated Time: ${data.todayRitual.estimatedTime}
 Ready to level up your mental defenses? Every ritual completed strengthens your resilience matrix.
 
 QUICK ACTIONS:
-• Enter Dashboard: ${process.env.NEXT_PUBLIC_APP_URL}/dashboard
-• View All Rituals: ${process.env.NEXT_PUBLIC_APP_URL}/daily-rituals
-• Crisis Support: ${process.env.NEXT_PUBLIC_APP_URL}/crisis-support
+• Enter Dashboard: ${APP_URL}/dashboard
+• View All Rituals: ${APP_URL}/daily-rituals
+• Crisis Support: ${APP_URL}/crisis-support
 
 System Message: Every small action builds your resilience. The glitch is temporary—your growth is permanent.
 
@@ -408,7 +430,7 @@ System Message: Every small action builds your resilience. The glitch is tempora
 CTRL+ALT+BLOCK™ - Glitch-Core Healing Protocol
 Your digital healing companion | Built for warriors, by warriors
 
-Notification Settings: ${process.env.NEXT_PUBLIC_APP_URL}/settings
+Notification Settings: ${APP_URL}/settings
 Unsubscribe: ${data.unsubscribeUrl}
 `;
   }

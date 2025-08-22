@@ -15,22 +15,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const byteService = new ByteService(user.id);
+    const byteService = ByteService;
     
     // Get current balance
-    const balance = await byteService.getUserBalance();
+    const balance = await byteService.getUserBalance(user.id);
     
     // Get earning statistics
-    const stats = await byteService.getEarningStats();
+    const stats = await byteService.getEarningStats(user.id);
     
     return NextResponse.json({
       balance,
-      todayEarned: stats.todayEarned,
-      weekEarned: stats.weekEarned,
-      monthEarned: stats.monthEarned,
-      totalEarned: stats.totalEarned,
-      streak: stats.currentStreak,
-      lastActivity: stats.lastActivity
+      todayEarned: stats.todayEarnings,
+      weekEarned: stats.weeklyEarnings,
+      monthEarned: stats.allTimeEarnings, // Using allTimeEarnings for monthEarned
+      totalEarned: stats.allTimeEarnings,
+      streak: stats.currentStreak
     });
 
   } catch (error) {

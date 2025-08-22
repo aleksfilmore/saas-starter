@@ -6,9 +6,9 @@
 
 import { db } from '@/lib/db';
 import { users, userByteHistory, userAchievements, userMultipliers } from '@/lib/db/schema';
-import { eq, and, gte, count, sum, desc } from 'drizzle-orm';
+import { eq, and, gte, count, sum, desc, sql } from 'drizzle-orm';
 import { ACHIEVEMENTS, MULTIPLIERS, Achievement, Multiplier } from './achievements';
-import { ByteService } from './ByteService';
+import { BYTE_EARNING_ACTIVITIES } from './constants';
 import { randomUUID } from 'crypto';
 
 export class AchievementService {
@@ -260,11 +260,36 @@ export class AchievementService {
 
         // Award Bytes
         if (achievement.rewards.bytes > 0) {
-          await ByteService.awardBytes(userId, 'DAILY_RITUAL_1', {
-            achievement: true,
-            achievementId: achievement.id,
-            achievementName: achievement.name
+          // Get current balance first
+          const userProfile = await tx.select({
+            byteBalance: users.byteBalance
+          }).from(users).where(eq(users.id, userId)).limit(1);
+          
+          const currentBalance = userProfile[0]?.byteBalance || 0;
+          const newBalance = currentBalance + achievement.rewards.bytes;
+          
+          // Award bytes directly - avoiding circular dependency
+          await tx.insert(userByteHistory).values({
+            userId,
+            type: 'earned',
+            activity: 'ACHIEVEMENT_UNLOCK',
+            amount: achievement.rewards.bytes,
+            balanceBefore: currentBalance,
+            balanceAfter: newBalance,
+            description: `Achievement unlocked: ${achievement.name}`,
+            metadata: JSON.stringify({
+              achievement: true,
+              achievementId: achievement.id,
+              achievementName: achievement.name
+            })
           });
+
+          // Update user balance using raw SQL to add bytes
+          await tx.execute(sql`
+            UPDATE users 
+            SET byte_balance = byte_balance + ${achievement.rewards.bytes}
+            WHERE id = ${userId}
+          `);
         }
 
         // Unlock multipliers if specified
@@ -417,5 +442,3 @@ export class AchievementService {
     }
   }
 }
-
-export default AchievementService;

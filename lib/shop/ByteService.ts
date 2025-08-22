@@ -551,5 +551,3 @@ export class ByteService {
     }
   }
 }
-
-export default ByteService;

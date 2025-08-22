@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
-import ByteService from '@/lib/shop/ByteService';
+import { ByteService } from '@/lib/shop/ByteService';
 import { BYTE_EARNING_ACTIVITIES } from '@/lib/shop/constants';
 
 export async function POST(request: NextRequest) {

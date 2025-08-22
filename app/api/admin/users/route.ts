@@ -23,13 +23,13 @@ export async function GET(request: NextRequest) {
       .select({
         id: users.id,
         email: users.email,
-        displayName: users.displayName,
         username: users.username,
         createdAt: users.createdAt,
-        lastLoginAt: users.lastLoginAt,
+        lastLogin: users.lastLogin,
         isActive: users.isActive,
-        subscriptionStatus: users.subscriptionStatus,
-        role: users.role,
+        tier: users.tier,
+        status: users.status,
+        isAdmin: users.isAdmin,
       })
       .from(users)
       .orderBy(desc(users.createdAt))
@@ -68,10 +68,11 @@ export async function GET(request: NextRequest) {
         ...user,
         postCount,
         ritualCompletions: ritualCount,
-        subscriptionStatus: user.subscriptionStatus || 'free',
-        role: user.role || 'user',
+        displayName: user.username || user.email.split('@')[0], // Use username or fallback to email prefix
+        subscriptionStatus: user.tier || 'freemium',
+        role: user.isAdmin ? 'admin' : 'user',
         createdAt: user.createdAt?.toISOString(),
-        lastLoginAt: user.lastLoginAt?.toISOString(),
+        lastLoginAt: user.lastLogin?.toISOString(),
       };
     });
 

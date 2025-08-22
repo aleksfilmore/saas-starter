@@ -65,16 +65,18 @@ export async function POST(request: Request) {
     // 🎯 BYTE ECONOMY: Award bytes for wall post creation
     let bytesAwarded = 0;
     try {
-      const byteService = new ByteService(session.userId);
-      const byteTransaction = await byteService.awardBytes(
-        15, // Wall post reward (from BYTE_EARNING_ACTIVITIES)
-        'wall_post',
-        `Posted to wall: ${content.substring(0, 50)}...`,
-        { postId: post.id, category: finalCategory, isAnonymous }
+      const byteTransaction = await ByteService.awardBytes(
+        session.userId,
+        'WALL_POST',
+        {
+          amount: 15, // Wall post reward (from BYTE_EARNING_ACTIVITIES)
+          description: `Posted to wall: ${content.substring(0, 50)}...`,
+          metadata: { postId: post.id, category: finalCategory, isAnonymous }
+        }
       );
       
       if (byteTransaction) {
-        bytesAwarded = byteTransaction.byteChange;
+        bytesAwarded = byteTransaction.bytesAwarded;
         console.log(`💰 Awarded ${bytesAwarded} Bytes for wall post`);
       }
     } catch (byteError) {

@@ -1,7 +1,40 @@
 /**
  * Daily Check-in API
  * 
- * Allows users to perform daily check-ins and earn Bytes for consistency.
+ * Allows users to perform daily    // Award bytes     try {
+      const byteTransaction = await ByteService.awardBytes(
+        user.id,
+         } else if (consecutiveDays === 14) {
+        const streakTransaction = await ByteService.awardStreakBonus(user.id, 'checkin', consecutiveDays);
+        if (streakTransaction) {
+          streakBonus = streakTransaction.bytesAwarded || 0;
+          bytesAwarded += streakBonus;'DAILY_CHECKIN',
+        { 
+          mood, 
+          notes: notes?.substring(0, 100), // Truncate for metadata
+          gratitudeCount: gratitude?.length || 0,
+          hasIntention: !!intention
+        }
+      );
+      
+      if (byteTransaction.success) {
+        bytesAwarded = byteTransaction.bytesAwarded;k-in
+    let bytesAwarded = 0;
+    
+    try {
+      const byteTransaction = await ByteService.awardBytes(
+        user.id,
+        'daily_checkin',
+        { 
+          mood, 
+          notes: notes?.substring(0, 100), // Truncate for metadata
+          gratitudeCount: gratitude?.length || 0,
+          hasIntention: !!intention
+        }
+      );
+      
+      if (byteTransaction.success) {
+        bytesAwarded = byteTransaction.bytesAwarded; Bytes for consistency.
  * This is a key part of the Byte Economy earning system.
  */
 
@@ -47,7 +80,7 @@ export async function POST(request: NextRequest) {
       .where(
         and(
           eq(userByteHistory.userId, user.id),
-          eq(userByteHistory.activityType, 'daily_checkin'),
+          eq(userByteHistory.activity, 'daily_checkin'),
           gte(userByteHistory.createdAt, today)
         )
       )
@@ -64,14 +97,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Award bytes for daily check-in
-    const byteService = new ByteService(user.id);
     let bytesAwarded = 0;
     
     try {
-      const byteTransaction = await byteService.awardBytes(
-        10, // Daily check-in reward (from BYTE_EARNING_ACTIVITIES)
-        'daily_checkin',
-        'Daily check-in completed',
+      const byteTransaction = await ByteService.awardBytes(
+        user.id,
+        'DAILY_CHECKIN',
         { 
           mood, 
           notes: notes?.substring(0, 100), // Truncate for metadata
@@ -81,7 +112,7 @@ export async function POST(request: NextRequest) {
       );
       
       if (byteTransaction) {
-        bytesAwarded = byteTransaction.byteChange;
+        bytesAwarded = byteTransaction.bytesAwarded;
         console.log(`💰 Awarded ${bytesAwarded} Bytes for daily check-in`);
       }
     } catch (byteError) {
@@ -113,7 +144,7 @@ export async function POST(request: NextRequest) {
         .where(
           and(
             eq(userByteHistory.userId, user.id),
-            eq(userByteHistory.activityType, 'daily_checkin')
+            eq(userByteHistory.activity, 'daily_checkin')
           )
         )
         .orderBy(sql`${userByteHistory.createdAt} DESC`)
@@ -142,16 +173,16 @@ export async function POST(request: NextRequest) {
 
       // Award streak bonuses at milestones
       if (consecutiveDays === 7) {
-        const streakTransaction = await byteService.awardStreakBonus(consecutiveDays, 'daily_checkin');
+        const streakTransaction = await ByteService.awardStreakBonus(user.id, 'checkin', consecutiveDays);
         if (streakTransaction) {
-          streakBonus = streakTransaction.bonusBytes;
+          streakBonus = streakTransaction.bytesAwarded || 0;
           bytesAwarded += streakBonus;
           console.log(`🔥 7-day check-in streak bonus: ${streakBonus} Bytes`);
         }
       } else if (consecutiveDays === 30) {
-        const streakTransaction = await byteService.awardStreakBonus(consecutiveDays, 'daily_checkin');
+        const streakTransaction = await ByteService.awardStreakBonus(user.id, 'checkin', consecutiveDays);
         if (streakTransaction) {
-          streakBonus = streakTransaction.bonusBytes;
+          streakBonus = streakTransaction.bytesAwarded || 0;
           bytesAwarded += streakBonus;
           console.log(`🔥 30-day check-in streak bonus: ${streakBonus} Bytes`);
         }
@@ -215,7 +246,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(userByteHistory.userId, user.id),
-          eq(userByteHistory.activityType, 'daily_checkin'),
+          eq(userByteHistory.activity, 'daily_checkin'),
           gte(userByteHistory.createdAt, today)
         )
       )

@@ -40,11 +40,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize ByteService
-    const byteService = new ByteService(user.id);
-    
     // Check if user has enough bytes
-    const userBalance = await byteService.getUserBalance();
+    const userBalance = await ByteService.getUserBalance(user.id);
     if (userBalance < product.bytePrice) {
       return NextResponse.json(
         { 
@@ -104,11 +101,12 @@ export async function POST(request: NextRequest) {
       });
 
       // Spend the bytes
-      const transaction = await byteService.spendBytes(
+      const transaction = await ByteService.spendBytes(
+        user.id,
         product.bytePrice,
-        'shop_purchase',
         `Purchased: ${product.name}${variant ? ` (${variant})` : ''}`,
-        { productId, orderId }
+        orderId,
+        { productId }
       );
 
       // For digital products, grant immediate access
@@ -126,8 +124,8 @@ export async function POST(request: NextRequest) {
       await db
         .update(shopOrders)
         .set({ 
-          status: 'completed',
-          completedAt: new Date()
+          status: 'delivered',
+          deliveredAt: new Date()
         })
         .where(eq(shopOrders.id, orderId));
 
@@ -141,8 +139,7 @@ export async function POST(request: NextRequest) {
           variant,
           bytesCost: product.bytePrice,
           newBalance: userBalance - product.bytePrice,
-          isDigital: product.isDigital,
-          transactionId: transaction.id
+          isDigital: product.isDigital
         },
         message: product.isDigital 
           ? `🎉 You've unlocked ${product.name}! Check your digital library.`

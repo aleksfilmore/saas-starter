@@ -24,12 +24,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for new achievements based on activity
-    const newAchievements = await AchievementService.checkAchievements(user.id, activity, data);
+    const achievementResult = await AchievementService.checkAchievements(user.id, activity, data);
 
     return NextResponse.json({
-      success: true,
-      newAchievements,
-      count: newAchievements.length
+      ...achievementResult,
+      count: achievementResult.newAchievements
     });
 
   } catch (error) {

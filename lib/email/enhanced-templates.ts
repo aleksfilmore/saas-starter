@@ -1,6 +1,15 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.EMAIL_API_KEY);
+const resend = process.env.EMAIL_API_KEY ? new Resend(process.env.EMAIL_API_KEY) : null;
+
+// Safe environment variable access with fallbacks
+const getEnvVar = (key: string, fallback: string = '') => {
+  const value = process.env[key];
+  return (value && value !== 'undefined') ? value : fallback;
+};
+
+const APP_URL = getEnvVar('NEXT_PUBLIC_APP_URL', 'https://ctrlaltblock.com');
+const EMAIL_FROM = getEnvVar('EMAIL_FROM', 'noreply@ctrlaltblock.com');
 
 // Enhanced email template system with improved design and better user experience
 export const EmailTemplates = {
@@ -356,8 +365,8 @@ export const EmailTemplates = {
         
         <div class="unsubscribe">
           <p>This email was sent to support your healing journey.<br>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe">Update preferences</a> | 
-          <a href="${process.env.NEXT_PUBLIC_APP_URL}/contact">Contact support</a></p>
+          <a href="${APP_URL}/unsubscribe">Update preferences</a> | 
+          <a href="${APP_URL}/contact">Contact support</a></p>
         </div>
       </div>
     </div>
@@ -368,7 +377,7 @@ export const EmailTemplates = {
 
   // Enhanced email verification template
   verification: (email: string, verificationToken: string, name?: string) => {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${APP_URL}/verify-email?token=${verificationToken}`;
     
     const content = `
       <h1>⚡ Verify Your Email & Unlock Rewards</h1>
@@ -431,8 +440,8 @@ export const EmailTemplates = {
 
   // Enhanced welcome email template
   welcome: (email: string, name?: string, verificationToken?: string) => {
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`;
-    const verificationUrl = verificationToken ? `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}` : null;
+    const dashboardUrl = `${APP_URL}/dashboard`;
+    const verificationUrl = verificationToken ? `${APP_URL}/verify-email?token=${verificationToken}` : null;
     
     const content = `
       <h1>🎮 Welcome to the Healing Protocol</h1>
@@ -489,7 +498,7 @@ export const EmailTemplates = {
       </div>
       
       <div class="warning-box">
-        <p style="margin: 0;"><strong>🆘 Crisis Support:</strong> If you're in crisis or having thoughts of self-harm, <a href="${process.env.NEXT_PUBLIC_APP_URL}/crisis-support" style="color: #00ff9f; font-weight: bold;">get immediate help here</a>. Your wellbeing is our top priority.</p>
+        <p style="margin: 0;"><strong>🆘 Crisis Support:</strong> If you're in crisis or having thoughts of self-harm, <a href="${APP_URL}/crisis-support" style="color: #00ff9f; font-weight: bold;">get immediate help here</a>. Your wellbeing is our top priority.</p>
       </div>
       
       <p style="text-align: center; margin-top: 30px; color: #94a3b8;">
@@ -502,7 +511,7 @@ export const EmailTemplates = {
 
   // Enhanced password reset template
   passwordReset: (email: string, resetToken: string, name?: string) => {
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${APP_URL}/reset-password?token=${resetToken}`;
     
     const content = `
       <h1>🔐 Password Reset Protocol</h1>
@@ -553,8 +562,8 @@ export const EmailTemplates = {
 
   // Daily reminder template
   dailyReminder: (email: string, name?: string, streakCount?: number, todayRituals?: any[]) => {
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`;
-    const ritualsUrl = `${process.env.NEXT_PUBLIC_APP_URL}/daily-rituals`;
+    const dashboardUrl = `${APP_URL}/dashboard`;
+    const ritualsUrl = `${APP_URL}/daily-rituals`;
     
     const content = `
       <h1>⏰ Your Daily Healing Check-In</h1>
@@ -613,8 +622,13 @@ export const EmailTemplates = {
 // Export individual template functions for backward compatibility
 export const sendEnhancedVerificationEmail = async (email: string, verificationToken: string, name?: string) => {
   try {
+    if (!resend) {
+      console.error('❌ Email service not configured (missing EMAIL_API_KEY)');
+      return { success: false, error: 'Email service not configured' };
+    }
+
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM!,
+      from: EMAIL_FROM,
       to: email,
       subject: '⚡ Verify Your Email & Unlock Rewards - CTRL+ALT+BLOCK',
       html: EmailTemplates.verification(email, verificationToken, name),
@@ -635,8 +649,13 @@ export const sendEnhancedVerificationEmail = async (email: string, verificationT
 
 export const sendEnhancedWelcomeEmail = async (email: string, name?: string, verificationToken?: string) => {
   try {
+    if (!resend) {
+      console.error('❌ Email service not configured (missing EMAIL_API_KEY)');
+      return { success: false, error: 'Email service not configured' };
+    }
+
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM!,
+      from: EMAIL_FROM,
       to: email,
       subject: '🎮 Welcome to CTRL+ALT+BLOCK - Your Healing Protocol is Active!',
       html: EmailTemplates.welcome(email, name, verificationToken),
@@ -656,8 +675,13 @@ export const sendEnhancedWelcomeEmail = async (email: string, name?: string, ver
 
 export const sendEnhancedPasswordResetEmail = async (email: string, resetToken: string, name?: string) => {
   try {
+    if (!resend) {
+      console.error('❌ Email service not configured (missing EMAIL_API_KEY)');
+      return { success: false, error: 'Email service not configured' };
+    }
+
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM!,
+      from: EMAIL_FROM,
       to: email,
       subject: '🔐 Password Reset Request - CTRL+ALT+BLOCK',
       html: EmailTemplates.passwordReset(email, resetToken, name),
@@ -677,8 +701,13 @@ export const sendEnhancedPasswordResetEmail = async (email: string, resetToken: 
 
 export const sendDailyReminderEmail = async (email: string, name?: string, streakCount?: number, todayRituals?: any[]) => {
   try {
+    if (!resend) {
+      console.error('❌ Email service not configured (missing EMAIL_API_KEY)');
+      return { success: false, error: 'Email service not configured' };
+    }
+
     const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM!,
+      from: EMAIL_FROM,
       to: email,
       subject: `⏰ Your Daily Healing Check-In ${streakCount ? `(${streakCount}-day streak!)` : ''} - CTRL+ALT+BLOCK`,
       html: EmailTemplates.dailyReminder(email, name, streakCount, todayRituals),

@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 // PUT /api/admin/blog/[id] - Update blog post
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user, session } = await validateRequest();
@@ -38,6 +38,8 @@ export async function PUT(
       reading_time,
     } = body;
 
+    const { id } = await params;
+
     const updatedPost = await db.update(blogPosts)
       .set({
         title,
@@ -54,7 +56,7 @@ export async function PUT(
         updated_at: new Date(),
         published_at: status === 'published' ? new Date() : null,
       })
-      .where(eq(blogPosts.id, params.id))
+      .where(eq(blogPosts.id, id))
       .returning();
 
     if (updatedPost.length === 0) {
@@ -71,7 +73,7 @@ export async function PUT(
 // DELETE /api/admin/blog/[id] - Delete blog post
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { user, session } = await validateRequest();
@@ -84,8 +86,10 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
+    const { id } = await params;
+
     const deletedPost = await db.delete(blogPosts)
-      .where(eq(blogPosts.id, params.id))
+      .where(eq(blogPosts.id, id))
       .returning();
 
     if (deletedPost.length === 0) {

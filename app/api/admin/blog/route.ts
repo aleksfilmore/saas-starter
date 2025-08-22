@@ -7,6 +7,8 @@ import { randomUUID } from 'crypto';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 // GET /api/admin/blog - Get all blog posts
 export async function GET(request: NextRequest) {

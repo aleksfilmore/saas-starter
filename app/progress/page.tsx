@@ -55,7 +55,7 @@ interface ProgressData {
   };
 }
 
-export default function ProgressPage() {
+export default function StandaloneProgressPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [progressData, setProgressData] = useState<ProgressData | null>(null);
   const [loading, setLoading] = useState(true);

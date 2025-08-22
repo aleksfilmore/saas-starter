@@ -6,7 +6,7 @@ import { NotificationProvider } from '@/contexts/SimpleNotificationContext';
 import { HealingHubProvider } from '@/contexts/HealingHubContext';
 import { LumoProvider } from '@/components/lumo/LumoProvider';
 
-export default function ClientProviders({ children }: { children: React.ReactNode }) {
+export function ClientProviders({ children }: { children: React.ReactNode }) {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
