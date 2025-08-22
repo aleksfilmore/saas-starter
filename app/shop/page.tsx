@@ -1,335 +1,366 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShoppingCart, Zap, Clock, Star, Gift, Sparkles, Loader2, CheckCircle } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Star, Package, Download, Headphones, Book, Flame, Shield, Shirt, Heart } from 'lucide-react'
+import { SHOP_PRODUCTS, formatBytes } from '@/lib/shop/constants'
+import ShippingForm from '@/components/shop/ShippingForm'
+import UnlockNotification from '@/components/shop/UnlockNotification'
+import { useAuth } from '@/hooks/useAuth'
+import { useUnlockNotifications } from '@/hooks/useUnlockNotifications'
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  category: 'digital' | 'physical';
-  type: string;
-  bytePrice: number | null;
-  cashPrice: number | null;
-  isDigital: boolean;
-  requiresShipping: boolean;
-  discount?: number;
-  isPopular?: boolean;
-  isLimited?: boolean;
-  stockCount?: number;
-  rating?: number;
-  imageUrl?: string;
-  features?: string[];
-  userCanAfford?: boolean;
+// Product icons mapping
+const getProductIcon = (type: string) => {
+  switch (type) {
+    case 'workbook': return Download
+    case 'audiobook': return Headphones
+    case 'signed_book': return Book
+    case 'candle': return Flame
+    case 'phone_case': return Shield
+    case 'hoodie': return Shirt
+    case 'blanket': return Heart
+    default: return Package
+  }
 }
 
 export default function ShopPage() {
-  const { user } = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [userBytes, setUserBytes] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [purchasing, setPurchasing] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('all');
-  const [paymentMethod, setPaymentMethod] = useState<'bytes' | 'cash'>('bytes');
+  const router = useRouter()
+  const { user } = useAuth()
+  const { currentNotification, dismissCurrentNotification, triggerUnlockNotification } = useUnlockNotifications()
+  const [userBytes, setUserBytes] = useState<number>(0)
+  const [userPlan, setUserPlan] = useState<string>('ghost')
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
+  const [showShipping, setShowShipping] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Get hero product (Blanket) and grid products (other 6)
+  const heroProduct = SHOP_PRODUCTS.BLANKET
+  const gridProducts = [
+    SHOP_PRODUCTS.WORKBOOK,
+    SHOP_PRODUCTS.AUDIOBOOK, 
+    SHOP_PRODUCTS.SIGNED_PAPERBACK,
+    SHOP_PRODUCTS.CANDLE,
+    SHOP_PRODUCTS.PHONE_CASE,
+    SHOP_PRODUCTS.HOODIE
+  ]
 
   useEffect(() => {
-    loadProducts();
-    if (user) {
-      loadUserBytes();
-    }
-  }, [user]);
-
-  const loadProducts = async () => {
-    try {
-      const response = await fetch('/api/shop/products');
-      const data = await response.json();
-      setProducts(data.products || []);
-    } catch (error) {
-      console.error('Error loading products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadUserBytes = async () => {
-    try {
-      const response = await fetch('/api/bytes/balance');
-      const data = await response.json();
-      setUserBytes(data.balance || 0);
-    } catch (error) {
-      console.error('Error loading user bytes:', error);
-    }
-  };
-
-  const handlePurchase = async (product: Product) => {
-    if (!user) {
-      console.log('Please sign in to make a purchase');
-      return;
-    }
-    
-    setPurchasing(product.id);
-    
-    try {
-      if (paymentMethod === 'bytes') {
-        if (!product.bytePrice) {
-          console.log('Error: This product is not available for Byte purchase');
-          return;
+    const loadUserData = async () => {
+      try {
+        if (user) {
+          // Load user bytes from API
+          const response = await fetch('/api/bytes/balance')
+          const data = await response.json()
+          setUserBytes(data.balance || 0)
+          setUserPlan('ghost') // Default plan
         }
+      } catch (error) {
+        console.error('Failed to load user profile:', error)
+      }
+    }
+    loadUserData()
+  }, [user])
 
-        const response = await fetch('/api/shop/purchase/bytes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: product.id })
-        });
+  const canAfford = (product: any) => {
+    return userBytes >= product.bytePrice
+  }
 
-        const result = await response.json();
+  const canUnlock = (product: any) => {
+    if (product.id === 'workbook_ctrlaltblock') {
+      if (userPlan === 'firewall') return true
+      // TODO: Check if ghost user has 7-day streak
+      return false
+    }
+    return canAfford(product)
+  }
 
-        if (response.ok) {
-          console.log('Purchase Successful!', result.message);
-          setUserBytes(result.newBalance);
-          await loadProducts();
+  const handlePurchase = async (product: any) => {
+    // For physical products, show shipping form first
+    if (product.requiresShipping) {
+      setSelectedProduct(product)
+      setShowShipping(true)
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      // Handle bytes-only purchase
+      const response = await fetch('/api/shop/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          paymentMethod: 'bytes'
+        })
+      })
+      
+      if (response.ok) {
+        setUserBytes(prev => prev - product.bytePrice)
+        
+        // Trigger unlock notification
+        triggerUnlockNotification({
+          productId: product.id,
+          userId: user?.id
+        })
+        
+        // For audiobook, redirect to audiobook page
+        if (product.id === 'audiobook_worst_boyfriends') {
+          router.push('/audiobook')
         } else {
-          console.log('Purchase Failed:', result.message || result.error);
-        }
-      } else {
-        // Cash purchase
-        if (!product.cashPrice) {
-          console.log('Error: This product is not available for cash purchase');
-          return;
-        }
-
-        const response = await fetch('/api/shop/purchase/cash', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: product.id })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.url) {
-          window.location.href = result.url;
-        } else {
-          console.log('Payment Error:', result.message || 'Failed to initialize payment');
+          router.push(`/shop/success?product=${product.id}`)
         }
       }
     } catch (error) {
-      console.error('Purchase error:', error);
-      console.log('An error occurred during purchase. Please try again.');
+      console.error('Purchase failed:', error)
     } finally {
-      setPurchasing(null);
+      setIsLoading(false)
     }
-  };
-
-  const filteredProducts = products.filter(product => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'digital') return product.category === 'digital';
-    if (activeTab === 'physical') return product.category === 'physical';
-    if (activeTab === 'affordable') return product.userCanAfford;
-    return true;
-  });
-
-  if (!user) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="p-6 text-center">
-            <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <h2 className="text-xl font-semibold mb-2">Sign In Required</h2>
-            <p className="text-muted-foreground mb-4">
-              Please sign in to access the CTRL+ALT+BLOCK shop and earn Bytes through your healing journey.
-            </p>
-            <Button asChild>
-              <a href="/sign-in">Sign In</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
   }
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <span className="ml-2">Loading shop...</span>
-        </div>
-      </div>
-    );
+
+
+  const handleShippingSubmit = async (shippingData: any) => {
+    setIsLoading(true)
+    try {
+      // Process bytes purchase with shipping
+      const response = await fetch('/api/shop/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: selectedProduct.id,
+          paymentMethod: 'bytes',
+          shippingAddress: shippingData
+        })
+      })
+      
+      if (response.ok) {
+        setUserBytes(prev => prev - selectedProduct.bytePrice)
+        
+        // Trigger unlock notification
+        triggerUnlockNotification({
+          productId: selectedProduct.id,
+          userId: user?.id
+        })
+        
+        router.push(`/shop/success?product=${selectedProduct.id}`)
+        setShowShipping(false)
+        setSelectedProduct(null)
+      }
+    } catch (error) {
+      console.error('Purchase with shipping failed:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleShippingCancel = () => {
+    setShowShipping(false)
+    setSelectedProduct(null)
+  }
+
+  const handleNotificationAction = () => {
+    if (currentNotification) {
+      // Handle the action based on product type
+      if (currentNotification.type === 'digital_instant') {
+        // For digital products, redirect to the product
+        if (currentNotification.productId === 'audiobook_worst_boyfriends') {
+          router.push('/audiobook')
+        } else if (currentNotification.productId === 'workbook_ctrlaltblock') {
+          router.push('/workbook')
+        }
+      } else {
+        // For physical products, go to order confirmation
+        router.push(`/shop/success?product=${currentNotification.productId}`)
+      }
+    }
+    dismissCurrentNotification()
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4">
-          <Sparkles className="inline h-8 w-8 mr-2 text-yellow-500" />
-          CTRL+ALT+BLOCK Shop
-        </h1>
-        <p className="text-lg text-muted-foreground mb-4">
-          Spend your hard-earned Bytes on rewards that support your healing journey
-        </p>
-        
-        <Card className="max-w-sm mx-auto">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-center space-x-2">
-              <Zap className="h-5 w-5 text-yellow-500" />
-              <span className="text-lg font-semibold">{userBytes.toLocaleString()} Bytes</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex justify-center mb-6">
-        <div className="flex bg-muted p-1 rounded-lg">
-          <Button
-            variant={paymentMethod === 'bytes' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setPaymentMethod('bytes')}
-            className="flex items-center space-x-2"
-          >
-            <Zap className="h-4 w-4" />
-            <span>Pay with Bytes</span>
-          </Button>
-          <Button
-            variant={paymentMethod === 'cash' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setPaymentMethod('cash')}
-            className="flex items-center space-x-2"
-          >
-            <span>💳</span>
-            <span>Pay with Card</span>
-          </Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+            CTRL+ALT+BLOCK™
+          </h1>
+          <p className="text-xl text-gray-300 mb-2">
+            Earned Rewards
+          </p>
+          <p className="text-sm text-gray-400 mb-6">
+            No purchases. No payments. Only earned through healing.
+          </p>
+          <div className="bg-black/30 backdrop-blur-sm rounded-lg p-4 inline-block">
+            <p className="text-2xl font-bold text-green-400">
+              {formatBytes(userBytes)} Available
+            </p>
+          </div>
         </div>
-      </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All Products</TabsTrigger>
-          <TabsTrigger value="digital">Digital</TabsTrigger>
-          <TabsTrigger value="physical">Physical</TabsTrigger>
-          <TabsTrigger value="affordable">Affordable</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value={activeTab}>
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-12">
-              <Gift className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-xl font-semibold mb-2">No Products Available</h3>
-              <p className="text-muted-foreground">
-                {activeTab === 'affordable' 
-                  ? "Keep earning Bytes to unlock more affordable options!"
-                  : "Check back soon for new products!"
-                }
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="relative overflow-hidden">
-                  {product.isPopular && (
-                    <Badge className="absolute top-2 right-2 z-10" variant="destructive">
-                      <Star className="h-3 w-3 mr-1" />
-                      Popular
-                    </Badge>
-                  )}
+        {/* Hero Product - Blanket */}
+        <div className="mb-16">
+          <Card className="bg-gradient-to-r from-purple-800/50 to-pink-800/50 backdrop-blur-sm border-purple-500/30 overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-8 p-8">
+              <div className="space-y-6">
+                <div>
+                  <Badge className="bg-yellow-500 text-black font-bold mb-4">
+                    LEGENDARY REWARD
+                  </Badge>
+                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    {heroProduct.name}
+                  </h2>
+                  <p className="text-xl text-gray-200 mb-6">
+                    {heroProduct.heroTagline}
+                  </p>
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    {heroProduct.description}
+                  </p>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl font-bold text-white">
+                      {formatBytes(heroProduct.bytePrice)}
+                    </span>
+                  </div>
                   
-                  {product.isLimited && (
-                    <Badge className="absolute top-2 left-2 z-10" variant="secondary">
-                      <Clock className="h-3 w-3 mr-1" />
-                      Limited
-                    </Badge>
-                  )}
+                  <div className="flex flex-wrap gap-3">
+                    {heroProduct.features?.map((feature, index) => (
+                      <Badge key={index} variant="outline" className="text-white border-white/30">
+                        {feature}
+                      </Badge>
+                    ))}
+                  </div>
 
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>{product.name}</span>
-                      {product.discount && (
-                        <Badge variant="outline">-{product.discount}%</Badge>
-                      )}
-                    </CardTitle>
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => handlePurchase(heroProduct)}
+                      disabled={!canAfford(heroProduct) || isLoading}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-8 py-3"
+                    >
+                      {canAfford(heroProduct) ? 'Claim Reward' : `Need ${formatBytes(heroProduct.bytePrice - userBytes)} More`}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center">
+                <div className="w-full max-w-md aspect-square bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-lg flex items-center justify-center">
+                  <Heart className="w-32 h-32 text-white/50" />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Grid Products - Other 6 */}
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">
+            Your Healing Journey
+          </h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {gridProducts.map((product) => {
+              const Icon = getProductIcon(product.type)
+              const affordable = canAfford(product)
+              const unlockable = canUnlock(product)
+              
+              return (
+                <Card key={product.id} className="bg-black/40 backdrop-blur-sm border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Icon className="w-6 h-6 text-purple-400" />
+                      <CardTitle className="text-white text-lg">
+                        {product.shortName}
+                      </CardTitle>
+                    </div>
+                    <CardDescription className="text-gray-300 text-sm">
+                      {product.timeToEarn} • {product.userPerception}
+                    </CardDescription>
                   </CardHeader>
-
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
+                  
+                  <CardContent className="space-y-4">
+                    <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-pink-600/10 rounded-lg flex items-center justify-center">
+                      <Icon className="w-16 h-16 text-white/30" />
+                    </div>
+                    
+                    <p className="text-gray-300 text-sm leading-relaxed">
                       {product.description}
                     </p>
-
-                    {product.features && (
-                      <ul className="text-sm space-y-1 mb-4">
-                        {product.features.slice(0, 3).map((feature, idx) => (
-                          <li key={idx} className="flex items-center">
-                            <CheckCircle className="h-3 w-3 mr-2 text-green-500" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex flex-col">
-                        {paymentMethod === 'bytes' && product.bytePrice && (
-                          <div className="flex items-center space-x-1">
-                            <Zap className="h-4 w-4 text-yellow-500" />
-                            <span className="font-semibold">{product.bytePrice.toLocaleString()} Bytes</span>
-                          </div>
-                        )}
-                        {paymentMethod === 'cash' && product.cashPrice && (
-                          <div className="flex items-center space-x-1">
-                            <span className="font-semibold">${product.cashPrice}</span>
-                          </div>
-                        )}
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-white">
+                          {product.bytePrice === 0 ? 'FREE' : formatBytes(product.bytePrice)}
+                        </span>
                       </div>
                       
-                      {product.rating && (
-                        <div className="flex items-center space-x-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          <span className="text-sm">{product.rating}</span>
-                        </div>
+                      {product.requiresShipping && (
+                        <Badge variant="outline" className="text-xs">
+                          <Package className="w-3 h-3 mr-1" />
+                          Shipping Required
+                        </Badge>
                       )}
+                      
+                      <div className="flex flex-col gap-2">
+                        {product.bytePrice === 0 ? (
+                          <Button
+                            onClick={() => handlePurchase(product)}
+                            disabled={!unlockable || isLoading}
+                            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+                          >
+                            {unlockable ? 'Claim Now' : 'Complete 7-Day Streak'}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => handlePurchase(product)}
+                            disabled={!affordable || isLoading}
+                            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                            size="sm"
+                          >
+                            {affordable ? 'Claim Reward' : `Need ${formatBytes(product.bytePrice - userBytes)} More`}
+                          </Button>
+                        )}
+                      </div>
                     </div>
-
-                    <Button
-                      onClick={() => handlePurchase(product)}
-                      disabled={
-                        purchasing === product.id ||
-                        (paymentMethod === 'bytes' && (!product.bytePrice || userBytes < product.bytePrice)) ||
-                        (paymentMethod === 'cash' && !product.cashPrice)
-                      }
-                      className="w-full"
-                    >
-                      {purchasing === product.id ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          {paymentMethod === 'bytes' && product.bytePrice && userBytes < product.bytePrice
-                            ? `Need ${(product.bytePrice - userBytes).toLocaleString()} more Bytes`
-                            : `Purchase${paymentMethod === 'bytes' && product.bytePrice ? ` for ${product.bytePrice.toLocaleString()} Bytes` : paymentMethod === 'cash' && product.cashPrice ? ` for $${product.cashPrice}` : ''}`
-                          }
-                        </>
-                      )}
-                    </Button>
-
-                    {product.stockCount && product.stockCount < 10 && (
-                      <p className="text-xs text-orange-600 mt-2 text-center">
-                        Only {product.stockCount} left in stock!
-                      </p>
-                    )}
                   </CardContent>
                 </Card>
-              ))}
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Shipping Form Modal */}
+        {showShipping && selectedProduct && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-gray-900 rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-xl font-bold text-white mb-4">
+                Shipping Information
+              </h3>
+              <p className="text-gray-300 mb-6">
+                {selectedProduct.name} will be shipped to:
+              </p>
+              <ShippingForm
+                onSubmit={handleShippingSubmit}
+                onCancel={handleShippingCancel}
+                loading={isLoading}
+              />
             </div>
-          )}
-        </TabsContent>
-      </Tabs>
+          </div>
+        )}
+      </div>
+      
+      {/* Unlock Notification */}
+      {currentNotification && (
+        <UnlockNotification
+          notification={currentNotification}
+          onClose={dismissCurrentNotification}
+          onAction={handleNotificationAction}
+        />
+      )}
     </div>
-  );
+  )
 }

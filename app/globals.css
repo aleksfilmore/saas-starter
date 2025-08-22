@@ -93,6 +93,23 @@
   .font-semibold { font-weight: 600; }
   .font-bold { font-weight: 700; }
   .font-black { font-weight: 800; }
+  
+  /* Logo responsive scaling for brand consistency */
+  @media (max-width: 390px) {
+    /* Very small phones */
+    .text-sm.xs\:text-base.sm\:text-xl.md\:text-2xl {
+      font-size: 0.75rem; /* 12px */
+      line-height: 1rem;
+    }
+  }
+  
+  @media (min-width: 391px) and (max-width: 474px) {
+    /* Small phones */
+    .text-sm.xs\:text-base.sm\:text-xl.md\:text-2xl {
+      font-size: 0.875rem; /* 14px */
+      line-height: 1.25rem;
+    }
+  }
 }
 
 /* Floating animation for particles */

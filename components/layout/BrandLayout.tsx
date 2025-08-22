@@ -57,10 +57,10 @@ export function BrandLayout({
       <div className="relative z-10">
         {showHeader && (
           <header className="w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+            <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-4">
               <div className="flex items-center justify-between">
                 <Link href="/admin" className="flex items-center space-x-4">
-                  <div className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                  <div className="text-sm xs:text-base sm:text-xl md:text-2xl font-bold text-white tracking-tight whitespace-nowrap">
                     <span>CTRL+ALT+</span>
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
                   </div>

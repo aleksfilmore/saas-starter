@@ -31,8 +31,6 @@ export async function GET(request: NextRequest) {
     // Calculate totals
     const totalBytes = enrichedItems.reduce((sum, item) => 
       sum + (item.product?.bytePrice || 0) * item.quantity, 0);
-    const totalCash = enrichedItems.reduce((sum, item) => 
-      sum + (item.product?.cashPrice || 0) * item.quantity, 0);
 
     return NextResponse.json({
       success: true,
@@ -41,8 +39,7 @@ export async function GET(request: NextRequest) {
         totals: {
           items: enrichedItems.length,
           quantity: enrichedItems.reduce((sum, item) => sum + item.quantity, 0),
-          bytes: totalBytes,
-          cash: totalCash
+          bytes: totalBytes
         }
       }
     });

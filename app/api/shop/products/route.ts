@@ -138,7 +138,6 @@ export async function POST(request: NextRequest) {
         category: product.category,
         type: product.type,
         bytePrice: product.bytePrice,
-        cashPrice: product.cashPrice,
         variants: typeof product.variants === 'string' ? product.variants : JSON.stringify(product.variants || null),
         digitalContent: (product as any).digitalContent || null,
         printifyProductId: (product as any).printifyProductId || null,
@@ -161,7 +160,6 @@ export async function POST(request: NextRequest) {
               name: product.name,
               description: product.description,
               bytePrice: product.bytePrice,
-              cashPrice: product.cashPrice,
               updatedAt: new Date()
             }
           });

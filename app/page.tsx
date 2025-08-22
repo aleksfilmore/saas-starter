@@ -137,11 +137,10 @@ export default function ComingSoonPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white">
       {/* Header */}
       <header className="relative z-50 w-full border-b border-purple-500/20 bg-black/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-center">
-            <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
-              <span className="hidden sm:inline">CTRL+ALT+</span>
-              <span className="sm:hidden">CAB+</span>
+            <div className="text-sm xs:text-base sm:text-xl md:text-2xl font-bold text-white tracking-tight whitespace-nowrap">
+              <span>CTRL+ALT+</span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">BLOCK</span>
             </div>
           </div>

@@ -141,9 +141,8 @@ function EmailVerificationContent() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-tight">
-                <span className="hidden sm:inline">CTRL+ALT+</span>
-                <span className="sm:hidden">CAB+</span>
+              <div className="text-sm xs:text-base sm:text-xl md:text-2xl font-bold text-white tracking-tight whitespace-nowrap">
+                <span>CTRL+ALT+</span>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 brand-glitch" data-text="BLOCK">BLOCK</span>
               </div>
             </div>

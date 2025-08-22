@@ -122,189 +122,184 @@ export const GLITCH_BONUSES = {
 // =====================================
 
 export const SHOP_PRODUCTS = {
-  // Digital Products
+  // === CTRL+ALT+BLOCK™ FINAL 7 PRODUCTS ===
+  
+  // 1. FREE WORKBOOK (Instant for Firewall, 1 week for Ghost)
+  WORKBOOK: {
+    id: 'workbook_ctrlaltblock',
+    name: 'CTRL+ALT+BLOCK Workbook',
+    shortName: 'Workbook',
+    description: 'Your starter kit for heartbreak survival. Firewall users get it now, Ghosts unlock it after 1 week of streaks. This is your first tool for closure.',
+    category: 'digital',
+    type: 'workbook',
+    bytePrice: 0, // FREE
+    isDigital: true,
+    requiresShipping: false,
+    unlockRequirement: 'firewall_immediate_or_ghost_7_days',
+    printifyProductId: null,
+    variants: null,
+    digitalContent: '/workbook/ctrl-alt-block-workbook',
+    tags: ['starter', 'healing', 'workbook', 'free'],
+    images: ['/products/workbook-cover.jpg'],
+    imageUrl: '/products/workbook-cover.jpg',
+    timeToEarn: 'Instant (Firewall) / 1 week (Ghost)',
+    userPerception: 'Your starter kit for healing.',
+    heroTagline: 'Free. Essential. Yours.',
+    isHero: false
+  },
+
+  // 2. AUDIOBOOK (900 bytes, ~1 month)
   AUDIOBOOK: {
     id: 'audiobook_worst_boyfriends',
     name: 'The Worst Boyfriends Ever (Audiobook)',
-    description: 'Full audiobook narrated by the author. Stream instantly after purchase.',
+    shortName: 'Audiobook',
+    description: 'The chaos, the cringe, the comedy — in your earbuds. Laugh, wince, and heal on the go. One month of healing unlocks the messiest love stories ever told.',
     category: 'digital',
     type: 'audiobook',
-    bytePrice: 300,
-    cashPrice: 299, // $2.99
+    bytePrice: 900,
     isDigital: true,
     requiresShipping: false,
     printifyProductId: null,
     variants: null,
     digitalContent: '/audiobook/worst-boyfriends-ever',
-    tags: ['healing', 'humor', 'audiobook', 'instant'],
-    images: ['/products/audiobook-cover.jpg']
+    tags: ['chaos', 'comedy', 'healing', 'audiobook'],
+    images: ['/TWBE/THE WORST BOYFRIENDS EVER AUDIOBOOK.png'],
+    imageUrl: '/TWBE/THE WORST BOYFRIENDS EVER AUDIOBOOK.png',
+    timeToEarn: '~1 month',
+    userPerception: 'The chaos in your earbuds.',
+    heroTagline: '900 Bytes. Pure Chaos. Total Healing.',
+    isHero: false
   },
-  
-  WORKBOOK: {
-    id: 'workbook_ctrlaltblock',
-    name: 'CTRL+ALT+BLOCK Workbook (Digital)',
-    description: 'Interactive healing workbook with exercises and prompts. Instant download.',
-    category: 'digital', 
-    type: 'ebook',
-    bytePrice: null, // Tier-based unlock
-    cashPrice: 1999, // $19.99
-    isDigital: true,
-    requiresShipping: false,
-    printifyProductId: null,
-    variants: null,
-    digitalContent: '/workbook/ctrl-alt-block-workbook',
-    tags: ['workbook', 'exercises', 'healing', 'pdf'],
-    images: ['/products/workbook-cover.jpg']
-  },
-  
-  // Physical Products - Mugs
-  MUG_WHITE_SELF_CARE: {
-    id: 'mug_white_self_care',
-    name: 'Sipping on Self-Care Mug (White)',
-    description: 'White ceramic mug with "Sipping on Self-Care" text. 11oz.',
-    category: 'physical',
-    type: 'mug',
-    bytePrice: 1000,
-    cashPrice: 1599, // $15.99
-    isDigital: false,
-    requiresShipping: true,
-    printifyProductId: 'mug_white_001',
-    variants: JSON.stringify([{ color: 'white', size: '11oz' }]),
-    digitalContent: null,
-    tags: ['mug', 'self-care', 'white', 'ceramic'],
-    images: ['/products/mug-white-self-care.jpg']
-  },
-  
-  MUG_BLACK_HEALING: {
-    id: 'mug_black_healing',
-    name: 'Healing One Sip at a Time Mug (Black)',
-    description: 'Black ceramic mug with "Healing One Sip at a Time" text. 11oz.',
-    category: 'physical',
-    type: 'mug',
-    bytePrice: 1000,
-    cashPrice: 1599,
-    isDigital: false,
-    requiresShipping: true,
-    printifyProductId: 'mug_black_001',
-    variants: JSON.stringify([{ color: 'black', size: '11oz' }]),
-    digitalContent: null,
-    tags: ['mug', 'healing', 'black', 'ceramic'],
-    images: ['/products/mug-black-healing.jpg']
-  },
-  
-  MUG_BLUE_BYTE: {
-    id: 'mug_blue_byte',
-    name: 'Byte by Byte Healing Mug (Blue)',
-    description: 'Blue ceramic mug with "Byte by Byte Healing" text. 11oz.',
-    category: 'physical',
-    type: 'mug',
-    bytePrice: 1000,
-    cashPrice: 1599,
-    isDigital: false,
-    requiresShipping: true,
-    printifyProductId: 'mug_blue_001',
-    variants: JSON.stringify([{ color: 'blue', size: '11oz' }]),
-    digitalContent: null,
-    tags: ['mug', 'byte', 'blue', 'ceramic', 'tech'],
-    images: ['/products/mug-blue-byte.jpg']
-  },
-  
-  // Signed Books
+
+  // 3. SIGNED AUTHOR COPY (3000 bytes, ~3 months)
   SIGNED_PAPERBACK: {
     id: 'signed_worst_boyfriends',
-    name: 'The Worst Boyfriends Ever (Signed Paperback)',
-    description: 'Personally signed author copy. Limited edition collectible.',
+    name: 'The Worst Boyfriends Ever (Signed Author Copy)',
+    shortName: 'Signed Author Copy',
+    description: 'A book that lived it all — signed, with a personal note just for you. Your heartbreak trophy, shipped worldwide. This isn\'t merch, it\'s a milestone.',
     category: 'physical',
     type: 'signed_book',
-    bytePrice: 2500,
-    cashPrice: 2999, // $29.99
+    bytePrice: 3000,
     isDigital: false,
     requiresShipping: true,
     printifyProductId: null,
     variants: null,
     digitalContent: null,
-    tags: ['signed', 'collectible', 'book', 'author', 'limited'],
-    images: ['/products/signed-book.jpg']
+    tags: ['signed', 'milestone', 'trophy', 'personal'],
+    images: ['/TWBE/THE WORST BOYFRIENDS EVER SIGNED BOOK.png'],
+    imageUrl: '/TWBE/THE WORST BOYFRIENDS EVER SIGNED BOOK.png',
+    timeToEarn: '~3 months',
+    userPerception: 'Personal note, signed just for you.',
+    heroTagline: '3000 Bytes. One Signature. Your Milestone.',
+    isHero: false,
+    features: ['Personally signed by author', 'Personal note included', 'Worldwide shipping', 'Heartbreak trophy', 'Limited edition']
   },
-  
-  // Blankets
-  BLANKET_BREAKUP_BUNKER: {
-    id: 'blanket_breakup_bunker',
-    name: 'Breakup Bunker Blanket',
-    description: 'Ultra-soft fleece blanket perfect for emotional recovery. 50"x60".',
+
+  // 4. CANDLE (4000 bytes, ~4 months)
+  CANDLE: {
+    id: 'candle_closure_ritual',
+    name: 'Closure Ritual Candle',
+    shortName: 'Candle',
+    description: 'Light it when you\'re ready to burn the past. A half-year of streaks earns you this ritual object — closure, flickering in flame.',
     category: 'physical',
-    type: 'blanket',
-    bytePrice: 5000,
-    cashPrice: 4999, // $49.99
+    type: 'candle',
+    bytePrice: 4000,
     isDigital: false,
     requiresShipping: true,
-    printifyProductId: 'blanket_001',
-    variants: JSON.stringify([{ size: '50x60', material: 'fleece' }]),
+    printifyProductId: 'candle_001',
+    variants: null,
     digitalContent: null,
-    tags: ['blanket', 'comfort', 'fleece', 'breakup', 'cozy'],
-    images: ['/products/blanket-bunker.jpg']
+    tags: ['ritual', 'closure', 'flame', 'burn-past'],
+    images: ['/products/candle-closure.jpg'],
+    imageUrl: '/products/candle-closure.jpg',
+    timeToEarn: '~4 months',
+    userPerception: 'Light this when you\'re ready to close the chapter.',
+    heroTagline: '4000 Bytes. One Flame. Total Closure.',
+    isHero: false,
+    features: ['Premium soy wax', 'Closure ritual object', 'Clean burning', 'Symbolic healing', 'Hand-poured']
   },
-  
-  BLANKET_CRY_PROOF: {
-    id: 'blanket_cry_proof',
-    name: 'Cry-Proof Comfort Cloak',
-    description: 'Premium comfort blanket for those tough healing days. 50"x60".',
+
+  // 5. PHONE CASE (5000 bytes, ~5 months)
+  PHONE_CASE: {
+    id: 'phone_case_ctrlaltblock',
+    name: 'CTRL+ALT+BLOCK Phone Case',
+    shortName: 'Phone Case',
+    description: 'CTRL+ALT+BLOCK in your pocket. A shield against late-night relapse texts and a reminder that you\'re stronger than the urge to reach out.',
     category: 'physical',
-    type: 'blanket',
+    type: 'phone_case',
     bytePrice: 5000,
-    cashPrice: 4999,
     isDigital: false,
     requiresShipping: true,
-    printifyProductId: 'blanket_002',
-    variants: JSON.stringify([{ size: '50x60', material: 'fleece' }]),
+    printifyProductId: 'phone_case_001',
+    variants: JSON.stringify([
+      { device: 'iPhone 15', sizes: ['Standard', 'Plus', 'Pro', 'Pro Max'] },
+      { device: 'iPhone 14', sizes: ['Standard', 'Plus', 'Pro', 'Pro Max'] },
+      { device: 'Samsung Galaxy S24', sizes: ['Standard', 'Plus', 'Ultra'] }
+    ]),
     digitalContent: null,
-    tags: ['blanket', 'comfort', 'fleece', 'healing', 'premium'],
-    images: ['/products/blanket-cry-proof.jpg']
+    tags: ['shield', 'protection', 'pocket', 'reminder'],
+    images: ['/products/phone-case-shield.jpg'],
+    imageUrl: '/products/phone-case-shield.jpg',
+    timeToEarn: '~5 months',
+    userPerception: 'CTRL+ALT+BLOCK in your pocket.',
+    heroTagline: '5000 Bytes. One Shield. Pocket Protection.',
+    isHero: false,
+    features: ['Shock-absorbing protection', 'Anti-relapse reminder', 'Multiple device options', 'Durable design', 'Daily strength boost']
   },
-  
-  // Hoodies
-  HOODIE_GHOSTED: {
-    id: 'hoodie_got_ghosted',
-    name: 'Got Ghosted, Got This Hoodie',
-    description: 'Premium hoodie for survivors. Available in multiple colors and sizes.',
+
+  // 6. HOODIE (8000 bytes, ~8 months)
+  HOODIE: {
+    id: 'hoodie_wear_healing',
+    name: 'CTRL+ALT+BLOCK Healing Hoodie',
+    shortName: 'Hoodie',
+    description: 'Wear your healing. Every streak, every ritual, every night you didn\'t text your ex — stitched into a hoodie you earned, not bought.',
     category: 'physical',
     type: 'hoodie',
     bytePrice: 8000,
-    cashPrice: 5999, // $59.99
     isDigital: false,
     requiresShipping: true,
-    printifyProductId: 'hoodie_001',
+    printifyProductId: 'hoodie_healing_001',
     variants: JSON.stringify([
-      { color: 'white', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
       { color: 'black', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
       { color: 'gray', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { color: 'blue', sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
+      { color: 'navy', sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
     ]),
     digitalContent: null,
-    tags: ['hoodie', 'ghosted', 'survivor', 'premium', 'multiple-colors'],
-    images: ['/products/hoodie-ghosted-white.jpg', '/products/hoodie-ghosted-black.jpg']
+    tags: ['earned', 'healing', 'wearable', 'strength'],
+    images: ['/products/hoodie-healing-black.jpg'],
+    imageUrl: '/products/hoodie-healing-black.jpg',
+    timeToEarn: '~8 months',
+    userPerception: 'Wear your healing.',
+    heroTagline: '8000 Bytes. Earned Comfort. Worn Strength.',
+    isHero: false,
+    features: ['Premium cotton blend', 'Earned, not bought', 'Symbol of strength', 'Comfortable fit', 'Healing reminder']
   },
-  
-  HOODIE_CTRL_ALT_RECOVER: {
-    id: 'hoodie_ctrl_alt_recover',
-    name: 'Ctrl+Alt+Recover Hoodie',
-    description: 'Ultimate recovery hoodie for the healing tech generation.',
+
+  // 7. BLANKET (10,000 bytes, ~10 months) - HERO PRODUCT
+  BLANKET: {
+    id: 'blanket_cocoon_closure',
+    name: 'The Ultimate Cocoon of Closure',
+    shortName: 'Blanket',
+    description: 'The ultimate cocoon of closure. Wrap yourself in the proof you made it through. Legendary status unlocked: you survived, you thrived, you\'re done.',
     category: 'physical',
-    type: 'hoodie',
-    bytePrice: 8000,
-    cashPrice: 5999,
+    type: 'blanket',
+    bytePrice: 10000,
     isDigital: false,
     requiresShipping: true,
-    printifyProductId: 'hoodie_002',
-    variants: JSON.stringify([
-      { color: 'white', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { color: 'black', sizes: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { color: 'gray', sizes: ['S', 'M', 'L', 'XL', 'XXL'] }
-    ]),
+    printifyProductId: 'blanket_cocoon_001',
+    variants: JSON.stringify([{ size: '60x80', material: 'premium_fleece' }]),
     digitalContent: null,
-    tags: ['hoodie', 'tech', 'recover', 'premium', 'ultimate'],
-    images: ['/products/hoodie-recover-white.jpg', '/products/hoodie-recover-black.jpg']
+    tags: ['legendary', 'cocoon', 'closure', 'ultimate', 'graduation'],
+    images: ['/products/blanket-cocoon-hero.jpg'],
+    imageUrl: '/products/blanket-cocoon-hero.jpg',
+    timeToEarn: '~10 months',
+    userPerception: 'The ultimate cocoon of closure.',
+    heroTagline: '10,000 Bytes. One Cocoon. Total Closure.',
+    isHero: true, // HERO PRODUCT - always highlighted
+    isLegendary: true,
+    features: ['Legendary status reward', 'Premium fleece material', 'Symbol of completion', 'Ultimate comfort', 'Proof you made it']
   }
+
 } as const;
 
 // =====================================
@@ -314,30 +309,35 @@ export const SHOP_PRODUCTS = {
 export const BYTE_TO_DOLLAR_RATE = 100; // 100 Bytes = $1
 
 export const REWARD_TIERS = {
-  QUICK_WIN: {
-    timeframe: '1-2 weeks',
-    products: ['AUDIOBOOK'],
-    description: 'Early motivation rewards'
+  STARTER: {
+    timeframe: 'Instant / 1 week',
+    products: ['WORKBOOK'],
+    description: 'Essential healing starter kit'
   },
-  MONTHLY: {
+  DIGITAL_HEALING: {
     timeframe: '1 month',
-    products: ['MUG_WHITE_SELF_CARE', 'MUG_BLACK_HEALING', 'MUG_BLUE_BYTE'],
-    description: 'First tangible milestone'
+    products: ['AUDIOBOOK'],
+    description: 'Comedy and chaos for healing'
   },
-  COLLECTOR: {
-    timeframe: '2-3 months', 
+  FIRST_PHYSICAL: {
+    timeframe: '3 months', 
     products: ['SIGNED_PAPERBACK'],
-    description: 'Collectible tier'
+    description: 'Your first heartbreak trophy'
   },
-  PREMIUM: {
-    timeframe: '5 months',
-    products: ['BLANKET_BREAKUP_BUNKER', 'BLANKET_CRY_PROOF'],
-    description: 'Premium comfort items'
+  RITUAL_OBJECTS: {
+    timeframe: '4-5 months',
+    products: ['CANDLE', 'PHONE_CASE'],
+    description: 'Tools for daily healing'
   },
-  ULTIMATE: {
-    timeframe: '8+ months',
-    products: ['HOODIE_GHOSTED', 'HOODIE_CTRL_ALT_RECOVER'],
-    description: 'Ultimate prestige rewards'
+  EARNED_COMFORT: {
+    timeframe: '8 months',
+    products: ['HOODIE'],
+    description: 'Wearable proof of strength'
+  },
+  LEGENDARY: {
+    timeframe: '10 months',
+    products: ['BLANKET'],
+    description: 'Ultimate graduation reward'
   }
 } as const;
 
