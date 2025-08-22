@@ -8,13 +8,13 @@ export const BYTE_EARNING_ACTIVITIES = {
   // Core Rituals (Main earning engine)
   DAILY_RITUAL_1: {
     activity: 'daily_ritual_1',
-    bytes: 10,
+    bytes: 8,
     dailyLimit: 1,
     description: 'Complete first daily ritual'
   },
   DAILY_RITUAL_2: {
     activity: 'daily_ritual_2', 
-    bytes: 10,
+    bytes: 8,
     dailyLimit: 1,
     description: 'Complete second daily ritual'
   },
@@ -22,19 +22,19 @@ export const BYTE_EARNING_ACTIVITIES = {
   // Self-Tracking & Reflection
   DAILY_CHECKIN: {
     activity: 'daily_checkin',
-    bytes: 5,
+    bytes: 4,
     dailyLimit: 1,
     description: 'Complete daily mood/status check-in'
   },
   JOURNAL_PROMPT: {
     activity: 'journal_prompt',
-    bytes: 5,
+    bytes: 4,
     dailyLimit: 1,
     description: 'Complete daily journal prompt'
   },
   NO_CONTACT_STREAK: {
     activity: 'no_contact_checkin',
-    bytes: 5,
+    bytes: 4,
     dailyLimit: 1,
     description: 'Confirm no-contact streak maintained'
   },
@@ -42,23 +42,33 @@ export const BYTE_EARNING_ACTIVITIES = {
   // Community & AI Engagement  
   WALL_POST: {
     activity: 'wall_post',
-    bytes: 5,
-    dailyLimit: 3,
+    bytes: 4,
+    dailyLimit: 2,
     description: 'Create a Wall of Wounds post'
   },
   WALL_REACTION: {
     activity: 'wall_reaction',
-    bytes: 2,
-    dailyLimit: 5,
+    bytes: 1,
+    dailyLimit: 3,
     description: 'React to or support a Wall post'
   },
   AI_THERAPY_SESSION: {
     activity: 'ai_therapy',
-    bytes: 10,
+    bytes: 8,
     dailyLimit: 1,
-    description: 'Complete AI therapy chat session'
+    weeklyLimit: 1,
+    description: 'Complete AI therapy chat session (once per week)'
   }
 } as const;
+
+// Add type for weekly limits
+export type ByteEarningActivity = {
+  activity: string;
+  bytes: number;
+  dailyLimit?: number;
+  weeklyLimit?: number;
+  description: string;
+};
 
 // =====================================
 // STREAK BONUSES
@@ -403,7 +413,7 @@ export const formatPrice = (cents: number): string => {
   return `$${(cents / 100).toFixed(2)}`;
 };
 
-// Daily potential: ~30-35 Bytes
+// Daily potential: ~35 Bytes
 // Monthly potential: ~1,000 Bytes
 console.log('📊 Byte Economy Summary:');
 console.log(`Daily potential: ${calculateDailyBytesPotential()} Bytes`);

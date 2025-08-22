@@ -46,6 +46,33 @@ export class ByteService {
           };
         }
       }
+
+      // Check weekly limits for AI therapy
+      if (rule.weeklyLimit && activity === 'AI_THERAPY_SESSION') {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        
+        const weeklyEarnings = await db
+          .select({ count: sum(userByteHistory.amount) })
+          .from(userByteHistory)
+          .where(and(
+            eq(userByteHistory.userId, userId),
+            eq(userByteHistory.activity, activity),
+            gte(userByteHistory.createdAt, weekAgo),
+            gte(userByteHistory.amount, 0)
+          ));
+        
+        const earnedThisWeek = Number(weeklyEarnings[0]?.count || 0);
+        const maxWeekly = rule.bytes * rule.weeklyLimit;
+        
+        if (earnedThisWeek >= maxWeekly) {
+          return {
+            success: false,
+            message: `Weekly limit reached for AI therapy sessions. You can still use AI therapy, but bytes are awarded only once per week.`,
+            bytesAwarded: 0
+          };
+        }
+      }
       
       // Get current user balance
       const [user] = await db

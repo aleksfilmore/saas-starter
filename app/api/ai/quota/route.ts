@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
     // Get user data
     const [user] = await db
       .select({
-        level: users.level,
         bytes: users.bytes,
         aiQuotaUsed: users.aiQuotaUsed,
         aiQuotaResetAt: users.aiQuotaResetAt
@@ -28,10 +27,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Calculate daily quota based on level
-    const baseQuota = 5
-    const levelBonus = Math.floor(user.level / 5) * 5 // +5 messages every 5 levels
-    const totalQuota = baseQuota + levelBonus
+    // Calculate daily quota - base quota for all users
+    const totalQuota = 5
 
     // Check if quota needs reset (daily reset at midnight)
     const now = new Date()

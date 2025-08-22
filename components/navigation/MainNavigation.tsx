@@ -26,11 +26,10 @@ import {
 interface MainNavigationProps {
   currentPath?: string;
   userStats?: {
-    level: number;
-    xp: number;
     streak: number;
     bytes: number;
     username?: string;
+    badges?: number;
   };
 }
 
@@ -118,12 +117,12 @@ export function MainNavigation({ currentPath, userStats }: MainNavigationProps) 
                 <h3 className="font-semibold text-white">
                   Welcome, {userStats.username || 'Warrior'}
                 </h3>
-                <p className="text-sm text-gray-400">Level {userStats.level}</p>
+                <p className="text-sm text-gray-400">Badges: {userStats.badges || 0}</p>
               </div>
               <div className="flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1">
                   <Zap className="h-4 w-4 text-cyan-400" />
-                  <span className="text-cyan-400">{userStats.xp.toLocaleString()}</span>
+                  <span className="text-cyan-400">{userStats.bytes.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Flame className="h-4 w-4 text-orange-400" />

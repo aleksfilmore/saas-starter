@@ -58,12 +58,11 @@ export function DailyRitualDashboard() {
 
   // Handle ritual completion
   const handleRitualComplete = async (data: {
-    xpEarned: number;
     bytesEarned: number;
     streakDays: number;
   }) => {
     // Show success message
-    toast.success(`Ritual Completed! 🎉 Earned ${data.xpEarned} XP and ${data.bytesEarned} Bytes. Current streak: ${data.streakDays} days.`);
+    toast.success(`Ritual Completed! 🎉 Earned ${data.bytesEarned} Bytes. Current streak: ${data.streakDays} days.`);
 
     // Reload ritual data
     await loadTodaysRituals();
@@ -241,7 +240,7 @@ export function DailyRitualDashboard() {
             <div>
               <h3 className="font-medium text-purple-900">Daily Ritual System</h3>
               <p className="text-sm text-purple-700 mt-1">
-                Complete 2 rituals daily to maintain your streak and earn XP/Bytes. 
+                Complete 2 rituals daily to maintain your streak and earn Bytes. 
                 You can reroll once per day if you don't like your assignments. 
                 Each ritual requires journaling and reflection to complete.
               </p>

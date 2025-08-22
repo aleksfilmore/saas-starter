@@ -36,7 +36,6 @@ interface JournalEntry {
   howIFeel: string
   tags: string
   source: string
-  xpAwarded: number
   bytesAwarded: number
   createdAt: string
 }
@@ -213,13 +212,8 @@ export function JournalHistory({ isOpen, onClose, ritualCode = 'all' }: JournalH
                           </div>
                         </div>
                         
-                        {(entry.xpAwarded > 0 || entry.bytesAwarded > 0) && (
+                        {entry.bytesAwarded > 0 && (
                           <div className="flex gap-1">
-                            {entry.xpAwarded > 0 && (
-                              <Badge className="bg-purple-600 text-white text-xs">
-                                +{entry.xpAwarded} XP
-                              </Badge>
-                            )}
                             {entry.bytesAwarded > 0 && (
                               <Badge className="bg-blue-600 text-white text-xs">
                                 +{entry.bytesAwarded} Bytes

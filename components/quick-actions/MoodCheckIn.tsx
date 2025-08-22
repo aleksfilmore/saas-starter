@@ -256,7 +256,7 @@ export function MoodCheckIn({ onComplete }: MoodCheckInProps) {
                 System Status: {selectedMood?.label} {selectedMood?.emoji}
               </p>
               <Badge className={selectedMood?.color}>
-                +10 XP • +5 Bytes
+                +4 Bytes
               </Badge>
             </div>
             <p className="text-gray-400 text-sm">

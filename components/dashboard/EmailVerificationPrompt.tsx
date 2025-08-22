@@ -84,7 +84,7 @@ export function EmailVerificationPrompt({ userEmail, onDismiss, className = "" }
             </div>
             
             <p className="text-gray-300 text-xs mb-3 leading-relaxed">
-              Unlock <span className="text-yellow-400 font-semibold">+50 XP</span>, priority support, and exclusive badges by verifying {userEmail}
+              Unlock <span className="text-yellow-400 font-semibold">+20 Bytes</span>, priority support, and exclusive badges by verifying {userEmail}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2">

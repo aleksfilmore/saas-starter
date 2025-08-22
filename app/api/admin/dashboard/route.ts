@@ -68,14 +68,13 @@ export async function GET(request: NextRequest) {
         username: users.username,
         avatar: users.avatar,
         subscriptionTier: users.subscriptionTier,
-        xpPoints: users.xpPoints,
+        bytes: users.bytes,
         byteBalance: users.byteBalance,
-        glowUpLevel: users.glowUpLevel,
         totalRituals: count(ritualCompletions.id)
       })
       .from(users)
       .leftJoin(ritualCompletions, eq(users.id, ritualCompletions.userId))
-      .groupBy(users.id, users.username, users.avatar, users.subscriptionTier, users.xpPoints, users.byteBalance, users.glowUpLevel)
+      .groupBy(users.id, users.username, users.avatar, users.subscriptionTier, users.bytes, users.byteBalance)
       .orderBy(desc(count(ritualCompletions.id)))
       .limit(20);
 
@@ -95,8 +94,7 @@ export async function GET(request: NextRequest) {
         codename: user.username || 'Unassigned Operative',
         avatar: user.avatar || 'default-glitch',
         tier: user.subscriptionTier || 'ghost_mode',
-        glowUpLevel: user.glowUpLevel || 1,
-        xpPoints: user.xpPoints || 0,
+        bytes: user.bytes || 0,
         byteBalance: user.byteBalance || 0,
         totalRituals: user.totalRituals || 0
       }))

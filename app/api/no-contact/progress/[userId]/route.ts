@@ -68,13 +68,13 @@ function calculateNextMilestone(currentDays: number): { days: number; reward: st
   const nextMilestone = milestones.find(m => m > currentDays) || 365;
   
   const rewards = {
-    7: '50 XP + Weekly Warrior badge',
-    14: '100 XP + Two Week Champion badge',
-    30: '200 XP + Monthly Master badge',
-    60: '300 XP + 60-Day Defender badge',
-    90: '500 XP + 90-Day Guardian badge',
-    180: '750 XP + Half-Year Hero badge',
-    365: '1000 XP + Year-Long Legend badge'
+    7: '8 Bytes + Weekly Warrior badge',
+    14: '12 Bytes + Two Week Champion badge',
+    30: '20 Bytes + Monthly Master badge',
+    60: '30 Bytes + 60-Day Defender badge',
+    90: '50 Bytes + 90-Day Guardian badge',
+    180: '75 Bytes + Half-Year Hero badge',
+    365: '100 Bytes + Year-Long Legend badge'
   };
 
   return {
@@ -85,13 +85,13 @@ function calculateNextMilestone(currentDays: number): { days: number; reward: st
 
 function getMilestoneRewards(currentDays: number): Array<{ days: number; reward: string; achieved: boolean }> {
   const milestones = [
-    { days: 7, reward: '50 XP + Weekly Warrior badge' },
-    { days: 14, reward: '100 XP + Two Week Champion badge' },
-    { days: 30, reward: '200 XP + Monthly Master badge' },
-    { days: 60, reward: '300 XP + 60-Day Defender badge' },
-    { days: 90, reward: '500 XP + 90-Day Guardian badge' },
-    { days: 180, reward: '750 XP + Half-Year Hero badge' },
-    { days: 365, reward: '1000 XP + Year-Long Legend badge' }
+    { days: 7, reward: '8 Bytes + Weekly Warrior badge' },
+    { days: 14, reward: '12 Bytes + Two Week Champion badge' },
+    { days: 30, reward: '20 Bytes + Monthly Master badge' },
+    { days: 60, reward: '30 Bytes + 60-Day Defender badge' },
+    { days: 90, reward: '50 Bytes + 90-Day Guardian badge' },
+    { days: 180, reward: '75 Bytes + Half-Year Hero badge' },
+    { days: 365, reward: '100 Bytes + Year-Long Legend badge' }
   ];
 
   return milestones.map(milestone => ({

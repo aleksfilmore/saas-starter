@@ -33,9 +33,7 @@ export const users = pgTable('users', {
   avatarStyle: text('avatar_style'),
   
   // Gamification & Progress
-  xp: integer('xp').notNull().default(0),
   bytes: integer('bytes').notNull().default(100),
-  level: integer('level').notNull().default(1),
   streak: integer('streak').notNull().default(0),
   streakDays: integer('streak_days').notNull().default(0),
   longestStreak: integer('longest_streak').notNull().default(0),
@@ -47,7 +45,6 @@ export const users = pgTable('users', {
   
   // Legacy fields (keeping for backward compatibility)
   subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'),
-  xpPoints: integer('xp_points').notNull().default(0),
   byteBalance: integer('byte_balance').notNull().default(100),
   glowUpLevel: integer('glow_up_level').notNull().default(1),
   uxStage: text('ux_stage').default('newcomer'), // newcomer, established, veteran, system_admin

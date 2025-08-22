@@ -111,10 +111,6 @@ export function DailyRitualCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
-                <Zap className="h-4 w-4 text-yellow-500" />
-                <span className="font-medium">{categoryInfo?.baseXP || ritual.xpReward} XP</span>
-              </div>
-              <div className="flex items-center gap-1">
                 <div className="h-4 w-4 bg-purple-500 rounded" />
                 <span className="font-medium">{categoryInfo?.baseBytes || ritual.bytesReward} Bytes</span>
               </div>

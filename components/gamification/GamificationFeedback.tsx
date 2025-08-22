@@ -1,7 +1,7 @@
 'use client';
 
 // Enhanced Gamification Visual Feedback
-// Animated level-ups, XP confetti bursts, badge unlock modals
+// Animated bytes rewards, badge unlock modals
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,13 +19,6 @@ import {
   Download
 } from 'lucide-react';
 
-interface LevelUpNotificationProps {
-  show: boolean;
-  newLevel: number;
-  xpGained: number;
-  onClose: () => void;
-}
-
 interface BadgeUnlockProps {
   show: boolean;
   badge: {
@@ -39,7 +32,7 @@ interface BadgeUnlockProps {
   onShare?: () => void;
 }
 
-interface XPConfettiProps {
+interface BytesConfettiProps {
   show: boolean;
   amount: number;
   onComplete: () => void;
@@ -51,14 +44,14 @@ interface AchievementCelebrationProps {
     id: string;
     title: string;
     description: string;
-    xpValue: number;
+    bytesValue: number;
     rarity: string;
   };
   onClose: () => void;
 }
 
-// Confetti Animation Component
-export function XPConfetti({ show, amount, onComplete }: XPConfettiProps) {
+// Bytes Confetti Animation Component
+export function BytesConfetti({ show, amount, onComplete }: BytesConfettiProps) {
   const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, delay: number}>>([]);
 
   useEffect(() => {
@@ -105,134 +98,21 @@ export function XPConfetti({ show, amount, onComplete }: XPConfettiProps) {
         ))}
       </AnimatePresence>
       
-      {/* XP Text Animation */}
+      {/* Bytes Text Animation */}
       <motion.div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         initial={{ opacity: 0, scale: 0, y: 0 }}
         animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0.8], y: [0, -50, -100] }}
         transition={{ duration: 2, ease: "easeOut" }}
       >
-        <div className="text-4xl font-bold text-yellow-400 drop-shadow-lg">
-          +{amount} XP
+        <div className="text-4xl font-bold text-blue-400 drop-shadow-lg">
+          +{amount} Bytes
         </div>
       </motion.div>
     </div>
   );
 }
 
-// Level Up Notification
-export function LevelUpNotification({ show, newLevel, xpGained, onClose }: LevelUpNotificationProps) {
-  if (!show) return null;
-
-  return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      >
-        <motion.div
-          className="relative"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          exit={{ scale: 0, rotate: 180 }}
-          transition={{ type: "spring", damping: 15, stiffness: 300 }}
-          onClick={(e: React.MouseEvent) => e.stopPropagation()}
-        >
-          <Card className="w-96 bg-gradient-to-br from-purple-900 via-pink-900 to-orange-900 border-2 border-yellow-500/50 relative overflow-hidden">
-            {/* Animated Background Effects */}
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-transparent to-purple-500/20 animate-pulse" />
-            
-            {/* Sparkle Animations */}
-            <div className="absolute inset-0">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute text-yellow-400"
-                  style={{
-                    left: `${20 + (i * 10)}%`,
-                    top: `${20 + (i % 3) * 30}%`,
-                  }}
-                  animate={{
-                    opacity: [0, 1, 0],
-                    scale: [0.5, 1, 0.5],
-                    rotate: [0, 180, 360]
-                  }}
-                  transition={{
-                    duration: 2,
-                    delay: i * 0.2,
-                    repeat: Infinity,
-                    repeatType: "loop"
-                  }}
-                >
-                  <Sparkles className="h-4 w-4" />
-                </motion.div>
-              ))}
-            </div>
-
-            <CardContent className="p-8 text-center relative z-10">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={onClose}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-
-              <motion.div
-                className="mb-6"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0]
-                }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "loop"
-                }}
-              >
-                <Crown className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
-              </motion.div>
-
-              <h2 className="text-3xl font-bold text-yellow-400 mb-2">
-                LEVEL UP!
-              </h2>
-              
-              <div className="space-y-2 mb-6">
-                <p className="text-xl text-white">
-                  You've reached <span className="text-yellow-400 font-bold">Level {newLevel}</span>
-                </p>
-                <p className="text-gray-300">
-                  +{xpGained} XP earned
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-lg px-4 py-2">
-                  <Zap className="h-4 w-4 mr-2" />
-                  New abilities unlocked!
-                </Badge>
-                
-                <div className="flex gap-2 justify-center">
-                  <Button variant="outline" className="border-gray-600 hover:bg-gray-800">
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share
-                  </Button>
-                  <Button onClick={onClose} className="bg-yellow-600 hover:bg-yellow-700">
-                    Continue Journey
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
 
 // Badge Unlock Modal
 export function BadgeUnlockModal({ show, badge, onClose, onShare }: BadgeUnlockProps) {
@@ -417,7 +297,7 @@ export function AchievementCelebration({ show, achievement, onClose }: Achieveme
 
               <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-lg px-4 py-2 mb-6">
                 <Zap className="h-4 w-4 mr-2" />
-                +{achievement.xpValue} XP
+                +{achievement.bytesValue} Bytes
               </Badge>
               
               <Button onClick={onClose} className="bg-green-600 hover:bg-green-700 w-full">

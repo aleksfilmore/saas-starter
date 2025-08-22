@@ -1124,7 +1124,7 @@ function AdaptiveDashboard({ user }: Props) {
           }]}
           onClose={() => setActiveModal(null)}
           onComplete={async (ritualId: string) => {
-            // For secondary ritual, we don't mark the main ritual task but can give XP
+            // For secondary ritual, we don't mark the main ritual task but can give bytes
             setActiveModal(null);
             return true;
           }}

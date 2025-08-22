@@ -185,7 +185,7 @@ export default function RitualLibrary({ userTier, onStartRitual }: RitualLibrary
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-sm">
                             <Zap className="h-4 w-4 text-yellow-500" />
-                            <span className="font-medium">+{ritual.xpReward} XP</span>
+                            <span className="font-medium">+{ritual.byteReward} Bytes</span>
                             <span className="text-gray-400">|</span>
                             <span className="font-medium">+{ritual.byteReward} bytes</span>
                           </div>

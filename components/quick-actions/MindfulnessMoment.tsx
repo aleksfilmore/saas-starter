@@ -325,11 +325,8 @@ export function MindfulnessMoment({ onComplete }: MindfulnessMomentProps) {
                 Completed {state.currentExercise.name} • {state.currentExercise.duration} minutes
               </p>
               <div className="flex justify-center space-x-2">
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
-                  +{state.currentExercise.duration * 10} XP
-                </Badge>
                 <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50">
-                  +{state.currentExercise.duration * 5} Bytes
+                  +{state.currentExercise.duration * 3} Bytes
                 </Badge>
               </div>
             </div>

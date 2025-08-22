@@ -36,7 +36,7 @@ export default function FeatureGate({
   const userStageLevel = stageHierarchy[data.ux_stage];
   const requiredStageLevel = stageHierarchy[stage];
 
-  // User has access if their stage level is >= required stage level
+  // User has access if their stage progression is >= required stage level
   const hasAccess = userStageLevel >= requiredStageLevel;
 
   if (hasAccess) {
@@ -58,7 +58,7 @@ export default function FeatureGate({
             </h3>
             <p className="text-gray-300 text-sm mb-3">
               {stage === 'core' 
-                ? 'Unlock at Day 5 or 50 XP'
+                ? 'Unlock at Day 5 or 200 Bytes'
                 : 'Unlock at Day 14 or with subscription'
               }
             </p>

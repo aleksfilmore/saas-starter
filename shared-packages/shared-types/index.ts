@@ -21,9 +21,7 @@ export interface User {
   avatar?: string;
   onboardingCompleted?: boolean;
   subscriptionTier?: string;
-  xpPoints?: number;
   byteBalance?: number;
-  glowUpLevel?: number;
   isAdmin?: boolean;
   isBanned?: boolean;
   lastActiveAt?: Date;

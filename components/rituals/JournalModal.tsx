@@ -142,7 +142,7 @@ export function JournalModal({
         setSavedEntry(result)
         setShowSuccess(true)
         
-        // Refresh user data to update XP/Bytes
+        // Refresh user data to update Bytes
         await refetchUser()
         
         // Notify parent component
@@ -167,7 +167,7 @@ export function JournalModal({
   }
 
   const handleSkip = () => {
-    // Allow one skip per day without XP penalty for free users
+    // Allow one skip per day without bytes penalty for free users
     onClose()
   }
 
@@ -199,9 +199,6 @@ export function JournalModal({
 
             {savedEntry.qualifiesForReward && (
               <div className="flex items-center justify-center gap-4 mb-4">
-                <Badge className="bg-purple-600 text-white">
-                  +{savedEntry.xpAwarded} XP
-                </Badge>
                 <Badge className="bg-blue-600 text-white">
                   +{savedEntry.bytesAwarded} Bytes
                 </Badge>
@@ -244,19 +241,19 @@ export function JournalModal({
                   {qualifiesForReward ? (
                     <Badge className="bg-green-600 text-white">
                       <Award className="w-3 h-3 mr-1" />
-                      XP Ready
+                      Bytes Ready
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="border-gray-600 text-gray-400">
-                      {!meetsTimeCriteria && `${minTimeSpent - timeSpent}s to XP`}
-                      {!meetsTextCriteria && meetsTimeCriteria && `${minTextLength - textLength} chars to XP`}
+                      {!meetsTimeCriteria && `${minTimeSpent - timeSpent}s to Bytes`}
+                      {!meetsTextCriteria && meetsTimeCriteria && `${minTextLength - textLength} chars to Bytes`}
                     </Badge>
                   )}
                 </div>
               </div>
               
               <div className="mt-2 text-xs text-gray-400">
-                Need {minTimeSpent}s + {minTextLength} characters for XP/Bytes
+                Need {minTimeSpent}s + {minTextLength} characters for Bytes
               </div>
             </CardContent>
           </Card>

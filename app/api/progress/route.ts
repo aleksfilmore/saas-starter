@@ -7,19 +7,31 @@ import {
   ritualEntries, 
   anonymousPosts, 
   dailyCheckIns,
-  xpTransactions,
   byteTransactions 
 } from '@/lib/db/schema';
 import { eq, desc, gte, and, count } from 'drizzle-orm';
 
-// Helper function to calculate level from XP
-const calculateLevel = (xp: number) => {
-  const level = Math.floor(xp / 1000) + 1;
-  const xpInCurrentLevel = xp % 1000;
-  const nextLevelXP = 1000;
-  const progressToNext = (xpInCurrentLevel / nextLevelXP) * 100;
+// Simplified progress system - no XP/levels, focus on streaks and badges
+const calculateProgress = (streakDays: number) => {
+  // Return badge progression based on streaks instead of XP
+  const badgeThresholds = [7, 14, 30, 60, 90, 180, 365];
+  let currentLevel = 1;
+  let nextThreshold = badgeThresholds[0];
   
-  return { level, xpInCurrentLevel, nextLevelXP, progressToNext };
+  for (let i = 0; i < badgeThresholds.length; i++) {
+    if (streakDays >= badgeThresholds[i]) {
+      currentLevel = i + 2; // Start at level 2 for first badge
+      nextThreshold = badgeThresholds[i + 1] || badgeThresholds[i];
+    } else {
+      nextThreshold = badgeThresholds[i];
+      break;
+    }
+  }
+  
+  const progressToNext = nextThreshold > streakDays ? 
+    (streakDays / nextThreshold) * 100 : 100;
+  
+  return { currentLevel, nextThreshold, progressToNext };
 };
 
 // Helper function to calculate streak
@@ -154,11 +166,11 @@ const generateProgressData = async (userId: string, timeRange: string) => {
       .orderBy(desc(dailyCheckIns.checkInDate))
       .limit(10);
 
-    // Calculate level and progress
-    const levelInfo = calculateLevel(user.xp || 0);
-    
     // Calculate streaks
     const streakInfo = await calculateStreak(userId);
+
+    // Calculate progress based on streaks instead of XP
+    const progressInfo = calculateProgress(streakInfo.current);
 
     // Calculate average mood
     const avgMood = moodData.length > 0 
@@ -192,12 +204,11 @@ const generateProgressData = async (userId: string, timeRange: string) => {
 
     return {
       user: {
-        level: levelInfo.level,
-        xp: user.xp || 0,
-        nextLevelXP: levelInfo.nextLevelXP,
-        progressToNext: levelInfo.progressToNext,
+        level: progressInfo.currentLevel,
         streak: streakInfo.current,
         longestStreak: streakInfo.longest,
+        nextThreshold: progressInfo.nextThreshold,
+        progressToNext: progressInfo.progressToNext,
         bytes: user.bytes || 100,
         username: user.username || user.codename || user.email?.split('@')[0] || 'Healing Warrior',
         avatar: user.avatar || '🔥'
@@ -216,7 +227,7 @@ const generateProgressData = async (userId: string, timeRange: string) => {
           id: ritual.id,
           title: 'Daily Ritual', // Could be enhanced with ritual title lookup
           completedAt: ritual.completedAt.toISOString(),
-          xpGained: 100 // Could be stored in ritual completion or calculated
+          bytesGained: 8 // Simplified bytes-only reward
         })),
         moods: moodData.map(mood => ({
           date: mood.checkInDate.toISOString(),
@@ -236,12 +247,11 @@ const generateProgressData = async (userId: string, timeRange: string) => {
 const generateMockData = (timeRange: string) => {
   const baseData = {
     user: {
-      level: 8,
-      xp: 12500,
-      nextLevelXP: 1000,
-      progressToNext: 50.0,
+      level: 3, // Badge level instead of XP level
       streak: 14,
       longestStreak: 28,
+      nextThreshold: 30, // Days to next badge
+      progressToNext: 46.7, // (14/30)*100
       bytes: 850,
       username: 'Healing Warrior',
       avatar: '🔥'
@@ -261,19 +271,19 @@ const generateMockData = (timeRange: string) => {
           id: '1',
           title: 'Morning Meditation',
           completedAt: new Date().toISOString(),
-          xpGained: 100
+          bytesGained: 8
         },
         {
           id: '2', 
           title: 'Gratitude Journal',
           completedAt: new Date(Date.now() - 86400000).toISOString(),
-          xpGained: 75
+          bytesGained: 8
         },
         {
           id: '3',
           title: 'Breathing Exercise',
           completedAt: new Date(Date.now() - 172800000).toISOString(),
-          xpGained: 50
+          bytesGained: 8
         }
       ],
       moods: [

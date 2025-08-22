@@ -23,9 +23,8 @@ export async function POST(req: NextRequest) {
       avatar: avatar,
       subscriptionTier: subscriptionTier || 'anonymous',
       hasCompletedOnboarding: true,
-      xpPoints: 0,
+      bytes: 100, // Starting bonus
       byteBalance: 100, // Starting bonus
-      glowUpLevel: 1,
       onboardedAt: new Date(),
     });
 

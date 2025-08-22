@@ -261,7 +261,7 @@ export default function SimplifiedAITherapyPage() {
             username: user?.username || 'User',
             streak: 34,
             bytes: 730,
-            level: 3,
+            badges: 3,
             noContactDays: 12,
             subscriptionTier: user?.subscriptionTier || 'free'
           }}

@@ -6,13 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface UserStats {
-  level: number;
   title: string;
-  xp: number;
   bytes: number;
   badges: number;
   wallPosts: number;
   tier: string;
+  streak: number;
 }
 
 export default function GamificationStats() {
@@ -83,10 +82,10 @@ export default function GamificationStats() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Level & Title */}
+        {/* Badge Collection & Title */}
         <div className="text-center">
           <div className="text-2xl font-bold text-yellow-400">
-            LEVEL_{stats.level}
+            🏆 {stats.badges} BADGES
           </div>
           <div className="text-green-300">{stats.title}</div>
           <Badge className={`mt-2 ${getTierColor(stats.tier)}`}>
@@ -94,16 +93,16 @@ export default function GamificationStats() {
           </Badge>
         </div>
 
-        {/* XP Progress */}
+        {/* Streak Progress */}
         <div>
           <div className="flex justify-between text-sm mb-1">
-            <span className="text-green-300">GLOW_UP_XP:</span>
-            <span className="text-yellow-400">{stats.xp.toLocaleString()}</span>
+            <span className="text-green-300">STREAK_DAYS:</span>
+            <span className="text-yellow-400">{stats.streak} days</span>
           </div>
           <div className="w-full bg-black border border-green-500 h-2 rounded">
             <div 
               className="bg-gradient-to-r from-green-500 to-yellow-500 h-full rounded"
-              style={{ width: `${Math.min((stats.xp % 100) || 100, 100)}%` }}
+              style={{ width: `${Math.min((stats.streak % 30) * 3.33 || 100, 100)}%` }}
             />
           </div>
         </div>

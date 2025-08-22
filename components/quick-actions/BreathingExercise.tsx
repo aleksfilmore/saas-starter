@@ -288,11 +288,8 @@ export function BreathingExercise({ onComplete, children }: BreathingExercisePro
                 Completed {selectedPattern.name} • {selectedPattern.cycles} cycles
               </p>
               <div className="flex justify-center space-x-2">
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
-                  +25 XP
-                </Badge>
                 <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">
-                  +15 Bytes
+                  +8 Bytes
                 </Badge>
               </div>
             </div>

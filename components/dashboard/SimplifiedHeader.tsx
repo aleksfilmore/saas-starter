@@ -12,7 +12,7 @@ interface SimplifiedHeaderProps {
     username: string
     streak: number
     bytes: number
-    level: number
+    badges: number
     noContactDays: number
     subscriptionTier: 'free' | 'premium'
   }
@@ -44,7 +44,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
             
             {/* Consolidated Status Pill - Compact */}
     <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800/60 rounded-full border border-gray-600/50 text-sm">
-              <div className="flex items-center gap-1" title="No-Contact streak & XP">
+              <div className="flex items-center gap-1" title="No-Contact streak & Badges">
                 <Flame className="h-4 w-4 text-orange-400" />
                 <button 
                   onClick={onCheckin}
@@ -70,20 +70,20 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                 <span className="text-gray-500 text-[10px]">B</span>
               </div>
               
-              <div className="flex items-center gap-1" title="User level">
-                <span className="text-white">Lvl {user.level}</span>
+              <div className="flex items-center gap-1" title="Badges earned">
+                <span className="text-white">🏆{user.badges}</span>
               </div>
             </div>
 
-            {/* Quick Breathing Action (always visible on desktop) */}
+            {/* Crisis Support */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={onBreathing}
-              className="hidden md:inline-flex text-teal-300 hover:text-teal-200 hover:bg-teal-500/10"
-              title="Open Breathing Exercise"
+              onClick={onCrisis}
+              className="hidden md:inline-flex text-red-300 hover:text-red-200 hover:bg-red-500/10"
+              title="Crisis Support"
             >
-              <Wind className="h-4 w-4" />
+              <Shield className="h-4 w-4" />
             </Button>
 
             {/* Notification Display */}
@@ -132,7 +132,7 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                           onBreathing()
                           setShowUserDropdown(false)
                         }}
-                        className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                        className="w-full px-4 py-2 text-left text-teal-300 hover:bg-gray-700 hover:text-teal-200 transition-colors flex items-center gap-2"
                       >
                         <Wind className="h-4 w-4" />
                         Breathing

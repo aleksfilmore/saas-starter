@@ -43,7 +43,7 @@ export function LumoOnboarding({ isFirstTimeUser, onDismiss, onStartNoContact, o
     {
       icon: <Shield className="h-8 w-8 text-orange-400" />,
       title: "No-Contact Tracker",
-      message: "Track your streak of digital silence. Every day without contact is XP toward your glow-up. Ready to start your firewall?",
+      message: "Track your streak of digital silence. Every day without contact earns badges toward your glow-up. Ready to start your firewall?",
       action: { label: "Start No-Contact", onClick: onStartNoContact }
     },
     {
@@ -70,7 +70,7 @@ export function LumoOnboarding({ isFirstTimeUser, onDismiss, onStartNoContact, o
     {
       icon: <Sparkles className="h-6 w-6 text-purple-400" />,
       title: "Glow-Up Status",
-      message: "You're leveling up every day. Check your progress and celebrate the small wins.",
+      message: "You're earning badges every day. Check your progress and celebrate the small wins.",
       action: null
     }
   ]

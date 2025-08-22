@@ -29,7 +29,7 @@ import {
 
 interface UserStats {
   totalPoints: number;
-  level: number;
+  badges: number;
   streak: number;
   completedQuests: number;
   aiConversations: number;
@@ -91,7 +91,7 @@ const DEFAULT_PROFILE: UserProfile = {
   joinDate: new Date(),
   stats: {
     totalPoints: 850,
-    level: 3,
+    badges: 12,
     streak: 7,
     completedQuests: 12,
     aiConversations: 45,
@@ -112,13 +112,11 @@ export function UserProfileManager({ user = DEFAULT_PROFILE, onProfileUpdate }: 
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState<UserProfile>(user);
 
-  const getLevelProgress = () => {
-    const currentLevel = user.stats.level;
-    const currentPoints = user.stats.totalPoints;
-    const currentThreshold = LEVEL_THRESHOLDS[currentLevel] || 0;
-    const nextThreshold = LEVEL_THRESHOLDS[currentLevel + 1] || LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
-    
-    const progress = ((currentPoints - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+  const getBadgeProgress = () => {
+    // Simple progress based on badge count
+    const badgeCount = user.stats.badges;
+    const maxBadges = 50; // Assume 50 total possible badges
+    const progress = (badgeCount / maxBadges) * 100;
     return Math.min(100, Math.max(0, progress));
   };
 
@@ -223,23 +221,23 @@ export function UserProfileManager({ user = DEFAULT_PROFILE, onProfileUpdate }: 
             <CardHeader>
               <CardTitle className="text-white flex items-center">
                 <Star className="w-5 h-5 mr-2" />
-                Warrior Level {user.stats.level}
+                Badge Collection ({user.stats.badges} badges)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-300">Progress to Level {user.stats.level + 1}</span>
-                  <span className="text-purple-400 font-bold">{user.stats.totalPoints} points</span>
+                  <span className="text-gray-300">Badge Progress</span>
+                  <span className="text-purple-400 font-bold">{user.stats.totalPoints} total points</span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-3">
                   <div
                     className="bg-gradient-to-r from-purple-600 to-blue-600 h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${getLevelProgress()}%` }}
+                    style={{ width: `${getBadgeProgress()}%` }}
                   ></div>
                 </div>
                 <p className="text-xs text-gray-400 text-center">
-                  {LEVEL_THRESHOLDS[user.stats.level + 1] - user.stats.totalPoints} points to next level
+                  {user.stats.badges} of 50 badges earned
                 </p>
               </div>
             </CardContent>

@@ -157,7 +157,7 @@ export function DailyRitual({ userId, userTier, streak, onRitualComplete }: Dail
             <div className="text-right">
               <div className="flex items-center gap-2 text-yellow-400 mb-1">
                 <Star className="h-4 w-4" />
-                <span className="font-bold">{currentRitual.xpReward} XP</span>
+                <span className="font-bold">{currentRitual.byteReward} Bytes</span>
               </div>
               <div className="flex items-center gap-2 text-blue-400">
                 <Gift className="h-4 w-4" />
@@ -258,7 +258,7 @@ export function DailyRitual({ userId, userTier, streak, onRitualComplete }: Dail
                   <div className="text-4xl mb-2">✨</div>
                   <h3 className="text-xl font-bold text-green-400 mb-2">Ritual Complete!</h3>
                   <p className="text-green-300 mb-4">
-                    You've earned {currentRitual.xpReward} XP and {currentRitual.byteReward} Bytes
+                    You've earned {currentRitual.byteReward} Bytes
                     {showProof && proof ? ' (+10 bonus Bytes for sharing)' : ''}
                   </p>
                   <div className="flex justify-center">

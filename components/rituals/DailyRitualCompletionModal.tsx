@@ -343,7 +343,7 @@ export function DailyRitualCompletionModal({
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Zap className="h-4 w-4 text-yellow-500" />
-                <span>{categoryInfo?.baseXP || ritual.xpReward} XP</span>
+                <span>{ritual.bytesReward} Bytes</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="h-4 w-4 bg-purple-500 rounded" />

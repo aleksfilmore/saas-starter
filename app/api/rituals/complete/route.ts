@@ -68,8 +68,7 @@ export async function POST(request: NextRequest) {
         AND completed_at IS NULL
     `);
 
-    // Calculate rewards from the ritual bank
-    const xpReward = ritual.xpReward;
+    // Calculate rewards from the ritual bank - only bytes now
     const byteReward = ritual.byteReward;
 
     // 🎯 BYTE ECONOMY: Award bytes for ritual completion
@@ -99,14 +98,12 @@ export async function POST(request: NextRequest) {
       // Continue with ritual completion even if byte award fails
     }
 
-    // Update user stats
+    // Update user stats - only streak tracking now
     const currentUserData = await db.execute(sql`
-      SELECT xp, level, ritual_streak FROM users WHERE id = ${user.id}
+      SELECT ritual_streak FROM users WHERE id = ${user.id}
     `);
 
-    const currentUser = currentUserData[0] as { xp: number; level: number; ritual_streak: number } | undefined;
-    const newXP = (currentUser?.xp || 0) + xpReward;
-    const newLevel = Math.floor(newXP / 1000) + 1;
+    const currentUser = currentUserData[0] as { ritual_streak: number } | undefined;
     const newRitualStreak = (currentUser?.ritual_streak || 0) + 1;
 
     // Award streak bonuses after we have the streak count
@@ -143,14 +140,11 @@ export async function POST(request: NextRequest) {
 
     await db.execute(sql`
       UPDATE users 
-      SET 
-        xp = ${newXP},
-        level = ${newLevel},
-        ritual_streak = ${newRitualStreak}
+      SET ritual_streak = ${newRitualStreak}
       WHERE id = ${user.id}
     `);
 
-    const leveledUp = newLevel > (currentUser?.level || 1);
+    // No longer tracking level ups - badges are the progression system
 
     // 🎯 BADGE SYSTEM: Trigger badge check-in for ritual completion
     try {
@@ -180,7 +174,7 @@ export async function POST(request: NextRequest) {
       console.warn('⚠️ Badge check-in failed (non-blocking):', badgeError);
     }
 
-    console.log('✅ Ritual completed:', ritual.title, 'XP:', xpReward, 'Bytes:', actualBytesAwarded);
+    console.log('✅ Ritual completed:', ritual.title, 'Bytes:', actualBytesAwarded);
 
     return NextResponse.json({
       success: true,
@@ -190,15 +184,10 @@ export async function POST(request: NextRequest) {
         completedAt: new Date().toISOString()
       },
       rewards: {
-        xp: xpReward,
         bytes: actualBytesAwarded, // Return actual bytes awarded
         streakBonus: streakBonus, // Include streak bonus info
-        leveledUp,
-        newLevel
       },
       user: {
-        xp: newXP,
-        level: newLevel,
         streak: newRitualStreak
       }
     });

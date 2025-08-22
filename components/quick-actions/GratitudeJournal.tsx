@@ -316,11 +316,8 @@ export function GratitudeJournal({ onComplete }: GratitudeJournalProps) {
                 {entries.length} gratitude {entries.length === 1 ? 'entry' : 'entries'} saved
               </p>
               <div className="flex justify-center space-x-2">
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
-                  +{entries.length * 15} XP
-                </Badge>
                 <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">
-                  +{entries.length * 10} Bytes
+                  +{entries.length * 6} Bytes
                 </Badge>
               </div>
             </div>
