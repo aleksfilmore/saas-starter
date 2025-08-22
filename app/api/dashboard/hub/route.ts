@@ -295,7 +295,21 @@ export async function GET(request: NextRequest) {
         message: motivationMessages[motivationLevel - 1]
       },
       completedRituals,
-      streakHistory
+      streakHistory,
+      todayActions: {
+        checkIn: false, // TODO: Implement actual check-in logic
+        noContact: false, // TODO: Check if user completed no-contact today
+        ritual: todaysRituals && todaysRituals.length > 0 ? todaysRituals.some((r: any) => r.completed) : false
+      },
+      recentActions: [
+        // TODO: Implement actual recent actions from database
+        // For now, providing empty array to prevent errors
+      ],
+      user: {
+        totalCheckIns: 0, // TODO: Calculate actual check-ins
+        totalNoContacts: noContactStreak, // Use current streak as placeholder
+        totalRituals: completedRituals
+      }
     };
 
     return NextResponse.json(dashboardData);

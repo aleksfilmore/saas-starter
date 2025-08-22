@@ -166,13 +166,13 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
                       <Heart className="w-5 h-5 text-pink-500" />
                       <span className="font-medium">Daily Check-in</span>
                     </div>
-                    {dashboardData.todayActions.checkIn ? (
+                    {dashboardData?.todayActions?.checkIn ? (
                       <Badge variant="default">+2 bytes</Badge>
                     ) : (
                       <Badge variant="outline">2 bytes</Badge>
                     )}
                   </div>
-                  {dashboardData.todayActions.checkIn ? (
+                  {dashboardData?.todayActions?.checkIn ? (
                     <p className="text-sm text-green-600">Completed today!</p>
                   ) : (
                     <Button 
@@ -191,13 +191,13 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
                       <Shield className="w-5 h-5 text-blue-500" />
                       <span className="font-medium">No Contact</span>
                     </div>
-                    {dashboardData.todayActions.noContact ? (
+                    {dashboardData?.todayActions?.noContact ? (
                       <Badge variant="default">+3 bytes</Badge>
                     ) : (
                       <Badge variant="outline">3 bytes</Badge>
                     )}
                   </div>
-                  {dashboardData.todayActions.noContact ? (
+                  {dashboardData?.todayActions?.noContact ? (
                     <p className="text-sm text-green-600">Completed today!</p>
                   ) : (
                     <Button 
@@ -216,13 +216,13 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
                       <Flame className="w-5 h-5 text-orange-500" />
                       <span className="font-medium">Daily Ritual</span>
                     </div>
-                    {dashboardData.todayActions.ritual ? (
+                    {dashboardData?.todayActions?.ritual ? (
                       <Badge variant="default">+5 bytes</Badge>
                     ) : (
                       <Badge variant="outline">5 bytes</Badge>
                     )}
                   </div>
-                  {dashboardData.todayActions.ritual ? (
+                  {dashboardData?.todayActions?.ritual ? (
                     <p className="text-sm text-green-600">Completed today!</p>
                   ) : (
                     <Button 
@@ -281,7 +281,7 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
                 <CardTitle className="text-sm font-medium">Total Check-ins</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dashboardData.user.totalCheckIns || 0}</div>
+                <div className="text-2xl font-bold">{dashboardData?.user?.totalCheckIns || 0}</div>
               </CardContent>
             </Card>
             <Card>
@@ -289,7 +289,7 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
                 <CardTitle className="text-sm font-medium">No Contact Days</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dashboardData.user.totalNoContacts || 0}</div>
+                <div className="text-2xl font-bold">{dashboardData?.user?.totalNoContacts || 0}</div>
               </CardContent>
             </Card>
             <Card>
@@ -297,7 +297,7 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
                 <CardTitle className="text-sm font-medium">Rituals Completed</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dashboardData.user.totalRituals || 0}</div>
+                <div className="text-2xl font-bold">{dashboardData?.user?.totalRituals || 0}</div>
               </CardContent>
             </Card>
           </div>
@@ -310,9 +310,9 @@ export function UnifiedDashboard({ user }: UnifiedDashboardProps) {
               <CardDescription>Your recent completed actions</CardDescription>
             </CardHeader>
             <CardContent>
-              {dashboardData.recentActions.length > 0 ? (
+              {dashboardData?.recentActions?.length > 0 ? (
                 <div className="space-y-3">
-                  {dashboardData.recentActions.map((action) => (
+                  {dashboardData.recentActions?.map((action) => (
                     <div key={action.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
                         {action.type === 'checkin' && <Heart className="w-4 h-4 text-pink-500" />}

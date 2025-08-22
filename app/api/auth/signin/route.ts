@@ -5,24 +5,16 @@ import { users } from '@/lib/db/schema'; // FIXED: Use main schema consistently
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
-import { authRateLimit } from '@/lib/middleware/rate-limiter';
-import { withValidation, schemas } from '@/lib/middleware/validation';
 
 // Force Node.js runtime for database operations
 export const runtime = 'nodejs';
 
-export const POST = withValidation(
-  { body: schemas.signIn },
-  async (request: NextRequest, { body }: { body: { email: string; password: string } }) => {
-    // Apply rate limiting
-    const rateLimitResponse = await authRateLimit(request);
-    if (rateLimitResponse) {
-      return rateLimitResponse;
-    }
+export async function POST(request: NextRequest) {
 
     try {
       console.log('Signin API called...');
       
+      const body = await request.json();
       const { email, password } = body;
 
       console.log('Signin attempt for email:', email);
@@ -104,5 +96,4 @@ export const POST = withValidation(
         { status: 500 }
       );
     }
-  }
-);
+}
