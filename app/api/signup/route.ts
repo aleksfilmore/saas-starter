@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/actual-schema';
+import { users } from '@/lib/db/schema'; // Use main schema
 import { eq } from 'drizzle-orm';
 import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';

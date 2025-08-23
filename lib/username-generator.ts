@@ -1,6 +1,6 @@
 // Server-side username generation utility
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/actual-schema';
+import { users } from '@/lib/db/schema'; // Use main schema
 import { eq } from 'drizzle-orm';
 
 const adjectives = [

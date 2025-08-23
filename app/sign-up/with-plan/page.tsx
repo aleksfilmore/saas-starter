@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft, Heart, Shield, CheckCircle, Crown, Ghost } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft, Heart, Shield, CheckCircle, Crown, Ghost, Dice6 } from 'lucide-react'
 import PlanSelection from '@/components/subscription/PlanSelection'
 
 const FloatingParticles = () => {
@@ -25,7 +25,7 @@ const FloatingParticles = () => {
   )
 }
 
-type Step = 'plan' | 'account' | 'processing'
+type Step = 'plan' | 'account' | 'username' | 'processing'
 type PlanType = 'FREE' | 'PREMIUM'
 
 function SignUpWithPlanContent() {
@@ -34,7 +34,8 @@ function SignUpWithPlanContent() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    username: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -42,11 +43,60 @@ function SignUpWithPlanContent() {
   const [wantsNewsletter, setWantsNewsletter] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [usernameLoading, setUsernameLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   
   // searchParams can be null during the very first render in some environments; guard it
   const fromScan = searchParams?.get('from') === 'scan'
+
+  // Username generation data
+  const adjectives = [
+    'anonymous', 'brave', 'calm', 'digital', 'evolved', 'free', 'guarded', 'hidden',
+    'improved', 'just', 'kind', 'liberated', 'motivated', 'new', 'optimized', 'protected',
+    'quiet', 'renewed', 'strong', 'transformed', 'upgraded', 'valued', 'wise', 'zen'
+  ];
+
+  const nouns = [
+    'seeker', 'warrior', 'guardian', 'builder', 'healer', 'survivor', 'dreamer', 'fighter',
+    'creator', 'explorer', 'phoenix', 'wanderer', 'architect', 'sage', 'champion', 'voyager'
+  ];
+
+  const numbers = [
+    '01', '02', '03', '07', '11', '13', '17', '19', '21', '23', '29', '31', '37', '41', '43', '47',
+    '53', '59', '61', '67', '71', '73', '79', '83', '89', '97', '42', '99', '88', '77'
+  ];
+
+  // Generate username function
+  const generateUsername = () => {
+    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    const number = numbers[Math.floor(Math.random() * numbers.length)];
+    const newUsername = `${adjective}_${noun}_${number}`;
+    setFormData(prev => ({ ...prev, username: newUsername }));
+  };
+
+  // Check username availability
+  const checkUsernameAvailability = async (usernameToCheck: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/check-username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: usernameToCheck }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.available;
+      }
+      return false;
+    } catch (error) {
+      console.error('Username check failed:', error);
+      return false;
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -68,6 +118,21 @@ function SignUpWithPlanContent() {
     const validationError = validateForm()
     if (validationError) {
       setError(validationError)
+      return
+    }
+
+    // Move to username selection step
+    setCurrentStep('username')
+    
+    // Auto-generate first username
+    if (!formData.username) {
+      generateUsername()
+    }
+  }
+
+  const handleUsernameSubmit = async () => {
+    if (!formData.username.trim()) {
+      setError('Please select a username')
       return
     }
 
@@ -103,6 +168,7 @@ function SignUpWithPlanContent() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
+          username: formData.username,
           wantsNewsletter,
           subscriptionTier: 'FREE',
           scanAnswers
@@ -160,6 +226,7 @@ function SignUpWithPlanContent() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
+          username: formData.username,
           wantsNewsletter,
           subscriptionTier: 'FREE', // Start as free, will be upgraded after payment
           scanAnswers
@@ -336,7 +403,7 @@ function SignUpWithPlanContent() {
                   <ArrowLeft className="h-4 w-4 mr-1" />
                   Back
                 </Button>
-                <div className="text-sm text-brand-light">Step 2 of 2</div>
+                <div className="text-sm text-brand-light">Step 2 of 3</div>
               </div>
               <CardTitle className="text-2xl font-bold text-center text-white brand-glow">Create Account</CardTitle>
               <CardDescription className="text-center text-brand-light">
@@ -486,7 +553,7 @@ function SignUpWithPlanContent() {
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <span>{selectedPlan === 'PREMIUM' ? 'Create Account & Subscribe' : 'Create Free Account'}</span>
+                      <span>Continue to Username</span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   )}
@@ -508,7 +575,109 @@ function SignUpWithPlanContent() {
     )
   }
 
-  // Step 3: Processing
+  // Step 3: Username Selection
+  if (currentStep === 'username') {
+    return (
+      <div className="brand-container">
+        <FloatingParticles />
+        <div className="relative z-10 w-full max-w-md mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <div className="w-10 h-10 bg-brand-gradient rounded-lg flex items-center justify-center neon-border">
+                <Heart className="h-6 w-6 text-white brand-glow" />
+              </div>
+              <h1 className="text-2xl font-bold brand-text-gradient brand-glitch">
+                CTRL+ALT+BLOCK
+              </h1>
+            </div>
+          </div>
+
+          <Card className="card-brand">
+            <CardHeader className="space-y-1 pb-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentStep('account')}
+                  className="text-brand-light hover:text-brand-primary brand-glow p-0"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Back
+                </Button>
+                <div className="text-sm text-brand-light">Step 3 of 3</div>
+              </div>
+              <CardTitle className="text-2xl font-bold text-center text-white brand-glow">
+                Choose Your Anonymous Alias
+              </CardTitle>
+              <CardDescription className="text-center text-brand-light">
+                Your identity in the healing community - no real names needed
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {error && (
+                <Alert className="border-red-500/50 bg-red-500/10">
+                  <AlertDescription className="text-red-400">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="text-center">
+                <div className="bg-brand-primary/10 border border-brand-primary/30 rounded-lg p-6 neon-border">
+                  <div className="text-2xl font-bold text-brand-primary brand-glow mb-2">
+                    {formData.username || 'valued_climber_98'}
+                  </div>
+                  <p className="text-brand-light text-sm mb-4">
+                    This will be your identity in the community
+                  </p>
+                  <Button
+                    onClick={generateUsername}
+                    disabled={usernameLoading}
+                    className="btn-brand-secondary"
+                  >
+                    <Dice6 className="h-4 w-4 mr-2" />
+                    Roll Again
+                  </Button>
+                </div>
+              </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <div className="flex items-center space-x-2 text-blue-400 text-sm">
+                  <Shield className="h-4 w-4" />
+                  <div>
+                    <div className="font-medium">Privacy-First Platform</div>
+                    <div className="text-xs text-blue-300 mt-1">
+                      Your alias protects your privacy while connecting you with others on similar healing journeys. Every alias is unique and truly yours.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleUsernameSubmit}
+                disabled={loading || !formData.username}
+                className="w-full btn-brand-primary"
+              >
+                {loading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>Creating your account...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <span>Continue</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </div>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  // Step 4: Processing
   return (
     <div className="brand-container">
       <FloatingParticles />
