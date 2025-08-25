@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 
 // In-memory storage for demo purposes

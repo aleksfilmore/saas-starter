@@ -98,10 +98,6 @@ export default function RitualCompletionModal({
             </p>
             <div className="flex justify-center space-x-6 mb-6">
               <div className="flex items-center space-x-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
-                <span className="font-bold text-lg">+{ritual.xpReward} XP</span>
-              </div>
-              <div className="flex items-center space-x-2">
                 <Star className="h-5 w-5 text-blue-500" />
                 <span className="font-bold text-lg">+{ritual.byteReward} Bytes</span>
               </div>
@@ -266,10 +262,6 @@ export default function RitualCompletionModal({
                         <div>
                           <p className="font-medium text-purple-800">Ritual Rewards</p>
                           <div className="flex items-center space-x-4 mt-1">
-                            <span className="flex items-center space-x-1 text-sm">
-                              <Zap className="h-4 w-4 text-yellow-500" />
-                              <span className="font-bold">+{ritual.xpReward} XP</span>
-                            </span>
                             <span className="flex items-center space-x-1 text-sm">
                               <Star className="h-4 w-4 text-blue-500" />
                               <span className="font-bold">+{ritual.byteReward} Bytes</span>

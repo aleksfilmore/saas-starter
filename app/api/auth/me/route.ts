@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+// Force dynamic rendering because this route depends on per-request cookies/session
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
@@ -49,15 +52,14 @@ export async function GET(request: NextRequest) {
         subscription_tier: dbUser.subscription_tier || 'ghost_mode',
         ritual_tier: dbUser.ritual_tier || 'ghost',
         archetype: dbUser.emotional_archetype, // Use correct column name
-        xp: dbUser.xp || 0,
         bytes: dbUser.bytes || 100,
-        level: dbUser.level || 1,
         ritual_streak: dbUser.ritual_streak || 0,
         no_contact_streak: dbUser.no_contact_streak || 0,
         is_verified: dbUser.is_verified || false,
         subscription_status: dbUser.subscription_status || 'free',
         subscriptionTier: subscriptionTier,
-        isAdmin: dbUser.isAdmin || false, // Add admin status
+  // Prefer explicit is_admin attribute (from actual-schema) then fallback legacy camelCase
+  isAdmin: (dbUser.is_admin ?? dbUser.isAdmin) || false,
         emailVerified: dbUser.emailVerified || false
       }
     });

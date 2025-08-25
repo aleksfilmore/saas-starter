@@ -4,7 +4,7 @@ import { cache } from '@/lib/cache/cache-service';
 import { validateRequest } from '@/lib/auth';
 import { authRateLimit } from '@/lib/middleware/rate-limiter';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {

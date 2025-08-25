@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { AnalyticsService } from '@/lib/analytics/service';
 import { getUserId } from '@/lib/auth';
 

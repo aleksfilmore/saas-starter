@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
       actionSuggestions: response.actionSuggestions,
       ritualRecommendations: response.ritualRecommendations,
       rewards: {
-        xp: response.xpReward,
         bytes: response.byteReward,
       },
       triggerWarnings: response.triggerWarnings,
@@ -54,7 +53,7 @@ export async function POST(request: NextRequest) {
       fallbackResponse: {
         message: "I'm experiencing a system glitch right now. While I reboot, remember: you're stronger than you think, and this feeling will pass. Try some deep breathing or reach out to a friend.",
         emotionalTone: 'supportive',
-        rewards: { xp: 5, bytes: 5 }
+  rewards: { bytes: 5 }
       }
     }, { status: 500 });
   }

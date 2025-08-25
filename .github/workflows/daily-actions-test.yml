@@ -1,0 +1,44 @@
+name: Daily Actions Endpoint Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  test-daily-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+      - name: Start Postgres
+        uses: ankane/setup-postgres@v1
+        with:
+          postgres-version: 15
+      - name: Prepare DB URL
+        run: echo "POSTGRES_URL=postgres://postgres:postgres@localhost:5432/postgres" >> $GITHUB_ENV
+      - name: Run migrations (shop & user daily actions)
+        env:
+          POSTGRES_URL: ${{ env.POSTGRES_URL }}
+        run: |
+          node migrations/shop-migration.ts || true
+          node migrations/user-daily-actions-migration.ts || true
+      - name: Optional seed (skip errors)
+        env:
+          POSTGRES_URL: ${{ env.POSTGRES_URL }}
+        run: npm run db:seed || true
+      - name: Type check
+        run: npx tsc --noEmit
+      - name: Run Daily Actions Test
+        env:
+          POSTGRES_URL: ${{ env.POSTGRES_URL }}
+          DATABASE_URL: ${{ env.POSTGRES_URL }}
+          TEST_MODE: 'true'
+          RATE_LIMIT_MAX_ATTEMPTS: 20
+        run: npx tsx scripts/test-daily-actions.ts

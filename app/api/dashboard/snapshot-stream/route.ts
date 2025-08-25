@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { getDashboardSnapshot } from '@/lib/dashboard/snapshot';
 

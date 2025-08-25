@@ -22,7 +22,7 @@ export const users = pgTable('users', {
   onboardingCompleted: boolean('onboarding_completed').default(false),
   
   // Gamification Core
-  xpPoints: integer('xp_points').default(0),
+  // xpPoints removed (bytes-only economy)
   byteBalance: integer('byte_balance').default(100), // Starting bytes
   glowUpLevel: integer('glow_up_level').default(1),
   currentPhase: text('current_phase').default('kernel_wounded'), // Status label
@@ -83,7 +83,7 @@ export const ritualTemplates = pgTable('ritual_templates', {
   weekNumber: integer('week_number'), // For program progression
   phaseRequired: text('phase_required'), // Minimum phase to unlock
   tierRequired: text('tier_required').default('ghost_mode'), // Subscription requirement
-  xpReward: integer('xp_reward').default(10),
+  // xpReward removed (bytes only)
   byteReward: integer('byte_reward').default(5),
   estimatedTime: integer('estimated_time_minutes'),
   tags: json('tags'), // Array of tags for filtering
@@ -194,7 +194,7 @@ export const badges = pgTable('badges', {
   category: text('category').notNull(), // identity, ritual, streak, wall, progression
   rarity: text('rarity').default('common'), // common, rare, epic, legendary
   unlockCondition: json('unlock_condition'), // Conditions to earn badge
-  xpReward: integer('xp_reward').default(0),
+  // xpReward removed (bytes only)
   byteReward: integer('byte_reward').default(0),
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).defaultNow(),

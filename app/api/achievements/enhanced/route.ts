@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 
 interface AchievementRequest {
@@ -17,7 +18,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Welcome Aboard',
     description: 'Joined the CTRL+ALT+BLOCK™ community',
     type: 'standard' as const,
-    xpValue: 50,
+    bytesValue: 25,
     category: 'onboarding',
     icon: '🎯',
     rarity: 'common'
@@ -27,7 +28,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'First Steps',
     description: 'Completed your first therapy session',
     type: 'standard' as const,
-    xpValue: 100,
+    bytesValue: 50,
     category: 'therapy',
     icon: '🎮',
     rarity: 'common'
@@ -39,7 +40,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Week Warrior',
     description: '7-day session streak',
     type: 'milestone' as const,
-    xpValue: 200,
+    bytesValue: 100,
     category: 'consistency',
     icon: '🔥',
     rarity: 'uncommon'
@@ -49,7 +50,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Month Master',
     description: '30-day session streak',
     type: 'milestone' as const,
-    xpValue: 500,
+    bytesValue: 250,
     category: 'consistency',
     icon: '🏆',
     rarity: 'rare'
@@ -61,7 +62,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Wall Warrior',
     description: 'Posted 10 times on Wall of Wounds',
     type: 'standard' as const,
-    xpValue: 150,
+    bytesValue: 75,
     category: 'community',
     icon: '📱',
     rarity: 'common'
@@ -71,29 +72,29 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Helper Healer',
     description: 'Supported 50 community members',
     type: 'milestone' as const,
-    xpValue: 300,
+    bytesValue: 150,
     category: 'community',
     icon: '🤝',
     rarity: 'uncommon'
   },
 
-  // XP Milestones
-  'xp-1000': {
-    id: 'xp-1000',
+  // Byte Milestones (replacing former XP milestones)
+  'bytes-1000': {
+    id: 'bytes-1000',
     title: 'Rising Phoenix',
-    description: 'Reached 1,000 XP',
+    description: 'Accumulated 1,000 bytes',
     type: 'milestone' as const,
-    xpValue: 100,
+    bytesValue: 50,
     category: 'progression',
     icon: '🔥',
     rarity: 'uncommon'
   },
-  'xp-5000': {
-    id: 'xp-5000',
+  'bytes-5000': {
+    id: 'bytes-5000',
     title: 'Digital Sage',
-    description: 'Reached 5,000 XP',
+    description: 'Accumulated 5,000 bytes',
     type: 'milestone' as const,
-    xpValue: 250,
+    bytesValue: 125,
     category: 'progression',
     icon: '✨',
     rarity: 'rare'
@@ -105,7 +106,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Firewall Activated',
     description: 'Upgraded to Firewall tier',
     type: 'milestone' as const,
-    xpValue: 200,
+    bytesValue: 100,
     category: 'tier',
     icon: '🛡️',
     rarity: 'uncommon'
@@ -115,7 +116,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Cult Leader Ascension',
     description: 'Achieved ultimate healing tier',
     type: 'legendary' as const,
-    xpValue: 500,
+    bytesValue: 250,
     category: 'tier',
     icon: '👑',
     rarity: 'legendary'
@@ -127,7 +128,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Glitch Master',
     description: 'Experienced exclusive Cult Leader content',
     type: 'legendary' as const,
-    xpValue: 100,
+    bytesValue: 50,
     category: 'special',
     icon: '⚡',
     rarity: 'legendary'
@@ -137,7 +138,7 @@ const ACHIEVEMENT_REGISTRY = {
     title: 'Protocol Ghost',
     description: 'Had an extended conversation with the AI ghost',
     type: 'standard' as const,
-    xpValue: 75,
+    bytesValue: 35,
     category: 'special',
     icon: '👻',
     rarity: 'uncommon'
@@ -194,7 +195,7 @@ export async function POST(request: NextRequest) {
           stats: {
             totalUnlocked: userAchievements.length,
             totalClaimed: userAchievements.filter(a => a.claimed).length,
-            totalXP: userAchievements.reduce((sum, a) => sum + (a.claimed ? a.xpValue : 0), 0),
+            totalBytes: userAchievements.reduce((sum, a) => sum + (a.claimed ? (a as any).bytesValue : 0), 0),
             categories: {
               onboarding: userAchievements.filter(a => a.category === 'onboarding').length,
               therapy: userAchievements.filter(a => a.category === 'therapy').length,
@@ -238,15 +239,14 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Invalid achievement ID' }, { status: 400 });
         }
 
-        const claimAchievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
+  const claimAchievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
         
         // Mock claim logic - in real app, check if user has unlocked this achievement
         return NextResponse.json({
           success: true,
           message: 'Reward claimed!',
           rewards: {
-            xp: claimAchievement.xpValue,
-            bytes: Math.floor(claimAchievement.xpValue * 0.1),
+            bytes: claimAchievement.bytesValue,
             badgeUnlocked: true
           },
           achievement: {
@@ -265,7 +265,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Achievement not found' }, { status: 404 });
         }
 
-        const shareAchievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
+  const shareAchievement = ACHIEVEMENT_REGISTRY[achievementId as keyof typeof ACHIEVEMENT_REGISTRY];
 
         // Generate share content
         const shareContent = shareData.message || 
@@ -289,9 +289,8 @@ export async function POST(request: NextRequest) {
           shareUrl: shareUrls[shareData.platform],
           achievement: shareAchievement,
           bonusReward: {
-            xp: 25,
-            bytes: 5,
-            message: 'Bonus XP for sharing your achievement!'
+            bytes: 10,
+            message: 'Bonus bytes for sharing your achievement!'
           }
         });
 

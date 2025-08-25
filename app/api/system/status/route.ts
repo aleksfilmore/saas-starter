@@ -1,8 +1,9 @@
 // System Status API - Comprehensive Health Check
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { users, sessions, anonymousPosts, badges } from '@/lib/db/schema';
+import { users, sessions, anonymousPosts, badges } from '@/lib/db/unified-schema';
 import { count } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -44,8 +45,7 @@ export async function GET(request: NextRequest) {
         currentUser = {
           id: user.id,
           email: dbUser.email,
-          level: 1, // Default level for minimal schema
-          xp: 0, // Default XP for minimal schema
+          milestone: 1, // Default milestone for minimal schema
           bytes: 0, // Default bytes for minimal schema
           tier: 'free' // Default tier for minimal schema
         };
@@ -63,8 +63,7 @@ export async function GET(request: NextRequest) {
       '/api/login': 'OPERATIONAL', 
       '/api/wall/create': authStatus === 'AUTHENTICATED' ? 'OPERATIONAL' : 'REQUIRES_AUTH',
       '/api/wall/feed': authStatus === 'AUTHENTICATED' ? 'OPERATIONAL' : 'REQUIRES_AUTH',
-      '/api/wall/react': authStatus === 'AUTHENTICATED' ? 'OPERATIONAL' : 'REQUIRES_AUTH',
-      '/api/wall/comments': authStatus === 'AUTHENTICATED' ? 'OPERATIONAL' : 'REQUIRES_AUTH',
+      '/api/wall/react': authStatus === 'AUTHENTICATED' ? 'OPERATIONAL' : 'REQUIRES_AUTH'
     };
     
     const responseTime = Date.now() - startTime;
@@ -115,8 +114,8 @@ export async function GET(request: NextRequest) {
           'Reformat Protocol™': {
             status: 'OPERATIONAL',
             components: [
-              'XP & Level system (40 levels)',
-              'Byte currency system',
+              'Byte milestone system',
+              'Byte currency and reward system',
               'Badge achievement system', 
               'Tier-based access control',
               'Streak bonuses'
@@ -128,7 +127,6 @@ export async function GET(request: NextRequest) {
               'Authentication endpoints',
               'Wall post CRUD operations',
               'Reaction system',
-              'Comment system',
               'Gamification tracking'
             ]
           },
@@ -155,7 +153,7 @@ export async function GET(request: NextRequest) {
           'Authentication system fully operational via API routes',
           'Database schema enhanced with gamification tables',
           'Wall of Wounds posting and reaction system working',
-          'XP, Bytes, and badge systems functional'
+          'Bytes and badge systems functional'
         ]
       },
       

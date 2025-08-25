@@ -2,7 +2,8 @@
 // Returns user's badge collection and completion status
 
 import { db } from '@/lib/db/drizzle';
-import { badges, userBadges, users } from '@/lib/db/badges-schema';
+export const dynamic = 'force-dynamic';
+import { badges, userBadges, users } from '@/lib/db/unified-schema';
 import { eq, and, count, isNull } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';

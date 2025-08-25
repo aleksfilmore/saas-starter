@@ -6,7 +6,7 @@
 import { getRitualsByArchetype, getRandomRitual, Ritual } from '@/lib/rituals/database';
 import type { DashboardType } from '@/lib/user/user-tier-service';
 import { db } from '@/lib/db/drizzle';
-import { users, rituals } from '@/lib/db/schema';
+import { users, rituals } from '@/lib/db/unified-schema';
 import { eq, sql } from 'drizzle-orm';
 
 // Global storage reference
@@ -28,11 +28,11 @@ export interface RitualTemplate {
   category: string;
   intensity: number; // 1-5
   duration: number; // minutes
-  xpReward: number;
   bytesReward: number;
   tierAccess: string[];
   archetypeMatch?: string[]; // emotional archetypes this works best for
   dayRange?: { min: number; max: number }; // protocol day range
+  // xpReward removed (deprecated)
 }
 
 /**
@@ -47,7 +47,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'digital_detox',
     intensity: 2,
     duration: 30,
-    xpReward: 50,
     bytesReward: 25,
     tierAccess: ['freemium', 'paid_beginner', 'paid_advanced']
   },
@@ -58,7 +57,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'self_compassion',
     intensity: 1,
     duration: 5,
-    xpReward: 30,
     bytesReward: 15,
     tierAccess: ['freemium', 'paid_beginner', 'paid_advanced']
   },
@@ -69,7 +67,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'physical_movement',
     intensity: 3,
     duration: 15,
-    xpReward: 40,
     bytesReward: 20,
     tierAccess: ['freemium', 'paid_beginner', 'paid_advanced']
   },
@@ -80,7 +77,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'mindfulness',
     intensity: 1,
     duration: 10,
-    xpReward: 35,
     bytesReward: 18,
     tierAccess: ['freemium', 'paid_beginner', 'paid_advanced']
   },
@@ -91,7 +87,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'organization',
     intensity: 2,
     duration: 10,
-    xpReward: 45,
     bytesReward: 22,
     tierAccess: ['freemium', 'paid_beginner', 'paid_advanced']
   },
@@ -104,7 +99,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'self_awareness',
     intensity: 3,
     duration: 15,
-    xpReward: 60,
     bytesReward: 30,
     tierAccess: ['paid_beginner', 'paid_advanced'],
     archetypeMatch: ['Data Flooder', 'Firewall Builder', 'Secure Node', 'Ghost in the Shell'],
@@ -117,7 +111,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'emotional_regulation',
     intensity: 2,
     duration: 20,
-    xpReward: 70,
     bytesReward: 35,
     tierAccess: ['paid_beginner', 'paid_advanced'],
     dayRange: { min: 3, max: 14 }
@@ -129,7 +122,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'boundaries',
     intensity: 4,
     duration: 20,
-    xpReward: 80,
     bytesReward: 40,
     tierAccess: ['paid_beginner', 'paid_advanced'],
     archetypeMatch: ['Firewall Builder', 'Secure Node'],
@@ -144,7 +136,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'deep_work',
     intensity: 5,
     duration: 30,
-    xpReward: 100,
     bytesReward: 50,
     tierAccess: ['paid_advanced'],
     dayRange: { min: 15, max: 999 }
@@ -156,7 +147,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'visioning',
     intensity: 4,
     duration: 25,
-    xpReward: 90,
     bytesReward: 45,
     tierAccess: ['paid_advanced'],
     dayRange: { min: 20, max: 999 }
@@ -168,7 +158,6 @@ const RITUAL_POOL: RitualTemplate[] = [
     category: 'shadow_work',
     intensity: 5,
     duration: 35,
-    xpReward: 120,
     bytesReward: 60,
     tierAccess: ['paid_advanced'],
     dayRange: { min: 30, max: 999 }
@@ -235,7 +224,6 @@ function convertRitualToTemplate(ritual: Ritual): RitualTemplate {
     category: ritual.category,
     intensity: intensityMap[ritual.difficulty],
     duration: ritual.duration_minutes,
-    xpReward: ritual.xp_reward,
     bytesReward: ritual.bytes_reward,
     tierAccess: [ritual.user_tier],
     archetypeMatch: ritual.archetype,
@@ -321,7 +309,6 @@ function getDefaultRitual(dashboardType: DashboardType): RitualTemplate {
       category: 'self_care',
       intensity: 1,
       duration: 5,
-      xpReward: 25,
       bytesReward: 10,
       tierAccess: ['freemium']
     },
@@ -332,7 +319,6 @@ function getDefaultRitual(dashboardType: DashboardType): RitualTemplate {
       category: 'self_awareness',
       intensity: 2,
       duration: 10,
-      xpReward: 50,
       bytesReward: 25,
       tierAccess: ['paid_beginner']
     },
@@ -343,7 +329,6 @@ function getDefaultRitual(dashboardType: DashboardType): RitualTemplate {
       category: 'growth',
       intensity: 3,
       duration: 20,
-      xpReward: 75,
       bytesReward: 40,
       tierAccess: ['paid_advanced']
     }
@@ -360,34 +345,30 @@ export async function completeRitual(
   ritualId: string,
   notes?: string,
   mood?: number
-): Promise<{ success: boolean; xpEarned: number; bytesEarned: number }> {
+): Promise<{ success: boolean; bytesEarned: number }> {
   try {
     // Find the ritual template
     const ritualTemplate = RITUAL_POOL.find(r => r.id === ritualId);
     
     if (!ritualTemplate) {
-      return { success: false, xpEarned: 0, bytesEarned: 0 };
+      return { success: false, bytesEarned: 0 };
     }
 
-    // Award XP and Bytes based on template
-    const xpEarned = ritualTemplate.xpReward;
     const bytesEarned = ritualTemplate.bytesReward;
 
     await db
       .update(users)
       .set({
-        xp: sql`${users.xp} + ${xpEarned}`,
         bytes: sql`${users.bytes} + ${bytesEarned}`,
         lastRitualCompleted: new Date(),
         streakDays: sql`${users.streakDays} + 1`
       })
       .where(eq(users.id, userId));
-
-    return { success: true, xpEarned, bytesEarned };
+  return { success: true, bytesEarned };
 
   } catch (error) {
     console.error('Error completing ritual:', error);
-    return { success: false, xpEarned: 0, bytesEarned: 0 };
+  return { success: false, bytesEarned: 0 };
   }
 }
 

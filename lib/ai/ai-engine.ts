@@ -30,7 +30,6 @@ export interface AIResponse {
   emotionalTone: 'supportive' | 'challenging' | 'empathetic' | 'motivational' | 'humorous';
   actionSuggestions?: string[];
   ritualRecommendations?: string[];
-  xpReward?: number;
   byteReward?: number;
   triggerWarnings?: string[];
 }
@@ -150,8 +149,7 @@ Be direct, compassionate, and action-oriented. This is not the time for humor or
         return {
           message: "AI service is currently unavailable. Please try again later or use crisis resources if you need immediate support.",
           emotionalTone: 'supportive',
-          xpReward: 5,
-          byteReward: 3,
+          byteReward: 5,
         };
       }
 
@@ -184,8 +182,7 @@ Be direct, compassionate, and action-oriented. This is not the time for humor or
       const response: AIResponse = {
         message: responseContent,
         emotionalTone: this.detectEmotionalTone(responseContent),
-        xpReward: this.calculateXPReward(context, responseContent),
-        byteReward: this.calculateByteReward(context, responseContent),
+  byteReward: this.calculateByteReward(context, responseContent),
       };
 
       // Add action suggestions if appropriate
@@ -206,8 +203,7 @@ Be direct, compassionate, and action-oriented. This is not the time for humor or
       return {
         message: "I'm experiencing a system glitch right now. While I reboot, remember: you're stronger than you think, and this feeling will pass. Try some deep breathing or reach out to a friend. I'll be back online soon.",
         emotionalTone: 'supportive',
-        xpReward: 5,
-        byteReward: 5,
+  byteReward: 8,
       };
     }
   }
@@ -221,23 +217,12 @@ Be direct, compassionate, and action-oriented. This is not the time for humor or
     return 'supportive';
   }
 
-  private calculateXPReward(context: TherapyContext, response: string): number {
-    let baseXP = 10;
-    
-    // Bonus for longer, more thoughtful responses
-    if (response.length > 200) baseXP += 5;
-    
-    // Bonus for crisis support
-    if (context.sessionType === 'crisis') baseXP += 15;
-    
-    // Bonus for therapy sessions
-    if (context.sessionType === 'therapy') baseXP += 10;
-    
-    return baseXP;
-  }
-
   private calculateByteReward(context: TherapyContext, response: string): number {
-    return Math.floor(this.calculateXPReward(context, response) * 0.6);
+  let base = 10;
+  if (response.length > 200) base += 3;
+  if (context.sessionType === 'crisis') base += 10;
+  if (context.sessionType === 'therapy') base += 6;
+  return base;
   }
 
   private async generateActionSuggestions(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
-import { analyticsEvents } from '@/lib/db/schema';
+import { analyticsEvents } from '@/lib/db/unified-schema';
 import { and, gte } from 'drizzle-orm';
 
 // GET /api/analytics/tiles?days=7

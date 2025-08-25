@@ -3,7 +3,7 @@ import { validateRequest } from '@/lib/auth';
 import { getUserSubscription } from '@/lib/stripe/subscription';
 import { RITUAL_BANK, getRandomRitual } from '@/lib/rituals/ritual-bank';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { sql, eq } from 'drizzle-orm';
 
 export async function GET(
@@ -84,7 +84,6 @@ export async function GET(
         })),
         difficulty: ritual.difficultyLevel <= 2 ? 'easy' : 
                    ritual.difficultyLevel <= 4 ? 'medium' : 'hard',
-        xpReward: ritual.xpReward,
         byteReward: ritual.byteReward,
         estimatedTime: ritual.estimatedTime,
         category: ritual.category,

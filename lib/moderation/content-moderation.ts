@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { anonymousPosts, moderationQueue, moderationLogs } from '@/lib/db/schema';
+import { anonymousPosts, moderationQueue, moderationLogs } from '@/lib/db/unified-schema';
 import { eq, and } from 'drizzle-orm';
 import crypto from 'crypto';
 

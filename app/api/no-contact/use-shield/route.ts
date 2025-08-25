@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserId } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { users, noContactPeriods } from '@/lib/db/schema'
+import { users, noContactPeriods } from '@/lib/db/unified-schema'
 import { eq, sql, desc } from 'drizzle-orm'
 
 export async function PATCH(request: NextRequest) {

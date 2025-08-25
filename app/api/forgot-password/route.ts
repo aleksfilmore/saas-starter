@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendPasswordResetEmail } from '@/lib/email/email-service'
 import { v4 as uuidv4 } from 'uuid'
 import { db } from '@/lib/db'
-import { users } from '@/lib/db/schema'
+import { users } from '@/lib/db/unified-schema'
 import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {

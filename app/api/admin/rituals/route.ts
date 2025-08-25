@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { ritualLibrary } from '@/lib/db/schema';
+import { ritualLibrary } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 

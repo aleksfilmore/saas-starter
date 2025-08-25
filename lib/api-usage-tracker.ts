@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { apiUsage } from '@/lib/db/schema';
+import { apiUsage } from '@/lib/db/unified-schema';
 import { randomUUID } from 'crypto';
 
 interface ApiUsageData {

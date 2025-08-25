@@ -1,0 +1,68 @@
+[
+  {
+    "id": "F_SWAP_1",
+    "name": "Adaptive Shift",
+    "description": "Performed first ritual swap to optimize healing flow",
+    "icon": "swap-cycle",
+    "rarity": "rare",
+    "kind": "swap",
+    "tierScope": "firewall",
+    "archetypeScope": null,
+    "unlock": "1_ritual_swap"
+  },
+  {
+    "id": "F_SWAP_10",
+    "name": "Strategic Reconstructor",
+    "description": "Completed 10 ritual swaps demonstrating adaptive strategy",
+    "icon": "dna-helix",
+    "rarity": "legendary",
+    "kind": "swap",
+    "tierScope": "firewall",
+    "archetypeScope": null,
+    "unlock": "10_ritual_swaps"
+  },
+  {
+    "id": "F_STREAK_7",
+    "name": "Protocol Ember",
+    "description": "Maintained 7-day ritual streak forging stability",
+    "icon": "flame-small",
+    "rarity": "uncommon",
+    "kind": "streak",
+    "tierScope": "firewall",
+    "archetypeScope": null,
+    "unlock": "ritual_streak_7"
+  },
+  {
+    "id": "F_STREAK_30",
+    "name": "Continuity Core",
+    "description": "30 ritual days sustaining firewall protocol",
+    "icon": "flame-core",
+    "rarity": "rare",
+    "kind": "streak",
+    "tierScope": "firewall",
+    "archetypeScope": null,
+    "unlock": "ritual_streak_30"
+  },
+  {
+    "id": "F_BYTES_10K",
+    "name": "Data Surge",
+    "description": "Accumulated 10,000 bytes of healing momentum",
+    "icon": "pulse-node",
+    "rarity": "epic",
+    "kind": "progression",
+    "tierScope": "firewall",
+    "archetypeScope": null,
+    "unlock": "bytes_10000"
+  },
+  {
+    "id": "F_BYTES_50K",
+    "name": "Bandwidth Overlord",
+    "description": "Pushed beyond 50,000 bytes re-engineering identity",
+    "icon": "bandwidth-max",
+    "rarity": "legendary",
+    "kind": "progression",
+    "tierScope": "firewall",
+    "archetypeScope": null,
+    "unlock": "bytes_50000"
+  }
+]

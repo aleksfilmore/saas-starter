@@ -7,17 +7,13 @@ import { Card, CardContent } from '@/components/ui/card'
 
 interface Notification {
   id: string;
-  type: 'achievement' | 'reminder' | 'social' | 'system';
+  type: string;
+  title?: string;
   message: string;
-  isRead: boolean;
-  timestamp: string;
-  metadata?: {
-    achievement?: {
-      name: string;
-      icon: string;
-      rarity: 'common' | 'rare' | 'epic' | 'legendary';
-    };
-  };
+  read: boolean;
+  createdAt: string;
+  actionUrl?: string;
+  actionText?: string;
 }
 
 interface NotificationDisplayProps {
@@ -30,8 +26,10 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,7 +40,7 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      fetchNotifications();
+      if(notifications.length===0) fetchNotifications();
     }
 
     return () => {
@@ -50,31 +48,42 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    // Initial fetch
-    fetchNotifications();
-  }, [notifications]);
+  // Initial prefetch (silent) once
+  useEffect(() => { fetchNotifications(); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchNotifications = async () => {
+    if(loading) return;
     try {
       setLoading(true);
       setLoadError(null);
-      const response = await fetch('/api/notifications/recent', { credentials: 'include' });
-      if (response.ok) {
+      const response = await fetch('/api/notifications/list?limit=20', { credentials: 'include' });
+      if(response.ok){
         const data = await response.json();
-        setNotifications((data.notifications || []).map((n: any) => ({ ...n }))); // keep raw
-      } else if (response.status === 401) {
-        // Not authenticated silently
+        setNotifications(data.items || []);
+        setNextCursor(data.nextCursor || null);
+      } else if(response.status === 401){
         setNotifications([]);
       } else {
         setLoadError('Server error');
       }
-    } catch (error: any) {
+    } catch(e){
       setLoadError('Network error');
-      console.error('Failed to fetch notifications:', error);
-    } finally {
-      setLoading(false);
-    }
+      console.error(e);
+    } finally { setLoading(false); }
+  };
+
+  const loadMore = async () => {
+    if(!nextCursor || loadingMore) return;
+    try {
+      setLoadingMore(true);
+      const r = await fetch(`/api/notifications/list?limit=20&cursor=${encodeURIComponent(nextCursor)}`);
+      if(r.ok){
+        const data = await r.json();
+        setNotifications(prev => [...prev, ...(data.items||[])]);
+        setNextCursor(data.nextCursor || null);
+      }
+    } finally { setLoadingMore(false); }
   };
 
   const markAsRead = async (notificationId: string) => {
@@ -82,10 +91,7 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
       await fetch(`/api/notifications/${notificationId}/read`, {
         method: 'PATCH'
       });
-      
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
-      );
+      setNotifications(prev => prev.map(n => n.id === notificationId ? { ...n, read: true } : n));
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
     }
@@ -93,14 +99,9 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
 
   const markAllAsRead = async () => {
     try {
-      await fetch('/api/notifications/read-all', {
-        method: 'PATCH'
-      });
-      
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
-    }
+      await fetch('/api/notifications/mark-read', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ids: [] }) });
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    } catch(e){ console.error('Failed to mark all', e); }
   };
 
   const getNotificationIcon = (type: string) => {
@@ -221,23 +222,23 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                         <div 
                           key={notification.id}
                           className={`p-4 hover:bg-gray-800/50 transition-colors cursor-pointer ${
-                            !notification.isRead ? 'bg-purple-500/5 border-l-2 border-l-purple-400' : ''
+                            !notification.read ? 'bg-purple-500/5 border-l-2 border-l-purple-400' : ''
                           }`}
-                          onClick={() => !notification.isRead && markAsRead(notification.id)}
+                          onClick={() => !notification.read && markAsRead(notification.id)}
                         >
                           <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 mt-1">
                               {getNotificationIcon(notification.type)}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm ${!notification.isRead ? 'text-white font-medium' : 'text-gray-300'}`}>
-                                {notification.message}
+                              <p className={`text-sm ${!notification.read ? 'text-white font-medium' : 'text-gray-300'}`}>
+                                {notification.title || notification.message}
                               </p>
                               <div className="flex items-center justify-between mt-2">
                                 <span className="text-xs text-gray-500">
-                                  {formatTimestamp(notification.timestamp)}
+                                  {formatTimestamp(notification.createdAt)}
                                 </span>
-                                {!notification.isRead && (
+                                {!notification.read && (
                                   <CheckCircle className="w-4 h-4 text-purple-400" />
                                 )}
                               </div>
@@ -245,6 +246,11 @@ export function NotificationDisplay({ className = "" }: NotificationDisplayProps
                           </div>
                         </div>
                       ))}
+                      {nextCursor && (
+                        <button onClick={loadMore} disabled={loadingMore} className="w-full text-xs py-3 text-purple-300 hover:text-purple-200 disabled:opacity-50 bg-gray-900/40">
+                          {loadingMore ? 'Loading…' : 'Load more'}
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

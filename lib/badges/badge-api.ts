@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db/drizzle';
+// Using badges-schema (contains badge domain tables) – users there no longer has xpPoints/byteBalance
 import { badges, userBadges, users, discountCodes } from '@/lib/db/badges-schema';
 import { eq, and, desc, isNull } from 'drizzle-orm';
 import { processBadgeEvent, type BadgeEventType, type EventPayload } from '@/lib/badges/badge-evaluator';

@@ -5,7 +5,7 @@
 
 import { db } from '@/lib/db';
 import { eq, and, gte, sql, count } from 'drizzle-orm';
-import { users, dailyRitualCompletions } from '@/lib/db/minimal-schema';
+import { users, dailyRitualCompletions } from '@/lib/db/unified-schema';
 import { getTierPermissions, type LegacyTier } from '@/lib/auth/tier-permissions';
 
 // Usage tracking interfaces
@@ -200,8 +200,8 @@ export class FUPEnforcementService {
           .from(dailyRitualCompletions)
           .where(
             and(
-              eq(dailyRitualCompletions.user_id, userId),
-              sql`DATE(${dailyRitualCompletions.completed_at}) = ${today}`
+              eq(dailyRitualCompletions.userId, userId),
+              sql`DATE(${dailyRitualCompletions.completedAt}) = ${today}`
             )
           );
         return ritualAttempts[0]?.count || 0;
@@ -359,17 +359,17 @@ export class FUPEnforcementService {
       const last2Hours = new Date(Date.now() - 2 * 60 * 60 * 1000);
       const recentCompletions = await db
         .select({
-          completed_at: dailyRitualCompletions.completed_at,
-          dwell_time_seconds: dailyRitualCompletions.dwell_time_seconds
+          completed_at: dailyRitualCompletions.completedAt,
+          dwell_time_seconds: dailyRitualCompletions.dwellTimeSeconds
         })
         .from(dailyRitualCompletions)
         .where(
           and(
-            eq(dailyRitualCompletions.user_id, userId),
-            gte(dailyRitualCompletions.completed_at, last2Hours)
+            eq(dailyRitualCompletions.userId, userId),
+            gte(dailyRitualCompletions.completedAt, last2Hours)
           )
         )
-        .orderBy(dailyRitualCompletions.completed_at);
+        .orderBy(dailyRitualCompletions.completedAt);
       
       let riskScore = 0;
       const details: Record<string, any> = {

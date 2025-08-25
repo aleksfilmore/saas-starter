@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(
@@ -50,9 +50,7 @@ export async function GET(
         tier: user.tier,
         archetype: user.emotionalArchetype,
         archetype_details: null,
-        xp: user.xp,
         bytes: user.bytes,
-        level: user.level,
         ritual_streak: user.streak,
         no_contact_streak: user.noContactDays,
         last_checkin: user.lastNoContactCheckin,

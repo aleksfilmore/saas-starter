@@ -1,5 +1,6 @@
 // Wall of Wounds API - FEED 
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { getWallFeed } from '@/lib/wall/wall-service';
 

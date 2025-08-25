@@ -83,6 +83,16 @@ export const AnalyticsEvents = {
   REFERRAL_LINK_SHARED: 'referral_link_shared',
   REFERRAL_SIGNUP_COMPLETED: 'referral_signup_completed',
   REFERRAL_REWARD_EARNED: 'referral_reward_earned'
+  ,BADGE_PROFILE_CHANGED: 'badge_profile_changed'
+  ,NOTIFICATION_OPENED: 'notification_opened'
+  ,CHECKIN_COMPLETED: 'checkin_completed'
+  // Daily action granular completions (dashboard checklist)
+  ,DAILY_ACTION_CHECKIN_COMPLETED: 'daily_action_checkin_completed'
+  ,DAILY_ACTION_NO_CONTACT_COMPLETED: 'daily_action_no_contact_completed'
+  ,DAILY_ACTION_RITUAL_COMPLETED: 'daily_action_ritual_completed'
+  ,DAILY_ACTION_WALL_INTERACT_COMPLETED: 'daily_action_wall_interact_completed'
+  ,DAILY_ACTION_AI_CHAT_COMPLETED: 'daily_action_ai_chat_completed'
+  ,DAILY_ACTION_WALL_POST_COMPLETED: 'daily_action_wall_post_completed'
 } as const;
 
 // Feature usage tracking

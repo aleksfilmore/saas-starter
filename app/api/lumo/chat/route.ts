@@ -94,16 +94,16 @@ export async function POST(request: NextRequest) {
     
     if (user) {
       const [u] = await db.select({
-        ritual_streak: users.ritual_streak,
-        last_ritual: users.last_ritual,
-        xp: users.xp,
-        tier: users.tier
+  ritualStreak: users.ritualStreak,
+  lastRitual: users.lastRitual,
+  bytes: users.bytes,
+  tier: users.tier
       }).from(users).where(eq(users.id, user.id)).limit(1);
       
       if (u) {
         userTier = (u.tier as 'ghost' | 'firewall') || 'ghost';
-        const lastHours = u.last_ritual ? Math.round((Date.now() - new Date(u.last_ritual).getTime())/36e5) : 'many';
-        contextPrefix = `UserContext: streak=${u.ritual_streak} lastRitualHoursAgo=${lastHours} xp=${u.xp} tier=${userTier}. `;
+  const lastHours = u.lastRitual ? Math.round((Date.now() - new Date(u.lastRitual).getTime())/36e5) : 'many';
+  contextPrefix = `UserContext: streak=${u.ritualStreak} lastRitualHoursAgo=${lastHours} bytes=${u.bytes} tier=${userTier}. `;
       }
     }
 

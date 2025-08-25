@@ -179,25 +179,19 @@ export function getByteShopAccess(dashboardType: DashboardType): {
 }
 
 /**
- * Calculate XP and Byte rewards based on user tier
+ * Calculate Byte rewards based on user tier (XP removed)
  */
 export function calculateRewards(
   dashboardType: DashboardType,
-  baseXP: number,
   baseBytes: number
-): { xp: number; bytes: number } {
+): { bytes: number } {
   const multipliers = {
-    'freemium': { xp: 1.0, bytes: 1.0 },
-    'paid_beginner': { xp: 1.2, bytes: 1.2 },
-    'paid_advanced': { xp: 1.5, bytes: 1.5 }
+    'freemium': 1.0,
+    'paid_beginner': 1.2,
+    'paid_advanced': 1.5
   };
-
-  const multiplier = multipliers[dashboardType];
-  
-  return {
-    xp: Math.floor(baseXP * multiplier.xp),
-    bytes: Math.floor(baseBytes * multiplier.bytes)
-  };
+  const factor = multipliers[dashboardType];
+  return { bytes: Math.floor(baseBytes * factor) };
 }
 
 /**

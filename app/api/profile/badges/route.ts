@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
-import { users, userBadges, badges } from '@/lib/db/badges-schema';
+import { users, userBadges, badges } from '@/lib/db/unified-schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 

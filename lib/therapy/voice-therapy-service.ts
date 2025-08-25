@@ -5,7 +5,7 @@
 
 import { db } from '@/lib/db';
 import { eq, and, gte, desc, sql } from 'drizzle-orm';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { enhancedFUPService } from '@/lib/fup/enhanced-fup-service';
 
 export interface VoiceTherapySession {

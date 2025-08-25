@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { digitalProductAccess, users } from '@/lib/db/schema';
+import { digitalProductAccess, users } from '@/lib/db/unified-schema';
 import { eq, and, sql } from 'drizzle-orm';
 
 // Simple in-memory storage for now - in production you'd want a proper table

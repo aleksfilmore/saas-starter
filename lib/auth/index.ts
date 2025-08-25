@@ -26,9 +26,7 @@ export const lucia = new Lucia(adapter, {
       tier: attributes.tier,
       archetype: attributes.archetype,
       archetype_details: attributes.archetype_details,
-      xp: attributes.xp,
       bytes: attributes.bytes,
-      level: attributes.level,
       ritual_streak: attributes.ritual_streak,
       no_contact_streak: attributes.no_contact_streak,
       last_checkin: attributes.last_checkin,
@@ -39,7 +37,9 @@ export const lucia = new Lucia(adapter, {
       onboardingCompleted: attributes.onboarding_completed,
       emailVerified: attributes.email_verified,
       created_at: attributes.created_at,
-      updated_at: attributes.updated_at,
+  updated_at: attributes.updated_at,
+  // surface admin flag so downstream /api/auth/me can expose it
+  is_admin: (attributes as any).is_admin,
     };
   },
 });
@@ -106,9 +106,7 @@ interface DatabaseUserAttributes {
   tier: string;
   archetype: string | null;
   archetype_details: any;
-  xp: number;
   bytes: number;
-  level: number;
   ritual_streak: number;
   no_contact_streak: number;
   last_checkin: Date | null;
@@ -120,4 +118,5 @@ interface DatabaseUserAttributes {
   email_verified: boolean;
   created_at: Date;
   updated_at: Date;
+  is_admin?: boolean; // added to propagate admin status
 }

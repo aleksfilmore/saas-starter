@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq, and } from 'drizzle-orm';
 import { sendDailyReminderEmail } from './enhanced-templates';
 

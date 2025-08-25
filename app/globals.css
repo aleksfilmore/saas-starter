@@ -6,6 +6,7 @@
 @import '../styles/dashboard-tokens.css';
 @import '../styles/organic-design.css';
 @import '../styles/brand-identity.css';
+@import '../styles/animations.css';
 
 @layer base {
   * {

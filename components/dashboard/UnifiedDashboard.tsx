@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { User } from '@/lib/db/schema';
+import { User } from '@/lib/db/unified-schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

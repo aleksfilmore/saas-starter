@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { 
@@ -8,7 +9,7 @@ import {
   anonymousPosts, 
   dailyCheckIns,
   byteTransactions 
-} from '@/lib/db/schema';
+} from '@/lib/db/unified-schema';
 import { eq, desc, gte, and, count } from 'drizzle-orm';
 
 // Simplified progress system - no XP/levels, focus on streaks and badges

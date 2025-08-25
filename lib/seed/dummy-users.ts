@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { users, anonymousPosts, userBadges, badges } from '@/lib/db/schema';
+import { users, anonymousPosts, userBadges, badges } from '@/lib/db/unified-schema';
 import { generateId } from 'lucia';
 import bcrypt from 'bcryptjs';
 
@@ -8,9 +8,8 @@ const DUMMY_USERS = [
     username: 'ghost_warrior_23',
     email: 'dummy1@internal.local',
     emotionalArchetype: 'Firewall Builder',
-    tier: 'paid',
-    level: 5,
-    xp: 450,
+  tier: 'paid', // 'paid' interpreted -> firewall tier mapping below
+  bytes: 1450,
     streakDays: 23,
     noContactDays: 45
   },
@@ -18,9 +17,8 @@ const DUMMY_USERS = [
     username: 'cipher_healer',
     email: 'dummy2@internal.local', 
     emotionalArchetype: 'Data Flooder',
-    tier: 'freemium',
-    level: 3,
-    xp: 280,
+  tier: 'freemium',
+  bytes: 780,
     streakDays: 12,
     noContactDays: 30
   },
@@ -28,9 +26,8 @@ const DUMMY_USERS = [
     username: 'neon_phoenix',
     email: 'dummy3@internal.local',
     emotionalArchetype: 'System Optimizer',
-    tier: 'paid',
-    level: 7,
-    xp: 680,
+  tier: 'paid',
+  bytes: 2680,
     streakDays: 67,
     noContactDays: 89
   },
@@ -38,9 +35,8 @@ const DUMMY_USERS = [
     username: 'quantum_survivor',
     email: 'dummy4@internal.local',
     emotionalArchetype: 'Secure Node',
-    tier: 'freemium',
-    level: 2,
-    xp: 150,
+  tier: 'freemium',
+  bytes: 450,
     streakDays: 5,
     noContactDays: 15
   },
@@ -48,9 +44,8 @@ const DUMMY_USERS = [
     username: 'digital_nomad_x',
     email: 'dummy5@internal.local',
     emotionalArchetype: 'Explorer',
-    tier: 'paid',
-    level: 4,
-    xp: 350,
+  tier: 'paid',
+  bytes: 1350,
     streakDays: 34,
     noContactDays: 52
   }
@@ -281,11 +276,11 @@ export class SeedService {
         
         await db.execute(`
           INSERT INTO users (
-            id, email, password_hash, username, emotional_archetype, tier, level, xp, 
+            id, email, password_hash, username, emotional_archetype, tier, bytes,
             streak_days, no_contact_days, subscription_tier, onboarding_completed, status, created_at
           ) VALUES (
-            '${userId}', '${dummy.email}', '${dummyPassword}', '${dummy.username}', 
-            '${dummy.emotionalArchetype}', '${dummy.tier}', ${dummy.level}, ${dummy.xp},
+            '${userId}', '${dummy.email}', '${dummyPassword}', '${dummy.username}',
+            '${dummy.emotionalArchetype}', '${dummy.tier === 'paid' ? 'firewall' : 'ghost'}', ${dummy.bytes},
             ${dummy.streakDays}, ${dummy.noContactDays}, '${dummy.tier === 'paid' ? 'firewall_pro' : 'ghost_mode'}', 
             true, 'active', NOW() - INTERVAL '${Math.floor(Math.random() * 30)} days'
           )

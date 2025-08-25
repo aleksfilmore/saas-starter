@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { generateId } from '@/lib/utils';
 import { sendEmailVerificationEmail } from '@/lib/email/email-service';

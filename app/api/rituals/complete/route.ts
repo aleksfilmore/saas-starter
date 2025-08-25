@@ -11,6 +11,7 @@ export const runtime = 'nodejs';
 /**
  * POST /api/rituals/complete
  * Mark a ritual as completed and award XP/Bytes based on user tier
+ * DEPRECATED: premium path handled by /api/daily-rituals/complete, ghost by /api/daily-rituals/complete-ghost
  */
 export async function POST(request: NextRequest) {
   try {

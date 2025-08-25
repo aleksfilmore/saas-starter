@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
-import { noContactPeriods } from '@/lib/db/schema';
+import { noContactPeriods } from '@/lib/db/unified-schema';
 import { validateRequest } from '@/lib/auth';
 import { eq, and } from 'drizzle-orm';
 

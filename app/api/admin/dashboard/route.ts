@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
-import { users, dailyRituals, ritualCompletions, noContactPeriods, dailyCheckIns, anonymousPosts } from '@/lib/db/schema';
+import { users, dailyRituals, ritualCompletions, noContactPeriods, dailyCheckIns, anonymousPosts } from '@/lib/db/unified-schema';
 import { validateRequest } from '@/lib/auth';
 import { getUserId } from '@/lib/utils';
 import { sql, count, desc, gte, eq } from 'drizzle-orm';
@@ -69,12 +69,11 @@ export async function GET(request: NextRequest) {
         avatar: users.avatar,
         subscriptionTier: users.subscriptionTier,
         bytes: users.bytes,
-        byteBalance: users.byteBalance,
         totalRituals: count(ritualCompletions.id)
       })
       .from(users)
       .leftJoin(ritualCompletions, eq(users.id, ritualCompletions.userId))
-      .groupBy(users.id, users.username, users.avatar, users.subscriptionTier, users.bytes, users.byteBalance)
+      .groupBy(users.id, users.username, users.avatar, users.subscriptionTier, users.bytes)
       .orderBy(desc(count(ritualCompletions.id)))
       .limit(20);
 
@@ -95,7 +94,7 @@ export async function GET(request: NextRequest) {
         avatar: user.avatar || 'default-glitch',
         tier: user.subscriptionTier || 'ghost_mode',
         bytes: user.bytes || 0,
-        byteBalance: user.byteBalance || 0,
+  // byteBalance deprecated; bytes now canonical
         totalRituals: user.totalRituals || 0
       }))
     });

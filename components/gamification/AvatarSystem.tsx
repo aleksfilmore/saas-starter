@@ -160,7 +160,8 @@ const cosmeticFrames = [
 const userProfile = {
   currentAvatar: 'circuit-heart',
   currentFrame: 'basic-neon',
-  byteBalance: 450,
+  // byteBalance deprecated; use bytes (placeholder value for preview)
+  bytes: 450,
   unlockedAvatars: ['circuit-heart', 'firewall-mask', 'ghost-packet'],
   unlockedFrames: ['basic-neon']
 }
@@ -258,7 +259,7 @@ export default function AvatarSystem() {
           </div>
           <div className="flex items-center justify-center space-x-2">
             <Coins className="h-4 w-4 text-yellow-500" />
-            <span>{userProfile.byteBalance} Bytes</span>
+            <span>{userProfile.bytes ?? 0} Bytes</span>
           </div>
         </CardContent>
       </Card>
@@ -330,7 +331,7 @@ export default function AvatarSystem() {
             {cosmeticFrames.map((frame) => {
               const isUnlocked = userProfile.unlockedFrames.includes(frame.id)
               const isSelected = selectedFrame === frame.id
-              const canAfford = userProfile.byteBalance >= frame.price
+              const canAfford = (userProfile.bytes ?? 0) >= frame.price
               
               return (
                 <div

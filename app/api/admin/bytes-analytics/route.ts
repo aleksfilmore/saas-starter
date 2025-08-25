@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users, byteTransactions } from '@/lib/db/schema';
+import { users, byteTransactions } from '@/lib/db/unified-schema';
 import { eq, gte, and, desc, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {

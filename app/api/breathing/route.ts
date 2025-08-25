@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Dynamic import to avoid loading database dependencies during build
     const { db } = await import('@/lib/db');
-    const { users } = await import('@/lib/db/schema');
+  const { users } = await import('@/lib/db/unified-schema');
     const { eq, sql } = await import('drizzle-orm');
 
     const { pattern, completedCycles } = await request.json();

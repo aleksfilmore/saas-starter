@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { users, userByteHistory, streakBonuses, byteEarningRules } from '@/lib/db/schema';
+import { users, userByteHistory, streakBonuses, byteEarningRules } from '@/lib/db/unified-schema';
 import { eq, and, gte, desc, sum } from 'drizzle-orm';
 import { BYTE_EARNING_ACTIVITIES, STREAK_BONUSES, GLITCH_BONUSES } from './constants';
 import { randomUUID } from 'crypto';

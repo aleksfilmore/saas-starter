@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { moderationQueue, anonymousPosts, users } from '@/lib/db/schema';
+import { moderationQueue, anonymousPosts, users } from '@/lib/db/unified-schema';
 import { eq, desc, and } from 'drizzle-orm';
 import { ContentModerationService } from '@/lib/moderation/content-moderation';
 

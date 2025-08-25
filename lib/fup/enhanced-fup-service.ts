@@ -5,7 +5,7 @@
 
 import { db } from '@/lib/db';
 import { eq, and, gte, desc, sql, count } from 'drizzle-orm';
-import { users, ritualCompletions } from '@/lib/db/schema';
+import { users, ritualCompletions } from '@/lib/db/unified-schema';
 
 export interface FUPViolation {
   type: 'ritual_spam' | 'journal_rapid_fire' | 'ai_abuse' | 'system_gaming';

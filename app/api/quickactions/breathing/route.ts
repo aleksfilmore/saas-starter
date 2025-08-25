@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
@@ -27,20 +27,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // XP/Bytes rewards based on difficulty and cycles
-    const baseXP = 15;
+    // Bytes rewards based on difficulty and cycles (XP removed)
+    const baseBytes = 8;
     const difficultyMultiplier = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 1.2 : 1.5;
-    const cycleBonus = Math.min(cycles * 2, 20); // Max 20 bonus XP
-    
-    const xpEarned = Math.floor(baseXP * difficultyMultiplier + cycleBonus);
-    const bytesEarned = Math.floor(xpEarned * 0.4);
+    const cycleBonusBytes = Math.min(cycles, 10); // 1 byte per cycle up to 10
+    const bytesEarned = Math.floor(baseBytes * difficultyMultiplier + cycleBonusBytes);
 
-    // Update user XP and Bytes
     await db.update(users)
-      .set({
-        xp: user.xp + xpEarned,
-        bytes: user.bytes + bytesEarned
-      })
+      .set({ bytes: user.bytes + bytesEarned })
       .where(eq(users.id, user.id));
 
     // Store breathing exercise entry
@@ -55,17 +49,13 @@ export async function POST(request: NextRequest) {
       difficulty: difficulty || 'easy',
       timestamp: new Date().toISOString(),
       platform: 'web',
-      xpEarned,
       bytesEarned
     };
 
     return NextResponse.json({
       success: true,
       data: breathingEntry,
-      rewards: {
-        xpEarned,
-        bytesEarned
-      },
+  rewards: { bytesEarned },
       message: 'Breathing exercise completed successfully'
     });
 

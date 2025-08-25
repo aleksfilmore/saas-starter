@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 import { validateRequest } from '@/lib/auth';
+import { getPersistentQuota, incrementPersistentUsage } from '@/lib/ai-therapy/quota-service';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || 'your-openai-api-key-here'
 });
 
-// In-memory storage for demo purposes
-const userQuotas = new Map();
+// conversationHistories retained if later needed (currently unused for persistence)
 const conversationHistories = new Map();
 
 interface Message {
@@ -36,41 +36,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // Check quota
-    let quota = userQuotas.get(user.id);
-    if (!quota) {
-      // Initialize quota
-      const tierLimits = {
-        freemium: { total: 5, purchaseCost: 25 },
-        paid_beginner: { total: 200, purchaseCost: 15 },
-        paid_advanced: { total: 999999, purchaseCost: 10 }
-      };
-      
-      const limits = tierLimits[user.tier as keyof typeof tierLimits] || tierLimits.freemium;
-      
-      const resetAt = new Date();
-      resetAt.setDate(resetAt.getDate() + 1);
-      resetAt.setHours(0, 0, 0, 0);
-      
-      quota = {
-        used: 0,
-        total: limits.total,
-        resetAt: resetAt.toISOString(),
-        canPurchaseMore: user.tier !== 'paid_advanced',
-        purchaseCost: limits.purchaseCost,
-        tier: user.tier,
-        extraMessages: 0
-      };
-      
-      userQuotas.set(user.id, quota);
-    }
-
-    // Check if user has exceeded quota
-    if (quota.used >= quota.total) {
-      return NextResponse.json({ 
-        error: 'Message quota exceeded',
-        quotaExceeded: true 
-      }, { status: 429 });
+    // Load / refresh quota
+  const quota = await getPersistentQuota(user.id);
+  if(!quota) return NextResponse.json({ error:'Quota unavailable' }, { status:500 });
+  const isUnlimited = quota.unlimited;
+  const hardRemaining = isUnlimited ? Number.POSITIVE_INFINITY : quota.remaining;
+  if (!isUnlimited && hardRemaining <= 0) {
+      return NextResponse.json({ error: 'Message quota exceeded', quotaExceeded: true }, { status: 429 });
     }
 
     // Build therapeutic prompt based on user's archetype
@@ -159,7 +131,7 @@ You don't have to go through this alone. There are people who want to help you r
     try {
       // For demo purposes, we'll use a mock response if no OpenAI key
       if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
-        // Mock therapeutic response based on archetype
+  // Mock therapeutic response based on archetype
         const mockResponses = {
           'PANIC PROTOCOL': `I hear how anxious you're feeling right now. That's completely understandable - heartbreak can trigger our deepest fears about being alone or abandoned. 
 
@@ -190,8 +162,7 @@ Right now, let's focus on what feels safe and stable for you. Is there a place o
           mockResponses['ARCHITECT'];
 
         // Update quota
-        quota.used += 1;
-        userQuotas.set(user.id, quota);
+  await incrementPersistentUsage(user.id, 2); // count user + ai message for fairness
 
         return NextResponse.json({ response });
       }
@@ -225,22 +196,21 @@ Right now, let's focus on what feels safe and stable for you. Is there a place o
       }
 
       // Update quota
-      quota.used += 1;
-      userQuotas.set(user.id, quota);
+  await incrementPersistentUsage(user.id, 2); // count both directions
 
       return NextResponse.json({ response: aiResponse });
 
     } catch (aiError) {
       console.error('OpenAI API error:', aiError);
       
-      // Fallback to mock response if OpenAI fails
+  // Fallback to mock response if OpenAI fails
       const fallbackResponse = "I'm experiencing some technical difficulties right now. Please try again in a moment, or reach out to support if this continues.";
       
       return NextResponse.json({ response: fallbackResponse });
     }
 
   } catch (error) {
-    console.error('Chat API error:', error);
+  console.error('Chat API error:', error);
     return NextResponse.json(
       { error: 'Failed to process message' },
       { status: 500 }

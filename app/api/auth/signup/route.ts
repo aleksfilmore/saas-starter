@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema'; // FIXED: Use main schema consistently
+import { users } from '@/lib/db/unified-schema'; // FIXED: Use main schema consistently
 import { generateId } from 'lucia';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';

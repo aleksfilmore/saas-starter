@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
@@ -27,16 +27,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // XP/Bytes rewards based on mood system
-    const xpEarned = 10;
+    // Bytes reward only (XP removed)
     const bytesEarned = 5;
-
-    // Update user XP and Bytes
     await db.update(users)
-      .set({
-        xp: user.xp + xpEarned,
-        bytes: user.bytes + bytesEarned
-      })
+      .set({ bytes: user.bytes + bytesEarned })
       .where(eq(users.id, user.id));
 
     // Store mood entry for analytics and cross-platform sync
@@ -52,7 +46,6 @@ export async function POST(request: NextRequest) {
       suggestions: suggestions || [],
       timestamp: new Date().toISOString(),
       platform: 'web', // Track source platform
-      xpEarned,
       bytesEarned
     };
 
@@ -62,10 +55,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: moodEntry,
-      rewards: {
-        xpEarned,
-        bytesEarned
-      },
+  rewards: { bytesEarned },
       message: 'Mood logged successfully'
     });
 

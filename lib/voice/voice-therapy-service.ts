@@ -122,13 +122,13 @@ export class VoiceTherapyService {
       const user = await db
         .select({ 
           archetype: users.archetype,
-          archetype_details: users.archetype_details 
+          archetypeDetails: (users as any).archetypeDetails ?? users.archetype // unified schema uses archetypeDetails JSON
         })
         .from(users)
         .where(eq(users.id, userId))
         .limit(1);
         
-      const archetypeCode = (user[0]?.archetype_details as any)?.archetype_code || 'sn';
+  const archetypeCode = (user[0]?.archetypeDetails as any)?.archetype_code || 'sn';
       
       // Create session record (mock implementation - would need actual table)
       const sessionId = `voice_${userId}_${Date.now()}`;

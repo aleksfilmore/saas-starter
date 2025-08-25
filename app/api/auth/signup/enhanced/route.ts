@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
       alias,
       emotionalTone,
       hashedPassword,
-      xp: 50, // Starting XP bonus
+  bytes: 200, // Starting bytes bonus
       week: 1,
       tier: 'free' as const,
-      dailyXP: 50,
-      weeklyXPTarget: 500,
+  dailyBytes: 200,
+  weeklyBytesTarget: 2000,
       streakDays: 1,
       totalSessions: 0,
       joinedAt: new Date(),
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         email: newUser.email,
         alias: newUser.alias,
         emotionalTone: newUser.emotionalTone,
-        xp: newUser.xp,
+  bytes: newUser.bytes,
         tier: newUser.tier
       },
       achievements: [
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
           title: 'Welcome Aboard',
           description: 'Joined the CTRL+ALT+BLOCK™ community',
           type: 'standard' as const,
-          xpValue: 50,
+          bytesValue: 200,
           unlockedAt: new Date()
         }
       ],

@@ -3,7 +3,7 @@ import { validateRequest } from '@/lib/auth';
 import { ByteService } from '@/lib/shop/ByteService';
 import { SHOP_PRODUCTS } from '@/lib/shop/constants';
 import { db } from '@/lib/db';
-import { shopOrders, shopOrderItems, digitalProductAccess } from '@/lib/db/schema';
+import { shopOrders, shopOrderItems, digitalProductAccess } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 

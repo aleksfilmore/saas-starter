@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { ritualEntries, users } from '@/lib/db/schema';
+import { ritualEntries, users } from '@/lib/db/unified-schema';
 import { eq, sql, and } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
@@ -36,11 +36,11 @@ export async function POST(
       }, { status: 400 });
     }
 
-    // Calculate text length for XP validation
+  // Calculate text length for reward validation (XP removed)
     const combinedText = `${whatIDid || ''} ${howIFeel || ''}`.trim();
     const textLength = combinedText.length;
     
-    // XP/Bytes validation criteria
+  // Bytes validation criteria (XP removed)
     const minTextLength = 20; // Minimum characters
     const minTimeSpent = 20; // Minimum seconds
     const meetsTextCriteria = textLength >= minTextLength;
@@ -61,11 +61,9 @@ export async function POST(
     const user = userData[0];
     const isPremium = user.subscriptionTier === 'premium';
 
-    // Calculate rewards based on tier
-    const baseXP = isPremium ? 12 : 10;
-    const baseBytes = isPremium ? 3 : 2;
-    const xpAwarded = qualifiesForReward ? baseXP : 0;
-    const bytesAwarded = qualifiesForReward ? baseBytes : 0;
+  // Calculate bytes reward based on tier (XP removed)
+  const baseBytes = isPremium ? 5 : 3;
+  const bytesAwarded = qualifiesForReward ? baseBytes : 0;
 
     // Create journal entry
     const entryId = randomUUID();
@@ -81,19 +79,17 @@ export async function POST(
       source,
       timeSpent,
       textLength,
-      xpAwarded,
       bytesAwarded,
       performedAt: new Date(),
       createdAt: new Date(),
       updatedAt: new Date()
     });
 
-    // Award XP and Bytes if criteria met
+  // Award Bytes if criteria met (XP removed)
     if (qualifiesForReward) {
       await db
         .update(users)
         .set({
-          xp: sql`${users.xp} + ${xpAwarded}`,
           bytes: sql`${users.bytes} + ${bytesAwarded}`,
           updatedAt: new Date()
         })
@@ -102,7 +98,7 @@ export async function POST(
 
     // Get updated user stats
     const updatedUser = await db
-      .select({ xp: users.xp, bytes: users.bytes })
+  .select({ bytes: users.bytes })
       .from(users)
       .where(eq(users.id, sessionUser.id))
       .limit(1);
@@ -115,11 +111,9 @@ export async function POST(
         mood,
         textLength,
         qualifiesForReward,
-        xpAwarded,
         bytesAwarded
       },
       user: {
-        xp: updatedUser[0]?.xp || 0,
         bytes: updatedUser[0]?.bytes || 0
       },
       criteria: {

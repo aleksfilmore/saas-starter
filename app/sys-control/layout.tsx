@@ -1,7 +1,7 @@
 import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 // Force dynamic rendering for auth-protected pages

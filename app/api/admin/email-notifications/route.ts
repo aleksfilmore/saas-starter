@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EmailNotificationService } from '@/lib/email/notifications';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {

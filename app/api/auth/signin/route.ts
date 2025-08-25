@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { lucia } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema'; // FIXED: Use main schema consistently
+// Use the same users table source as auth (actual-schema) to match field names
+import { users } from '@/lib/db/actual-schema';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
+
+export const dynamic = 'force-dynamic';
 
 // Force Node.js runtime for database operations
 export const runtime = 'nodejs';
@@ -16,6 +19,9 @@ export async function POST(request: NextRequest) {
       
       const body = await request.json();
       const { email, password } = body;
+      if (!email || !password) {
+        return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
+      }
 
       console.log('Signin attempt for email:', email);
 
@@ -28,7 +34,7 @@ export async function POST(request: NextRequest) {
           hashedPassword: users.hashedPassword,
         })
         .from(users)
-        .where(eq(users.email, email.toLowerCase()))
+  .where(eq(users.email, email.toLowerCase()))
         .limit(1);
 
       console.log('Database query complete. Found users:', user.length);

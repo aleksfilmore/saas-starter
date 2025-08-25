@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { anonymousPosts, users } from '@/lib/db/schema';
+import { anonymousPosts, users } from '@/lib/db/unified-schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
 
 // Get optimized feed for user
@@ -22,8 +23,8 @@ export async function GET(request: NextRequest) {
     // 2. High-engagement entries
     // 3. Entries from users in similar stage of journey
     
-    const userProgress = (user as any).xp || 0;
-    const userLevel = (user as any).level || 1;
+  const userBytes = (user as any).bytes || 0;
+  const userStreak = (user as any).streak || 0;
 
     // Build optimized query
     const feedEntries = await db
@@ -33,8 +34,8 @@ export async function GET(request: NextRequest) {
           id: users.id,
           username: users.username,
           avatar: users.avatar,
-          level: users.level,
-          xp: users.xp
+          bytes: users.bytes,
+          streak: users.streak
         }
       })
       .from(anonymousPosts)
@@ -42,15 +43,15 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(anonymousPosts.isActive, true),
-          // Prioritize users within 2 levels of current user
-          sql`ABS(${users.level} - ${userLevel}) <= 2`
+          // Prioritize users within similar streak band (+/- 5 days)
+          sql`ABS(${users.streak} - ${userStreak}) <= 5`
         )
       )
       .orderBy(
-        // Boost recent entries from similar-level users
+        // Boost recent entries from similar-streak users
         sql`
           CASE 
-            WHEN ABS(${users.level} - ${userLevel}) <= 1 
+            WHEN ABS(${users.streak} - ${userStreak}) <= 2 
             THEN ${anonymousPosts.createdAt} + INTERVAL '24 hours'
             ELSE ${anonymousPosts.createdAt}
           END DESC
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
       ...item.entry,
       author: item.author,
       isOptimized: true,
-      relevanceScore: Math.abs((item.author.level || 1) - userLevel) <= 1 ? 'high' : 'medium'
+      relevanceScore: Math.abs((item.author.streak || 0) - userStreak) <= 2 ? 'high' : 'medium'
     }));
 
     return NextResponse.json({
@@ -78,9 +79,9 @@ export async function GET(request: NextRequest) {
           hasMore: enrichedEntries.length === limit
         },
         optimization: {
-          userLevel,
-          userProgress,
-          algorithm: 'level_proximity_v1'
+          userBytes,
+          userStreak,
+          algorithm: 'streak_proximity_v1'
         }
       }
     });
@@ -97,7 +98,8 @@ export async function GET(request: NextRequest) {
             id: users.id,
             username: users.username,
             avatar: users.avatar,
-            level: users.level
+            streak: users.streak,
+            bytes: users.bytes
           }
         })
         .from(anonymousPosts)

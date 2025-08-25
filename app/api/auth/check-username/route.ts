@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema'; // Use main schema, not minimal-schema
+import { users } from '@/lib/db/unified-schema'; // Use main schema, not minimal-schema
 import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {

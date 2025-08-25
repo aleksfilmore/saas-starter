@@ -17,8 +17,7 @@ export const users = pgTable('users', {
   
   // Subscription & Gamification
   subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'),
-  xpPoints: integer('xp_points').notNull().default(0),
-  byteBalance: integer('byte_balance').notNull().default(100),
+  // xpPoints & byteBalance removed in unified schema (bytes field canonical)
   glowUpLevel: integer('glow_up_level').notNull().default(1),
   
   // Admin & Status

@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 
 // Mock user archetype data - in production this would come from the database
 const getUserArchetype = (userEmail: string) => {

@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
+import { addPersistentPurchase, getPersistentQuota } from '@/lib/ai-therapy/quota-service';
+import { rateLimit } from '../../../../lib/rate-limit';
+import { auditLog } from '../../../../lib/security/audit-log';
+import { db } from '@/lib/db/drizzle';
+import { users, byteTransactions } from '@/lib/db/unified-schema';
+import { eq } from 'drizzle-orm';
 
-// In-memory storage for demo purposes
-declare global {
-  var userQuotas: Map<string, any>;
-}
-
-if (!global.userQuotas) {
-  global.userQuotas = new Map();
-}
+// Legacy in-memory logic replaced by unified quota-store
 
 export async function POST(request: Request) {
   try {
@@ -40,41 +39,34 @@ export async function POST(request: Request) {
     // In real implementation, this would integrate with Stripe or other payment processor
     console.log(`Processing payment for user ${user.id}: $3.99 for 300 AI therapy messages`);
 
-    // Get or create quota for user
-    let quota = global.userQuotas?.get(user.id);
-    
-    if (!quota) {
-      quota = {
-        used: 0,
-        total: 0,
-        resetAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // Far future
-        canPurchaseMore: true,
-        purchaseCost: 3.99,
-        tier: 'ghost',
-        extraMessages: 0,
-        remaining: 0,
-        isUnlimited: false,
-        messagesPerPurchase: 300
-      };
-    }
+  // Simple rate limit (5 purchases per hour)
+  const limited = await rateLimit(`ai_purchase:${user.id}`, 5, 60*60);
+  if(!limited.ok) return NextResponse.json({ error:'Rate limit exceeded' }, { status:429 });
 
-    // Add 300 messages to their quota
-    quota.total += 300;
-    quota.remaining = quota.total - quota.used;
-    quota.extraMessages += 300;
+  // Persist purchase
+  await addPersistentPurchase(user.id, 300, 30);
+  const updated = await getPersistentQuota(user.id);
+  const remaining = updated ? updated.remaining : 0;
 
-    global.userQuotas.set(user.id, quota);
-
-    return NextResponse.json({
+    await auditLog(user.id, 'ai_therapy_purchase', { method:'purchase', messages:300 });
+    await db.insert(byteTransactions).values({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      amount: 0,
+      source: 'ai_therapy_purchase',
+      description: 'Purchased 300 AI therapy messages (cash)',
+      relatedId: 'ai_therapy_messages'
+    } as any);
+  return NextResponse.json({
       success: true,
       message: '300 AI therapy messages added to your account',
-      quota: {
-        total: quota.total,
-        used: quota.used,
-        remaining: quota.remaining,
+      quota: updated ? {
+        total: updated.cap,
+        used: updated.used,
+        remaining,
         messagesAdded: 300,
         cost: 3.99
-      },
+      }: null,
       paymentConfirmation: {
         amount: 3.99,
         currency: 'USD',

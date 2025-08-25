@@ -206,7 +206,7 @@ export default function RitualDetailPage() {
       });
       if (response.ok) {
         const result = await response.json();
-        router.push(`/dashboard?completed=${ritualId}&xp=${result.rewards?.xp || result.xpEarned || 0}&bytes=${result.rewards?.bytes || result.bytesEarned || 0}`);
+  router.push(`/dashboard?completed=${ritualId}&bytes=${result.rewards?.bytes || result.bytesEarned || 0}`);
       } else {
         const err = await response.json().catch(()=>({}));
         console.error('Failed to complete ritual', err);
@@ -499,8 +499,6 @@ export default function RitualDetailPage() {
 
           <div className="flex items-center space-x-2 text-sm text-gray-400">
             <Sparkles className="h-4 w-4" />
-            <span>+{ritual.xp_reward} XP</span>
-            <span>•</span>
             <span>+{ritual.bytes_reward} Bytes</span>
           </div>
 

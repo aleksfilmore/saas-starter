@@ -4,10 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
 import { eq, and, gte, desc, sql, count } from 'drizzle-orm';
-import { users, ritualCompletions, journalDrafts } from '@/lib/db/schema';
-import { getNextLevelXP } from '@/lib/gamification/leveling';
+import { users, ritualCompletions, journalDrafts } from '@/lib/db/unified-schema';
 
 export async function GET(request: NextRequest) {
   try {
@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
 
     console.log('Progress metrics API: Successfully calculated metrics');
 
-    // Build response with fallback data
-    const metrics = {
+  // Build response with fallback data (XP/Level removed – bytes + streak + consistency)
+  const metrics = {
       // 30-Day Commitment Progress
       commitmentDay: currentDay,
       commitmentProgress,
@@ -123,11 +123,9 @@ export async function GET(request: NextRequest) {
       averageMood: emotionalMetrics.averageMood,
       moodStability: emotionalMetrics.stability,
       
-      // Gamification
-      xp: userData?.xp || (ritualStats.completed * 50), // Fallback: 50 XP per ritual
-      level: userData?.level || Math.max(1, Math.floor((ritualStats.completed * 50) / 100) + 1),
-      nextLevelXp: getNextLevelXP(userData?.level || Math.max(1, Math.floor((ritualStats.completed * 50) / 100) + 1)),
-      achievements,
+  // Progress Currency (bytes only)
+  bytes: userData?.bytes || (ritualStats.completed * 25), // simple fallback estimation
+  achievements,
       
       // Therapy Integration (placeholder)
       therapySessions: Math.min(currentDay, 2),
@@ -161,9 +159,7 @@ export async function GET(request: NextRequest) {
       moodTrend: 'stable' as const,
       averageMood: 6.0,
       moodStability: 0.7,
-      xp: 50,
-      level: 1,
-      nextLevelXp: 100,
+  bytes: 25,
       achievements: [
         {
           id: 'first_ritual',

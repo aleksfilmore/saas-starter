@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { dailyRitualService } from '@/lib/rituals/daily-ritual-service-drizzle';
 import { validateRequest } from '@/lib/auth';
 

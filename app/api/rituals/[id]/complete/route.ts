@@ -75,20 +75,13 @@ export async function POST(
       ritualId,
       completedAt: new Date().toISOString(),
       completionData,
-      xpEarned: ritual.xp_reward,
       bytesEarned: ritual.bytes_reward
     };
     
     global.ritualCompletions.set(completionKey, completion);
     
     // Update user stats
-    user.xp = (user.xp || 0) + ritual.xp_reward;
     user.bytes = (user.bytes || 0) + ritual.bytes_reward;
-    
-    // Calculate new level (every 100 XP = 1 level)
-    const newLevel = Math.floor((user.xp || 0) / 100) + 1;
-    const leveledUp = newLevel > (user.level || 1);
-    user.level = newLevel;
     
     // Update ritual streak (if this is daily ritual)
     const streakKey = `daily-ritual-${session.userId}`;
@@ -106,17 +99,13 @@ export async function POST(
     global.localUsers.set(session.userId, user);
     
     console.log(`✅ Ritual completed: ${ritual.title} by user ${session.userId}`);
-    console.log(`User stats: XP: ${user.xp}, Bytes: ${user.bytes}, Level: ${user.level}`);
+  console.log(`User stats: Bytes: ${user.bytes}`);
     
     return NextResponse.json({
       success: true,
       message: 'Ritual completed successfully!',
-      xpEarned: ritual.xp_reward,
-      bytesEarned: ritual.bytes_reward,
-      newLevel: user.level,
-      leveledUp,
-      totalXp: user.xp,
-      totalBytes: user.bytes,
+  bytesEarned: ritual.bytes_reward,
+  totalBytes: user.bytes,
       ritualStreak: user.ritual_streak || 1
     });
     

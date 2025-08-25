@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { referrals, users, subscriptionEvents } from '@/lib/db/schema';
+import { referrals, users, subscriptionEvents } from '@/lib/db/unified-schema';
 import { eq, and, count, sql } from 'drizzle-orm';
 import { AnalyticsService } from '@/lib/analytics/service';
 import { AnalyticsEvents } from '@/lib/analytics/events';

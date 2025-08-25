@@ -1,0 +1,8 @@
+@keyframes scaleFadeIn {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-scaleFade {
+  animation: scaleFadeIn 140ms cubic-bezier(.4,0,.2,1);
+}

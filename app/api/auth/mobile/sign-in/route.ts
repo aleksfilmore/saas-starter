@@ -52,9 +52,7 @@ export async function POST(request: NextRequest) {
         tier: user.tier,
         archetype: user.emotional_archetype,
         archetype_details: null, // Not stored in current schema
-        xp: user.xp,
         bytes: user.bytes,
-        level: user.level,
         ritual_streak: user.streak,
         no_contact_streak: user.no_contact_days,
         last_checkin: user.last_no_contact_checkin,

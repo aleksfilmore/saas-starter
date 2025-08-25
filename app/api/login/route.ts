@@ -16,9 +16,7 @@ export interface LoginResponse {
     email: string;
     tier: string;
     archetype: string | null;
-    xp: number;
     bytes: number;
-    level: number;
   };
 }
 
@@ -80,9 +78,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
         email: user.email,
         tier: user.tier,
         archetype: user.archetype,
-        xp: user.xp,
         bytes: user.bytes,
-        level: user.level
       }
     });
 

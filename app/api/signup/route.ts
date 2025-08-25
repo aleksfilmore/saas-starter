@@ -1,8 +1,9 @@
 // Signup API route - Direct database registration with actual schema
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/schema'; // Use main schema
+import { users } from '@/lib/db/unified-schema'; // consolidated schema
 import { eq } from 'drizzle-orm';
 import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';
@@ -91,15 +92,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
       }
     }
 
-    // Create user in database using actual schema
+    // Create user in database using actual schema (camelCase field names from drizzle definition)
     const newUser = await db.insert(users).values({
       id: userId,
       email: email.toLowerCase(),
       username: finalUsername,
       hashedPassword: hashedPassword,
-      subscription_tier: subscriptionTier || 'ghost_mode',
-      created_at: new Date(),
-      updated_at: new Date()
+      subscriptionTier: subscriptionTier || 'ghost_mode',
+      createdAt: new Date(),
+      updatedAt: new Date()
     }).returning({
       id: users.id,
       email: users.email,
@@ -115,8 +116,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<SignupRes
       // Update user with verification token
       await db.update(users)
         .set({
-          email_verification_token: verificationToken,
-          email_verification_sent_at: new Date()
+          emailVerificationToken: verificationToken,
+          emailVerificationSentAt: new Date()
         })
         .where(eq(users.id, userId));
 

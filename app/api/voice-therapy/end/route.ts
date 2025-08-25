@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
-import { voiceTherapyCredits, voiceTherapySessions } from '@/lib/db/schema';
+import { voiceTherapyCredits, voiceTherapySessions } from '@/lib/db/unified-schema';
 import { and, eq, gt } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 

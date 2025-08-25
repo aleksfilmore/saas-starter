@@ -1,5 +1,6 @@
 // API endpoint for getting onboarding progress
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 
 // Mock onboarding progress structure
 const createOnboardingProgress = (userId: string) => ({

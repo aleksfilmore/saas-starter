@@ -1,127 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
+import { validateRequest } from '@/lib/auth';
+import { db } from '@/lib/db/drizzle';
+import { sql } from 'drizzle-orm';
 
-interface UserData {
-  id: string;
-  username: string;
-  level: number;
-  xp: number;
-  nextLevelXP: number;
-  progressToNext: number;
-  bytes: number;
-  streak: number;
-  longestStreak: number;
-  noContactDays: number;
-  avatar: string;
-  uxStage: string;
-  wallPosts: number;
-}
+// NOTE: Legacy level/xp based stage logic removed. If UX stage tagging is needed,
+// derive from streak + bytes (e.g. newcomer <5 streak & <250 bytes, core <1000 bytes,
+// power >=1000 bytes or streak >=30). Left intentionally unimplemented here to
+// avoid reintroducing derived gamification complexity in this lightweight route.
 
-interface Ritual {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  intensity: number;
-  duration: number;
-  isCompleted: boolean;
-  completedAt?: string;
-}
-
-interface DashboardData {
-  user: UserData;
-  todayRituals: Ritual[];
-  featureGates: Record<string, boolean>;
-  aiQuota: {
-    msgsLeft: number;
-    totalQuota: number;
-    resetAt: string;
-    canPurchaseMore: boolean;
-    purchaseCost: number;
-  };
-  stats: {
-    ritualsCompleted: number;
-    totalRituals: number;
-    streakActive: boolean;
-    canReroll: boolean;
-  };
-}
-
-function determineUserStage(days: number, xp: number): string {
-  // Power stage: Day 14+ OR XP >= 200
-  if (days >= 14 || xp >= 200) {
-    return 'power';
-  }
-  
-  // Core stage: Day 5+ OR XP >= 50
-  if (days >= 5 || xp >= 50) {
-    return 'core';
-  }
-  
-  // Starter stage: Day 0-4
-  return 'starter';
-}
-
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const userEmail = request.headers.get('x-user-email') || 'admin@ctrlaltblock.com';
-    
-    // Mock user data - in production, this would come from the database
-    const mockUser: UserData = {
-      id: 'user_1',
-      username: 'HealingWarrior',
-      level: 3,
-      xp: 175,
-      nextLevelXP: 200,
-      progressToNext: 87.5, // (175/200) * 100
-      bytes: 245,
-      streak: 7,
-      longestStreak: 12,
-      noContactDays: 14,
-      avatar: '🔥',
-      uxStage: determineUserStage(14, 175),
-      wallPosts: 3
+    const { user } = await validateRequest();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    // Ensure daily actions helper table exists
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS user_daily_actions (
+      user_id text NOT NULL,
+      action_date date NOT NULL,
+      checkin boolean NOT NULL DEFAULT false,
+      no_contact boolean NOT NULL DEFAULT false,
+      ritual boolean NOT NULL DEFAULT false,
+      PRIMARY KEY (user_id, action_date)
+    )`);
+
+    // Load user fresh (minimal fields)
+    const rows = await db.execute(sql`SELECT bytes, streak, no_contact_days FROM users WHERE id = ${user.id}`);
+    const fresh = rows[0] || {};
+
+    // Today's actions
+    const today = await db.execute(sql`SELECT checkin, no_contact, ritual FROM user_daily_actions WHERE user_id = ${user.id} AND action_date = CURRENT_DATE`);
+    const todayActions = {
+      checkIn: today[0]?.checkin || false,
+      noContact: today[0]?.no_contact || false,
+      ritual: today[0]?.ritual || false,
     };
 
-    // Mock today's ritual - matching useDashboard hook expectations
-    const todayRitual = {
-      id: 'ritual_breath_firewall',
-      name: 'Breath Firewall',
-      difficulty: 2,
-      xpReward: 20,
-      emoji: '🔥',
-      description: 'Build emotional barriers through controlled breathing exercises',
-      canReroll: true,
-      cooldownHours: 24
-    };
+    // Simple counts (placeholder logic can be enhanced later)
+  const totalRitualsResult = await db.execute(sql`SELECT COUNT(*) as c FROM user_ritual_assignments WHERE user_id = ${user.id} AND completed_at IS NOT NULL`);
+  const totalRituals = parseInt(((totalRitualsResult[0] as any)?.c ?? '0').toString(), 10);
 
-    // Response structure matching useDashboard hook expectations
+  // Derive total check-ins from helper table (count of days with checkin true)
+  const totalCheckInsResult = await db.execute(sql`SELECT COUNT(*) as c FROM user_daily_actions WHERE user_id = ${user.id} AND checkin = true`);
+  const totalCheckIns = parseInt(((totalCheckInsResult[0] as any)?.c ?? '0').toString(), 10);
+
+  const totalNoContacts = fresh.no_contact_days || 0;
+
+    // Build response matching DashboardV2 expectations
     const response = {
-      ux_stage: mockUser.uxStage as 'starter' | 'core' | 'power',
-      ritual: todayRitual,
-      streak: {
-        days: mockUser.streak,
-        shieldAvailable: mockUser.streak >= 7,
-        checkinNeeded: false
-      },
-      bytes: mockUser.bytes,
-      xp: mockUser.xp,
-      level: mockUser.level,
-      quota: mockUser.uxStage === 'starter' ? 5 : (mockUser.uxStage === 'core' ? 20 : 50),
       user: {
-        alias: mockUser.username,
-        signupDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
-        tier: 'ghost' as const,
-        hasSubscription: false,
-        lastActivity: new Date().toISOString()
-      }
+        bytes: fresh.bytes || 0,
+        streak: fresh.streak || 0,
+        totalRituals,
+  totalCheckIns,
+  totalNoContacts,
+        tier: (user as any).tier || (user as any).subscriptionTier || 'ghost'
+      },
+      todayActions,
     };
 
     return NextResponse.json(response);
   } catch (error) {
     console.error('Dashboard API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch dashboard data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch dashboard data' }, { status: 500 });
   }
 }

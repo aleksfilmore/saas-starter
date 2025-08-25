@@ -1,81 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
+import { db } from '@/lib/db';
+import { notifications } from '@/lib/db/actual-schema';
+import { and, eq, lt } from 'drizzle-orm';
 
-// Mock notifications for now - in production you'd fetch from database
-const generateNotifications = (userId: string) => {
-  const baseNotifications = [
-    {
-      id: '1',
-      type: 'daily_checkin',
-      title: 'Daily Check-In Reminder',
-      message: 'How are you feeling today? Take a moment to reflect on your healing journey.',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-      read: false,
-      actionUrl: '/dashboard',
-      actionText: 'Check In'
-    },
-    {
-      id: '2',
-      type: 'streak_reminder',
-      title: 'No-Contact Streak Update',
-      message: 'Great job maintaining your boundaries! Keep up the strong work.',
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-      read: false,
-      actionUrl: '/dashboard',
-      actionText: 'View Streak'
-    },
-    {
-      id: '3',
-      type: 'ritual_suggestion',
-      title: 'New Healing Ritual Available',
-      message: 'A personalized ritual has been crafted for your healing journey today.',
-      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-      read: true,
-      actionUrl: '/dashboard',
-      actionText: 'Start Ritual'
-    },
-    {
-      id: '4',
-      type: 'milestone',
-      title: 'Milestone Achieved! 🎉',
-      message: 'You\'ve completed 7 days of consistent healing practices. Amazing progress!',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-      read: true,
-      actionUrl: '/dashboard/progress',
-      actionText: 'View Progress'
-    },
-    {
-      id: '5',
-      type: 'lumo_nudge',
-      title: 'Gentle Reminder from Lumo',
-      message: 'Remember: healing isn\'t linear. Every small step counts toward your growth.',
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-      read: true
-    }
-  ];
-
-  return baseNotifications;
-};
-
+// GET /api/notifications/recent?limit=20&cursor=ISO_DATE&unreadOnly=1
 export async function GET(request: NextRequest) {
   try {
     const { user } = await validateRequest();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const url = new URL(request.url);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '20', 10), 100);
+    const cursor = url.searchParams.get('cursor');
+    const unreadOnly = url.searchParams.get('unreadOnly') === '1';
+
+    const whereParts: any[] = [eq(notifications.user_id, user.id)];
+    if(cursor){
+      const cDate = new Date(cursor);
+      if(!isNaN(cDate.getTime())) whereParts.push(lt(notifications.created_at as any, cDate as any));
+    }
+    if(unreadOnly){
+      whereParts.push(eq(notifications.read as any, false));
     }
 
-    // Generate mock notifications
-    const notifications = generateNotifications(user.id);
+    const rows = await db.select().from(notifications)
+      .where(whereParts.length>1 ? and(...whereParts) : whereParts[0])
+      .orderBy(notifications.created_at as any)
+      .limit(limit + 1); // fetch one extra for next cursor
 
-    return NextResponse.json({ 
-      success: true,
-      notifications: notifications
+    const ordered = rows.sort((a,b)=> (b.created_at as any) - (a.created_at as any));
+    const page = ordered.slice(0, limit);
+    const nextCursor = ordered.length > limit ? ordered[limit].created_at?.toISOString() : null;
+    const unreadCount = unreadOnly ? page.length : rows.filter(r=> !r.read).length;
+
+    return NextResponse.json({
+      notifications: page.map(r => ({
+        id: r.id,
+        type: r.type,
+        title: r.title,
+        message: r.message,
+        actionUrl: r.action_url,
+        actionText: r.action_text,
+        read: r.read,
+        createdAt: r.created_at
+      })),
+      nextCursor,
+      unreadCount
     });
   } catch (error) {
     console.error('Failed to fetch recent notifications:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch notifications' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
   }
 }

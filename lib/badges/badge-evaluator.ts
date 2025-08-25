@@ -24,6 +24,7 @@ import { nanoid } from 'nanoid';
 export type BadgeEventType = 
   | 'check_in_completed'
   | 'ritual_completed'
+  | 'ritual_swap'
   | 'wall_reaction_added'
   | 'ai_therapy_session_completed'
   | 'game_bingo_won'
@@ -172,6 +173,10 @@ export class BadgeEvaluator {
         unlockCandidates.push(...await this.evaluateGameBadges(user.id, user.tier, payload));
         break;
       
+      case 'ritual_swap':
+        unlockCandidates.push(...await this.evaluateSwapBadges(user.id));
+        break;
+      
       case 'wall_reaction_added':
         unlockCandidates.push(...await this.evaluateWallBadges(user.id, payload as WallReactionPayload));
         break;
@@ -189,6 +194,24 @@ export class BadgeEvaluator {
     // Filter out already-earned badges
     const earnedBadges = await this.getEarnedBadgeIds(user.id);
     return unlockCandidates.filter(badgeId => !earnedBadges.includes(badgeId));
+  }
+
+  /**
+   * Evaluate ritual swap badges (F_SWAP_1, F_SWAP_10)
+   */
+  private async evaluateSwapBadges(userId: string): Promise<string[]> {
+    const candidates: string[] = [];
+    const user = await this.getUser(userId);
+    if (!user || user.tier !== 'firewall') return candidates; // firewall only
+    try {
+      const rows = await db.execute(sql`SELECT COUNT(*) as c FROM user_ritual_swaps WHERE user_id = ${userId}`);
+      const total = parseInt(((rows[0] as any)?.c ?? '0').toString(),10);
+      if (total >= 1) candidates.push('F_SWAP_1');
+      if (total >= 10) candidates.push('F_SWAP_10');
+    } catch (e) {
+      console.warn('Swap badge evaluation failed', e);
+    }
+    return candidates;
   }
 
   /**

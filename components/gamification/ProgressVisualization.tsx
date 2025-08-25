@@ -11,16 +11,16 @@ interface Achievement {
   title: string;
   description: string;
   type: 'rare' | 'milestone' | 'standard' | 'cult-exclusive';
-  xpValue: number;
+  bytesValue: number; // replaced xpValue
   unlockedAt?: Date;
   progress?: number;
   maxProgress?: number;
 }
 
 interface ProgressVisualizationProps {
-  userXP: number;
-  dailyXPGained: number;
-  weeklyXPTarget: number;
+  userBytes: number; // total accumulated bytes
+  dailyBytesGained: number;
+  weeklyBytesTarget: number;
   userTier: 'free' | 'firewall' | 'cult-leader';
   recentAchievements: Achievement[];
   onShareAchievement?: (achievement: Achievement) => void;
@@ -28,9 +28,9 @@ interface ProgressVisualizationProps {
 }
 
 export default function ProgressVisualization({
-  userXP,
-  dailyXPGained,
-  weeklyXPTarget,
+  userBytes,
+  dailyBytesGained,
+  weeklyBytesTarget,
   userTier,
   recentAchievements,
   onShareAchievement,
@@ -41,21 +41,10 @@ export default function ProgressVisualization({
 
   // Calculate progress metrics
   const getProgressMetrics = () => {
-    const currentLevel = Math.floor(userXP / 100) + 1;
-    const xpToNextLevel = 100 - (userXP % 100);
-    const levelProgress = (userXP % 100);
-    const weeklyProgress = Math.min((dailyXPGained * 7) / weeklyXPTarget * 100, 100);
-    const nextMilestone = Math.ceil(userXP / 500) * 500;
-    const milestoneProgress = (userXP / nextMilestone) * 100;
-    
-    return {
-      currentLevel,
-      xpToNextLevel,
-      levelProgress,
-      weeklyProgress,
-      nextMilestone,
-      milestoneProgress
-    };
+    const nextMilestone = Math.max(1000, Math.ceil(userBytes / 1000) * 1000);
+    const milestoneProgress = (userBytes / nextMilestone) * 100;
+    const weeklyProgress = Math.min((dailyBytesGained * 7) / weeklyBytesTarget * 100, 100);
+    return { nextMilestone, milestoneProgress, weeklyProgress };
   };
 
   const metrics = getProgressMetrics();
@@ -167,7 +156,7 @@ export default function ProgressVisualization({
               
               <div className="flex items-center justify-center space-x-2 text-2xl font-bold">
                 <Zap className="h-8 w-8 text-blue-400" />
-                <span className="text-blue-400">+{celebratingAchievement.xpValue} XP</span>
+                <span className="text-blue-400">+{celebratingAchievement.bytesValue} Bytes</span>
               </div>
               
               <div className="flex space-x-4">
@@ -192,11 +181,11 @@ export default function ProgressVisualization({
         </Card>
       )}
 
-      {/* Enhanced XP Progress Ring */}
+  {/* Bytes Progress Visualization */}
       <Card className="bg-gradient-to-br from-purple-900/20 via-pink-900/30 to-blue-900/20 border-2 border-purple-500/50">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-black text-white" style={{fontFamily: 'system-ui, -apple-system, sans-serif'}}>
-            📊 GLOW-UP CONSOLE
+            📊 PROGRESSION CONSOLE
           </CardTitle>
           <Badge className={`mx-auto ${
             userTier === 'free' ? 'bg-blue-500/20 text-blue-400' :
@@ -208,7 +197,7 @@ export default function ProgressVisualization({
         </CardHeader>
         
         <CardContent className="space-y-6">
-          {/* Main XP Ring */}
+          {/* Main Bytes Ring */}
           <div className="flex justify-center">
             <div className="relative w-40 h-40">
               {/* Background Ring */}
@@ -219,23 +208,23 @@ export default function ProgressVisualization({
                   stroke="rgb(75 85 99)"
                   strokeWidth="2"
                 />
-                {/* Level Progress */}
+                {/* Milestone Progress (bytes) */}
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                   fill="none"
                   stroke="url(#gradient)"
                   strokeWidth="3"
-                  strokeDasharray={`${metrics.levelProgress}, 100`}
+                  strokeDasharray={`${metrics.milestoneProgress}, 100`}
                   className="transition-all duration-1000"
                 />
-                {/* Daily XP Glow Effect */}
-                {dailyXPGained > 0 && (
+        {/* Daily Bytes Glow Effect */}
+        {dailyBytesGained > 0 && (
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
                     stroke="rgb(250 204 21)"
                     strokeWidth="1"
-                    strokeDasharray={`${(dailyXPGained / 50) * 100}, 100`}
+          strokeDasharray={`${(dailyBytesGained / 25) * 100}, 100`}
                     className="animate-pulse"
                   />
                 )}
@@ -254,17 +243,11 @@ export default function ProgressVisualization({
               
               {/* Center Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-3xl font-black text-white">
-                  {metrics.currentLevel}
-                </div>
-                <div className="text-sm text-purple-400 font-bold">LEVEL</div>
-                <div className="text-xs text-gray-400">
-                  {metrics.xpToNextLevel} XP to next
-                </div>
-                {dailyXPGained > 0 && (
-                  <div className="text-xs text-yellow-400 font-bold animate-pulse">
-                    +{dailyXPGained} today
-                  </div>
+                <div className="text-xl font-black text-white">{userBytes}</div>
+                <div className="text-xs text-purple-400 font-bold">TOTAL BYTES</div>
+                <div className="text-xs text-gray-400">{Math.max(0, Math.round(metrics.nextMilestone - userBytes))} to {metrics.nextMilestone}</div>
+                {dailyBytesGained > 0 && (
+                  <div className="text-xs text-yellow-400 font-bold animate-pulse">+{dailyBytesGained} today</div>
                 )}
               </div>
             </div>
@@ -279,15 +262,15 @@ export default function ProgressVisualization({
                   <Calendar className="h-4 w-4 text-green-400" />
                   <span className="text-green-400 font-bold">Today</span>
                 </div>
-                <span className="text-green-400 font-bold">+{dailyXPGained}</span>
+                <span className="text-green-400 font-bold">+{dailyBytesGained}</span>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min((dailyXPGained / 50) * 100, 100)}%` }}
+                  style={{ width: `${Math.min((dailyBytesGained / 25) * 100, 100)}%` }}
                 />
               </div>
-              <p className="text-gray-400 text-xs mt-1">Target: 50 XP/day</p>
+              <p className="text-gray-400 text-xs mt-1">Target: 25 bytes/day</p>
             </div>
 
             {/* Weekly Progress */}
@@ -307,7 +290,7 @@ export default function ProgressVisualization({
                   style={{ width: `${metrics.weeklyProgress}%` }}
                 />
               </div>
-              <p className="text-gray-400 text-xs mt-1">Target: {weeklyXPTarget} XP</p>
+              <p className="text-gray-400 text-xs mt-1">Target: {weeklyBytesTarget} bytes</p>
             </div>
 
             {/* Milestone Progress */}
@@ -327,7 +310,7 @@ export default function ProgressVisualization({
                   style={{ width: `${metrics.milestoneProgress}%` }}
                 />
               </div>
-              <p className="text-gray-400 text-xs mt-1">Next: {metrics.nextMilestone} XP</p>
+              <p className="text-gray-400 text-xs mt-1">Next: {metrics.nextMilestone} bytes</p>
             </div>
           </div>
         </CardContent>
@@ -365,15 +348,14 @@ export default function ProgressVisualization({
                         <p className="text-gray-300 text-sm">
                           {achievement.description}
                         </p>
+                        <span className="text-blue-400 font-bold">+{achievement.bytesValue}</span>
                       </div>
                     </div>
                     
                     <div className="text-right">
                       <div className="flex items-center space-x-1">
                         <Zap className="h-4 w-4 text-blue-400" />
-                        <span className="text-blue-400 font-bold">
-                          +{achievement.xpValue}
-                        </span>
+                        <span className="text-blue-400 font-bold">+{achievement.bytesValue}</span>
                       </div>
                       {onClaimReward && (
                         <Button

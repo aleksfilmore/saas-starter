@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { db } from '@/lib/db';
 import { anonymousPosts, wallPostReactions } from '@/lib/db';
 import { sql } from 'drizzle-orm';
 
 export async function GET() {
   try {
+    const buildGuard = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
+    if (buildGuard) {
+      return NextResponse.json({ activeHealers: 0, heartsGiven: 0, supportMessages: 0, totalPosts: 0, categoryCounts: {} });
+    }
     const [{ count: postCount }] = await db.execute<{ count: number }>(sql`SELECT COUNT(*)::int AS count FROM anonymous_posts`);
     let reactionCount = 0;
     try {

@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Flame, Shield, Crown, ChevronDown, User, Wind, Settings, CreditCard, Trash2 } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Flame, Shield, Crown, ChevronDown, User, Wind, Settings, CreditCard, Trash2, Loader2, Bell, Key, BadgeCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
@@ -24,6 +24,106 @@ interface SimplifiedHeaderProps {
 
 export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCrisis }: SimplifiedHeaderProps) {
   const [showUserDropdown, setShowUserDropdown] = useState(false)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [badgeUpdating, setBadgeUpdating] = useState(false)
+  const [emailEnabled, setEmailEnabled] = useState<boolean | null>(null)
+  const [togglingEmail, setTogglingEmail] = useState(false)
+
+  // Preload email notification preference once on mount
+  useEffect(() => {
+    let active = true
+    if (emailEnabled !== null) return
+    ;(async () => {
+      try {
+        const prefRes = await fetch('/api/notifications', { cache: 'no-store' })
+        if (!prefRes.ok) return
+        const data = await prefRes.json()
+        if (active) setEmailEnabled(!!data?.preferences?.enableEmail)
+      } catch (e) {
+        console.warn('Pref load failed', e)
+      }
+    })()
+    return () => { active = false }
+  }, [emailEnabled])
+
+  async function openStripePortal() {
+    try {
+      setPortalLoading(true)
+      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      if (!res.ok) throw new Error('Portal error')
+      const data = await res.json()
+      const url = data?.url
+      if (url) {
+        window.location.href = url
+      }
+    } catch (e) {
+      console.error('Open portal failed', e)
+      alert('Could not open subscription portal.')
+    } finally {
+      setPortalLoading(false)
+      setShowUserDropdown(false)
+    }
+  }
+
+  async function setFirewallBadge() {
+    try {
+      setBadgeUpdating(true)
+      // Fetch locker to discover firewall badge dynamically (name contains 'firewall')
+      const locker = await fetch('/api/badges/locker').then(r => r.ok ? r.json() : null)
+      const list = locker?.badges || locker?.data?.badges || []
+      const firewall = list.find((b: any) => /fire ?wall/i.test(b.name || ''))
+      if (!firewall) {
+        alert('Firewall badge not found yet. Earn it first!')
+        return
+      }
+      const resp = await fetch('/api/badges/profile', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ badgeId: firewall.id }) })
+      if (resp.ok) {
+        alert('Profile badge set to Firewall')
+      } else {
+        alert('Failed to set badge')
+      }
+    } catch (e) {
+      console.error('Set firewall badge error', e)
+      alert('Error setting badge')
+    } finally {
+      setBadgeUpdating(false)
+      setShowUserDropdown(false)
+    }
+  }
+
+  async function toggleEmailNotifications() {
+    if (togglingEmail) return
+    try {
+      setTogglingEmail(true)
+      // lazy fetch initial state if unknown
+      let current = emailEnabled
+      if (current === null) {
+        try {
+          const prefRes = await fetch('/api/notifications', { cache: 'no-store' })
+          if (prefRes.ok) {
+            const data = await prefRes.json()
+            current = !!data?.preferences?.enableEmail
+            setEmailEnabled(current)
+          }
+        } catch {}
+      }
+      const next = !(current ?? true)
+      // optimistic
+      setEmailEnabled(next)
+      const res = await fetch('/api/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preferences: { enableEmail: next } })
+      })
+      if (!res.ok) {
+        // revert on failure
+        setEmailEnabled(current ?? true)
+        alert('Failed to update email preference')
+      }
+    } finally {
+      setTogglingEmail(false)
+    }
+  }
 
   return (
     <header className="w-full border-b border-gray-600/30 bg-gray-800/60 backdrop-blur-xl sticky top-0 z-50 mb-8">
@@ -159,14 +259,41 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
                         📊 Progress & Stats
                       </Link>
                       
+                      <button
+                        onClick={openStripePortal}
+                        disabled={portalLoading}
+                        className="w-full px-4 py-2 text-left disabled:opacity-50 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        {portalLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+                        Manage Subscription
+                      </button>
+
+                      <button
+                        onClick={toggleEmailNotifications}
+                        disabled={togglingEmail}
+                        className="w-full px-4 py-2 text-left disabled:opacity-50 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        {togglingEmail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
+                        {emailEnabled === false ? 'Enable Daily Email' : 'Disable Daily Email'}
+                      </button>
+
                       <Link
-                        href="/subscription"
+                        href="/change-password"
                         className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
                         onClick={() => setShowUserDropdown(false)}
                       >
-                        <CreditCard className="h-4 w-4" />
-                        💳 Subscription
+                        <Key className="h-4 w-4" />
+                        Change Password
                       </Link>
+
+                      <button
+                        onClick={setFirewallBadge}
+                        disabled={badgeUpdating}
+                        className="w-full px-4 py-2 text-left disabled:opacity-50 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        {badgeUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgeCheck className="h-4 w-4" />}
+                        Firewall Badge
+                      </button>
                       
                       <Link
                         href="/settings"

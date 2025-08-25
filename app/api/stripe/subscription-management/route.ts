@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import Stripe from 'stripe';
 import { db } from '@/lib/db/drizzle';
-import { users, subscriptionEvents, type NewSubscriptionEvent } from '@/lib/db/schema';
+import { users, subscriptionEvents } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { validateRequest } from '@/lib/auth';
 import { paymentRateLimit } from '@/lib/middleware/rate-limiter';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil',
+  // Updated to current supported API version to satisfy Stripe types
+  apiVersion: '2025-07-30.basil',
 });
 
 export async function POST(request: NextRequest) {
@@ -336,15 +338,16 @@ async function logSubscriptionEvent(
   metadata: Record<string, any>
 ) {
   try {
-    const eventData: NewSubscriptionEvent = {
+    // Conform to inlined subscriptionEvents schema (id, userId, type, amount?, currency?, raw, createdAt)
+    await db.insert(subscriptionEvents).values({
       id: crypto.randomUUID(),
       userId,
-      stripeSubscriptionId: subscriptionId,
-      eventType,
-      metadata: JSON.stringify(metadata),
-    };
-
-    await db.insert(subscriptionEvents).values(eventData);
+      type: eventType,
+      raw: JSON.stringify({ subscriptionId, metadata }),
+      // Optionally pluck amount / currency if present inside metadata.amount/metadata.currency
+      amount: typeof metadata.amount === 'number' ? metadata.amount : undefined,
+      currency: typeof metadata.currency === 'string' ? metadata.currency : undefined,
+    });
   } catch (error) {
     console.error('Error logging subscription event:', error);
     // Don't throw here - logging failure shouldn't break the main operation

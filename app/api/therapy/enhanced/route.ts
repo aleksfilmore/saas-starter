@@ -47,17 +47,17 @@ const PERSONALITY_RESPONSES = {
 const TIER_SPECIFIC_CONTENT = {
   free: {
     sessionContent: 'Basic guided session with core therapeutic techniques',
-    xpMultiplier: 1,
+  rewardMultiplier: 1,
     specialFeatures: []
   },
   firewall: {
     sessionContent: 'Advanced session with personalized insights and extended content',
-    xpMultiplier: 1.5,
+  rewardMultiplier: 1.5,
     specialFeatures: ['streak_bonuses', 'advanced_analytics', 'priority_features']
   },
   'cult-leader': {
     sessionContent: 'Elite session with exclusive content and experimental features',
-    xpMultiplier: 2,
+  rewardMultiplier: 2,
     specialFeatures: ['glitch_effects', 'experimental_features', 'community_leadership', 'early_access']
   }
 };
@@ -80,12 +80,11 @@ export async function POST(request: NextRequest) {
     // Generate AI response based on emotional tone
     const responseTemplate = personality.examples[Math.floor(Math.random() * personality.examples.length)];
     
-    // Calculate XP reward
-    const baseXP = sessionType === 'weekly' ? 100 : sessionType === 'emergency' ? 50 : 75;
-    const earnedXP = Math.floor(baseXP * tierConfig.xpMultiplier);
-    
-    // Generate bytes (virtual currency)
-    const earnedBytes = Math.floor(earnedXP * 0.1);
+  // Calculate bytes reward (formerly derived from XP; now direct bytes-only model)
+  // Legacy mapping kept: previous XP values (100/50/75) * multiplier * 0.1
+  const basePoints = sessionType === 'weekly' ? 100 : sessionType === 'emergency' ? 50 : 75; // legacy scale
+  const scaledPoints = Math.floor(basePoints * tierConfig.rewardMultiplier);
+  const earnedBytes = Math.floor(scaledPoints * 0.1); // convert to bytes reward
 
     // Check for achievements
     const achievements = [];
@@ -97,7 +96,7 @@ export async function POST(request: NextRequest) {
         title: `Week ${currentWeek} Warrior`,
         description: `Completed your week ${currentWeek} therapy session`,
         type: 'standard' as const,
-        xpValue: 25,
+        bytesValue: 2, // mapped from prior 25 XP (~10:1)
         unlockedAt: new Date()
       });
     }
@@ -109,7 +108,7 @@ export async function POST(request: NextRequest) {
         title: 'Glitch Master',
         description: 'Experienced exclusive Cult Leader content',
         type: 'milestone' as const,
-        xpValue: 100,
+        bytesValue: 10, // mapped from prior 100 XP
         unlockedAt: new Date()
       });
     }
@@ -155,9 +154,8 @@ export async function POST(request: NextRequest) {
       message: 'Session completed successfully',
       session: sessionSummary,
       rewards: {
-        xp: earnedXP,
         bytes: earnedBytes,
-        multiplier: tierConfig.xpMultiplier
+        multiplier: tierConfig.rewardMultiplier
       },
       achievements,
       aiResponse: {
@@ -188,7 +186,7 @@ export async function POST(request: NextRequest) {
       type: sessionType,
       tone: emotionalTone,
       tier: userTier,
-      xpEarned: earnedXP,
+      bytesEarned: earnedBytes,
       achievementsUnlocked: achievements.length
     });
 

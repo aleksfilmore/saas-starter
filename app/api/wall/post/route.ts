@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { createWallPost } from '@/lib/wall/wall-service';
 import { AnalyticsService } from '@/lib/analytics/service';

@@ -2,7 +2,6 @@ import { db } from '@/lib/db';
 import { users, anonymousPosts, wallPostReactions, wallPostComments, ritualEntries } from '@/lib/db';
 import { logSchemaWarning } from '@/lib/db/schema-health-logger';
 import { eq, and, gte, count, sql } from 'drizzle-orm';
-import { getLevelProgressSnapshot } from '@/lib/gamification/leveling';
 
 export async function getDashboardSnapshot(userId: string) {
   const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
@@ -27,13 +26,14 @@ export async function getDashboardSnapshot(userId: string) {
       ? db.select({ c: count(ritualEntries.id) }).from(ritualEntries).where(and(eq(ritualEntries.userId, userId), gte(ritualEntries.performedAt, startOfDay)))
       : Promise.resolve([{ c: 0 }])
   ]);
-  const levelSnapshot = getLevelProgressSnapshot(dbUser.xp, dbUser.level);
+  // XP/level removed – placeholder level snapshot
+  const levelSnapshot = { level: 1, current: 0, next: 0, progressPercent: 0 };
   return {
     user: {
       id: dbUser.id,
       username: dbUser.username || dbUser.email?.split('@')[0] || 'agent',
-      level: dbUser.level,
-      xp: dbUser.xp,
+  level: 1,
+  xp: 0,
       bytes: dbUser.bytes,
       noContactStreak: dbUser.noContactDays,
       ritualStreak: dbUser.streak,

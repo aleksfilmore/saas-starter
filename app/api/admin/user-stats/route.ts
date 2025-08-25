@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/minimal-schema';
@@ -52,9 +53,7 @@ export async function GET(request: NextRequest) {
     const verifiedUsersResult = await db
       .select({ count: count() })
       .from(users)
-      .where(
-        eq(users.is_verified, true)
-      );
+      .where(eq(users.isVerified, true));
     
     const verifiedUsers = verifiedUsersResult[0]?.count || 0;
 

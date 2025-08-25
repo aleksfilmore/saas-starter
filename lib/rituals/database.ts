@@ -13,7 +13,6 @@ export interface Ritual {
   user_tier: 'freemium' | 'paid_beginner' | 'paid_advanced';
   steps: RitualStep[];
   completion_type: 'reflection' | 'timer' | 'checklist' | 'creative';
-  xp_reward: number;
   bytes_reward: number;
 }
 
@@ -52,7 +51,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 15,
     bytes_reward: 10
   },
   {
@@ -84,7 +82,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 25,
     bytes_reward: 15
   },
 
@@ -118,7 +115,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 20,
     bytes_reward: 12
   },
   {
@@ -149,7 +145,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'checklist',
-    xp_reward: 30,
     bytes_reward: 20
   },
 
@@ -187,7 +182,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 50,
     bytes_reward: 35
   },
 
@@ -226,7 +220,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 35,
     bytes_reward: 25
   },
 
@@ -264,7 +257,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 20,
     bytes_reward: 15
   },
   {
@@ -302,7 +294,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 25,
     bytes_reward: 18
   },
 
@@ -340,7 +331,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'creative',
-    xp_reward: 40,
     bytes_reward: 30
   },
 
@@ -382,7 +372,6 @@ export const RITUAL_DATABASE: Ritual[] = [
       }
     ],
     completion_type: 'reflection',
-    xp_reward: 100,
     bytes_reward: 75
   }
 ];

@@ -23,8 +23,7 @@ export async function POST(req: NextRequest) {
       avatar: avatar,
       subscriptionTier: subscriptionTier || 'anonymous',
       hasCompletedOnboarding: true,
-      bytes: 100, // Starting bonus
-      byteBalance: 100, // Starting bonus
+  bytes: 100, // Starting bonus (byteBalance deprecated)
       onboardedAt: new Date(),
     });
 

@@ -10,7 +10,7 @@ import {
   dailyRitualCompletions, 
   userDailyState,
   dailyRitualAssignments 
-} from '@/lib/db/minimal-schema';
+} from '@/lib/db/unified-schema';
 import { getTierPermissions, type LegacyTier } from '@/lib/auth/tier-permissions';
 
 export interface LiveMetrics {
@@ -53,7 +53,7 @@ export interface TrendData {
   date: string;
   completions: number;
   mood: number | null;
-  xp_gained: number;
+  bytes_gained: number;
   streak_day: number;
 }
 
@@ -99,7 +99,7 @@ export class EnhancedProgressService {
       const engagementTrend = await this.analyzeEngagementTrend(userId);
       
       // Predictive insights
-      const streakRiskLevel = this.calculateStreakRisk(user.ritual_streak, todayCompletions.length);
+  const streakRiskLevel = this.calculateStreakRisk(user.ritualStreak, todayCompletions.length);
       const predictedNextCompletion = await this.predictNextCompletion(userId);
       const improvementVelocity = await this.calculateImprovementVelocity(userId);
       
@@ -111,7 +111,7 @@ export class EnhancedProgressService {
       const archetypeComparison = await this.getArchetypeComparison(userId, user.archetype || 'unknown');
       
       return {
-        current_streak: user.ritual_streak || 0,
+  current_streak: user.ritualStreak || 0,
         today_completions: todayCompletions.length,
         week_completions: weekCompletions,
         month_completions: monthCompletions,
@@ -145,20 +145,20 @@ export class EnhancedProgressService {
       
       const rawData = await db
         .select({
-          date: sql<string>`DATE(${dailyRitualCompletions.completed_at})`,
+          date: sql<string>`DATE(${dailyRitualCompletions.completedAt})`,
           completions: count(dailyRitualCompletions.id),
-          avg_mood: avg(dailyRitualCompletions.mood_rating),
-          total_xp: sql<number>`COALESCE(SUM(${dailyRitualCompletions.xp_earned}), 0)`
+          avg_mood: avg(dailyRitualCompletions.moodRating),
+          total_bytes: sql<number>`COALESCE(SUM(${dailyRitualCompletions.bytesEarned}), 0)`
         })
         .from(dailyRitualCompletions)
         .where(
           and(
-            eq(dailyRitualCompletions.user_id, userId),
-            gte(dailyRitualCompletions.completed_at, startDate)
+            eq(dailyRitualCompletions.userId, userId),
+            gte(dailyRitualCompletions.completedAt, startDate)
           )
         )
-        .groupBy(sql`DATE(${dailyRitualCompletions.completed_at})`)
-        .orderBy(sql`DATE(${dailyRitualCompletions.completed_at})`);
+        .groupBy(sql`DATE(${dailyRitualCompletions.completedAt})`)
+        .orderBy(sql`DATE(${dailyRitualCompletions.completedAt})`);
       
       // Fill in missing dates and calculate streak days
       const trendData: TrendData[] = [];
@@ -182,7 +182,7 @@ export class EnhancedProgressService {
           date,
           completions,
           mood: dayData?.avg_mood ? Number(dayData.avg_mood) : null,
-          xp_gained: dayData?.total_xp || 0,
+          bytes_gained: dayData?.total_bytes || 0,
           streak_day: currentStreak
         });
       }
@@ -269,11 +269,10 @@ export class EnhancedProgressService {
       .select({
         tier: users.tier,
         archetype: users.archetype,
-        archetype_details: users.archetype_details,
-        xp: users.xp,
-        level: users.level,
-        ritual_streak: users.ritual_streak,
-        created_at: users.created_at
+        archetypeDetails: users.archetypeDetails,
+  bytes: users.bytes,
+        ritualStreak: users.ritualStreak,
+        createdAt: users.createdAt
       })
       .from(users)
       .where(eq(users.id, userId))
@@ -288,8 +287,8 @@ export class EnhancedProgressService {
       .from(dailyRitualCompletions)
       .where(
         and(
-          eq(dailyRitualCompletions.user_id, userId),
-          sql`DATE(${dailyRitualCompletions.completed_at}) = ${today}`
+          eq(dailyRitualCompletions.userId, userId),
+          sql`DATE(${dailyRitualCompletions.completedAt}) = ${today}`
         )
       );
   }
@@ -300,8 +299,8 @@ export class EnhancedProgressService {
       .from(dailyRitualCompletions)
       .where(
         and(
-          eq(dailyRitualCompletions.user_id, userId),
-          gte(dailyRitualCompletions.completed_at, since)
+          eq(dailyRitualCompletions.userId, userId),
+          gte(dailyRitualCompletions.completedAt, since)
         )
       );
       
@@ -318,8 +317,8 @@ export class EnhancedProgressService {
       .from(dailyRitualAssignments)
       .where(
         and(
-          eq(dailyRitualAssignments.user_id, userId),
-          gte(sql`${dailyRitualAssignments.assigned_date}::date`, since)
+          eq(dailyRitualAssignments.userId, userId),
+          gte(sql`${dailyRitualAssignments.assignedDate}::date`, since)
         )
       );
     
@@ -331,12 +330,12 @@ export class EnhancedProgressService {
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     
     const result = await db
-      .select({ avg_mood: avg(dailyRitualCompletions.mood_rating) })
+  .select({ avg_mood: avg(dailyRitualCompletions.moodRating) })
       .from(dailyRitualCompletions)
       .where(
         and(
-          eq(dailyRitualCompletions.user_id, userId),
-          gte(dailyRitualCompletions.completed_at, since)
+          eq(dailyRitualCompletions.userId, userId),
+          gte(dailyRitualCompletions.completedAt, since)
         )
       );
       
@@ -447,7 +446,7 @@ export class EnhancedProgressService {
   }
   
   private async getNextMilestone(userId: string, user: any): Promise<LiveMetrics['next_milestone']> {
-    const streak = user.ritual_streak || 0;
+  const streak = (user.ritualStreak ?? (user as any).ritual_streak) || 0;
     const level = user.level || 1;
     
     // Determine next milestone
@@ -467,15 +466,16 @@ export class EnhancedProgressService {
       };
     } else {
       // Focus on level progression
-      const xpNeeded = (level + 1) * 1000; // Simple XP calculation
-      const currentXP = user.xp || 0;
-      const progress = (currentXP / xpNeeded) * 100;
+      // Level system deprecated: substitute bytes milestone (e.g., 10k increments)
+      const currentBytes = user.bytes || 0;
+      const nextBytesMilestone = Math.ceil((currentBytes + 1) / 10000) * 10000;
+      const progress = (currentBytes / nextBytesMilestone) * 100;
       
       return {
-        type: 'level',
-        description: `Reach Level ${level + 1}`,
+        type: 'completion_count',
+        description: `Reach ${nextBytesMilestone.toLocaleString()} bytes earned`,
         progress_percentage: Math.min(progress, 100),
-        estimated_days: Math.ceil((xpNeeded - currentXP) / 100) // Assume 100 XP per day
+        estimated_days: Math.max(1, Math.ceil((nextBytesMilestone - currentBytes) / 200)) // assume 200 bytes/day
       };
     }
   }

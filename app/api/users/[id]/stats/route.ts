@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(
@@ -40,23 +40,20 @@ export async function GET(
 
     const user = userData[0];
 
-    // Calculate derived stats
-    const currentLevel = user.level || 1;
-    const currentXP = user.xp || 0;
-    const xpForCurrentLevel = (currentLevel - 1) * 100;
-    const xpForNextLevel = currentLevel * 100;
-    const xpProgress = currentXP - xpForCurrentLevel;
-    const xpNeeded = xpForNextLevel - currentXP;
+  // Derived progress: bytes milestones (every 1000 bytes)
+  const bytes = user.bytes || 0;
+  const milestone = Math.floor(bytes / 1000) + 1;
+  const milestoneProgress = bytes % 1000;
+  const milestoneRemaining = 1000 - milestoneProgress;
 
     return NextResponse.json({
       success: true,
       data: {
         userId: user.id,
-        totalXP: currentXP,
-        totalBytes: user.bytes || 0,
-        currentLevel,
-        xpProgress,
-        xpNeeded: xpNeeded > 0 ? xpNeeded : 0,
+  totalBytes: bytes,
+  milestone,
+  milestoneProgress,
+  milestoneRemaining,
         ritualStreak: user.streak || 0,
         noContactStreak: user.noContactDays || 0,
         totalRitualsCompleted: 0, // Would need ritual completions table

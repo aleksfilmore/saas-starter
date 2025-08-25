@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users, userSessions, anonymousPosts, ritualCompletions } from '@/lib/db/schema';
+import { users, userSessions, anonymousPosts, ritualCompletions } from '@/lib/db/unified-schema';
 import { eq, count, desc, sql, inArray } from 'drizzle-orm';
 
 const ADMIN_EMAIL = 'system_admin@ctrlaltblock.com';

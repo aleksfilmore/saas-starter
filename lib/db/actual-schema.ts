@@ -9,6 +9,7 @@ export const users = pgTable('users', {
   created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   username: text('username').unique(),
+  // (theme_preference column intentionally omitted – it does not exist in live DB)
   // Email verification fields
   email_verified: boolean('email_verified').default(false),
   email_verification_token: text('email_verification_token'),
@@ -17,9 +18,7 @@ export const users = pgTable('users', {
   avatar: text('avatar'),
   onboarding_completed: boolean('onboarding_completed').default(false),
   subscription_tier: text('subscription_tier').default('ghost_mode'),
-  xp_points: integer('xp_points').default(0),
-  byte_balance: integer('byte_balance').default(100),
-  glow_up_level: integer('glow_up_level').default(1),
+  // xp_points, byte_balance, glow_up_level removed (bytes economy)
   is_admin: boolean('is_admin').default(false),
   is_banned: boolean('is_banned').default(false),
   last_active_at: timestamp('last_active_at', { withTimezone: true }),
@@ -33,9 +32,9 @@ export const users = pgTable('users', {
   emotional_archetype: text('emotional_archetype'),
   codename: text('codename'),
   avatar_style: text('avatar_style'),
-  xp: integer('xp').notNull().default(0),
+  // xp removed
   bytes: integer('bytes').notNull().default(100),
-  level: integer('level').notNull().default(1),
+  // level removed
   streak: integer('streak').notNull().default(0),
   streak_days: integer('streak_days').notNull().default(0),
   longest_streak: integer('longest_streak').notNull().default(0),
@@ -59,8 +58,24 @@ export const sessions = pgTable('sessions', {
   expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
 });
 
+// Simple notifications table (optional usage; graceful fallback if empty)
+export const notifications = pgTable('notifications', {
+  id: text('id').primaryKey(),
+  user_id: text('user_id').notNull().references(() => users.id),
+  type: text('type').notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  action_url: text('action_url'),
+  action_text: text('action_text'),
+  read: boolean('read').notNull().default(false), // legacy quick flag
+  read_at: timestamp('read_at', { withTimezone: true }),
+  created_at: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
+export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;

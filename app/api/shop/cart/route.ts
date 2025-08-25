@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { shopCart, shopProducts } from '@/lib/db/schema';
+import { shopCart, shopProducts } from '@/lib/db/unified-schema';
 import { and, eq, isNull } from 'drizzle-orm';
 import { SHOP_PRODUCTS } from '@/lib/shop/constants';
 
@@ -24,8 +24,9 @@ export async function GET(request: NextRequest) {
       const product = SHOP_PRODUCTS[item.productId as keyof typeof SHOP_PRODUCTS];
       return {
         ...item,
-        product: product || null
-      };
+        product: product || null,
+        quantity: item.quantity || 1
+      } as typeof item & { product: any; quantity: number };
     }).filter(item => item.product); // Filter out items with missing products
 
     // Calculate totals

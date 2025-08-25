@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { dailyRitualService } from '@/lib/rituals/daily-ritual-service-drizzle';
 import { validateRequest } from '@/lib/auth';
 
@@ -30,11 +31,11 @@ export async function GET(request: NextRequest) {
           assignmentId: result.assignments?.id
         })),
         userState: {
-          streakDays: result.userState.streak_days,
-          ritualsCompletedToday: result.userState.rituals_completed_today,
-          dailyCapReached: result.userState.daily_cap_reached,
-          hasRerolledToday: result.userState.has_rerolled_today,
-          totalWeeksActive: result.userState.total_weeks_active
+          streakDays: result.userState.streakDays,
+          ritualsCompletedToday: result.userState.ritualsCompletedToday,
+          dailyCapReached: result.userState.dailyCapReached,
+          hasRerolledToday: result.userState.hasRerolledToday,
+          totalWeeksActive: result.userState.totalWeeksActive
         },
         canReroll: result.canReroll
       }

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { users, rituals } from '@/lib/db/schema';
+import { users, rituals } from '@/lib/db/unified-schema';
 import { eq, and } from 'drizzle-orm';
 import { rerollRitual } from '@/lib/ritual/ritual-engine';
+import { sql } from 'drizzle-orm';
+import { randomUUID } from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,7 +28,12 @@ export async function POST(request: NextRequest) {
 
     const user = userData[0];
 
-    // Check reroll limits (1 per day for freemium, unlimited for paid)
+    // Firewall-only feature (swap)
+    if (user.tier !== 'firewall') {
+      return NextResponse.json({ error: 'Ritual swap is Firewall-only' }, { status: 403 });
+    }
+
+    // Check reroll limits: max 1 per day (explicit requirement)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -42,16 +49,13 @@ export async function POST(request: NextRequest) {
       r.createdAt >= today
     ).length;
 
-    // Apply reroll limits based on tier
-    const dashboardType = user.dashboardType || 'freemium';
-    const maxRerolls = dashboardType === 'freemium' ? 1 : 3; // Freemium: 1/day, Paid: 3/day
-
-    if (todaysRerollCount >= maxRerolls) {
+  const maxRerolls = 1; // enforced cap
+  if (todaysRerollCount >= maxRerolls) {
       return NextResponse.json({
-        error: `Daily reroll limit reached (${maxRerolls}/day)`,
-        maxRerolls,
-        currentRerolls: todaysRerollCount,
-        tier: dashboardType
+    error: 'Daily swap limit reached (1/day)',
+    maxRerolls,
+    currentRerolls: todaysRerollCount,
+    tier: user.tier
       }, { status: 429 });
     }
 
@@ -66,6 +70,31 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ New ritual generated via reroll:', newRitual.title);
 
+    // Record swap event
+    try {
+      await db.execute(sql`INSERT INTO user_ritual_swaps (id, user_id) VALUES (${randomUUID()}, ${user.id})`);
+    } catch (e) { console.warn('Failed to record ritual swap', e); }
+
+    // Compute updated counts
+    let totalSwaps = 0; let todaySwaps = todaysRerollCount + 1;
+    try {
+      const totalRows = await db.execute(sql`SELECT COUNT(*) as c FROM user_ritual_swaps WHERE user_id = ${user.id}`);
+      totalSwaps = parseInt(((totalRows[0] as any)?.c ?? '0').toString(),10);
+    } catch {}
+
+    // Emit badge event for ritual_swap
+    try {
+      await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3001'}/api/badges/check-in`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          eventType: 'ritual_swap',
+            payload: { totalSwaps, todaySwaps }
+        })
+      }).catch(()=>{});
+    } catch {}
+
     return NextResponse.json({
       success: true,
       ritual: {
@@ -75,12 +104,16 @@ export async function POST(request: NextRequest) {
         category: newRitual.category,
         intensity: newRitual.intensity,
         duration: newRitual.duration,
-        xpReward: newRitual.xpReward,
         bytesReward: newRitual.bytesReward
       },
       rerollsUsed: todaysRerollCount + 1,
       rerollsRemaining: maxRerolls - (todaysRerollCount + 1),
-      message: `New ritual generated! ${maxRerolls - (todaysRerollCount + 1)} rerolls remaining today.`
+  message: `New ritual generated! No more swaps remaining today.`,
+      swaps: {
+        today: todaySwaps,
+        total: totalSwaps,
+        dailyLimit: maxRerolls
+      }
     });
 
   } catch (error) {

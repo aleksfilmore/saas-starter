@@ -56,7 +56,6 @@ export async function seedRituals() {
             action_type,
             tier,
             estimated_time,
-            xp_reward,
             byte_reward
           ) VALUES (
             ${ritual.id},
@@ -72,7 +71,6 @@ export async function seedRituals() {
             ${ritual.actionType},
             ${ritual.tier},
             ${ritual.estimatedTime},
-            ${ritual.xpReward},
             ${ritual.byteReward}
           )
           ON CONFLICT (id) DO UPDATE SET
@@ -87,7 +85,6 @@ export async function seedRituals() {
             action_type = EXCLUDED.action_type,
             tier = EXCLUDED.tier,
             estimated_time = EXCLUDED.estimated_time,
-            xp_reward = EXCLUDED.xp_reward,
             byte_reward = EXCLUDED.byte_reward,
             updated_at = now()
         `);

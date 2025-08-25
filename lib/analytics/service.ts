@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { analyticsEvents, userSessions, conversionFunnels } from '@/lib/db/schema';
+import { analyticsEvents, userSessions, conversionFunnels } from '@/lib/db/unified-schema';
 import { AnalyticsEvent, AnalyticsEvents, ConversionFunnels } from './events';
 import { eq, and, gte, lte, desc, count, avg, sum } from 'drizzle-orm';
 
@@ -186,7 +186,7 @@ export class AnalyticsService {
     startDate.setDate(startDate.getDate() - days);
 
     // Get subscription events
-    const subscriptionEvents = await db
+    let subscriptionEvents = await db
       .select()
       .from(analyticsEvents)
       .where(
@@ -195,6 +195,10 @@ export class AnalyticsService {
           gte(analyticsEvents.timestamp, startDate)
         )
       );
+
+    if (!Array.isArray(subscriptionEvents)) {
+      subscriptionEvents = [];
+    }
 
     // Calculate basic revenue metrics
     const totalRevenue = subscriptionEvents.reduce((sum, event) => {
@@ -241,7 +245,7 @@ export class AnalyticsService {
       cohortDate.setDate(cohortDate.getDate() - days - 1);
 
       // Users who signed up on the cohort date
-      const cohortUsers = await db
+  let cohortUsers = await db
         .select({ userId: analyticsEvents.userId })
         .from(analyticsEvents)
         .where(
@@ -251,9 +255,10 @@ export class AnalyticsService {
             lte(analyticsEvents.timestamp, startDate)
           )
         );
+  if (!Array.isArray(cohortUsers)) cohortUsers = [];
 
-      // Users from cohort who were active after the retention period
-      const activeUsers = await db
+  // Users from cohort who were active after the retention period
+  let activeUsers = await db
         .select({ userId: analyticsEvents.userId })
         .from(analyticsEvents)
         .where(
@@ -262,6 +267,7 @@ export class AnalyticsService {
             gte(analyticsEvents.timestamp, startDate)
           )
         );
+  if (!Array.isArray(activeUsers)) activeUsers = [];
 
       const cohortSize = cohortUsers.length;
       const retainedUsers = activeUsers.filter(user => 

@@ -29,8 +29,7 @@ async function checkAdminUser() {
     console.log('  Username:', admin.username);
     console.log('  isAdmin:', admin.isAdmin);
     console.log('  Tier:', admin.tier);
-    console.log('  Level:', admin.level);
-    console.log('  Created:', admin.created_at);
+  console.log('  Created:', admin.createdAt);
 
     if (!admin.isAdmin) {
       console.log('⚠️  WARNING: Admin user exists but isAdmin flag is false!');

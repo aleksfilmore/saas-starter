@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { anonymousPosts } from '@/lib/db/schema';
+import { anonymousPosts } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 const ADMIN_EMAIL = 'system_admin@ctrlaltblock.com';

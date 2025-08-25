@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/config';
 import { db } from '@/lib/db';
-import { users, voiceTherapyCredits } from '@/lib/db/schema';
+import { users, voiceTherapyCredits } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import Stripe from 'stripe';
 import { randomUUID } from 'crypto';

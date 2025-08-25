@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
 
@@ -27,21 +27,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // XP/Bytes rewards based on duration and difficulty
-    const baseXP = 20;
-    const durationBonus = Math.min(duration * 3, 30); // Max 30 bonus XP
-    const difficultyMultiplier = exercise.difficulty === 'easy' ? 1 : 
-                                exercise.difficulty === 'medium' ? 1.3 : 1.6;
-    
-    const xpEarned = Math.floor((baseXP + durationBonus) * difficultyMultiplier);
-    const bytesEarned = Math.floor(xpEarned * 0.5);
+    // Bytes rewards based on duration and difficulty (XP removed)
+    const baseBytes = 10;
+    const durationBonusBytes = Math.min(duration * 2, 20); // Max 20 bonus bytes
+    const difficultyMultiplier = exercise.difficulty === 'easy' ? 1 : exercise.difficulty === 'medium' ? 1.3 : 1.6;
+    const bytesEarned = Math.floor((baseBytes + durationBonusBytes) * difficultyMultiplier);
 
-    // Update user XP and Bytes
     await db.update(users)
-      .set({
-        xp: user.xp + xpEarned,
-        bytes: user.bytes + bytesEarned
-      })
+      .set({ bytes: user.bytes + bytesEarned })
       .where(eq(users.id, user.id));
 
     // Store mindfulness exercise entry
@@ -58,17 +51,13 @@ export async function POST(request: NextRequest) {
       category: exercise.category || 'general',
       timestamp: new Date().toISOString(),
       platform: 'web',
-      xpEarned,
       bytesEarned
     };
 
     return NextResponse.json({
       success: true,
       data: mindfulnessEntry,
-      rewards: {
-        xpEarned,
-        bytesEarned
-      },
+  rewards: { bytesEarned },
       message: 'Mindfulness exercise completed successfully'
     });
 

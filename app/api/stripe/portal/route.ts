@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { createCustomerPortalSession, getUserSubscription } from '@/lib/stripe/subscription';
 import { validateRequest } from '@/lib/auth';
 

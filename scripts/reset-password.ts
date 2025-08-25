@@ -39,7 +39,7 @@ async function resetUserPassword() {
     await db.update(users)
       .set({ 
         hashedPassword,
-        updated_at: new Date()
+        updatedAt: new Date()
       })
       .where(eq(users.email, 'admin@ctrlaltblock.com'));
 

@@ -29,6 +29,26 @@ export default function SignInPage() {
       className: particleTypes[i % 4]
     }));
     setParticles(newParticles);
+    // Sync any browser autofill after initial paint (password managers often fill silently)
+    const syncAutofill = () => {
+      const emailEl = document.getElementById('email') as HTMLInputElement | null
+      const passEl = document.getElementById('password') as HTMLInputElement | null
+      if (emailEl && emailEl.value && !email) setEmail(emailEl.value)
+      if (passEl && passEl.value && !password) setPassword(passEl.value)
+    }
+    // Run twice: immediate and delayed to catch late autofill
+    syncAutofill()
+    const t = setTimeout(syncAutofill, 150)
+    // Poll a few more times in case the password manager injects later
+    let attempts = 0
+    const interval = setInterval(() => {
+      attempts++
+      syncAutofill()
+      if (attempts > 10 || (email && password)) {
+        clearInterval(interval)
+      }
+    }, 300)
+    return () => clearTimeout(t)
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,13 +77,9 @@ export default function SignInPage() {
           localStorage.setItem('user-email', data.user.email);
         }
         
-        // Check if this is the system admin and redirect to admin dashboard
-        if (data.user && data.user.email === 'system_admin@ctrlaltblock.com') {
-          router.push('/admin/dashboard')
-        } else {
-          // Redirect to regular dashboard for all other users
-          router.push('/dashboard')
-        }
+  // Determine destination: prefer admin flag returned from API (future-proof)
+  const isAdmin = data.user?.isAdmin || data.user?.is_admin || data.user?.email === 'system_admin@ctrlaltblock.com';
+  router.push(isAdmin ? '/admin/dashboard' : '/dashboard');
       } else {
         setError(data.error || 'Login failed')
       }
@@ -135,9 +151,11 @@ export default function SignInPage() {
                   <Input
                     id="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
                     className="pl-10 border-purple-500/30 bg-gray-800/50 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 neon-border-purple"
                     required
                   />
@@ -153,9 +171,11 @@ export default function SignInPage() {
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
                     className="pl-10 pr-10 border-purple-500/30 bg-gray-800/50 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 neon-border-purple"
                     required
                   />
@@ -180,7 +200,7 @@ export default function SignInPage() {
 
               <Button
                 type="submit"
-                disabled={loading || !email || !password}
+                disabled={loading}
                 className="w-full btn-brand-primary py-3"
               >
                 {loading ? (

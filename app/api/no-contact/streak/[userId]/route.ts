@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq, sql } from 'drizzle-orm';
 
 export async function POST(
@@ -52,9 +52,8 @@ export async function POST(
         }
       }
 
-      // Award XP and Bytes for daily check-in
-      const xpEarned = 15;
-      const bytesEarned = 10;
+  // Award Bytes for daily check-in (XP removed)
+  const bytesEarned = 15;
 
       // Update user record
       await db
@@ -63,7 +62,6 @@ export async function POST(
           lastNoContactCheckin: now,
           noContactDays: sql`${users.noContactDays} + 1`,
           noContactStreakThreatened: false,
-          xp: sql`${users.xp} + ${xpEarned}`,
           bytes: sql`${users.bytes} + ${bytesEarned}`,
         })
         .where(eq(users.id, user.id));
@@ -72,8 +70,7 @@ export async function POST(
         success: true,
         message: 'Streak updated successfully',
         newStreak: (user.noContactDays || 0) + 1,
-        xpEarned,
-        bytesEarned
+  bytesEarned
       });
 
     } else if (action === 'reset') {

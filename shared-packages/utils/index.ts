@@ -1,6 +1,9 @@
 // Shared utility functions for web and mobile platforms
 // Business logic that can be reused across platforms
 
+// NOTE: Adjust path if monorepo alias changes; fallback to relative shared-types
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - shared types resolution may differ in consumer
 import { User, UserTier, DailyRitual, Badge } from '@ctrlaltblock/shared-types';
 
 // Date and Time Utilities
@@ -55,27 +58,17 @@ export const getUserTierName = (tier: UserTier): string => {
   return names[tier] || 'Ghost Mode';
 };
 
-export const calculateLevel = (xp: number): number => {
-  // XP to level formula: level = floor(sqrt(xp / 100))
-  return Math.floor(Math.sqrt(xp / 100)) + 1;
+// Bytes milestone utilities (replacing legacy XP level system)
+export const getByteMilestone = (bytes: number): number => {
+  return Math.floor(bytes / 1000) + 1; // every 1000 bytes advances milestone
 };
 
-export const getXpForLevel = (level: number): number => {
-  // XP required for level: xp = (level - 1)^2 * 100
-  return Math.pow(level - 1, 2) * 100;
-};
-
-export const getXpProgress = (xp: number): { current: number; next: number; progress: number } => {
-  const currentLevel = calculateLevel(xp);
-  const currentLevelXp = getXpForLevel(currentLevel);
-  const nextLevelXp = getXpForLevel(currentLevel + 1);
-  const progress = ((xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100;
-  
-  return {
-    current: currentLevel,
-    next: currentLevel + 1,
-    progress: Math.min(progress, 100),
-  };
+export const getByteMilestoneProgress = (bytes: number): { milestone: number; progress: number; remaining: number; percent: number } => {
+  const milestone = getByteMilestone(bytes);
+  const progress = bytes % 1000;
+  const remaining = 1000 - progress;
+  const percent = Math.min(100, Math.floor((progress / 1000) * 100));
+  return { milestone, progress, remaining, percent };
 };
 
 // Streak Calculations
@@ -229,13 +222,11 @@ export const sanitizeHtml = (html: string): string => {
 
 export const extractMentions = (text: string): string[] => {
   const mentionRegex = /@(\w+)/g;
-  const mentions = [];
-  let match;
-  
+  const mentions: string[] = [];
+  let match: RegExpExecArray | null;
   while ((match = mentionRegex.exec(text)) !== null) {
     mentions.push(match[1]);
   }
-  
   return mentions;
 };
 
@@ -346,9 +337,8 @@ export const utils = {
   getUserDisplayName,
   getUserTierColor,
   getUserTierName,
-  calculateLevel,
-  getXpForLevel,
-  getXpProgress,
+  getByteMilestone,
+  getByteMilestoneProgress,
   
   // Streaks
   calculateStreak,

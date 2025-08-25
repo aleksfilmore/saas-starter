@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import Stripe from 'stripe';
 
@@ -6,7 +7,7 @@ const ADMIN_EMAIL = 'system_admin@ctrlaltblock.com';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20' as any,
+  apiVersion: '2025-07-30.basil',
 });
 
 export async function GET(request: NextRequest) {

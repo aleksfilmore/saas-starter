@@ -5,7 +5,7 @@
 
 import { db } from '@/lib/db';
 import { eq, and, gte, sql } from 'drizzle-orm';
-import { 
+import {
   dailyRitualAssignments,
   dailyRitualCompletions,
   userDailyState,
@@ -14,7 +14,7 @@ import {
   type DailyRitualAssignment,
   type DailyRitualCompletion,
   type UserDailyState,
-} from '@/lib/db/minimal-schema';
+} from '@/lib/db/unified-schema';
 import { 
   PAID_RITUAL_CATEGORIES, 
   PAID_RITUALS_DATABASE, 
@@ -53,12 +53,12 @@ export class DailyRitualService {
       
       // If no assignments exist, create them
       if (!assignments) {
-        assignments = await this.createDailyAssignments(userId, today, userStateRecord.total_weeks_active);
+        assignments = await this.createDailyAssignments(userId, today, (userStateRecord as any).totalWeeksActive ?? (userStateRecord as any).total_weeks_active ?? 0);
       }
       
       // Get ritual details and completion state
-      const ritual1 = getPaidRitualById(assignments.ritual_1_id);
-      const ritual2 = getPaidRitualById(assignments.ritual_2_id);
+  const ritual1 = getPaidRitualById((assignments as any).ritual1Id ?? (assignments as any).ritual_1_id);
+  const ritual2 = getPaidRitualById((assignments as any).ritual2Id ?? (assignments as any).ritual_2_id);
       
       if (!ritual1 || !ritual2) {
         throw new Error('Invalid ritual IDs in assignments');
@@ -66,25 +66,25 @@ export class DailyRitualService {
       
       // Check completion status
       const completions = await this.getTodaysCompletions(userId, assignments.id);
-      const ritual1Completion = completions.find(c => c.ritual_id === assignments.ritual_1_id);
-      const ritual2Completion = completions.find(c => c.ritual_id === assignments.ritual_2_id);
+  const ritual1Completion = completions.find(c => (c as any).ritualId === ((assignments as any).ritual1Id) || (c as any).ritual_id === (assignments as any).ritual_1_id);
+  const ritual2Completion = completions.find(c => (c as any).ritualId === ((assignments as any).ritual2Id) || (c as any).ritual_id === (assignments as any).ritual_2_id);
       
       const rituals: DailyRitualCard[] = [
         {
           ritual: ritual1,
           state: ritual1Completion ? 'completed' : 'available',
           completionId: ritual1Completion?.id,
-          canComplete: !userStateRecord.daily_cap_reached && !ritual1Completion
+          canComplete: !(userStateRecord as any).dailyCapReached && !ritual1Completion
         },
         {
           ritual: ritual2,
           state: ritual2Completion ? 'completed' : 'available',
           completionId: ritual2Completion?.id,
-          canComplete: !userStateRecord.daily_cap_reached && !ritual2Completion
+          canComplete: !(userStateRecord as any).dailyCapReached && !ritual2Completion
         }
       ];
       
-      const canReroll = !userStateRecord.has_rerolled_today && 
+  const canReroll = !(userStateRecord as any).hasRerolledToday && 
                        !ritual1Completion && 
                        !ritual2Completion;
       
@@ -112,12 +112,12 @@ export class DailyRitualService {
       // Get recently used rituals for no-repeat enforcement (30 days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
       const recentlyUsed = await db
-        .select({ ritual_id: userRitualHistory.ritual_id })
+  .select({ ritual_id: (userRitualHistory as any).ritualId ?? (userRitualHistory as any).ritual_id })
         .from(userRitualHistory)
         .where(
           and(
-            eq(userRitualHistory.user_id, userId),
-            gte(userRitualHistory.last_assigned_date, thirtyDaysAgo)
+            eq((userRitualHistory as any).userId ?? (userRitualHistory as any).user_id, userId),
+            gte((userRitualHistory as any).lastAssignedDate ?? (userRitualHistory as any).last_assigned_date, thirtyDaysAgo)
           )
         );
       
@@ -135,12 +135,12 @@ export class DailyRitualService {
       const newAssignment = await db
         .insert(dailyRitualAssignments)
         .values({
-          user_id: userId,
-          assigned_date: date,
-          ritual_1_id: selectedRituals[0].id,
-          ritual_2_id: selectedRituals[1].id,
-          allocation_mode: 'guided',
-          user_weeks_at_assignment: userWeeks
+          userId: userId,
+          assignedDate: new Date(date),
+          ritual1Id: selectedRituals[0].id,
+          ritual2Id: selectedRituals[1].id,
+          allocationMode: 'guided',
+          userWeeksAtAssignment: userWeeks
         })
         .returning();
       
@@ -166,7 +166,6 @@ export class DailyRitualService {
     dwellTimeSeconds: number
   ): Promise<{
     success: boolean;
-    xpEarned: number;
     bytesEarned: number;
     streakDays: number;
     error?: string;
@@ -180,7 +179,6 @@ export class DailyRitualService {
       if (journalText.length < minChars) {
         return {
           success: false,
-          xpEarned: 0,
           bytesEarned: 0,
           streakDays: 0,
           error: `Journal entry too short. Need at least ${minChars} characters.`
@@ -190,7 +188,6 @@ export class DailyRitualService {
       if (dwellTimeSeconds < minDwellTime) {
         return {
           success: false,
-          xpEarned: 0,
           bytesEarned: 0,
           streakDays: 0,
           error: 'Please spend more time reflecting before completing.'
@@ -198,14 +195,14 @@ export class DailyRitualService {
       }
       
       // Check if already completed
-      const existingCompletion = await db
+  const existingCompletion = await db
         .select()
         .from(dailyRitualCompletions)
         .where(
           and(
-            eq(dailyRitualCompletions.user_id, userId),
-            eq(dailyRitualCompletions.assignment_id, assignmentId),
-            eq(dailyRitualCompletions.ritual_id, ritualId)
+    eq((dailyRitualCompletions as any).userId ?? (dailyRitualCompletions as any).user_id, userId),
+    eq((dailyRitualCompletions as any).assignmentId ?? (dailyRitualCompletions as any).assignment_id, assignmentId),
+    eq((dailyRitualCompletions as any).ritualId ?? (dailyRitualCompletions as any).ritual_id, ritualId)
           )
         )
         .limit(1);
@@ -213,7 +210,6 @@ export class DailyRitualService {
       if (existingCompletion.length > 0) {
         return {
           success: false,
-          xpEarned: 0,
           bytesEarned: 0,
           streakDays: 0,
           error: 'Ritual already completed today.'
@@ -222,12 +218,11 @@ export class DailyRitualService {
       
       // Check daily cap
       const userStateRecord = await this.getUserDailyState(userId);
-      if (userStateRecord.daily_cap_reached) {
+    if ((userStateRecord as any).dailyCapReached) {
         return {
           success: false,
-          xpEarned: 0,
           bytesEarned: 0,
-          streakDays: userStateRecord.streak_days,
+      streakDays: (userStateRecord as any).streakDays ?? (userStateRecord as any).streak_days,
           error: 'Daily ritual cap reached.'
         };
       }
@@ -239,40 +234,32 @@ export class DailyRitualService {
       }
       
       const category = PAID_RITUAL_CATEGORIES[ritual.category as keyof typeof PAID_RITUAL_CATEGORIES];
-      const baseXP = category.baseXP;
       const baseBytes = category.baseBytes;
       
       // Calculate streak bonus
       const newStreakDays = await this.updateUserStreak(userId);
-      let xpBonus = 0;
-      if (newStreakDays >= 7) xpBonus = 5;
-      else if (newStreakDays >= 3) xpBonus = 3;
-      
-      const totalXP = baseXP + xpBonus;
       const totalBytes = baseBytes;
       
       // Create completion record
       await db.insert(dailyRitualCompletions).values({
-        user_id: userId,
-        assignment_id: assignmentId,
-        ritual_id: ritualId,
-        journal_text: journalText,
-        mood_rating: moodRating,
-        dwell_time_seconds: dwellTimeSeconds,
-        word_count: wordCount,
-        xp_earned: totalXP,
-        bytes_earned: totalBytes
-      });
+        userId: userId,
+        assignmentId: assignmentId,
+        ritualId: ritualId,
+        journalText: journalText,
+        moodRating: moodRating,
+        dwellTimeSeconds: dwellTimeSeconds,
+        wordCount: wordCount,
+        bytesEarned: totalBytes
+      } as any);
       
       // Update user daily state
       await this.updateUserDailyState(userId);
       
       // Award XP and Bytes to user profile
-      await this.awardRewards(userId, totalXP, totalBytes);
+  await this.awardRewards(userId, totalBytes);
       
       return {
         success: true,
-        xpEarned: totalXP,
         bytesEarned: totalBytes,
         streakDays: newStreakDays
       };
@@ -295,7 +282,7 @@ export class DailyRitualService {
       
       // Check if already rerolled today
       const userStateRecord = await this.getUserDailyState(userId, today);
-      if (userStateRecord.has_rerolled_today) {
+  if ((userStateRecord as any).hasRerolledToday) {
         return {
           success: false,
           error: 'Already rerolled today. You get one reroll per day.'
@@ -325,25 +312,25 @@ export class DailyRitualService {
         .where(eq(dailyRitualAssignments.id, currentAssignments.id));
       
       // Create new assignments
-      const newAssignments = await this.createDailyAssignments(userId, today, userStateRecord.total_weeks_active);
+  const newAssignments = await this.createDailyAssignments(userId, today, (userStateRecord as any).totalWeeksActive ?? (userStateRecord as any).total_weeks_active ?? 0);
       
       // Mark as rerolled
       await db
         .update(userDailyState)
         .set({ 
-          has_rerolled_today: true,
-          updated_at: new Date()
+          hasRerolledToday: true,
+          updatedAt: new Date()
         })
         .where(
           and(
-            eq(userDailyState.user_id, userId),
-            eq(userDailyState.state_date, today)
+            eq((userDailyState as any).userId ?? (userDailyState as any).user_id, userId),
+            eq((userDailyState as any).stateDate ?? (userDailyState as any).state_date, today)
           )
         );
       
       // Get new ritual cards
-      const ritual1 = getPaidRitualById(newAssignments.ritual_1_id);
-      const ritual2 = getPaidRitualById(newAssignments.ritual_2_id);
+  const ritual1 = getPaidRitualById((newAssignments as any).ritual1Id ?? (newAssignments as any).ritual_1_id);
+  const ritual2 = getPaidRitualById((newAssignments as any).ritual2Id ?? (newAssignments as any).ritual_2_id);
       
       if (!ritual1 || !ritual2) {
         throw new Error('Invalid ritual IDs after reroll');
@@ -380,8 +367,8 @@ export class DailyRitualService {
       .from(dailyRitualAssignments)
       .where(
         and(
-          eq(dailyRitualAssignments.user_id, userId),
-          eq(dailyRitualAssignments.assigned_date, date)
+          eq((dailyRitualAssignments as any).userId ?? (dailyRitualAssignments as any).user_id, userId),
+          eq((dailyRitualAssignments as any).assignedDate ?? (dailyRitualAssignments as any).assigned_date, date)
         )
       )
       .limit(1);
@@ -395,8 +382,8 @@ export class DailyRitualService {
       .from(dailyRitualCompletions)
       .where(
         and(
-          eq(dailyRitualCompletions.user_id, userId),
-          eq(dailyRitualCompletions.assignment_id, assignmentId)
+          eq((dailyRitualCompletions as any).userId ?? (dailyRitualCompletions as any).user_id, userId),
+          eq((dailyRitualCompletions as any).assignmentId ?? (dailyRitualCompletions as any).assignment_id, assignmentId)
         )
       );
   }
@@ -409,8 +396,8 @@ export class DailyRitualService {
       .from(userDailyState)
       .where(
         and(
-          eq(userDailyState.user_id, userId),
-          eq(userDailyState.state_date, targetDate)
+          eq((userDailyState as any).userId ?? (userDailyState as any).user_id, userId),
+          eq((userDailyState as any).stateDate ?? (userDailyState as any).state_date, targetDate)
         )
       )
       .limit(1);
@@ -423,14 +410,14 @@ export class DailyRitualService {
     const newState = await db
       .insert(userDailyState)
       .values({
-        user_id: userId,
-        state_date: targetDate,
-        rituals_completed_today: 0,
-        daily_cap_reached: false,
-        has_rerolled_today: false,
-        streak_days: 0,
+  userId: userId,
+  stateDate: new Date(targetDate),
+  ritualsCompletedToday: 0,
+  dailyCapReached: false,
+  hasRerolledToday: false,
+  streakDays: 0,
         timezone: 'UTC',
-        total_weeks_active: 0
+  totalWeeksActive: 0
       })
       .returning();
     
@@ -447,8 +434,8 @@ export class DailyRitualService {
       .from(dailyRitualCompletions)
       .where(
         and(
-          eq(dailyRitualCompletions.user_id, userId),
-          gte(dailyRitualCompletions.completed_at, todayDate)
+          eq((dailyRitualCompletions as any).userId, userId),
+          gte((dailyRitualCompletions as any).completedAt, todayDate)
         )
       );
     
@@ -458,14 +445,14 @@ export class DailyRitualService {
     await db
       .update(userDailyState)
       .set({
-        rituals_completed_today: completionCount,
-        daily_cap_reached: capReached,
-        updated_at: new Date()
+        ritualsCompletedToday: completionCount,
+        dailyCapReached: capReached,
+        updatedAt: new Date()
       })
       .where(
         and(
-          eq(userDailyState.user_id, userId),
-          eq(userDailyState.state_date, today)
+          eq((userDailyState as any).userId ?? (userDailyState as any).user_id, userId),
+          eq((userDailyState as any).stateDate ?? (userDailyState as any).state_date, new Date(today) as any)
         )
       );
   }
@@ -483,31 +470,31 @@ export class DailyRitualService {
       .from(userDailyState)
       .where(
         and(
-          eq(userDailyState.user_id, userId),
-          eq(userDailyState.state_date, yesterday)
+          eq((userDailyState as any).userId ?? (userDailyState as any).user_id, userId),
+          eq((userDailyState as any).stateDate ?? (userDailyState as any).state_date, yesterday)
         )
       )
       .limit(1);
     
     let newStreakDays = 1;
     
-    if (yesterdayState.length > 0 && yesterdayState[0].rituals_completed_today > 0) {
+  if (yesterdayState.length > 0 && ((yesterdayState[0] as any).ritualsCompletedToday ?? (yesterdayState[0] as any).rituals_completed_today) > 0) {
       // Consecutive day
-      newStreakDays = currentState.streak_days + 1;
+  newStreakDays = ((currentState as any).streakDays ?? (currentState as any).streak_days) + 1;
     }
     
     // Update streak
     await db
       .update(userDailyState)
       .set({
-        streak_days: newStreakDays,
-        last_completion_date: today,
-        updated_at: new Date()
+        streakDays: newStreakDays,
+  lastCompletionDate: new Date(today),
+        updatedAt: new Date()
       })
       .where(
         and(
-          eq(userDailyState.user_id, userId),
-          eq(userDailyState.state_date, today)
+          eq((userDailyState as any).userId ?? (userDailyState as any).user_id, userId),
+          eq((userDailyState as any).stateDate ?? (userDailyState as any).state_date, today)
         )
       );
     
@@ -522,8 +509,8 @@ export class DailyRitualService {
         .from(userRitualHistory)
         .where(
           and(
-            eq(userRitualHistory.user_id, userId),
-            eq(userRitualHistory.ritual_id, ritual.id)
+            eq((userRitualHistory as any).userId ?? (userRitualHistory as any).user_id, userId),
+            eq((userRitualHistory as any).ritualId ?? (userRitualHistory as any).ritual_id, ritual.id)
           )
         )
         .limit(1);
@@ -533,12 +520,12 @@ export class DailyRitualService {
         await db
           .update(userRitualHistory)
           .set({
-            last_assigned_date: date
+            lastAssignedDate: new Date(date)
           })
           .where(
             and(
-              eq(userRitualHistory.user_id, userId),
-              eq(userRitualHistory.ritual_id, ritual.id)
+              eq((userRitualHistory as any).userId ?? (userRitualHistory as any).user_id, userId),
+              eq((userRitualHistory as any).ritualId ?? (userRitualHistory as any).ritual_id, ritual.id)
             )
           );
       } else {
@@ -546,22 +533,21 @@ export class DailyRitualService {
         await db
           .insert(userRitualHistory)
           .values({
-            user_id: userId,
-            ritual_id: ritual.id,
-            last_assigned_date: date,
-            completion_count: 0
-          });
+            userId: userId,
+            ritualId: ritual.id,
+            lastAssignedDate: new Date(date),
+            completionCount: 0
+          } as any);
       }
     }
   }
   
-  private async awardRewards(userId: string, xp: number, bytes: number): Promise<void> {
+  private async awardRewards(userId: string, bytes: number): Promise<void> {
     await db
       .update(users)
       .set({
-        xp: sql`${users.xp} + ${xp}`,
         bytes: sql`${users.bytes} + ${bytes}`,
-        updated_at: new Date()
+        updatedAt: new Date()
       })
       .where(eq(users.id, userId));
   }

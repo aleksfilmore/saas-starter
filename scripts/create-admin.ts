@@ -38,8 +38,6 @@ async function createSystemAdmin() {
       username: 'system_admin',
       tier: 'premium', // Give admin premium access
       subscriptionTier: 'premium', // Use correct field name
-      level: 99,
-      xp: 999999,
       bytes: 999999,
       isAdmin: true // Mark as admin in the schema
     });

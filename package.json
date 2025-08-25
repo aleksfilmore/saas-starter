@@ -12,14 +12,19 @@
     "lint:unused": "node scripts/lint-unused.cjs",
     "lint:unused:fix": "node scripts/lint-unused-fix.cjs",
     "lint:unused:report": "node scripts/report-unused.js",
-    "db:recover:core": "psql $POSTGRES_URL -f scripts/recreate-missing-core-tables.sql",
+    "db:recover:core": "node scripts/recover-core-tables.cjs",
     "schema:check": "node --loader tsx scripts/schema-startup-check.ts",
     "test:production": "npx tsx scripts/production-test.ts",
     "db:setup": "npx tsx lib/db/setup.ts",
     "db:seed": "npx tsx lib/db/seed.ts",
+    "db:seed:swap-badges": "npx tsx scripts/seed-swap-badges.ts",
+    "badges:backfill:rarity": "npx tsx scripts/backfill-badge-rarity-kind.ts",
+    "badges:sync": "npx tsx scripts/sync-badges.ts",
+    "badges:columns": "npx tsx scripts/check-badges-columns.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio",
+    "db:migrate": "node scripts/check-db-env.js && drizzle-kit migrate",
+  "db:studio": "drizzle-kit studio",
+  "db:migrate:manual": "node scripts/apply-sql-migrations.js",
     "db:verify:clean": "tsx scripts/verify-clean-migrations.ts",
     "email:test": "npx tsx lib/test-email.ts",
     "mobile:setup": "cd mobile && npm install",
@@ -28,7 +33,14 @@
     "mobile:android": "cd mobile && expo start --android",
     "mobile:build:ios": "cd mobile && eas build --platform ios",
     "mobile:build:android": "cd mobile && eas build --platform android",
-    "setup:all": "npm install && npm run mobile:setup"
+    "setup:all": "npm install && npm run mobile:setup",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --runInBand",
+    "ghost:setup": "node scripts/ghost-backfill.js && node scripts/timezone-normalize.js"
+  },
+  "scriptsExtra": {
+    "README": "ghost:setup combines ghost assignment backfill and optional timezone normalization"
   },
   "dependencies": {
     "@lucia-auth/adapter-drizzle": "^1.1.0",
@@ -56,6 +68,7 @@
     "@types/react": "19.0.1",
     "@types/react-datepicker": "^7.0.0",
     "@types/react-dom": "19.0.1",
+    "@upstash/redis": "^1.35.3",
     "autoprefixer": "^10.4.21",
     "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
@@ -102,12 +115,15 @@
     "@babel/preset-env": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jest": "^29.5.14",
     "@types/lodash": "^4.17.20",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
     "eslint": "^9.32.0",
     "eslint-config-next": "15.4.6",
-    "sass": "^1.90.0"
+    "jest": "^29.7.0",
+    "sass": "^1.90.0",
+    "ts-jest": "^29.4.1"
   }
 }

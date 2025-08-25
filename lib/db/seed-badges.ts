@@ -13,7 +13,7 @@ export async function seedBadges() {
       category: 'wall_activity',
       tier: 'bronze',
       iconUrl: '/badges/void-whisperer-bronze.svg',
-      xpReward: 50,
+    // xpReward removed
       byteReward: 100,
       rarity: 'common',
     },
@@ -24,7 +24,7 @@ export async function seedBadges() {
       category: 'wall_activity',
       tier: 'silver',
       iconUrl: '/badges/void-whisperer-silver.svg',
-      xpReward: 100,
+    // xpReward removed
       byteReward: 200,
       rarity: 'uncommon',
     },
@@ -35,7 +35,7 @@ export async function seedBadges() {
       category: 'wall_activity', 
       tier: 'gold',
       iconUrl: '/badges/void-whisperer-gold.svg',
-      xpReward: 200,
+    // xpReward removed
       byteReward: 500,
       rarity: 'rare',
     },
@@ -46,7 +46,7 @@ export async function seedBadges() {
       category: 'engagement',
       tier: 'silver',
       iconUrl: '/badges/resonance-collector.svg',
-      xpReward: 150,
+    // xpReward removed
       byteReward: 300,
       rarity: 'uncommon',
     },
@@ -57,7 +57,7 @@ export async function seedBadges() {
       category: 'engagement',
       tier: 'gold',
       iconUrl: '/badges/viral-sensation.svg', 
-      xpReward: 250,
+    // xpReward removed
       byteReward: 750,
       rarity: 'rare',
     },
@@ -68,7 +68,7 @@ export async function seedBadges() {
       category: 'recognition',
       tier: 'platinum',
       iconUrl: '/badges/oracle-ascended.svg',
-      xpReward: 500,
+    // xpReward removed
       byteReward: 1000,
       rarity: 'legendary',
     },
@@ -81,7 +81,7 @@ export async function seedBadges() {
       category: 'streaks',
       tier: 'bronze',
       iconUrl: '/badges/firewall-activated.svg',
-      xpReward: 75,
+    // xpReward removed
       byteReward: 150,
       rarity: 'common',
     },
@@ -92,7 +92,7 @@ export async function seedBadges() {
       category: 'streaks',
       tier: 'gold',
       iconUrl: '/badges/reboot-complete.svg',
-      xpReward: 300,
+    // xpReward removed
       byteReward: 600,
       rarity: 'rare',
     },
@@ -103,7 +103,7 @@ export async function seedBadges() {
       category: 'streaks',
       tier: 'platinum',
       iconUrl: '/badges/protocol-mastered.svg',
-      xpReward: 500,
+    // xpReward removed
       byteReward: 1000,
       rarity: 'epic',
     },
@@ -114,7 +114,7 @@ export async function seedBadges() {
       category: 'streaks',
       tier: 'diamond',
       iconUrl: '/badges/deep-reset-achieved.svg',
-      xpReward: 1000,
+    // xpReward removed
       byteReward: 2000,
       rarity: 'legendary',
     },
@@ -125,7 +125,7 @@ export async function seedBadges() {
       category: 'resilience',
       tier: 'gold',
       iconUrl: '/badges/streak-phoenix.svg',
-      xpReward: 200,
+    // xpReward removed
       byteReward: 400,
       rarity: 'rare',
     },
@@ -138,7 +138,7 @@ export async function seedBadges() {
       category: 'rituals',
       tier: 'bronze',
       iconUrl: '/badges/ritual-initiate.svg',
-      xpReward: 50,
+    // xpReward removed
       byteReward: 100,
       rarity: 'common',
     },
@@ -149,7 +149,7 @@ export async function seedBadges() {
       category: 'rituals',
       tier: 'gold',
       iconUrl: '/badges/emotional-engineer.svg',
-      xpReward: 300,
+    // xpReward removed
       byteReward: 600,
       rarity: 'rare',
     },
@@ -160,7 +160,7 @@ export async function seedBadges() {
       category: 'rituals',
       tier: 'diamond',
       iconUrl: '/badges/zen-master.svg',
-      xpReward: 1000,
+    // xpReward removed
       byteReward: 2000,
       rarity: 'legendary',
     },
@@ -173,7 +173,7 @@ export async function seedBadges() {
       category: 'progression',
       tier: 'silver',
       iconUrl: '/badges/system-stable.svg',
-      xpReward: 100,
+    // xpReward removed
       byteReward: 200,
       rarity: 'uncommon',
     },
@@ -184,7 +184,7 @@ export async function seedBadges() {
       category: 'progression',
       tier: 'gold',
       iconUrl: '/badges/firewall-mastery.svg',
-      xpReward: 250,
+    // xpReward removed
       byteReward: 500,
       rarity: 'rare',
     },
@@ -195,7 +195,7 @@ export async function seedBadges() {
       category: 'progression',
       tier: 'diamond',
       iconUrl: '/badges/cult-leader-ascension.svg',
-      xpReward: 500,
+    // xpReward removed
       byteReward: 1000,
       rarity: 'legendary',
     },
@@ -208,7 +208,7 @@ export async function seedBadges() {
       category: 'achievement',
       tier: 'platinum',
       iconUrl: '/badges/byte-millionaire.svg',
-      xpReward: 500,
+    // xpReward removed
       byteReward: 0, // No byte reward for byte achievement
       rarity: 'epic',
     },
@@ -219,7 +219,7 @@ export async function seedBadges() {
       category: 'community',
       tier: 'platinum',
       iconUrl: '/badges/community-pillar.svg',
-      xpReward: 400,
+    // xpReward removed
       byteReward: 800,
       rarity: 'epic',
     },
@@ -230,7 +230,7 @@ export async function seedBadges() {
       category: 'milestone',
       tier: 'bronze',
       iconUrl: '/badges/first-post.svg',
-      xpReward: 25,
+    // xpReward removed
       byteReward: 50,
       rarity: 'common',
     },
@@ -241,7 +241,7 @@ export async function seedBadges() {
       category: 'milestone',
       tier: 'bronze',
       iconUrl: '/badges/week-one-survivor.svg',
-      xpReward: 75,
+    // xpReward removed
       byteReward: 150,
       rarity: 'common',
     },
@@ -254,7 +254,7 @@ export async function seedBadges() {
       category: 'cult_bubbles',
       tier: 'gold',
       iconUrl: '/badges/bubble-creator.svg',
-      xpReward: 200,
+    // xpReward removed
       byteReward: 400,
       rarity: 'rare',
     },
@@ -265,7 +265,7 @@ export async function seedBadges() {
       category: 'cult_bubbles',
       tier: 'platinum',
       iconUrl: '/badges/cult-architect.svg',
-      xpReward: 500,
+    // xpReward removed
       byteReward: 1000,
       rarity: 'epic',
     },
@@ -278,7 +278,7 @@ export async function seedBadges() {
       category: 'special',
       tier: 'diamond',
       iconUrl: '/badges/beta-pioneer.svg',
-      xpReward: 1000,
+        // xpReward removed
       byteReward: 2000,
       rarity: 'legendary',
     },
@@ -297,7 +297,7 @@ export async function seedBadges() {
         category: badge.category,
         tier: badge.tier,
         iconUrl: badge.iconUrl,
-        xpReward: badge.xpReward,
+          // xpReward removed from insert
         byteReward: badge.byteReward,
         rarity: badge.rarity,
       }).onConflictDoNothing(); // Skip if badge already exists

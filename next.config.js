@@ -26,54 +26,28 @@ const nextConfig = {
         config.resolve.alias['drizzle-orm/postgres-js'] = require.resolve('./lib/db/drizzle-orm-mock.js');
       }
       
-      // Add plugin to inject safe JSON parser during build
-      config.plugins = config.plugins || [];
-      config.plugins.push({
-        apply: (compiler) => {
-          compiler.hooks.emit.tapAsync('SafeJSONParsePlugin', (compilation, callback) => {
-            // Process all assets
-            Object.keys(compilation.assets).forEach((assetName) => {
-              if (assetName.endsWith('.js') && compilation.assets[assetName]) {
+      // Only patch JSON.parse in production build to avoid corrupting dev HMR/runtime
+      if (!dev && process.env.NODE_ENV === 'production') {
+        config.plugins = config.plugins || [];
+        config.plugins.push({
+          apply: (compiler) => {
+            compiler.hooks.emit.tapAsync('SafeJSONParsePlugin', (compilation, callback) => {
+              Object.keys(compilation.assets).forEach((assetName) => {
+                if (!assetName.endsWith('.js')) return;
+                if (assetName.includes('webpack-runtime')) return; // never touch runtime core
                 const asset = compilation.assets[assetName];
                 const source = asset.source();
-                
-                if (typeof source === 'string' && source.includes('JSON.parse')) {
-                  console.log(`🔧 Patching JSON.parse in: ${assetName}`);
-                  
-                  // Replace all occurrences of JSON.parse with a safe version
-                  const patchedSource = source.replace(
-                    /JSON\.parse\(/g,
-                    'safeJSONParse('
-                  );
-                  
-                  // Add the safe parser at the beginning
-                  const finalSource = `
-// Safe JSON.parse wrapper for build time
-function safeJSONParse(text, reviver) {
-  if (text === undefined || text === null || text === 'undefined') {
-    console.warn('Skipping undefined JSON.parse during build in ${assetName}');
-    return null;
-  }
-  try {
-    return JSON.parse(text, reviver);
-  } catch (e) {
-    console.warn('JSON.parse error in ${assetName}:', e.message, 'text:', text);
-    return null;
-  }
-}
-${patchedSource}`;
-                  
-                  compilation.assets[assetName] = {
-                    source: () => finalSource,
-                    size: () => finalSource.length,
-                  };
-                }
-              }
+                if (typeof source !== 'string' || !source.includes('JSON.parse')) return;
+                console.log(`🔧 Patching JSON.parse in: ${assetName}`);
+                const patchedSource = source.replace(/JSON\.parse\(/g, 'safeJSONParse(');
+                const finalSource = `// Safe JSON.parse wrapper (prod build only)\nfunction safeJSONParse(text, reviver){\n  if(text===undefined||text===null||text==='undefined'){return null;}\n  try{return JSON.parse(text, reviver);}catch(e){return null;}\n}\n${patchedSource}`;
+                compilation.assets[assetName] = { source: () => finalSource, size: () => finalSource.length };
+              });
+              callback();
             });
-            callback();
-          });
-        },
-      });
+          },
+        });
+      }
     }
     return config;
   },

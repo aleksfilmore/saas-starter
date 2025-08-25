@@ -43,7 +43,7 @@ import { validateRequest } from '@/lib/auth';
 import { ByteService } from '@/lib/shop/ByteService';
 import { db } from '@/lib/db';
 import { eq, and, gte, sql } from 'drizzle-orm';
-import { users, userByteHistory } from '@/lib/db/schema';
+import { users, userByteHistory } from '@/lib/db/unified-schema';
 
 interface CheckInData {
   mood?: number; // 1-10 scale

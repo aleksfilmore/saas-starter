@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface HubAPIData {
   streaks: { rituals: number; noContact: number };
-  xp: { current: number; level: number; nextLevelXP: number; progressFraction: number };
+  // xp removed
   badges: Array<{ id: string; name: string; icon: string; unlocked: boolean }>;
   todaysRituals: Array<{ id: string; title: string; difficulty: string; completed: boolean; duration: string; icon: string }>;
   wallPosts: Array<{ id: string; content: string; emotionTag?: string; archetype?: string; glitchCategory?: string; timeAgo: string; reactions: number; anonymous: boolean }>;
@@ -23,7 +23,6 @@ interface TodayRitual {
   description?: string;
   steps?: Array<{ title: string; description?: string; duration?: number }> | null;
   difficulty?: string;
-  xpReward?: number;
   estimatedTime?: string | number | null;
   isCompleted?: boolean;
   completedAt?: string | null;
@@ -43,7 +42,7 @@ interface HealingHubContextValue {
   hubLoading: boolean;
   ritualLoading: boolean;
   noContactLoading: boolean;
-  xp: HubAPIData['xp'] | null;
+  xp: null;
   streaks: HubAPIData['streaks'] | null;
   badges: HubAPIData['badges'];
   wallPosts: HubAPIData['wallPosts'];
@@ -69,11 +68,9 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
   const { updateUser } = useAuth();
 
   const { data: hubData, isLoading: hubLoading, mutate: mutateHub } = useSWR<HubAPIData>(
-    '/api/dashboard/hub', fetcher, { revalidateOnFocus: false, dedupingInterval: 30000 }
+    '/api/dashboard/hub', fetcher, { revalidateOnFocus: false, dedupingInterval: 15000 }
   );
-  const { data: ritualWrapper, isLoading: ritualLoading, mutate: mutateRitual } = useSWR<{ ritual: TodayRitual }>(
-    '/api/rituals/today', fetcher, { revalidateOnFocus: false, dedupingInterval: 15000 }
-  );
+  const ritualLoading = hubLoading; // unified
   const { data: noContactStatus, isLoading: noContactLoading, mutate: mutateNoContact } = useSWR<any>(
     '/api/no-contact/status', fetcher, { revalidateOnFocus: true }
   );
@@ -87,55 +84,28 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
     return () => clearInterval(id);
   }, [rerollCooldownHoursLeft]);
 
-  const completeRitual = useCallback(async (ritualId: string, difficulty?: string) => {
+  const completeRitual = useCallback(async (ritualId: string) => {
     try {
       toast.loading('Completing ritual...', { id: ritualId });
-      const res = await fetch('/api/rituals/complete', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ritualId, difficulty })
-      });
+      const res = await fetch('/api/daily-rituals/complete-ghost', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ritualId }) });
       const json = await res.json();
       if (!res.ok || !json.success) {
         toast.error(json?.error || 'Failed to complete ritual', { id: ritualId });
         return false;
       }
-      toast.success(`Ritual complete +${json.rewards?.xp || 0} XP`, { id: ritualId });
-      mutateRitual(prev => prev ? { ritual: { ...prev.ritual, isCompleted: true, completedAt: new Date().toISOString() } } : prev, false);
+      toast.success(`Ritual complete +${json.data?.bytesEarned || 0} Bytes`, { id: ritualId });
       mutateHub();
-      updateUser({ xp: json.user?.xp, level: json.user?.level });
       return true;
     } catch (e) {
       console.error(e);
       toast.error('Network error completing ritual');
       return false;
     } finally {
-      mutateRitual();
+      mutateHub();
     }
-  }, [mutateRitual, mutateHub, updateUser]);
+  }, [mutateHub]);
 
-  const rerollRitual = useCallback(async () => {
-    try {
-      const res = await fetch('/api/rituals/today', { method: 'POST' });
-      const json = await res.json();
-      if (!res.ok) {
-        if (res.status === 429 && json.hoursLeft) {
-          setRerollCooldownHoursLeft(json.hoursLeft);
-          toast.error(`Reroll cooldown: ${json.hoursLeft}h left`);
-        } else {
-          toast.error(json.error || 'Reroll failed');
-        }
-        return false;
-      }
-      toast.success('New ritual assigned');
-      mutateRitual();
-      setRerollCooldownHoursLeft(null);
-      return true;
-    } catch (e) {
-      console.error(e);
-      toast.error('Network error rerolling ritual');
-      return false;
-    }
-  }, [mutateRitual]);
+  const rerollRitual = useCallback(async () => { toast.error('Reroll disabled for ghost mode'); return false; }, []);
 
   const checkInNoContact = useCallback(async () => {
     try {
@@ -146,7 +116,7 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
         toast.error(json?.error || 'Check-in failed', { id: 'no-contact-checkin' });
         return false;
       }
-      toast.success(`No-contact +${json.xpEarned} XP`, { id: 'no-contact-checkin' });
+  toast.success(`No-contact logged`, { id: 'no-contact-checkin' });
       mutateNoContact();
       mutateHub();
       return true;
@@ -157,17 +127,18 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
     }
   }, [mutateNoContact, mutateHub]);
 
+  const ritual = hubData?.todaysRituals?.length ? (hubData.todaysRituals[0] as TodayRitual) : null;
   const value: HealingHubContextValue = useMemo(() => ({
     hubLoading,
     ritualLoading,
     noContactLoading,
-    xp: hubData?.xp || null,
+  xp: null,
     streaks: hubData?.streaks || null,
     badges: hubData?.badges || [],
     wallPosts: hubData?.wallPosts || [],
     dailyInsight: hubData?.dailyInsight || null,
     motivationMeter: hubData?.motivationMeter || null,
-    ritual: ritualWrapper?.ritual ? { ...ritualWrapper.ritual, steps: ritualWrapper.ritual.steps } : null,
+  ritual,
     noContact: noContactStatus ? {
       status: noContactStatus.status,
       canCheckIn: !!noContactStatus.canCheckIn,
@@ -182,11 +153,11 @@ export function HealingHubProvider({ children }: { children: React.ReactNode }) 
   rerollRitual,
   rerollCooldownHoursLeft,
     checkInNoContact,
-    refresh: () => { mutateHub(); mutateRitual(); mutateNoContact(); }
+  refresh: () => { mutateHub(); mutateNoContact(); }
     ,
     completedRituals: hubData?.completedRituals || 0,
     streakHistory: hubData?.streakHistory || []
-  }), [hubLoading, ritualLoading, noContactLoading, hubData, ritualWrapper, noContactStatus, completeRitual, rerollRitual, rerollCooldownHoursLeft, checkInNoContact, mutateHub, mutateRitual, mutateNoContact]);
+  }), [hubLoading, ritualLoading, noContactLoading, hubData, ritual, noContactStatus, completeRitual, rerollRitual, rerollCooldownHoursLeft, checkInNoContact, mutateHub, mutateNoContact]);
 
   return <HealingHubContext.Provider value={value}>{children}</HealingHubContext.Provider>;
 }

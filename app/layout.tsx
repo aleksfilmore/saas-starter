@@ -110,7 +110,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#8B5FE6" />
         <meta name="background-color" content="#1A1A1F" />
       </head>
-      <body>
+  <body className="min-h-screen bg-background text-foreground antialiased selection:bg-secondary/40">
         <GoogleAnalytics />
         <ErrorBoundary>
           <ClientProviders>

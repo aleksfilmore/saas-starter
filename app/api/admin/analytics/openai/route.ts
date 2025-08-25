@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { apiUsage } from '@/lib/db/schema';
+import { apiUsage } from '@/lib/db/unified-schema';
 import { eq, gte, sum, count, avg } from 'drizzle-orm';
 
 const ADMIN_EMAIL = 'system_admin@ctrlaltblock.com';

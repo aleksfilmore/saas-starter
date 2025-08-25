@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { sql } from 'drizzle-orm';
 import { getUser } from '@/lib/db/queries';
-import { FREE_RITUALS, PREMIUM_RITUALS, ALL_RITUALS, getRandomRituals, type Ritual } from '@/lib/ritual-bank';
+import { FREE_RITUALS, ALL_RITUALS, getRandomRituals, type Ritual } from '@/lib/ritual-bank';
 
 export const runtime = 'nodejs';
 
@@ -12,6 +12,8 @@ export const runtime = 'nodejs';
  */
 export async function GET(request: NextRequest) {
   try {
+  // DEPRECATED: use /api/dashboard/hub (for summary) or /api/daily-rituals/today
+  // Kept temporarily for backward compatibility
     const user = await getUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -104,14 +106,8 @@ export async function GET(request: NextRequest) {
     // Check if ritual is completed
     const isCompleted = currentRitual.length > 0 && currentRitual[0].completed_at;
 
-    // Calculate XP and byte rewards based on difficulty
-    const difficultyXP = {
-      'easy': 25,
-      'medium': 50,
-      'hard': 100
-    };
-
-    const difficultyBytes = {
+  // Deprecated XP model removed; provide only bytes rewards for backward compatibility consumers
+  const difficultyBytes = {
       'easy': 15,
       'medium': 30,
       'hard': 60
@@ -128,8 +124,7 @@ export async function GET(request: NextRequest) {
           duration: parseInt(selectedRitual.duration.replace(/\D/g, '')) || 15
         }],
         difficulty: selectedRitual.difficulty,
-        xpReward: difficultyXP[selectedRitual.difficulty],
-        byteReward: difficultyBytes[selectedRitual.difficulty],
+  byteReward: difficultyBytes[selectedRitual.difficulty], // formerly xpReward + byteReward (XP removed)
         estimatedTime: selectedRitual.duration,
         category: selectedRitual.category,
         tier: isPremium ? 'firewall' : 'ghost',

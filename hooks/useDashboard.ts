@@ -6,7 +6,6 @@ interface DashboardPayload {
     id: string;
     name: string;
     difficulty: number;
-    xpReward: number;
     emoji: string;
     description: string;
     canReroll: boolean;
@@ -18,8 +17,7 @@ interface DashboardPayload {
     checkinNeeded: boolean;
   };
   bytes: number;
-  xp: number;
-  level: number;
+  // xp/level removed (bytes-only)
   quota: number;
   wallPreview?: Array<{
     id: string;
@@ -31,7 +29,7 @@ interface DashboardPayload {
   }>;
   stats?: {
     bytesChart: Array<{ date: string; bytes: number }>;
-    xpChart: Array<{ date: string; xp: number }>;
+  // xpChart removed
   };
   user: {
     alias: string;
@@ -69,8 +67,8 @@ export const useDashboard = (stage?: 'starter' | 'core' | 'power') => {
     canAccessVoiceOracle: data?.ux_stage === 'power' && data?.user?.hasSubscription,
     // User info
     userAlias: data?.user?.alias || 'Warrior',
-    userLevel: data?.level || 1,
-    userXP: data?.xp || 0,
+  userLevel: 1,
+  userXP: 0,
     userBytes: data?.bytes || 0,
     userStreak: data?.streak?.days || 0,
     // Ritual info
@@ -81,7 +79,7 @@ export const useDashboard = (stage?: 'starter' | 'core' | 'power') => {
     aiQuota: data?.quota || 0,
     hasAIQuota: (data?.quota || 0) > 0,
     // Progress calculation
-    progressPercent: data?.level ? Math.floor(((data.xp % 1000) / 1000) * 100) : 0,
+  progressPercent: 0,
   };
 };
 

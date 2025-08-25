@@ -4,8 +4,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { dailyRitualService } from '@/lib/rituals/daily-ritual-service-drizzle';
 import { validateRequest } from '@/lib/auth';
+import { triggerRitualBadgeEvent } from '@/lib/rituals/badge-events';
 
 interface CompleteRitualRequest {
   assignmentId: number;
@@ -56,10 +58,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    return NextResponse.json({
+  // Fire badge event (non-blocking)
+  triggerRitualBadgeEvent(user.id, { ritualId, category: undefined, mode: 'firewall', journalWordCount: journalText.split(/\s+/).filter(Boolean).length, dwellTimeSeconds });
+
+  return NextResponse.json({
       success: true,
       data: {
-        xpEarned: result.xpEarned,
         bytesEarned: result.bytesEarned,
         streakDays: result.streakDays
       }

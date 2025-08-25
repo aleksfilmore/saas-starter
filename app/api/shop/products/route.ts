@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { shopProducts, digitalProductAccess, users } from '@/lib/db/schema';
+import { shopProducts, digitalProductAccess, users } from '@/lib/db/unified-schema';
 import { eq, and } from 'drizzle-orm';
 import { SHOP_PRODUCTS } from '@/lib/shop/constants';
 

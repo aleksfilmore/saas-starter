@@ -8,7 +8,6 @@ interface TodayRitual {
   description: string;
   steps?: Array<{ title: string; description?: string; duration?: number }> | null;
   difficulty?: string;
-  xpReward?: number;
   byteReward?: number;
   estimatedTime?: string | number | null;
   isCompleted?: boolean;
@@ -27,47 +26,27 @@ const fetcher = (url: string) => fetch(url).then(r => {
 });
 
 export function useHealingHubData() {
-  const { data: ritualData, isLoading: ritualLoading, error: ritualError, mutate: mutateRitual } = useSWR<{ ritual: TodayRitual }>(
-    '/api/rituals/today',
-    fetcher,
-    { revalidateOnFocus: true, shouldRetryOnError: false }
+  // Legacy /api/rituals/today removed; ghost ritual now embedded in hub payload (todaysRituals[0])
+  const { data: hubData, isLoading: hubLoading, error: hubError, mutate: mutateHub } = useSWR<any>(
+    '/api/dashboard/hub', fetcher, { revalidateOnFocus: true, shouldRetryOnError: false }
   );
 
-  const completeRitual = useCallback(async (ritualId: string, difficulty?: string) => {
+  const completeRitual = useCallback(async (ritualId: string) => {
     try {
       toast.loading('Completing ritual...', { id: ritualId });
-      const res = await fetch('/api/rituals/complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ritualId, difficulty })
-      });
-      const json: CompleteResponse = await res.json();
-      if (!res.ok || !json.success) {
-        // @ts-ignore
-        toast.error(json?.error || 'Failed to complete ritual', { id: ritualId });
-        return false;
-      }
-      toast.success(`Ritual complete +${json.rewards?.xp} XP`, { id: ritualId });
-      mutateRitual(prev => prev ? ({ ritual: { ...prev.ritual, isCompleted: true, completedAt: new Date().toISOString() } }) : prev, false);
-      mutateRitual();
+      const res = await fetch('/api/daily-rituals/complete-ghost', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ritualId }) });
+      const json = await res.json();
+      if (!res.ok || !json.success) { toast.error(json?.error || 'Failed to complete ritual', { id: ritualId }); return false; }
+      toast.success(`Ritual complete +${json.data?.bytesEarned || 0} Bytes`, { id: ritualId });
+      mutateHub();
       return true;
     } catch (e) {
       console.error(e);
       toast.error('Network error completing ritual');
       return false;
     }
-  }, [mutateRitual]);
+  }, [mutateHub]);
 
-  let steps: TodayRitual['steps'] = ritualData?.ritual?.steps;
-  if (steps && typeof steps === 'string') {
-    try { steps = JSON.parse(steps as any); } catch { /* ignore */ }
-  }
-
-  return {
-    ritual: ritualData?.ritual ? { ...ritualData.ritual, steps } : null,
-    ritualLoading,
-    ritualError,
-    completeRitual,
-    refreshRitual: () => mutateRitual(),
-  };
+  const ghostRitual = hubData?.todaysRituals?.length ? hubData.todaysRituals[0] : null;
+  return { ritual: ghostRitual, ritualLoading: hubLoading, ritualError: hubError, completeRitual, refreshRitual: () => mutateHub() };
 }

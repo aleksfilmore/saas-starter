@@ -7,7 +7,7 @@ import {
   rituals,
   ritualCompletions,
   analyticsEvents 
-} from '@/lib/db/schema';
+} from '@/lib/db/unified-schema';
 import { eq, gte, lte, count, sql, desc, asc } from 'drizzle-orm';
 
 export interface AnalyticsMetrics {

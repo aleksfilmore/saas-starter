@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { anonymousPosts, wallPostReactions } from '@/lib/db/schema';
+import { anonymousPosts, wallPostReactions } from '@/lib/db/unified-schema';
 import { eq, and, inArray } from 'drizzle-orm';
 
 export const REACTION_MAP: Record<string, keyof typeof anonymousPosts['_']['columns']> = {

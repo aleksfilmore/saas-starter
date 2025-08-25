@@ -6,7 +6,7 @@ let stripe: Stripe | null = null;
 
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2024-06-20' as any,
+    apiVersion: '2025-07-30.basil',
     typescript: true,
   });
 }
@@ -35,8 +35,8 @@ export const SUBSCRIPTION_PLANS = {
       '1 random daily ritual (general pool)',
       'Wall of Wounds™ - Read & react only ❤️🔥😭',
       'AI Therapy on-demand ($3.99/session, 300 msg cap)',
-      'XP & Levels up to Level 15',
-      'Starter Bytes & Badges (earn only)'
+  'Byte milestones up to Milestone 15',
+  'Earn starter Bytes & basic badges'
     ],
     limits: {
       shieldWindowHours: 24,
@@ -66,8 +66,8 @@ export const SUBSCRIPTION_PLANS = {
       'Wall of Wounds™ - Unlimited posting, edit & delete',
       'AI Therapy Chat included (1,000 msgs/month)',
       'AI Voice Therapy ($4.99/15 min, 3 personas)',
-      'Unlimited XP & Levels',
-      'Earn & spend Bytes + all badges + secret quests'
+  'Unlimited byte milestones',
+  'Earn & spend Bytes + all badges + secret quests'
     ],
     limits: {
       shieldWindowHours: 48,

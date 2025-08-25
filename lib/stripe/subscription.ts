@@ -1,6 +1,6 @@
 import { getStripe, SUBSCRIPTION_PLANS } from './config';
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 
 export interface CreateCheckoutSessionParams {

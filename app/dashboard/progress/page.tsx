@@ -45,10 +45,8 @@ interface ProgressMetrics {
   averageMood: number;
   moodStability: number;
   
-  // Gamification Progress
-  xp: number;
-  level: number;
-  nextLevelXp: number;
+  // Progress Currency
+  bytes: number;
   achievements: Array<{
     id: string;
     title: string;
@@ -330,23 +328,23 @@ export default function ProgressPage() {
                 </CardContent>
               </Card>
 
-              {/* Level Progress */}
+              {/* Bytes Progress */}
               <Card className="bg-gray-900/50 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg text-white">
                     <Star className="h-5 w-5 text-purple-500" />
-                    Level {metrics.level}
+                    Byte Progress
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-purple-400">
-                    {metrics.xp} XP
+                    {metrics.bytes.toLocaleString()} Bytes
                   </div>
                   <p className="text-sm text-gray-400 mt-1">
-                    {metrics.nextLevelXp - metrics.xp} XP to next level
+                    Reward currency accumulated
                   </p>
                   <Progress 
-                    value={(metrics.xp / metrics.nextLevelXp) * 100} 
+                    value={100} 
                     className="mt-3 h-2" 
                   />
                 </CardContent>

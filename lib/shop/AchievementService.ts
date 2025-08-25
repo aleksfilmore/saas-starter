@@ -5,7 +5,7 @@
  */
 
 import { db } from '@/lib/db';
-import { users, userByteHistory, userAchievements, userMultipliers } from '@/lib/db/schema';
+import { users, userByteHistory, userAchievements, userMultipliers } from '@/lib/db/unified-schema';
 import { eq, and, gte, count, sum, desc, sql } from 'drizzle-orm';
 import { ACHIEVEMENTS, MULTIPLIERS, Achievement, Multiplier } from './achievements';
 import { BYTE_EARNING_ACTIVITIES } from './constants';
@@ -262,10 +262,10 @@ export class AchievementService {
         if (achievement.rewards.bytes > 0) {
           // Get current balance first
           const userProfile = await tx.select({
-            byteBalance: users.byteBalance
+            bytes: users.bytes
           }).from(users).where(eq(users.id, userId)).limit(1);
           
-          const currentBalance = userProfile[0]?.byteBalance || 0;
+          const currentBalance = userProfile[0]?.bytes || 0;
           const newBalance = currentBalance + achievement.rewards.bytes;
           
           // Award bytes directly - avoiding circular dependency
@@ -287,7 +287,7 @@ export class AchievementService {
           // Update user balance using raw SQL to add bytes
           await tx.execute(sql`
             UPDATE users 
-            SET byte_balance = byte_balance + ${achievement.rewards.bytes}
+            SET bytes = bytes + ${achievement.rewards.bytes}
             WHERE id = ${userId}
           `);
         }

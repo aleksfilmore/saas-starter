@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { getMissingCoreTables, restoreMissingTables, CORE_TABLES } from '@/lib/db/health';
+export const dynamic = 'force-dynamic';
 
 export const runtime = 'nodejs';
 
 export async function GET() {
   try {
+    const buildGuard = process.env.NEXT_PHASE === 'phase-production-build' || process.env.VERCEL === '1';
     const missingBefore = await getMissingCoreTables();
+    if (buildGuard) {
+      return NextResponse.json({ ok: true, buildPhase: true, expected: CORE_TABLES, missingBefore, restored: [], stillMissing: missingBefore, timestamp: new Date().toISOString() });
+    }
     let restored: string[] = [];
     if (missingBefore.length) {
       const result = await restoreMissingTables(missingBefore);

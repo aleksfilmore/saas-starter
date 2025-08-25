@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { 
@@ -9,7 +10,7 @@ import {
   apiUsage,
   ritualLibrary,
   blogPosts
-} from '@/lib/db/schema';
+} from '@/lib/db/unified-schema';
 import { gte, lte, count, sum, avg, eq, desc, and } from 'drizzle-orm';
 
 export const runtime = 'nodejs';

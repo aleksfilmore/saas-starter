@@ -88,7 +88,6 @@ export async function POST(request: NextRequest) {
         'Reach out for support'
       ],
       rewards: {
-        xp: response.xpReward || 25, // Higher rewards for crisis engagement
         bytes: response.byteReward || 15,
       },
       priority: containsSafetyRisk ? 'emergency' : 'urgent'

@@ -7,9 +7,16 @@ export interface User {
   tier: 'freemium' | 'survivor' | 'warrior' | 'phoenix';
   archetype?: string;
   archetype_details?: any;
-  xp: number;
-  bytes: number;
-  level: number;
+  /** @deprecated XP removed; use bytes + milestone */
+  xp?: never;
+  /** @deprecated XP removed; use bytes + milestone */
+  xpPoints?: never;
+  bytes: number; // canonical
+  // deprecated alias kept during migration
+  byteBalance?: number;
+  /** @deprecated Levels removed; use milestone */
+  level?: never;
+  milestone: number;
   ritual_streak: number;
   no_contact_streak: number;
   last_checkin?: Date;
@@ -21,7 +28,6 @@ export interface User {
   avatar?: string;
   onboardingCompleted?: boolean;
   subscriptionTier?: string;
-  byteBalance?: number;
   isAdmin?: boolean;
   isBanned?: boolean;
   lastActiveAt?: Date;
@@ -34,9 +40,9 @@ export interface DailyRitual {
   user_id: string;
   assigned_date: Date;
   ritual_id: number;
-  status: 'pending' | 'completed' | 'skipped';
-  completion_notes?: string;
-  mood_before?: number;
+  // xpPoints & byteBalance deprecated
+  // xpPoints?: never;
+  // byteBalance?: number;
   mood_after?: number;
   completed_at?: Date;
   streak_count: number;
@@ -159,8 +165,8 @@ export interface PushNotification {
 export interface DashboardStats {
   currentStreak: number;
   totalRituals: number;
-  xpPoints: number;
-  byteBalance: number;
+    // xpPoints: number; // removed
+    // byteBalance: number; // removed
   level: number;
   todaysMood?: number;
   weeklyProgress: number[];

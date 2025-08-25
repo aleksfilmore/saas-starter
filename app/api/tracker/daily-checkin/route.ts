@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
-import { dailyCheckIns } from '@/lib/db/schema';
+import { dailyCheckIns } from '@/lib/db/unified-schema';
 import { validateRequest } from '@/lib/auth';
 import { getUserId } from '@/lib/utils';
 import { nanoid } from 'nanoid';

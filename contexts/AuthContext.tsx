@@ -7,8 +7,6 @@ interface User {
   email: string
   username: string
   subscriptionTier: 'free' | 'premium'
-  level: number
-  xp: number
   bytes: number
   noContactDays: number
   streak: number
@@ -44,8 +42,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: userData.email,
           username: userData.username,
           subscriptionTier: userData.subscriptionTier,
-          level: userData.level,
-          xp: userData.xp,
           bytes: userData.bytes,
           noContactDays: userData.no_contact_streak || 0,
           streak: userData.ritual_streak || 0,

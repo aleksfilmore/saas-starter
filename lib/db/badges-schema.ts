@@ -110,8 +110,7 @@ export const users = pgTable('users', {
   avatar: text('avatar'),
   onboardingCompleted: boolean('onboarding_completed').notNull().default(false),
   subscriptionTier: text('subscription_tier').notNull().default('ghost_mode'),
-  xpPoints: integer('xp_points').notNull().default(0),
-  byteBalance: integer('byte_balance').notNull().default(100),
+  // xpPoints & byteBalance removed in unified economy (bytes field in unified schema)
   glowUpLevel: integer('glow_up_level').notNull().default(1),
   
   // System
@@ -247,5 +246,24 @@ export const BADGE_CATALOG = [
     archetypeScope: null,
     unlock: '5_wall_reaction_days',
     discountPercent: 10 // First discount unlock
+  },
+  // Firewall Swap Badges
+  {
+    id: 'F_SWAP_1',
+    code: 'F_SWAP_1',
+    name: 'Adaptive Shift',
+    description: 'Performed first ritual swap to optimize healing flow',
+    tierScope: 'firewall',
+    archetypeScope: null,
+    unlock: '1_ritual_swap'
+  },
+  {
+    id: 'F_SWAP_10',
+    code: 'F_SWAP_10',
+    name: 'Strategic Reconstructor',
+    description: 'Completed 10 ritual swaps demonstrating adaptive strategy',
+    tierScope: 'firewall',
+    archetypeScope: null,
+    unlock: '10_ritual_swaps'
   }
 ] as const;

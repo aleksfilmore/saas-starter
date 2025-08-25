@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { anonymousPosts, wallPostReactions, wallPostComments, ritualEntries, users } from '@/lib/db';
@@ -42,28 +43,27 @@ export async function GET(req: NextRequest) {
         : Promise.resolve([{ c: 0 }])
     ]);
 
-    // Calculate level based on Bytes (every 1000 bytes = 1 level)
-    const level = Math.floor((dbUser.bytes || 0) / 1000) + 1;
-    const currentLevelBytes = (dbUser.bytes || 0) % 1000;
-    const nextLevelBytes = 1000;
+  // Calculate milestone progress (every 1000 bytes = new milestone band)
+  const milestone = Math.floor((dbUser.bytes || 0) / 1000) + 1;
+  const milestoneProgress = (dbUser.bytes || 0) % 1000;
+  const milestoneSize = 1000;
 
     return NextResponse.json({
       user: {
         id: dbUser.id,
         username: dbUser.username || dbUser.email?.split('@')[0] || 'agent',
-        level: level,
-        xp: dbUser.bytes, // Use bytes as XP for compatibility
         bytes: dbUser.bytes,
         noContactStreak: dbUser.noContactDays,
         ritualStreak: dbUser.streak,
         longestStreak: dbUser.longestStreak,
         subscriptionTier: dbUser.tier,
+        milestone
       },
-      level: {
-        current: level,
-        progress: currentLevelBytes,
-        progressMax: nextLevelBytes,
-        progressPercent: Math.floor((currentLevelBytes / nextLevelBytes) * 100)
+      milestone: {
+        current: milestone,
+        progress: milestoneProgress,
+        progressMax: milestoneSize,
+        progressPercent: Math.floor((milestoneProgress / milestoneSize) * 100)
       },
       today: {
         posts: todayPosts[0]?.c || 0,
