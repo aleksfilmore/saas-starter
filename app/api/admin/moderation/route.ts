@@ -50,13 +50,13 @@ export async function GET(request: Request) {
       .limit(limit)
       .offset(offset);
 
-    // Get total count for pagination
+    // Get total count for pagination (compatible with older Drizzle)
     const totalResult = await db
-      .select({ count: db.$count(moderationQueue.id) })
+      .select()
       .from(moderationQueue)
       .where(eq(moderationQueue.status, status));
 
-    const total = totalResult[0]?.count || 0;
+    const total = totalResult.length;
 
     return NextResponse.json({
       items: items.map(item => ({
