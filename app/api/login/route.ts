@@ -8,6 +8,10 @@ import { eq } from 'drizzle-orm';
 import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
+// Force Node runtime (postgres-js + bcrypt need Node, not Edge) and disable static optimization
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export interface LoginResponse {
   error?: string | null;
   success: boolean;
@@ -33,10 +37,11 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
 
   console.log('🔧 Login attempt for:', email);
 
-    // Find user in database
+    // Find user in database (normalize to lowercase). In production a case-mismatch could cause false "not found".
+    const normalizedEmail = email.toLowerCase();
     const userResult = await db.select()
       .from(users)
-      .where(eq(users.email, email.toLowerCase()))
+      .where(eq(users.email, normalizedEmail))
     const user = userResult[0];
 
     if (!user) {
@@ -56,7 +61,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       );
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
+  // Optional debug meta (never expose full hash)
+  const debugKey = request.nextUrl?.searchParams?.get('key');
+  const debugEnabled = debugKey && debugKey === process.env.DEBUG_KEY;
+  const hashMeta = { len: user.hashedPassword.length, prefix: user.hashedPassword.slice(0, 7) };
+
+  const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordMatch) {
       console.log('❌ Invalid password for user:', email);
@@ -69,10 +79,17 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     // Create Lucia session
     const session = await lucia.createSession(user.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    
-    // Set session cookie
+
+    // Harden cookie attributes (align with other auth routes)
     const cookieStore = await cookies();
-    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    cookieStore.set(sessionCookie.name, sessionCookie.value, {
+      ...sessionCookie.attributes,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      // domain optional: rely on framework default; if needed can set CTRLALTBLOCK_DOMAIN env later
+    });
 
     console.log('✅ Login successful for:', email);
 
@@ -84,7 +101,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
         email: user.email,
         tier: user.tier,
         bytes: user.bytes,
-      }
+      },
+      ...(debugEnabled ? { debug: { hashMeta } } : {})
     });
 
   } catch (error) {
