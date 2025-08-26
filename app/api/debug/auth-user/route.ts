@@ -32,9 +32,9 @@ export async function GET(req: NextRequest) {
 
     const lower = email.toLowerCase()
     console.log('[debug/auth-user] lookup start', lower)
-    const result = await db.select().from(users).where(eq(users.email, lower)).limit(1)
-    console.log('[debug/auth-user] query complete count=', result.length)
-    const user = result[0]
+  const result = await db.select().from(users).where(eq(users.email, lower))
+  console.log('[debug/auth-user] query complete count=', result.length)
+  const user = result[0]
     if (!user) {
       return NextResponse.json({ found: false, email: lower })
     }

@@ -27,26 +27,24 @@ export async function POST(request: NextRequest) {
 
       // Find user
       console.log('Querying database...');
-      const user = await db
+      const userRows = await db
         .select({
           id: users.id,
           email: users.email,
           hashedPassword: users.hashedPassword,
         })
         .from(users)
-  .where(eq(users.email, email.toLowerCase()))
-        .limit(1);
+        .where(eq(users.email, email.toLowerCase()))
 
-      console.log('Database query complete. Found users:', user.length);
+      console.log('Database query complete. Found users:', userRows.length);
 
-      if (user.length === 0) {
+      if (userRows.length === 0) {
         return NextResponse.json(
           { error: 'Invalid email or password' },
           { status: 400 }
         );
       }
-
-      const existingUser = user[0];
+      const existingUser = userRows[0];
       console.log('User found:', existingUser.id);
 
       // Verify password with bcrypt

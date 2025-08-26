@@ -36,11 +36,9 @@ export async function POST(request: NextRequest) {
       .where(
         and(
           eq(users.reset_token, token),
-          // Enforce expiry in the SQL predicate for stronger protection
           gt(users.reset_token_expiry, new Date())
         )
       )
-      .limit(1)
 
     const user = userResult[0]
 

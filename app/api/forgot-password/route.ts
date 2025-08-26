@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
       const userResult = await db.select()
         .from(users)
         .where(eq(users.email, email.toLowerCase()))
-        .limit(1)
       user = userResult[0]
     } catch (dbError) {
       console.error('Database error checking user:', dbError)
