@@ -27,10 +27,17 @@ if (!postgresUrl && !isBuildTime) {
   throw new Error('POSTGRES_URL (or fallback DATABASE_URL / NETLIFY_DATABASE_URL) is required');
 }
 
-// Only log in development
-if (process.env.NODE_ENV === 'development' && postgresUrl) {
-  const source = getEnvVar('POSTGRES_URL') ? 'POSTGRES_URL' : (getEnvVar('DATABASE_URL') ? 'DATABASE_URL' : 'NETLIFY_DATABASE_URL');
-  console.log(`Connecting to database via ${source} starting with:`, postgresUrl.substring(0, 32) + '...');
+// Log sanitized connection info once (dev + prod) for diagnostics
+if (postgresUrl) {
+  try {
+    const source = getEnvVar('POSTGRES_URL') ? 'POSTGRES_URL' : (getEnvVar('DATABASE_URL') ? 'DATABASE_URL' : 'NETLIFY_DATABASE_URL');
+    const parts = postgresUrl.replace('postgres://', '').split('@');
+    const hostPart = parts[1] ? parts[1].split('/')[0] : 'unknown-host';
+    const dbName = parts[1] ? parts[1].split('/')[1]?.split('?')[0] : 'unknown-db';
+    console.log(`[DB] Using ${source} host=${hostPart} db=${dbName} (env NODE_ENV=${process.env.NODE_ENV})`);
+  } catch {
+    console.log('[DB] Using database (sanitization failed)');
+  }
 }
 
 // Create a mock client for build time to prevent connection attempts
