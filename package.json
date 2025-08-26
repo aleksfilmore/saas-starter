@@ -41,7 +41,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --runInBand",
-    "ghost:setup": "node scripts/ghost-backfill.js && node scripts/timezone-normalize.js"
+    "ghost:setup": "node scripts/ghost-backfill.js && node scripts/timezone-normalize.js",
+    "seed:core:users": "tsx scripts/seed-core-users.ts"
   },
   "scriptsExtra": {
     "README": "ghost:setup combines ghost assignment backfill and optional timezone normalization"
