@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db/drizzle';
-import { users } from '@/lib/db/minimal-schema';
+// Use actual-schema for consistency across auth endpoints
+import { users } from '@/lib/db/actual-schema';
 import { eq } from 'drizzle-orm';
 import { lucia } from '@/lib/auth';
 import { cookies } from 'next/headers';
@@ -15,14 +16,13 @@ export interface LoginResponse {
     id: string;
     email: string;
     tier: string;
-    archetype: string | null;
     bytes: number;
   };
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse<LoginResponse>> {
   try {
-    const { email, password } = await request.json();
+  const { email, password } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
       );
     }
 
-    console.log('🔧 Login attempt for:', email);
+  console.log('🔧 Login attempt for:', email);
 
     // Find user in database
     const userResult = await db.select()
@@ -50,6 +50,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
     }
 
     // Verify password
+    if (!user.hashedPassword) {
+      console.error('❌ User record missing hashedPassword column – schema mismatch? User id:', user.id);
+      return NextResponse.json(
+        { success: false, error: 'Authentication temporarily unavailable' },
+        { status: 500 }
+      );
+    }
+
     const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
 
     if (!passwordMatch) {
@@ -77,13 +85,14 @@ export async function POST(request: NextRequest): Promise<NextResponse<LoginResp
         id: user.id,
         email: user.email,
         tier: user.tier,
-        archetype: user.archetype,
         bytes: user.bytes,
       }
     });
 
   } catch (error) {
-    console.error('❌ Login API error:', error);
+  console.error('❌ Login API error:', error);
+  const message = error instanceof Error ? error.message : 'Unknown error';
+  console.log('LoginInternalErrorDetail:', message);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

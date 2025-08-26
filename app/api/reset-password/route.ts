@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { users } from '@/lib/db/unified-schema'
+// Use actual-schema for consistency with auth/signin and drizzle schema-central
+import { users } from '@/lib/db/actual-schema'
 import { eq, and, gt } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
+
+// Ensure Node runtime (bcryptjs + DB access reliability)
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +27,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('🔧 Processing password reset with token:', token.substring(0, 8) + '...')
+  console.log('🔧 Processing password reset with token:', typeof token === 'string' ? token.substring(0, 8) + '...' : '[invalid token type]')
 
     // Find user with valid reset token
     // Query only non-expired tokens directly at the DB layer
@@ -31,9 +35,9 @@ export async function POST(request: NextRequest) {
       .from(users)
       .where(
         and(
-          eq(users.resetToken, token),
+          eq(users.reset_token, token),
           // Enforce expiry in the SQL predicate for stronger protection
-          gt(users.resetTokenExpiry, new Date())
+          gt(users.reset_token_expiry, new Date())
         )
       )
       .limit(1)
@@ -48,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // (Defensive) Double-check expiry in application layer (should already be filtered)
-    if (!user.resetTokenExpiry || new Date() > user.resetTokenExpiry) {
+  if (!user.reset_token_expiry || new Date() > user.reset_token_expiry) {
       return NextResponse.json({ error: 'Reset token has expired. Please request a new one.' }, { status: 400 })
     }
 
@@ -60,14 +64,14 @@ export async function POST(request: NextRequest) {
     await db.update(users)
       .set({
         hashedPassword: hashedPassword,
-        resetToken: null,
-        resetTokenExpiry: null,
-        updatedAt: new Date()
+        reset_token: null,
+        reset_token_expiry: null,
+        updated_at: new Date()
       })
       .where(eq(users.id, user.id))
 
-    const dbUser = user as any;
-    console.log('✅ Password reset successfully for user:', dbUser.email)
+  const dbUser = user as any
+  console.log('✅ Password reset successfully for user:', dbUser.email)
 
     return NextResponse.json({
       success: true,
@@ -76,6 +80,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('❌ Reset password error:', error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    // Surface internal error detail in logs only; keep response generic
+    console.log('ResetPasswordInternalErrorDetail:', message)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sendPasswordResetEmail } from '@/lib/email/email-service'
 import { v4 as uuidv4 } from 'uuid'
 import { db } from '@/lib/db'
-import { users } from '@/lib/db/unified-schema'
+// Use actual-schema to match reset-password & drizzle schema
+import { users } from '@/lib/db/actual-schema'
 import { eq } from 'drizzle-orm'
+
+export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +35,7 @@ export async function POST(request: NextRequest) {
     try {
       const userResult = await db.select()
         .from(users)
-        .where(eq(users.email, email))
+        .where(eq(users.email, email.toLowerCase()))
         .limit(1)
       user = userResult[0]
     } catch (dbError) {
@@ -49,9 +52,9 @@ export async function POST(request: NextRequest) {
       try {
         await db.update(users)
           .set({
-            resetToken: resetToken,
-            resetTokenExpiry: resetTokenExpiry,
-            updatedAt: new Date()
+            reset_token: resetToken,
+            reset_token_expiry: resetTokenExpiry,
+            updated_at: new Date()
           })
           .where(eq(users.id, user.id))
         
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send the reset email (always send for security, even if user doesn't exist)
-    const emailResult = await sendPasswordResetEmail(email, resetToken, 'user')
+  const emailResult = await sendPasswordResetEmail(email, resetToken, 'user')
 
     if (!emailResult.success) {
       console.error('❌ Email sending failed:', emailResult.error)
@@ -84,7 +87,9 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Password reset error:', error)
+    console.error('❌ Forgot-password error:', error)
+    const message = error instanceof Error ? error.message : 'Unknown'
+    console.log('ForgotPasswordInternalErrorDetail:', message)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
