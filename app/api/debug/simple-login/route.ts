@@ -29,11 +29,12 @@ export async function GET(req: NextRequest) {
 
   const email = emailRaw.toLowerCase()
   try {
-    const rows = await db.select().from(users).where(eq(users.email, email))
-    const user = rows[0]
-    if (!user) {
+    // Use more compatible query method for older Drizzle versions
+    const allUsers = await db.select().from(users).where(eq(users.email, email))
+    if (!allUsers.length) {
       return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 })
     }
+    const user = allUsers[0]
     if (!(user as any).hashedPassword) {
       return NextResponse.json({ success: false, error: 'User missing password hash' }, { status: 500 })
     }

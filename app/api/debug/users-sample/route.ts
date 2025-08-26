@@ -14,8 +14,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
   const rows = await db.select().from(users)
-    const sample = rows.slice(0, 5).map(r => ({ id: r.id, email: r.email, hasHash: !!(r as any).hashedPassword }))
-    return NextResponse.json({ count: rows.length, sample })
+    // Avoid .slice() method issues in production
+    const allUsers = rows || []
+    const sample = allUsers.length > 5 ? allUsers.slice(0, 5) : allUsers
+    const sampleData = sample.map(r => ({ id: r.id, email: r.email, hasHash: !!(r as any).hashedPassword }))
+    return NextResponse.json({ count: allUsers.length, sample: sampleData })
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     console.error('[debug/users-sample] error', e)

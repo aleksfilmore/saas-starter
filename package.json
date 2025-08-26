@@ -82,7 +82,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.6.1",
     "drizzle-kit": "^0.31.1",
-    "drizzle-orm": "^0.43.1",
+    "drizzle-orm": "^0.32.2",
     "framer-motion": "^12.23.12",
     "google-libphonenumber": "^3.2.42",
     "ioredis": "^5.7.0",

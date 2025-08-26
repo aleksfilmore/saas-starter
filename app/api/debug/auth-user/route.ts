@@ -32,12 +32,12 @@ export async function GET(req: NextRequest) {
 
     const lower = email.toLowerCase()
     console.log('[debug/auth-user] lookup start', lower)
-  const result = await db.select().from(users).where(eq(users.email, lower))
-  console.log('[debug/auth-user] query complete count=', result.length)
-  const user = result[0]
-    if (!user) {
+    const result = await db.select().from(users).where(eq(users.email, lower))
+    console.log('[debug/auth-user] query complete count=', result.length)
+    if (!result || !result.length) {
       return NextResponse.json({ found: false, email: lower })
     }
+    const user = result[0]
     const hash = (user as any).hashedPassword || ''
     const hashPreview = hash ? hash.substring(0, 7) + '...' + hash.slice(-4) : null
 
