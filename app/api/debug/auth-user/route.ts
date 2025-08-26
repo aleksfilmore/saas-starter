@@ -64,6 +64,6 @@ export async function GET(req: NextRequest) {
     if (key === expected && url.searchParams.get('verbose') === '1') {
       return NextResponse.json({ error: 'Internal error', detail: message }, { status: 500 })
     }
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  return NextResponse.json({ error: 'Internal error', detail: message }, { status: 500 })
   }
 }

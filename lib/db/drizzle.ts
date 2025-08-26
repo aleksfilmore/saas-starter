@@ -13,9 +13,12 @@ const getEnvVar = (key: string, fallback: string = '') => {
 };
 
 // Get the database URL from environment variables (prefer POSTGRES_URL but fall back gracefully)
-const postgresUrl = getEnvVar('POSTGRES_URL') 
-  || getEnvVar('DATABASE_URL') 
-  || getEnvVar('NETLIFY_DATABASE_URL') 
+// Added DATABASE_URL_UNPOOLED to cover environments providing only an unpooled URL
+const postgresUrl = getEnvVar('POSTGRES_URL')
+  || getEnvVar('DATABASE_URL')
+  || getEnvVar('NETLIFY_DATABASE_URL')
+  || getEnvVar('NETLIFY_DATABASE_URL_UNPOOLED')
+  || getEnvVar('DATABASE_URL_UNPOOLED')
   || '';
 
 // Check if we're in a build context where database connection shouldn't be established
@@ -30,7 +33,11 @@ if (!postgresUrl && !isBuildTime) {
 // Log sanitized connection info once (dev + prod) for diagnostics
 if (postgresUrl) {
   try {
-    const source = getEnvVar('POSTGRES_URL') ? 'POSTGRES_URL' : (getEnvVar('DATABASE_URL') ? 'DATABASE_URL' : 'NETLIFY_DATABASE_URL');
+    const source = getEnvVar('POSTGRES_URL') ? 'POSTGRES_URL'
+      : (getEnvVar('DATABASE_URL') ? 'DATABASE_URL'
+      : (getEnvVar('NETLIFY_DATABASE_URL') ? 'NETLIFY_DATABASE_URL'
+      : (getEnvVar('NETLIFY_DATABASE_URL_UNPOOLED') ? 'NETLIFY_DATABASE_URL_UNPOOLED'
+      : (getEnvVar('DATABASE_URL_UNPOOLED') ? 'DATABASE_URL_UNPOOLED' : 'UNKNOWN'))));
     const parts = postgresUrl.replace('postgres://', '').split('@');
     const hostPart = parts[1] ? parts[1].split('/')[0] : 'unknown-host';
     const dbName = parts[1] ? parts[1].split('/')[1]?.split('?')[0] : 'unknown-db';

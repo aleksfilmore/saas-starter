@@ -146,7 +146,7 @@ async function checkApplicationHealth() {
     // Check environment variables
     const requiredEnvVars = [
       'DATABASE_URL',
-      'NEXTAUTH_SECRET',
+      'AUTH_SECRET',
       'NEXTAUTH_URL'
     ];
     
@@ -166,7 +166,12 @@ async function checkApplicationHealth() {
     // Check uptime
     const uptimeHours = process.uptime() / 3600;
     
-    const status = issues.length === 0 ? 'healthy' : 
+    // Warn if ADMIN_SECRET equals AUTH_SECRET (should be distinct)
+    if (process.env.ADMIN_SECRET && process.env.AUTH_SECRET && process.env.ADMIN_SECRET === process.env.AUTH_SECRET) {
+      issues.push('ADMIN_SECRET should differ from AUTH_SECRET');
+    }
+
+    const status = issues.length === 0 ? 'healthy' :
                   issues.some(issue => issue.includes('Missing')) ? 'critical' : 'warning';
 
     return {

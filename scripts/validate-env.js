@@ -30,7 +30,7 @@ try {
 const groups = [
   {
     label: 'Core',
-    required: ['POSTGRES_URL','NODE_ENV','NEXT_PUBLIC_SITE_URL','NEXT_PUBLIC_APP_URL','NEXTAUTH_URL','NEXT_PUBLIC_BASE_URL','ADMIN_SECRET'],
+  required: ['POSTGRES_URL','NODE_ENV','NEXT_PUBLIC_SITE_URL','NEXT_PUBLIC_APP_URL','NEXTAUTH_URL','NEXT_PUBLIC_BASE_URL','ADMIN_SECRET','AUTH_SECRET'],
   },
   {
     label: 'Stripe (Payments)',
@@ -86,6 +86,9 @@ if (!same('NEXT_PUBLIC_SITE_URL','NEXT_PUBLIC_APP_URL')) {
 }
 if (process.env.STRIPE_PUBLISHABLE_KEY && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && process.env.STRIPE_PUBLISHABLE_KEY !== process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
   reportLines.push('\n⚠️ STRIPE_PUBLISHABLE_KEY and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY mismatch.');
+}
+if (process.env.ADMIN_SECRET && process.env.AUTH_SECRET && process.env.ADMIN_SECRET === process.env.AUTH_SECRET) {
+  reportLines.push('\n⚠️ ADMIN_SECRET and AUTH_SECRET are identical; generate a distinct ADMIN_SECRET.');
 }
 
 console.log(reportLines.join('\n'));
