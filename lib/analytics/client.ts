@@ -1,4 +1,20 @@
-// Lightweight browser analytics client
+// Lightweight client-side analytics tracker.
+// Avoid importing server AnalyticsService (which pulls in the database & postgres).
+// Usage: trackEvent(AnalyticsEvents.WALL_POST_LIKED, { postId })
+export async function trackEvent(event: string, properties?: Record<string, any>) {
+  try {
+    await fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event, properties })
+    });
+  } catch {
+    // Silently ignore – analytics should never block UX
+  }
+}
+
+// Backward compatible alias if some code expects track()
+export const track = trackEvent;// Lightweight browser analytics client
 export interface ClientAnalyticsOptions {
   endpoint?: string;
 }

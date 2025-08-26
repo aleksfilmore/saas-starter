@@ -59,18 +59,26 @@ interface Props {
   user: User;
 }
 
-const EMOJI_TAGS = [
-  { emoji: '💔', label: 'Heartbreak', category: 'heartbreak', color: 'from-red-500 to-pink-600', border: 'border-red-500/50', bg: 'bg-red-500/10' },
-  { emoji: '😢', label: 'Sadness', category: 'sadness', color: 'from-blue-500 to-indigo-600', border: 'border-blue-500/50', bg: 'bg-blue-500/10' },
-  { emoji: '😤', label: 'Anger', category: 'anger', color: 'from-orange-500 to-red-600', border: 'border-orange-500/50', bg: 'bg-orange-500/10' },
-  { emoji: '😰', label: 'Anxiety', category: 'anxiety', color: 'from-yellow-500 to-orange-600', border: 'border-yellow-500/50', bg: 'bg-yellow-500/10' },
-  { emoji: '🔥', label: 'Rage', category: 'rage', color: 'from-red-600 to-red-700', border: 'border-red-600/50', bg: 'bg-red-600/10' },
-  { emoji: '💭', label: 'Confusion', category: 'confusion', color: 'from-purple-500 to-violet-600', border: 'border-purple-500/50', bg: 'bg-purple-500/10' },
-  { emoji: '🌟', label: 'Hope', category: 'hope', color: 'from-green-500 to-emerald-600', border: 'border-green-500/50', bg: 'bg-green-500/10' },
-  { emoji: '⚡', label: 'Breakthrough', category: 'breakthrough', color: 'from-cyan-500 to-blue-600', border: 'border-cyan-500/50', bg: 'bg-cyan-500/10' },
-  { emoji: '🎭', label: 'Identity', category: 'identity', color: 'from-pink-500 to-purple-600', border: 'border-pink-500/50', bg: 'bg-pink-500/10' },
-  { emoji: '🔮', label: 'Future', category: 'future', color: 'from-indigo-500 to-purple-600', border: 'border-indigo-500/50', bg: 'bg-indigo-500/10' }
-];
+// Updated Wall categories aligned with central categories.ts definitions
+import { WALL_CATEGORIES, getWallCategoryConfig } from '@/lib/wall/categories';
+const WALL_EMOJI: Record<string,string> = {
+  system_error: '�',
+  loop_detected: '🔁',
+  memory_leak: '🧠',
+  buffer_overflow: '🌊',
+  syntax_error: '🧩',
+  null_pointer: '🕳️',
+  stack_overflow: '⚡',
+  access_denied: '🚫'
+};
+const EMOJI_TAGS = WALL_CATEGORIES.map(c => ({
+  emoji: WALL_EMOJI[c.id] || '💠',
+  label: c.label,
+  category: c.id,
+  color: c.containerClass,
+  border: c.badgeClass, // keep original; not critical here
+  bg: c.containerClass
+}));
 
 const AI_PERSONAS = [
   { 
@@ -115,9 +123,7 @@ function AdaptiveDashboard({ user }: Props) {
   const [particles, setParticles] = useState<Array<{left: string, animationDelay: string, animationDuration: string, className: string}>>([]);
   
   // Helper function to get emotion tag from category
-  const getEmotionTagFromCategory = (category: string) => {
-    return EMOJI_TAGS.find(tag => tag.category === category) || EMOJI_TAGS[0];
-  };
+  const getEmotionTagFromCategory = (category: string) => EMOJI_TAGS.find(tag => tag.category === category) || EMOJI_TAGS[0];
 
   const { tasks, markTask, progressFraction } = useDailyTasks();
   const { user: authUser } = useAuth();
@@ -920,7 +926,7 @@ function AdaptiveDashboard({ user }: Props) {
                 {/* Quick Post with Emotion Selector (Premium) */}
                 {isPremium ? (
                   <div className="space-y-3">
-                    {/* Emotion Tag Selector */}
+                    {/* Emotion Tag Selector (Updated categories) */}
                     <div className="relative">
                       <button
                         onClick={() => setShowTagDropdown(!showTagDropdown)}
@@ -945,19 +951,19 @@ function AdaptiveDashboard({ user }: Props) {
                       
                       {showTagDropdown && (
                         <div className="absolute z-50 top-full mt-2 w-full bg-slate-800 border border-slate-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                          {EMOJI_TAGS.map((tag) => (
-                            <button
-                              key={tag.category}
-                              onClick={() => {
-                                setSelectedTag(tag);
-                                setShowTagDropdown(false);
-                              }}
-                              className={`w-full p-3 text-left hover:bg-slate-700 flex items-center gap-3 text-sm transition-colors border-l-2 ${tag.border}`}
-                            >
-                              <span className="text-lg">{tag.emoji}</span>
-                              <span className="text-white">{tag.label}</span>
-                            </button>
-                          ))}
+                          {EMOJI_TAGS.map(tag => {
+                            const cfg = getWallCategoryConfig(tag.category);
+                            return (
+                              <button
+                                key={tag.category}
+                                onClick={() => { setSelectedTag(tag); setShowTagDropdown(false); }}
+                                className={`w-full p-3 text-left flex items-center gap-3 text-sm transition-colors hover:bg-slate-700 border-l-2 ${cfg? cfg.accentClass: 'border-slate-600'}`}
+                              >
+                                <span className="text-lg">{tag.emoji}</span>
+                                <span className="text-white">{tag.label}</span>
+                              </button>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -1008,32 +1014,25 @@ function AdaptiveDashboard({ user }: Props) {
 
                 {/* Recent Posts with Emotion-Based Styling */}
                 <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
-                  {wallPosts?.slice(0, 12).map((post) => {
-                    const emotionTag = post.glitchCategory ? getEmotionTagFromCategory(post.glitchCategory) : EMOJI_TAGS[0];
+                  {wallPosts?.slice(0, 12).map(post => {
+                    const cfg = getWallCategoryConfig(post.glitchCategory as string | undefined);
+                    const emoji = WALL_EMOJI[post.glitchCategory as keyof typeof WALL_EMOJI] || '💠';
                     return (
-                      <div 
-                        key={post.id} 
-                        className={`p-3 rounded-lg border-l-4 ${emotionTag.border} bg-gradient-to-r ${emotionTag.bg} backdrop-blur-sm`}
-                      >
+                      <div key={post.id} className={`p-3 rounded-lg border ${cfg? cfg.containerClass: 'bg-slate-800/40 border-slate-600/40'} backdrop-blur-sm`}> 
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-lg">{emotionTag.emoji}</span>
-                            <Badge className={`${emotionTag.bg} ${emotionTag.border} text-white text-xs`}>
-                              {emotionTag.label}
-                            </Badge>
+                            <span className="text-lg">{emoji}</span>
+                            {cfg && <Badge className={`${cfg.badgeClass} text-xs`}>{cfg.label}</Badge>}
                           </div>
                           <span className="text-xs text-slate-400">{post.timeAgo}</span>
                         </div>
                         <p className="text-sm text-slate-200 leading-relaxed mb-3">{post.content}</p>
                         <div className="flex items-center justify-between">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-slate-400 hover:text-pink-400 text-xs"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleWallReaction(post.id, 'resonate');
-                            }}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className={cfg? `${cfg.accentClass} hover:opacity-80 text-xs` : 'text-slate-400 hover:text-pink-400 text-xs'}
+                            onClick={(e)=> { e.preventDefault(); handleWallReaction(post.id,'resonate'); }}
                           >
                             <Heart className="h-3 w-3 mr-1" />
                             {post.reactions + (optimisticReactions[post.id] || 0)}
@@ -1132,10 +1131,13 @@ function AdaptiveDashboard({ user }: Props) {
       )}
 
       {activeModal === 'checkin' && (
-        <CheckInModal 
+        <CheckInModal
           onClose={() => setActiveModal(null)}
-          onComplete={() => {
-            markTask('checkIn');
+          onComplete={async ({ mood, gratitude, challenge, intention }) => {
+            try {
+              await fetch('/api/dashboard/checkin', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mood, gratitude, challenge, intention, notes: '' }) });
+              markTask('checkIn');
+            } catch {}
             setActiveModal(null);
           }}
         />

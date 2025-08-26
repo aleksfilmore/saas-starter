@@ -4,6 +4,7 @@ import { validateRequest } from '@/lib/auth';
 import { createWallPost } from '@/lib/wall/wall-service';
 import { AnalyticsService } from '@/lib/analytics/service';
 import { AnalyticsEvents } from '@/lib/analytics/events';
+import { WALL_CATEGORIES } from '@/lib/wall/categories';
 import { ContentModerationService } from '@/lib/moderation/content-moderation';
 import { ByteService } from '@/lib/shop/ByteService';
 
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { content, isAnonymous = true, category } = await request.json();
+  const { content, isAnonymous = true, category } = await request.json();
 
     if (!content?.trim()) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
@@ -59,7 +60,12 @@ export async function POST(request: Request) {
 
     // Auto-detect category from content
     const detectedCategory = detectGlitchCategory(content);
-    const finalCategory = category || detectedCategory;
+    const allowedIds = new Set(WALL_CATEGORIES.map(c=>c.id));
+    let finalCategory = category || detectedCategory;
+    if(!allowedIds.has(finalCategory)) {
+      // Fallback to detected if provided invalid
+      finalCategory = allowedIds.has(detectedCategory) ? detectedCategory : 'system_error';
+    }
 
     const post = await createWallPost({ userId: session.userId, content: content.trim(), isAnonymous, category: finalCategory });
     

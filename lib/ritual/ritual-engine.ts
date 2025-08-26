@@ -360,8 +360,8 @@ export async function completeRitual(
       .update(users)
       .set({
         bytes: sql`${users.bytes} + ${bytesEarned}`,
-        lastRitualCompleted: new Date(),
-        streakDays: sql`${users.streakDays} + 1`
+        lastRitualCompleted: new Date()
+        // streakDays increment removed – use user_daily_state for ritual streak tracking
       })
       .where(eq(users.id, userId));
   return { success: true, bytesEarned };

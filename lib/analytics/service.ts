@@ -1,13 +1,17 @@
 import { db } from '@/lib/db';
 import { analyticsEvents, userSessions, conversionFunnels } from '@/lib/db/unified-schema';
 import { AnalyticsEvent, AnalyticsEvents, ConversionFunnels } from './events';
-import { eq, and, gte, lte, desc, count, avg, sum } from 'drizzle-orm';
+import { eq, and, gte, lte, desc, count, inArray } from 'drizzle-orm';
+// NOTE: Bytes economy aggregation relies on client events containing a numeric 'delta' property.
+// We aggregate by known event names (BYTES_EARNED_*) for admin reporting.
 
 /**
  * Analytics Service
  * Handles event tracking, metrics calculation, and reporting
  */
 export class AnalyticsService {
+  // Cache detection of legacy schema (no source/jsonb) to avoid repeated failing inserts
+  private static legacyNoSourceColumn: boolean | null = null;
   
   /**
    * Track an analytics event
@@ -17,17 +21,35 @@ export class AnalyticsService {
       // Get session ID from headers or generate one
       const sessionId = event.sessionId || this.generateSessionId();
       
-      await db.insert(analyticsEvents).values({
+      // Derive normalized source (optional) if provided in properties for direct column write
+      const sourceRaw = (event.properties as any)?.source || (event.properties as any)?.mode || (event.properties as any)?.context;
+      const baseValues: any = {
         id: crypto.randomUUID(),
         userId: event.userId,
         sessionId,
         event: event.event,
-        properties: JSON.stringify(event.properties || {}),
+        properties: (event.properties || {}) as any,
         timestamp: event.timestamp || new Date(),
         userAgent: event.userAgent,
         ip: event.ip,
         referer: event.referer
-      });
+      };
+      if (!AnalyticsService.legacyNoSourceColumn && sourceRaw) {
+        baseValues.source = String(sourceRaw).toLowerCase();
+      }
+      try {
+        await db.insert(analyticsEvents).values(baseValues);
+      } catch (err:any) {
+        const msg = String(err?.message||'');
+        if (AnalyticsService.legacyNoSourceColumn === null && /column .*source/i.test(msg)) {
+          // Mark legacy mode and retry without source
+            AnalyticsService.legacyNoSourceColumn = true;
+            delete baseValues.source;
+            try { await db.insert(analyticsEvents).values(baseValues); } catch(innerErr){ console.error('Analytics tracking fallback failed:', innerErr); }
+        } else {
+          throw err; // propagate to outer catch
+        }
+      }
 
       // Update conversion funnels
       if (event.userId) {
@@ -109,14 +131,9 @@ export class AnalyticsService {
       events.map(e => e.timestamp.toDateString())
     ).size;
     
-    const featureUsage = events.reduce((acc, event) => {
-      let properties: any = {};
-      try {
-        properties = JSON.parse(event.properties || '{}');
-      } catch {
-        properties = {};
-      }
-      const feature = properties.feature || 'unknown';
+    const featureUsage = events.reduce((acc, event: any) => {
+      const props = (event as any).properties || {};
+      const feature = props.feature || 'unknown';
       acc[feature] = (acc[feature] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -201,14 +218,9 @@ export class AnalyticsService {
     }
 
     // Calculate basic revenue metrics
-    const totalRevenue = subscriptionEvents.reduce((sum, event) => {
-      let properties: any = {};
-      try {
-        properties = JSON.parse(event.properties || '{}');
-      } catch {
-        properties = {};
-      }
-      return sum + (properties.amount || 0);
+    const totalRevenue = subscriptionEvents.reduce((sum, event: any) => {
+      const props = (event as any).properties || {};
+      return sum + (props.amount || 0);
     }, 0);
 
     const averageRevenuePerUser = subscriptionEvents.length > 0 
@@ -290,34 +302,67 @@ export class AnalyticsService {
     startDate.setDate(startDate.getDate() - days);
 
     const featureEvents = await db
-      .select({
-        properties: analyticsEvents.properties,
-        count: count()
-      })
+      .select({ properties: analyticsEvents.properties, count: count() })
       .from(analyticsEvents)
-      .where(
-        and(
-          gte(analyticsEvents.timestamp, startDate)
-        )
-      )
+      .where(gte(analyticsEvents.timestamp, startDate))
       .groupBy(analyticsEvents.properties)
       .orderBy(desc(count()))
       .limit(limit);
 
     return featureEvents
-      .map(event => {
-        let properties: any = {};
-        try {
-          properties = JSON.parse(event.properties || '{}');
-        } catch {
-          properties = {};
-        }
-        return {
-          feature: properties.feature || 'unknown',
-          count: event.count
-        };
-      })
+      .map(event => ({
+        feature: (event as any).properties?.feature || 'unknown',
+        count: event.count
+      }))
       .filter(item => item.feature !== 'unknown');
+  }
+
+  /**
+   * Aggregate bytes economy metrics over a time window.
+   * Returns total bytes earned, per-event breakdown, and per-source grouping if source present.
+   */
+  static async getBytesEconomyMetrics(days: number = 30) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Fetch all bytes earned events in window
+    const byteEventNames = [
+      AnalyticsEvents.BYTES_EARNED_CHECKIN,
+      AnalyticsEvents.BYTES_EARNED_NO_CONTACT,
+      AnalyticsEvents.BYTES_EARNED_RITUAL,
+      AnalyticsEvents.BYTES_EARNED_RITUAL_GHOST,
+      AnalyticsEvents.BYTES_EARNED_DAILY_ACTION,
+      AnalyticsEvents.BYTES_EARNED_AI_CHAT,
+      AnalyticsEvents.BYTES_EARNED_WALL_POST,
+      AnalyticsEvents.BYTES_EARNED_WALL_INTERACT
+    ];
+
+    // Simple select (could be filtered server-side with an IN clause; using multiple awaits if IN not supported in current drizzle setup)
+    // Fetch needed rows with event filter; aggregate in memory using jsonb extraction (delta field)
+    const rows = await db.select().from(analyticsEvents)
+      .where(and(gte(analyticsEvents.timestamp, startDate), inArray(analyticsEvents.event, byteEventNames)));
+
+    const perEvent: Record<string, { count: number; bytes: number }> = {};
+    const perSource: Record<string, { count: number; bytes: number }> = {};
+    let totalBytes = 0;
+    for (const r of rows as any[]) {
+      const props = r.properties || {};
+      const delta = typeof props.delta === 'number' ? props.delta : 0;
+      totalBytes += delta;
+      if(!perEvent[r.event]) perEvent[r.event] = { count:0, bytes:0 };
+      perEvent[r.event].count++;
+      perEvent[r.event].bytes += delta;
+      const source = (r.source || props.source || props.mode || props.context || 'unknown').toString();
+      if(!perSource[source]) perSource[source] = { count:0, bytes:0 };
+      perSource[source].count++;
+      perSource[source].bytes += delta;
+    }
+    return {
+      windowDays: days,
+      totalBytes,
+      events: Object.entries(perEvent).map(([event, v]) => ({ event, ...v })).sort((a,b)=> b.bytes - a.bytes),
+      sources: Object.entries(perSource).map(([source, v]) => ({ source, ...v })).sort((a,b)=> b.bytes - a.bytes)
+    };
   }
 
   /**

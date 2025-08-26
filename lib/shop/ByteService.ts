@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
-import { users, userByteHistory, streakBonuses, byteEarningRules } from '@/lib/db/unified-schema';
-import { eq, and, gte, desc, sum } from 'drizzle-orm';
+import { users, streakBonuses, byteEarningRules } from '@/lib/db/unified-schema';
+import { eq, and } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { BYTE_EARNING_ACTIVITIES, STREAK_BONUSES, GLITCH_BONUSES } from './constants';
 import { randomUUID } from 'crypto';
 
@@ -22,20 +23,12 @@ export class ByteService {
       
       // Check if user has already earned bytes for this activity today
       if (rule.dailyLimit) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayIso = today.toISOString();
         
-        const todayEarnings = await db
-          .select({ count: sum(userByteHistory.amount) })
-          .from(userByteHistory)
-          .where(and(
-            eq(userByteHistory.userId, userId),
-            eq(userByteHistory.activity, activity),
-            gte(userByteHistory.createdAt, today),
-            gte(userByteHistory.amount, 0) // Only positive amounts (earnings)
-          ));
-        
-        const earnedToday = Number(todayEarnings[0]?.count || 0);
+      const todayEarnings = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id = ${userId} AND activity_type = ${activity} AND byte_change > 0 AND created_at >= ${todayIso}`);
+            const earnedToday = Number((todayEarnings[0] as any)?.s || 0);
         const maxDaily = rule.bytes * rule.dailyLimit;
         
         if (earnedToday >= maxDaily) {
@@ -49,20 +42,12 @@ export class ByteService {
 
       // Check weekly limits for AI therapy
       if ('weeklyLimit' in rule && rule.weeklyLimit && activity === 'AI_THERAPY_SESSION') {
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekAgoIso = weekAgo.toISOString();
         
-        const weeklyEarnings = await db
-          .select({ count: sum(userByteHistory.amount) })
-          .from(userByteHistory)
-          .where(and(
-            eq(userByteHistory.userId, userId),
-            eq(userByteHistory.activity, activity),
-            gte(userByteHistory.createdAt, weekAgo),
-            gte(userByteHistory.amount, 0)
-          ));
-        
-        const earnedThisWeek = Number(weeklyEarnings[0]?.count || 0);
+      const weeklyEarnings = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id = ${userId} AND activity_type = ${activity} AND byte_change > 0 AND created_at >= ${weekAgoIso}`);
+            const earnedThisWeek = Number((weeklyEarnings[0] as any)?.s || 0);
         const maxWeekly = rule.bytes * rule.weeklyLimit;
         
         if (earnedThisWeek >= maxWeekly) {
@@ -111,17 +96,9 @@ export class ByteService {
           .where(eq(users.id, userId));
         
         // Create history record
-        await tx.insert(userByteHistory).values({
-          id: randomUUID(),
-          userId,
-          type: 'earned',
-          activity,
-          amount: rule.bytes,
-          balanceBefore: currentBalance,
-          balanceAfter: newBalance,
-          description: rule.description,
-          metadata: metadata ? JSON.stringify(metadata) : null
-        });
+            // Direct insert (table: user_byte_history) aligning to actual column names
+            await tx.execute(sql`INSERT INTO user_byte_history (id, user_id, activity_type, byte_change, balance_after, description, metadata, created_at)
+              VALUES (${randomUUID()}, ${userId}, ${activity}, ${finalAmount}, ${newBalance}, ${rule.description}, ${metadata ? JSON.stringify(metadata) : '{}'}, NOW())`);
       });
       
       // Check for achievements after awarding bytes
@@ -196,19 +173,9 @@ export class ByteService {
           })
           .where(eq(users.id, userId));
         
-        // Create history record
-        await tx.insert(userByteHistory).values({
-          id: randomUUID(),
-          userId,
-          type: 'spent',
-          activity: 'purchase',
-          amount: -amount, // Negative for spending
-          balanceBefore: currentBalance,
-          balanceAfter: newBalance,
-          description,
-          relatedId,
-          metadata: metadata ? JSON.stringify(metadata) : null
-        });
+        // Create history record (negative change)
+        await tx.execute(sql`INSERT INTO user_byte_history (id, user_id, activity_type, byte_change, balance_after, description, metadata, created_at)
+          VALUES (${randomUUID()}, ${userId}, ${'purchase'}, ${-amount}, ${newBalance}, ${description}, ${metadata ? JSON.stringify(metadata) : '{}'}, NOW())`);
       });
       
       console.log(`💰 User ${userId} spent ${amount} Bytes on: ${description}`);
@@ -346,17 +313,8 @@ export class ByteService {
           })
           .where(eq(users.id, userId));
         
-        await tx.insert(userByteHistory).values({
-          id: randomUUID(),
-          userId,
-          type: 'bonus',
-          activity: 'glitch_bonus',
-          amount: bonusAmount,
-          balanceBefore: currentBalance,
-          balanceAfter: newBalance,
-          description: `Surprise Glitch Bonus! +${bonusAmount} Bytes`,
-          metadata: JSON.stringify({ glitchBonus: true, bonusType: 'surprise' })
-        });
+        await tx.execute(sql`INSERT INTO user_byte_history (id, user_id, activity_type, byte_change, balance_after, description, metadata, created_at)
+          VALUES (${randomUUID()}, ${userId}, ${'glitch_bonus'}, ${bonusAmount}, ${newBalance}, ${`Surprise Glitch Bonus! +${bonusAmount} Bytes`}, ${JSON.stringify({ glitchBonus: true, bonusType: 'surprise' })}, NOW())`);
       });
       
       console.log(`✨ Glitch bonus! Awarded ${bonusAmount} Bytes to user ${userId}`);
@@ -393,30 +351,19 @@ export class ByteService {
       }
       
       // Get recent byte history (last 10 transactions)
-      const history = await db
-        .select()
-        .from(userByteHistory)
-        .where(eq(userByteHistory.userId, userId))
-        .orderBy(desc(userByteHistory.createdAt))
-        .limit(10);
+  const history = await db.execute(sql`SELECT id, activity_type, byte_change, balance_after, description, metadata, created_at FROM user_byte_history WHERE user_id = ${userId} ORDER BY created_at DESC LIMIT 10`);
       
       // Get today's earnings
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayIso = today.toISOString();
       
-      const todayEarnings = await db
-        .select({ total: sum(userByteHistory.amount) })
-        .from(userByteHistory)
-        .where(and(
-          eq(userByteHistory.userId, userId),
-          gte(userByteHistory.createdAt, today),
-          gte(userByteHistory.amount, 0) // Only positive amounts
-        ));
+  const todayEarnings = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id = ${userId} AND byte_change > 0 AND created_at >= ${todayIso}`);
       
       return {
         balance: user.bytes || 0,
-        todayEarnings: Number(todayEarnings[0]?.total || 0),
-        recentHistory: history
+  todayEarnings: Number((todayEarnings[0] as any)?.s || 0),
+  recentHistory: history
       };
       
     } catch (error) {
@@ -444,18 +391,10 @@ export class ByteService {
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const todayIso = today.toISOString();
     
-    const todayEarnings = await db
-      .select({ count: sum(userByteHistory.amount) })
-      .from(userByteHistory)
-      .where(and(
-        eq(userByteHistory.userId, userId),
-        eq(userByteHistory.activity, activity),
-        gte(userByteHistory.createdAt, today),
-        gte(userByteHistory.amount, 0)
-      ));
-    
-    const earnedToday = Number(todayEarnings[0]?.count || 0);
+  const todayEarnings = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id = ${userId} AND activity_type = ${activity} AND byte_change > 0 AND created_at >= ${todayIso}`);
+  const earnedToday = Number((todayEarnings[0] as any)?.s || 0);
     const maxDaily = rule.bytes * rule.dailyLimit;
     const remaining = Math.max(0, maxDaily - earnedToday);
     
@@ -490,91 +429,20 @@ export class ByteService {
    */
   static async getEarningStats(userId: string) {
     try {
-      // Get today's earnings
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const todayEarnings = await db
-        .select({ total: sum(userByteHistory.amount) })
-        .from(userByteHistory)
-        .where(and(
-          eq(userByteHistory.userId, userId),
-          gte(userByteHistory.createdAt, today),
-          gte(userByteHistory.amount, 0) // Only positive amounts (earnings)
-        ));
-
-      // Get this week's earnings
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      
-      const weeklyEarnings = await db
-        .select({ total: sum(userByteHistory.amount) })
-        .from(userByteHistory)
-        .where(and(
-          eq(userByteHistory.userId, userId),
-          gte(userByteHistory.createdAt, weekAgo),
-          gte(userByteHistory.amount, 0)
-        ));
-
-      // Get all-time earnings
-      const allTimeEarnings = await db
-        .select({ total: sum(userByteHistory.amount) })
-        .from(userByteHistory)
-        .where(and(
-          eq(userByteHistory.userId, userId),
-          gte(userByteHistory.amount, 0)
-        ));
-
-      // Get current streak (simplified - checking consecutive days with earnings)
-      const recentDays = await db
-        .select({ 
-          date: userByteHistory.createdAt,
-          amount: userByteHistory.amount 
-        })
-        .from(userByteHistory)
-        .where(and(
-          eq(userByteHistory.userId, userId),
-          gte(userByteHistory.amount, 0)
-        ))
-        .orderBy(desc(userByteHistory.createdAt))
-        .limit(30);
-
-      // Calculate current streak
-      let currentStreak = 0;
-      const daysWithEarnings = new Set();
-      
-      for (const earning of recentDays) {
-        const earnDate = earning.date.toDateString();
-        daysWithEarnings.add(earnDate);
-      }
-
-      // Simple streak calculation - consecutive days from today
-      const now = new Date();
-      while (currentStreak < 30) {
-        const checkDate = new Date(now);
-        checkDate.setDate(checkDate.getDate() - currentStreak);
-        
-        if (daysWithEarnings.has(checkDate.toDateString())) {
-          currentStreak++;
-        } else {
-          break;
-        }
-      }
-
-      return {
-        todayEarnings: Number(todayEarnings[0]?.total || 0),
-        weeklyEarnings: Number(weeklyEarnings[0]?.total || 0),
-        allTimeEarnings: Number(allTimeEarnings[0]?.total || 0),
-        currentStreak
-      };
-    } catch (error) {
-      console.error('Error getting earning stats:', error);
-      return {
-        todayEarnings: 0,
-        weeklyEarnings: 0,
-        allTimeEarnings: 0,
-        currentStreak: 0
-      };
+  const today = new Date(); today.setHours(0,0,0,0); const todayIso = today.toISOString();
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7); const weekAgoIso = weekAgo.toISOString();
+  const todayRows = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id=${userId} AND byte_change>0 AND created_at >= ${todayIso}`);
+  const weekRows = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id=${userId} AND byte_change>0 AND created_at >= ${weekAgoIso}`);
+      const allRows = await db.execute(sql`SELECT COALESCE(SUM(byte_change),0) AS s FROM user_byte_history WHERE user_id=${userId} AND byte_change>0`);
+      const recent = await db.execute(sql`SELECT created_at AS date, byte_change AS amount FROM user_byte_history WHERE user_id=${userId} AND byte_change>0 ORDER BY created_at DESC LIMIT 30`);
+      let currentStreak=0; const days=new Set<string>();
+  for(const r of recent as any[]){ const d=new Date((r as any).date as any); days.add(d.toDateString()); }
+      const now=new Date();
+      while(currentStreak<30){ const cd=new Date(now); cd.setDate(cd.getDate()-currentStreak); if(days.has(cd.toDateString())) currentStreak++; else break; }
+      return { todayEarnings:Number((todayRows[0] as any)?.s||0), weeklyEarnings:Number((weekRows[0] as any)?.s||0), allTimeEarnings:Number((allRows[0] as any)?.s||0), currentStreak };
+    } catch(err){
+      console.error('Error getting earning stats:', err);
+      return { todayEarnings:0, weeklyEarnings:0, allTimeEarnings:0, currentStreak:0 };
     }
   }
 }

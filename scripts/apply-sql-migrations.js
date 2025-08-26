@@ -38,7 +38,13 @@ async function markApplied(filename){
 
 async function run(){
   const dir = path.join(process.cwd(), 'lib', 'db', 'migrations');
-  const entries = fs.readdirSync(dir).filter(f => f.endsWith('.sql') && !f.includes('_down_') && f !== 'meta');
+  const entries = fs.readdirSync(dir).filter(f => {
+    if(!f.endsWith('.sql')) return false;
+    if(f.includes('_down_')) return false; // skip explicit down migrations
+    if(f === '000000_baseline_snapshot.sql') return false; // skip large baseline dump
+    if(f.endsWith('.sql.sql')) return false; // skip shim duplicates
+    return true;
+  });
   entries.sort();
   await ensureMeta();
   let appliedCount = 0;

@@ -30,8 +30,14 @@ import {
   Wind,
   Brain,
   Crown,
-  AlertTriangle
+  AlertTriangle,
+  Info
 } from 'lucide-react';
+import { WALL_CATEGORIES, getWallCategoryConfig } from '@/lib/wall/categories';
+import { useWallReaction } from '@/lib/hooks/useWallReaction';
+// Use client-side tracker instead of server AnalyticsService to prevent postgres from entering client bundle
+import { trackEvent } from '@/lib/analytics/client';
+import { AnalyticsEvents } from '@/lib/analytics/events';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -71,18 +77,17 @@ interface Post {
   userReaction?: string | null;
 }
 
-const EMOJI_TAGS = [
-  { emoji: '💔', label: 'Heartbreak', category: 'heartbreak', color: 'from-red-500 to-pink-600', border: 'border-red-500/50', bg: 'bg-red-500/10' },
-  { emoji: '😢', label: 'Sadness', category: 'sadness', color: 'from-blue-500 to-indigo-600', border: 'border-blue-500/50', bg: 'bg-blue-500/10' },
-  { emoji: '😤', label: 'Anger', category: 'anger', color: 'from-orange-500 to-red-600', border: 'border-orange-500/50', bg: 'bg-orange-500/10' },
-  { emoji: '😰', label: 'Anxiety', category: 'anxiety', color: 'from-yellow-500 to-orange-600', border: 'border-yellow-500/50', bg: 'bg-yellow-500/10' },
-  { emoji: '🔥', label: 'Rage', category: 'rage', color: 'from-red-600 to-red-700', border: 'border-red-600/50', bg: 'bg-red-600/10' },
-  { emoji: '💭', label: 'Confusion', category: 'confusion', color: 'from-purple-500 to-violet-600', border: 'border-purple-500/50', bg: 'bg-purple-500/10' },
-  { emoji: '🌟', label: 'Hope', category: 'hope', color: 'from-green-500 to-emerald-600', border: 'border-green-500/50', bg: 'bg-green-500/10' },
-  { emoji: '⚡', label: 'Breakthrough', category: 'breakthrough', color: 'from-cyan-500 to-blue-600', border: 'border-cyan-500/50', bg: 'bg-cyan-500/10' },
-  { emoji: '🎭', label: 'Identity', category: 'identity', color: 'from-pink-500 to-purple-600', border: 'border-pink-500/50', bg: 'bg-pink-500/10' },
-  { emoji: '🔮', label: 'Future', category: 'future', color: 'from-indigo-500 to-purple-600', border: 'border-indigo-500/50', bg: 'bg-indigo-500/10' }
-];
+// Map standardized categories to display meta (reusing original emoji aesthetics)
+const CATEGORY_EMOJIS: Record<string,string> = {
+  system_error: '💥',
+  loop_detected: '🔁',
+  memory_leak: '🧠',
+  buffer_overflow: '📈',
+  syntax_error: '🧩',
+  null_pointer: '🫥',
+  stack_overflow: '⚡',
+  access_denied: '🚫'
+};
 
 const fetcher = (url: string) => fetch(url, { credentials: 'include' }).then(res => {
   if (!res.ok) throw new Error('Failed to fetch');
@@ -93,11 +98,12 @@ export default function OptimizedWallPage() {
   const { user: authUser, isAuthenticated, isLoading: authLoading } = useAuth();
   const [filter, setFilter] = useState('recent');
   const [postContent, setPostContent] = useState('');
-  const [selectedTag, setSelectedTag] = useState<typeof EMOJI_TAGS[0] | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [posting, setPosting] = useState(false);
-  const [optimisticReactions, setOptimisticReactions] = useState<Record<string, number>>({});
+  // Reactions handled by shared hook
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const { toggleReaction } = useWallReaction({ endpoint: '/api/wall/react' });
 
   // User premium status
   const isPremium = authUser?.subscriptionTier === 'premium' || 
@@ -136,73 +142,34 @@ export default function OptimizedWallPage() {
 
   const posts: Post[] = feedData?.posts || [];
 
-  // Optimistic heart reaction handler (properly handle existing reactions)
-  const handleHeartReaction = async (postId: string) => {
-    const currentPost = posts.find(p => p.id === postId);
-    if (!currentPost) return;
-
-    const hasUserReacted = currentPost.userReaction === 'resonate';
-    
-    // Optimistically update the UI state immediately
-    setOptimisticReactions(prev => ({
-      ...prev,
-      [postId]: hasUserReacted ? -1 : 1 // Remove if already reacted, add if not
-    }));
-
+  // Heart reaction via shared hook mapped onto resonateCount
+  const handleHeartReaction = async (post: Post) => {
     try {
-      const response = await fetch('/api/wall/react', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ postId, reactionType: 'resonate' })
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        
-        // Clear optimistic state and refresh actual data
-        setOptimisticReactions(prev => {
-          const newState = { ...prev };
-          delete newState[postId];
-          return newState;
-        });
-        
-        // Force refresh the data to get updated userReaction state
-        await refresh();
-        
-        if (result.action === 'added') {
-          toast.success('💖 Reaction added!');
-        } else if (result.action === 'removed') {
-          toast.success('Reaction removed');
+      await toggleReaction({ id: post.id, hearts: post.resonateCount, userReaction: post.userReaction } as any, (updater, shouldRevalidate)=>{
+        if(typeof updater === 'function') {
+          refresh((prev: any)=>{
+            if(!prev) return prev;
+            // Build temp with hearts
+            const temp = { ...prev, posts: prev.posts.map((p: any)=> ({ ...p, hearts: p.resonateCount })) };
+            const updated = updater(temp);
+            if(updated){
+              updated.posts = updated.posts.map((p:any)=>{
+                const { hearts, ...rest } = p; return { ...rest, resonateCount: hearts };
+              });
+            }
+            return updated;
+          }, shouldRevalidate);
         }
-      } else {
-        // Revert optimistic update on failure
-        setOptimisticReactions(prev => {
-          const newState = { ...prev };
-          delete newState[postId];
-          return newState;
-        });
-        
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        console.error('Failed to react to post:', errorData);
-        toast.error('Failed to register reaction - please try again');
-      }
-    } catch (error) {
-      // Revert optimistic update on error
-      setOptimisticReactions(prev => {
-        const newState = { ...prev };
-        delete newState[postId];
-        return newState;
       });
-      
-      console.error('Failed to react to post:', error);
-      toast.error('Connection error - reaction not saved');
+  trackEvent(AnalyticsEvents.WALL_POST_LIKED, { postId: post.id, category: post.glitchCategory });
+    } catch {
+      toast.error('Unable to react');
     }
   };
 
   // Post submission handler
   const handleSubmitPost = async () => {
-    if (!postContent.trim() || !selectedTag || posting) return;
+  if (!postContent.trim() || !selectedCategory || posting) return;
 
     setPosting(true);
     try {
@@ -212,15 +179,15 @@ export default function OptimizedWallPage() {
         credentials: 'include',
         body: JSON.stringify({
           content: postContent,
-          glitchCategory: selectedTag.category,
-          glitchTitle: selectedTag.label,
+          glitchCategory: selectedCategory,
+          glitchTitle: getWallCategoryConfig(selectedCategory!)?.label || selectedCategory,
           isAnonymous: true
         })
       });
 
       if (response.ok) {
         setPostContent('');
-        setSelectedTag(null);
+  setSelectedCategory(null);
         refresh(); // Refresh feed after posting
         toast.success('Your healing story has been shared with the community 💜');
       } else {
@@ -248,7 +215,9 @@ export default function OptimizedWallPage() {
   };
 
   const getEmotionData = (category: string) => {
-    return EMOJI_TAGS.find(tag => tag.category === category) || EMOJI_TAGS[0];
+    const cfg = getWallCategoryConfig(category);
+    if(!cfg) return { label:'Unknown', badgeClass:'bg-slate-700 text-slate-300', containerClass:'bg-slate-800/40 border-slate-600/40', accentClass:'text-slate-400', emoji:'❔' } as any;
+    return { ...cfg, emoji: CATEGORY_EMOJIS[cfg.id] || '❔' };
   };
 
   // Early returns for auth states
@@ -438,14 +407,12 @@ export default function OptimizedWallPage() {
                   className="flex items-center justify-between w-full p-3 bg-brand-dark/50 hover:bg-brand-dark/70 border border-brand-light neon-border rounded-lg transition-colors"
                 >
                   <div className="flex items-center space-x-2">
-                    {selectedTag ? (
+                    {selectedCategory ? (
                       <>
-                        <span className="text-lg">{selectedTag.emoji}</span>
-                        <span className="text-white">{selectedTag.label}</span>
+                        <span className="text-lg">{CATEGORY_EMOJIS[selectedCategory]||'❔'}</span>
+                        <span className="text-white">{getWallCategoryConfig(selectedCategory)?.label}</span>
                       </>
-                    ) : (
-                      <span className="text-gray-400">Choose an emotion tag</span>
-                    )}
+                    ) : <span className="text-gray-400">Choose a glitch category</span>}
                   </div>
                   {showTagDropdown ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
                 </button>
@@ -459,17 +426,17 @@ export default function OptimizedWallPage() {
                       transition={{ duration: 0.15 }}
                       className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto"
                     >
-                      {EMOJI_TAGS.map((tag) => (
+                      {WALL_CATEGORIES.map(cat => (
                         <button
-                          key={tag.category}
-                          onClick={() => {
-                            setSelectedTag(tag);
-                            setShowTagDropdown(false);
-                          }}
-                          className="flex items-center space-x-3 w-full p-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
+                          key={cat.id}
+                          onClick={()=>{ setSelectedCategory(cat.id); setShowTagDropdown(false); trackEvent(AnalyticsEvents.WALL_CATEGORY_SELECTED, { category: cat.id }); }}
+                          className="flex items-center justify-between w-full p-3 text-left hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 last:border-b-0"
                         >
-                          <span className="text-lg">{tag.emoji}</span>
-                          <span className="text-white">{tag.label}</span>
+                          <div className="flex items-center space-x-3">
+                            <span className="text-lg">{CATEGORY_EMOJIS[cat.id]||'❔'}</span>
+                            <span className="text-white">{cat.label}</span>
+                          </div>
+                          <span className="text-xs text-gray-400 max-w-[160px] line-clamp-1" title={cat.description}>{cat.description}</span>
                         </button>
                       ))}
                     </motion.div>
@@ -489,13 +456,10 @@ export default function OptimizedWallPage() {
                     handleSubmitPost();
                   }
                 }}
-                placeholder={selectedTag 
-                  ? `${selectedTag.emoji} Share your ${selectedTag.label.toLowerCase()} healing journey anonymously...`
-                  : 'Click to choose an emotion tag, then share your healing journey...'
-                }
+                placeholder={selectedCategory ? `${CATEGORY_EMOJIS[selectedCategory]} Share your ${getWallCategoryConfig(selectedCategory)?.label?.toLowerCase()} fragment...` : 'Choose a glitch category, then share your fragment...'}
                 className="bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 min-h-[120px] resize-none focus:border-red-500/50 focus:ring-red-500/20"
                 maxLength={500}
-                disabled={!selectedTag}
+                disabled={!selectedCategory}
               />
               
               <div className="flex justify-between items-center">
@@ -515,7 +479,7 @@ export default function OptimizedWallPage() {
                   </div>
                   <Button 
                     onClick={handleSubmitPost}
-                    disabled={!postContent.trim() || posting || !selectedTag}
+                    disabled={!postContent.trim() || posting || !selectedCategory}
                     className="bg-red-600 hover:bg-red-700 text-white"
                     size="sm"
                   >
@@ -586,13 +550,13 @@ export default function OptimizedWallPage() {
                   transition={{ duration: 0.3 }}
                   className="h-fit"
                 >
-                  <Card className={`bg-gradient-to-br ${emotionData.bg} backdrop-blur-sm border ${emotionData.border} hover:border-opacity-80 transition-all duration-300 h-full`}>
+                  <Card className={`backdrop-blur-sm border h-full ${emotionData.containerClass} hover:shadow-lg transition-all duration-300`}> 
                     <CardContent className="p-5">
                       
                       {/* Post Header with Emotion Tag */}
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-2">
-                          <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${emotionData.color} text-white text-sm font-medium flex items-center space-x-2`}>
+                          <div className={`px-3 py-1 rounded-full text-white text-sm font-medium flex items-center space-x-2 border ${emotionData.badgeClass}`} title={emotionData.description}>
                             <span className="text-lg">{emotionData.emoji}</span>
                             <span>{emotionData.label}</span>
                           </div>
@@ -624,7 +588,7 @@ export default function OptimizedWallPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleHeartReaction(post.id)}
+                          onClick={() => handleHeartReaction(post)}
                           className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
                             post.userReaction === 'resonate'
                               ? 'text-red-400 bg-red-500/10 hover:bg-red-500/20' 
@@ -633,7 +597,7 @@ export default function OptimizedWallPage() {
                         >
                           <Heart className={`h-4 w-4 ${post.userReaction === 'resonate' ? 'fill-current' : ''}`} />
                           <span className="font-medium">
-                            {totalReactions + (optimisticReactions[post.id] || 0)}
+                            {post.resonateCount}
                           </span>
                         </Button>
                       </div>

@@ -31,12 +31,14 @@ export async function GET(request: NextRequest) {
       revenueMetrics,
       retentionMetrics,
       conversionMetrics,
-      topFeatures
+      topFeatures,
+      bytesEconomy
     ] = await Promise.all([
       AnalyticsService.getRevenueMetrics(days),
       AnalyticsService.getRetentionMetrics(),
       AnalyticsService.getConversionFunnelMetrics(funnel, days),
-      AnalyticsService.getTopFeatures(days, 10)
+      AnalyticsService.getTopFeatures(days, 10),
+      AnalyticsService.getBytesEconomyMetrics(days)
     ]);
 
     return NextResponse.json({
@@ -47,7 +49,8 @@ export async function GET(request: NextRequest) {
         funnel,
         metrics: conversionMetrics
       },
-      features: topFeatures,
+  features: topFeatures,
+  bytesEconomy,
       generatedAt: new Date().toISOString()
     });
 

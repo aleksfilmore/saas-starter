@@ -4,7 +4,6 @@ import { db } from '@/lib/db';
 import { users, voiceTherapyCredits } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
 import Stripe from 'stripe';
-import { randomUUID } from 'crypto';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -124,15 +123,17 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       expiryDate.setDate(expiryDate.getDate() + 30);
       
       // Add voice therapy credits to user account
+      // Insert voice therapy credit record (schema: id auto-generated, no purchaseDate/stripeSessionId columns)
       await db.insert(voiceTherapyCredits).values({
-        id: randomUUID(),
         userId: userId,
         minutesPurchased: sessionDuration,
         minutesRemaining: sessionDuration,
-        purchaseDate: new Date(),
         expiryDate: expiryDate,
+        isActive: true,
+        purchaseDate: new Date(),
         stripeSessionId: session.id,
-        isActive: true
+        // updatedAt will default; explicit set for clarity
+        updatedAt: new Date()
       });
       
       console.log(`✅ Voice therapy credits added: ${sessionDuration} minutes for user ${userId}`);

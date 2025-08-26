@@ -1,6 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { emitBytesUpdate } from '@/lib/bytes/emit';
+import { BytesEventSource } from '@/lib/bytes/sources';
+import { trackEvent } from '@/lib/analytics/client';
+import { AnalyticsEvents } from '@/lib/analytics/events';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,8 +57,9 @@ const PERSONA_CONFIG = {
 
 interface AITherapyModalProps {
   onClose: () => void;
-  onFirstUserMessage: () => void;
+  onFirstUserMessage: () => void; // parent daily action completion (may already award bytes)
   selectedPersona?: string;
+  disableInternalBytesAward?: boolean; // guard flag to prevent fallback emission
 }
 
 interface Message {
@@ -64,7 +69,7 @@ interface Message {
   timestamp: Date;
 }
 
-export default function AITherapyModal({ onClose, onFirstUserMessage, selectedPersona = 'supportive-guide' }: AITherapyModalProps) {
+export default function AITherapyModal({ onClose, onFirstUserMessage, selectedPersona = 'supportive-guide', disableInternalBytesAward }: AITherapyModalProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +97,12 @@ export default function AITherapyModal({ onClose, onFirstUserMessage, selectedPe
     // Mark first user message for gamification
     if (!hasStartedConversation) {
       onFirstUserMessage();
+      // Only emit if internal award not disabled (parent may already perform emission)
+      if(!disableInternalBytesAward){
+        emitBytesUpdate({ source: BytesEventSource.AI_CHAT, delta: 5 });
+  trackEvent(AnalyticsEvents.BYTES_EARNED_AI_CHAT, { delta:5, source: BytesEventSource.AI_CHAT, modality: 'text' });
+      }
+      trackEvent(AnalyticsEvents.AI_THERAPY_SESSION_STARTED, { persona: selectedPersona });
       setHasStartedConversation(true);
     }
 

@@ -28,6 +28,9 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
   const [badgeUpdating, setBadgeUpdating] = useState(false)
   const [emailEnabled, setEmailEnabled] = useState<boolean | null>(null)
   const [togglingEmail, setTogglingEmail] = useState(false)
+  const [ritualStreak, setRitualStreak] = useState<number | null>(null)
+  const [noContactStreak, setNoContactStreak] = useState<number | null>(null)
+  const [streakLoading, setStreakLoading] = useState(false)
 
   // Preload email notification preference once on mount
   useEffect(() => {
@@ -45,6 +48,27 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
     })()
     return () => { active = false }
   }, [emailEnabled])
+
+  // Load normalized streaks
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        setStreakLoading(true)
+        const res = await fetch('/api/streaks', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        if (!alive) return
+        setRitualStreak(data.ritual ?? null)
+        setNoContactStreak(data.noContact ?? null)
+      } catch (e) {
+        console.warn('streak load failed', e)
+      } finally {
+        if (alive) setStreakLoading(false)
+      }
+    })()
+    return () => { alive = false }
+  }, [])
 
   async function openStripePortal() {
     try {
@@ -144,14 +168,14 @@ export function SimplifiedHeader({ user, hasShield, onCheckin, onBreathing, onCr
             
             {/* Consolidated Status Pill - Compact */}
     <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-800/60 rounded-full border border-gray-600/50 text-sm">
-              <div className="flex items-center gap-1" title="No-Contact streak & Badges">
+              <div className="flex items-center gap-1" title="Ritual streak (consecutive days with at least one ritual completed)">
                 <Flame className="h-4 w-4 text-orange-400" />
-                <button 
+                <button
                   onClick={onCheckin}
                   className="text-white hover:text-orange-300 transition-colors"
-                  title="Click to check-in (once per day)"
+                  title="Record today's ritual activity"
                 >
-      {user.streak ?? user.noContactDays}
+                  {streakLoading ? '…' : (ritualStreak ?? user.streak ?? 0)}d
                 </button>
               </div>
               

@@ -25,12 +25,12 @@ export default function ComingSoonPage() {
     setIsMounted(true);
   }, []);
 
-  // Countdown timer effect - counting to September 5th, 2025
+  // Countdown timer effect - counting to September 15th, 2025
   useEffect(() => {
     if (!isMounted) return;
     
     const calculateTimeLeft = () => {
-      const launchDate = new Date('2025-09-05T00:00:00Z').getTime();
+  const launchDate = new Date('2025-09-15T00:00:00Z').getTime();
       const now = new Date().getTime();
       const difference = launchDate - now;
 
@@ -196,7 +196,7 @@ export default function ComingSoonPage() {
                     <div className="text-sm md:text-base text-gray-400">SEC</div>
                   </div>
                 </div>
-                <div className="text-lg text-gray-400 mt-6">September 5th, 2025</div>
+                <div className="text-lg text-gray-400 mt-6">September 15th, 2025</div>
               </CardContent>
             </Card>
           </div>
@@ -226,7 +226,7 @@ export default function ComingSoonPage() {
               <div className="text-center py-8">
                 <div className="text-2xl font-bold text-green-400 mb-4">✅ You're In!</div>
                 <p className="text-gray-300">
-                  We'll notify you as soon as CTRL+ALT+BLOCK launches on September 5th.
+                  We'll notify you as soon as CTRL+ALT+BLOCK launches on September 15th.
                 </p>
               </div>
             )}

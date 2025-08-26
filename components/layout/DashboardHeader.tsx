@@ -4,10 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Zap, Crown, Menu, X, Badge as BadgeIcon, User as UserIcon, LogOut, Settings, Bell, HeartPulse, Loader2, CreditCard, BellOff, Key, Check, Shield } from 'lucide-react';
 import { AnalyticsEvents } from '@/lib/analytics/events';
+import { BytesEventSource } from '@/lib/bytes/sources';
 import { BadgeToken } from '@/components/badges/BadgeToken';
 import { CheckInModal } from '@/components/dashboard/modals/CheckInModal';
 import useSWR from 'swr';
 import { toast } from 'sonner';
+import { emitBytesUpdate } from '@/lib/bytes/emit';
+import { trackEvent } from '@/lib/analytics/client';
 
 interface HubUserResponse { user: { bytes: number; streak: number; profileBadgeId?: string | null; tier?: string; username?: string; email?: string }; }
 interface BadgeSummary { id: string; name: string; icon: string; unlocked: boolean; rarity?: string; kind?: string; }
@@ -27,8 +30,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userEmail, use
   const [emailEnabled, setEmailEnabled] = React.useState<boolean|null>(null);
   const [togglingEmail, setTogglingEmail] = React.useState(false);
   const [checkInOpen, setCheckInOpen] = React.useState(false);
-  const [mood, setMood] = React.useState<number|undefined>();
-  const [notes, setNotes] = React.useState('');
   const [submittingCheckIn, setSubmittingCheckIn] = React.useState(false);
   const router = useRouter();
   const tier = (data?.user.tier || '').toLowerCase();
@@ -128,6 +129,28 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userEmail, use
   const prevUserOpen = React.useRef(open); React.useEffect(()=>{ if(prevUserOpen.current && !open){ userMenuButtonRef.current?.focus(); } prevUserOpen.current = open; }, [open]);
   const prevBadgeOpen = React.useRef(badgePickerOpen); React.useEffect(()=>{ if(prevBadgeOpen.current && !badgePickerOpen){ badgeTriggerRef.current?.focus(); } prevBadgeOpen.current = badgePickerOpen; }, [badgePickerOpen]);
   const prevCheckOpen = React.useRef(checkInOpen); React.useEffect(()=>{ if(prevCheckOpen.current && !checkInOpen){ checkInButtonRef.current?.focus(); } prevCheckOpen.current = checkInOpen; }, [checkInOpen]);
+  // Broadcast bytes changes when SWR hub data updates (compare previous value)
+  const prevBytesRef = React.useRef<number|undefined>(undefined);
+  React.useEffect(()=>{
+    const current = data?.user.bytes;
+    if(typeof current === 'number' && prevBytesRef.current !== undefined && prevBytesRef.current !== current){
+      emitBytesUpdate({ bytes: current });
+    }
+    if(typeof current === 'number') prevBytesRef.current = current;
+  }, [data?.user.bytes]);
+  // Listen for global bytes update events (optional emit elsewhere) for real-time wallet sync
+  React.useEffect(()=>{
+    const handler = (e: any) => {
+      if(!e?.detail) return; // detail can be { bytes:number } or { delta:number }
+      mutateHub(prev => {
+        if(!prev) return prev as any;
+        const nextBytes = typeof e.detail.bytes === 'number' ? e.detail.bytes : (prev.user.bytes + (e.detail.delta||0));
+        return { ...prev, user: { ...prev.user, bytes: nextBytes } };
+      }, { revalidate:false });
+    };
+    window.addEventListener('bytes:update', handler as any);
+    return ()=> window.removeEventListener('bytes:update', handler as any);
+  }, [mutateHub]);
 
   // Generic focus trap handler
   const trapFocus = (e: React.KeyboardEvent, container: HTMLElement|null) => {
@@ -145,7 +168,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userEmail, use
   const applyProfileBadge = async (badgeId: string|null) => { if(!isPremium) return; if(badgeUpdating) return; try { setBadgeUpdating(true); const r = await fetch('/api/badges/profile',{method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ badgeId })}); if(!r.ok){ toast.error('Failed to set badge'); return;} setBadgePickerOpen(false); toast.success(badgeId? 'Profile badge updated':'Badge removed'); mutateHub(); sendEvent(AnalyticsEvents.BADGE_PROFILE_CHANGED, { badgeId }); } finally { setBadgeUpdating(false);} };
   const startFirewallCheckout = async () => { try { const r = await fetch('/api/stripe/checkout',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ tier:'firewall' })}); if(!r.ok){ toast.error('Upgrade failed'); return;} const j= await r.json(); if(j?.url) window.location.href = j.url; else toast.error('Checkout URL missing'); } catch { toast.error('Upgrade failed'); } };
   const logout = async () => { try { await fetch('/api/auth/logout',{method:'POST', credentials:'include'}); } catch{}; try { await fetch('/api/logout',{method:'POST'}); } catch{}; try { localStorage.removeItem('user-email'); } catch{}; window.location.href='/'; };
-  const submitCheckIn = async () => { if(submittingCheckIn || mood==null) return; try { setSubmittingCheckIn(true); const r = await fetch('/api/dashboard/checkin',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mood, notes })}); if(!r.ok){ toast.error('Check-in failed'); return;} setCheckInOpen(false); setMood(undefined); setNotes(''); toast.success('Check-in recorded'); mutateHub(); sendEvent(AnalyticsEvents.CHECKIN_COMPLETED, { mood }); } finally { setSubmittingCheckIn(false);} };
+  // Legacy inline submit removed; handled in modal onComplete
 
   return (
     <header className="sticky top-0 z-30 backdrop-blur-md bg-slate-950/70 border-b border-slate-800">
@@ -155,21 +178,36 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userEmail, use
           <Link href="/dashboard" className="flex items-center gap-1 text-lg sm:text-xl font-extrabold tracking-tight text-white">
             <span>CTRL</span><span className="text-slate-500">+</span><span>ALT</span><span className="text-slate-500">+</span><span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">BLOCK</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-[13px] font-medium">
-            <Link href="/wall" className="text-slate-400 hover:text-white transition">Wall</Link>
-            <Link href="/ai-therapy" className="text-slate-400 hover:text-white transition">AI Therapy</Link>
+          <nav className="hidden md:flex items-center gap-4 text-[13px] font-medium">
             {showUpgrade && (
-              <button onClick={startFirewallCheckout} className="text-slate-400 hover:text-white transition">Upgrade</button>
+              <button onClick={startFirewallCheckout} className="relative overflow-hidden rounded-md bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 px-3 py-1.5 text-white font-semibold tracking-tight shadow-sm hover:from-emerald-500 hover:to-cyan-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/60">
+                <span className="relative z-10">Upgrade</span>
+                <span className="absolute inset-0 opacity-0 hover:opacity-20 bg-white/30 transition" />
+              </button>
             )}
           </nav>
         </div>
         {/* Center: Quick Actions & Metrics */}
         <div className="hidden lg:flex items-center gap-3 text-[11px]">
-          <button ref={checkInButtonRef} onClick={()=> setCheckInOpen(true)} className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800/70 border border-slate-700 text-emerald-300 hover:bg-slate-700">
-            <HeartPulse className="w-3 h-3" /> Check‑In
+          <button
+            ref={checkInButtonRef}
+            onClick={()=> setCheckInOpen(true)}
+            className="group relative overflow-hidden rounded-md border px-3 py-1.5 flex items-center gap-1.5 bg-slate-800/60 border-slate-700 hover:bg-slate-700/60 text-emerald-300 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+            title="Daily Check-In"
+          >
+            <HeartPulse className="w-3 h-3" />
+            <span>Check‑In</span>
+            <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-emerald-500/40 to-teal-500/40" />
           </button>
           {data ? (
-            <div className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800/70 border border-slate-700 text-slate-200"><Zap className="w-3 h-3 text-emerald-400" />{data?.user.bytes ?? 0} <span className="text-slate-500 ml-1">Bytes</span></div>
+            <button
+              onClick={()=> router.push('/shop')}
+              title="Open Shop"
+              className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800/70 border border-slate-700 text-slate-200 hover:bg-slate-700/60 hover:border-emerald-500/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+            >
+              <Zap className="w-3 h-3 text-emerald-400" />{data?.user.bytes ?? 0}
+              <span className="text-slate-500 ml-1">Bytes</span>
+            </button>
           ) : (
             <div className="w-28 h-6 rounded bg-slate-800/50 border border-slate-700 animate-pulse" aria-busy="true" />
           )}
@@ -301,16 +339,17 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userEmail, use
       </div>
       {/* Mobile nav */}
       <div id="mobile-nav" className={`md:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out border-t border-slate-800 bg-slate-950/90 backdrop-blur px-4 ${mobileNav? 'max-h-96 opacity-100 py-3':'max-h-0 opacity-0 py-0'} flex flex-col gap-2 text-[13px]`}> 
-        <Link onClick={()=> setMobileNav(false)} href="/wall" className="text-slate-300 hover:text-white">Wall</Link>
-        <Link onClick={()=> setMobileNav(false)} href="/ai-therapy" className="text-slate-300 hover:text-white">AI Therapy</Link>
-  {showUpgrade && (
-          <button onClick={()=> { startFirewallCheckout(); setMobileNav(false);} } className="text-left text-slate-300 hover:text-white">Upgrade</button>
+        {showUpgrade && (
+          <button
+            onClick={()=> { startFirewallCheckout(); setMobileNav(false);} }
+            className="w-full text-left relative overflow-hidden rounded-md bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 px-3 py-2 text-white font-semibold tracking-tight shadow-sm hover:from-emerald-500 hover:to-cyan-500"
+          >Upgrade</button>
         )}
         <div className="flex items-center gap-2 pt-2">
-          <button onClick={()=> { setCheckInOpen(true); setMobileNav(false);} } className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded bg-slate-800/70 border border-slate-700 text-emerald-300">Check‑In</button>
+          <button onClick={()=> { setCheckInOpen(true); setMobileNav(false);} } className="flex-1 group relative overflow-hidden rounded-md border px-3 py-2 flex items-center justify-center gap-1.5 bg-slate-800/60 border-slate-700 hover:bg-slate-700/60 text-emerald-300 text-[12px] font-medium">Check‑In</button>
         </div>
         <div className="flex items-center gap-3 pt-2 text-[11px]">
-          <div className="flex-1 flex items-center gap-1 px-2 py-1 rounded bg-slate-800/70 border border-slate-700 text-slate-200"><Zap className="w-3 h-3 text-emerald-400" />{data?.user.bytes ?? 0}</div>
+          <button onClick={()=> { router.push('/shop'); setMobileNav(false);} } className="flex-1 flex items-center gap-1 px-2 py-1 rounded bg-slate-800/70 border border-slate-700 text-slate-200 hover:bg-slate-700/60"><Zap className="w-3 h-3 text-emerald-400" />{data?.user.bytes ?? 0}</button>
         </div>
         <div className="flex items-center gap-2 pt-2">
           <button onClick={()=> setNotifOpen(o=>!o)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded bg-slate-800/70 border border-slate-700 text-slate-300">Alerts</button>
@@ -318,7 +357,22 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userEmail, use
       </div>
       {/* Enhanced multi-step check-in */}
       {checkInOpen && (
-        <CheckInModal onClose={()=> setCheckInOpen(false)} onComplete={()=> setCheckInOpen(false)} />
+        <CheckInModal 
+          onClose={()=> setCheckInOpen(false)} 
+          onComplete={async ({ mood, gratitude, challenge, intention })=> {
+            if(submittingCheckIn) return;
+            try {
+              setSubmittingCheckIn(true);
+              const res = await fetch('/api/dashboard/checkin',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mood, gratitude, challenge, intention, notes: '' })});
+              if(!res.ok){ toast.error('Check-in failed'); return; }
+              toast.success('Check-in recorded');
+              mutateHub();
+              emitBytesUpdate({ source: BytesEventSource.CHECK_IN, delta: 10 });
+              trackEvent(AnalyticsEvents.BYTES_EARNED_CHECKIN, { delta:10, source: BytesEventSource.CHECK_IN, context:'header_quick' });
+              sendEvent(AnalyticsEvents.CHECKIN_COMPLETED, { mood });
+            } finally { setSubmittingCheckIn(false); setCheckInOpen(false);} 
+          }} 
+        />
       )}
     </header>
   );

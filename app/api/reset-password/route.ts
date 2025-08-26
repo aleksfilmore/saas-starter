@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { users } from '@/lib/db/unified-schema'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, gt } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
@@ -26,12 +26,14 @@ export async function POST(request: NextRequest) {
     console.log('🔧 Processing password reset with token:', token.substring(0, 8) + '...')
 
     // Find user with valid reset token
+    // Query only non-expired tokens directly at the DB layer
     const userResult = await db.select()
       .from(users)
       .where(
         and(
           eq(users.resetToken, token),
-          // Check if token hasn't expired (within 1 hour)
+          // Enforce expiry in the SQL predicate for stronger protection
+          gt(users.resetTokenExpiry, new Date())
         )
       )
       .limit(1)
@@ -45,12 +47,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if token has expired
-    if (user.resetTokenExpiry && new Date() > user.resetTokenExpiry) {
-      return NextResponse.json(
-        { error: 'Reset token has expired. Please request a new one.' },
-        { status: 400 }
-      )
+    // (Defensive) Double-check expiry in application layer (should already be filtered)
+    if (!user.resetTokenExpiry || new Date() > user.resetTokenExpiry) {
+      return NextResponse.json({ error: 'Reset token has expired. Please request a new one.' }, { status: 400 })
     }
 
     // Hash the new password

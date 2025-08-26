@@ -113,6 +113,24 @@
   }
 }
 
+/* Wall feed auto-scroll */
+@keyframes wall-scroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.wall-feed {
+  position: relative;
+  animation: wall-scroll 32s linear infinite;
+  padding-right: 0.25rem;
+}
+
+.wall-feed:hover { animation-play-state: paused; }
+
+/* Hide native scrollbar for wall feed container */
+.wall-feed::-webkit-scrollbar { display: none; }
+.wall-feed { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Floating animation for particles */
 @keyframes float {
   0% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }

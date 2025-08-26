@@ -1,7 +1,7 @@
 // Consolidated unified schema. Based on legacy schema.ts (full product scope)
 // plus added daily ritual tables & extra user columns (archetype, details, streak tracking, etc.).
 // After migration, all imports should target this file.
-import { pgTable, text, timestamp, integer, boolean, varchar, index, json, real } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, boolean, varchar, index, json, real, pgEnum, jsonb } from 'drizzle-orm/pg-core';
 import { randomUUID } from 'crypto';
 
 // USERS (legacy + new columns for unified)
@@ -159,6 +159,8 @@ export const voiceTherapyCredits = pgTable('voice_therapy_credits', {
   minutesRemaining: integer('minutes_remaining').notNull().default(0),
   expiryDate: timestamp('expiry_date', { withTimezone: true, mode: 'date' }),
   isActive: boolean('is_active').notNull().default(true),
+  purchaseDate: timestamp('purchase_date', { withTimezone: true, mode: 'date' }),
+  stripeSessionId: text('stripe_session_id'),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 });
@@ -225,17 +227,25 @@ export const ritualCompletions = pgTable('ritual_completions', {
 });
 
 // Analytics events
+export const analyticsEventSourceEnum = pgEnum('analytics_event_source', ['checkin','no_contact','ritual','ritual_complete','wall_interact','ai_chat','wall_post','unknown']);
+
 export const analyticsEvents = pgTable('analytics_events', {
   id: text('id').primaryKey(),
   userId: text('user_id').references(() => users.id),
   sessionId: text('session_id'),
   event: text('event').notNull(),
-  properties: text('properties').notNull().default('{}'), // JSON string
+  properties: jsonb('properties').notNull().default('{}'),
+  source: analyticsEventSourceEnum('source').notNull().default('unknown'),
   timestamp: timestamp('timestamp', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
   userAgent: text('user_agent'),
   ip: text('ip'),
   referer: text('referer'),
-});
+}, (table) => ({
+  eventIdx: index('analytics_events_event_idx').on(table.event),
+  eventTimeIdx: index('analytics_events_event_time_idx').on(table.event, table.timestamp),
+  sourceIdx: index('analytics_events_source_idx').on(table.source),
+  timeIdx: index('analytics_events_time_idx').on(table.timestamp)
+}));
 
 // User sessions for analytics (not auth sessions table above)
 export const userSessions = pgTable('user_sessions', {

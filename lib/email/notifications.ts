@@ -39,7 +39,7 @@ export class EmailNotificationService {
         .select({
           email: users.email,
           username: users.username,
-          streakDays: users.streakDays,
+          // streakDays removed from direct user select – ritual streak derived separately
           emailNotifications: users.emailNotifications,
           tier: users.tier
         })
@@ -60,10 +60,11 @@ export class EmailNotificationService {
       const unsubscribeUrl = `${APP_URL}/unsubscribe?token=${unsubscribeToken}`;
 
       // Use enhanced daily reminder template
+      // Ritual streak now sourced via /api/streaks if needed; defer for emails (send 0 for now)
       const result = await sendDailyReminderEmail(
         user.email,
         user.username || 'warrior',
-        user.streakDays || 0,
+        0,
         [todayRitual]
       );
 

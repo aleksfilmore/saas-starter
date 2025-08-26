@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Heart, CheckCircle, MessageCircle } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics/client';
+import { AnalyticsEvents } from '@/lib/analytics/events';
 
 interface Props {
   onClose: () => void;
-  onComplete: () => void;
+  onComplete: (data: { mood: number; gratitude: string; challenge: string; intention: string }) => void;
 }
 
 const moodEmojis = ['😢', '😔', '😐', '🙂', '😊', '😄', '🥰', '✨', '🌟', '🚀'];
@@ -107,9 +109,20 @@ export function CheckInModal({ onClose, onComplete }: Props) {
     }
   ];
 
-  const handleNext = () => {
+  // Fire started + first step viewed on mount
+  useEffect(() => {
+    trackEvent(AnalyticsEvents.CHECKIN_STARTED, {});
+    trackEvent(AnalyticsEvents.CHECKIN_STEP_VIEWED, { step: 0, name: steps[0].title });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const advanceStep = () => {
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+      // Mark completion of step
+      trackEvent(AnalyticsEvents.CHECKIN_STEP_COMPLETED, { step: currentStep, name: steps[currentStep].title });
+      const next = currentStep + 1;
+      setCurrentStep(next);
+      trackEvent(AnalyticsEvents.CHECKIN_STEP_VIEWED, { step: next, name: steps[next].title });
     } else {
       handleSubmit();
     }
@@ -117,24 +130,10 @@ export function CheckInModal({ onClose, onComplete }: Props) {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In real app, send data to API
-      const checkInData = {
-        mood: mood,
-        gratitude,
-        challenge,
-        intention,
-        timestamp: new Date().toISOString()
-      };
-      
-      console.log('Check-in submitted:', checkInData);
-      onComplete();
-    } catch (error) {
-      console.error('Failed to submit check-in:', error);
+  // Mark final step complete before overall completion
+  trackEvent(AnalyticsEvents.CHECKIN_STEP_COMPLETED, { step: currentStep, name: steps[currentStep].title });
+      onComplete({ mood, gratitude, challenge, intention });
     } finally {
       setIsSubmitting(false);
     }
@@ -197,7 +196,7 @@ export function CheckInModal({ onClose, onComplete }: Props) {
             </Button>
 
             <Button
-              onClick={handleNext}
+              onClick={advanceStep}
               disabled={!canProceed() || isSubmitting}
               className="bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700"
             >

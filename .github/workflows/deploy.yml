@@ -1,0 +1,37 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+      # Optionally add other runtime secrets here
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install deps
+        run: npm ci
+      - name: Run migrations
+        run: npm run db:migrate
+      - name: Restore core tables (idempotent)
+        run: npm run db:restore:core
+      - name: Build
+        run: npm run build
+      - name: Smoke test (basic health)
+        run: |
+          echo "Skipping real HTTP smoke tests (no runtime env)."
+      # Add deployment step (e.g., to Vercel, Fly.io, Docker push) below.
+      # - name: Deploy
+      #   run: echo "Deploy command here"

@@ -49,6 +49,12 @@ interface AnalyticsMetrics {
     feature: string;
     count: number;
   }>;
+  bytesEconomy?: {
+    windowDays: number;
+    totalBytes: number;
+    events: { event: string; count: number; bytes: number }[];
+    sources: { source: string; count: number; bytes: number }[];
+  };
 }
 
 export function AdminDashboard() {
@@ -198,6 +204,7 @@ export function AdminDashboard() {
           <TabsTrigger value="retention">User Retention</TabsTrigger>
           <TabsTrigger value="features">Feature Usage</TabsTrigger>
           <TabsTrigger value="revenue">Revenue Breakdown</TabsTrigger>
+          <TabsTrigger value="bytes">Bytes Economy</TabsTrigger>
           <TabsTrigger value="mobile">Mobile Apps</TabsTrigger>
         </TabsList>
 
@@ -391,6 +398,58 @@ export function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="bytes" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Bytes Economy Overview</CardTitle>
+              <CardDescription>Total bytes earned and distribution (last {timeframe} days)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {!metrics.bytesEconomy && <p className="text-sm text-gray-500">No bytes data.</p>}
+              {metrics.bytesEconomy && (
+                <>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="p-4 rounded border flex flex-col min-w-[160px]">
+                      <span className="text-xs text-gray-500">Total Bytes Earned</span>
+                      <span className="text-2xl font-bold text-emerald-600">{metrics.bytesEconomy.totalBytes}</span>
+                    </div>
+                    <div className="p-4 rounded border flex flex-col min-w-[160px]">
+                      <span className="text-xs text-gray-500">Active Sources</span>
+                      <span className="text-2xl font-bold">{metrics.bytesEconomy.sources.length}</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">Top Sources</h4>
+                      <div className="space-y-2">
+                        {metrics.bytesEconomy.sources.slice(0,8).map(s => (
+                          <div key={s.source} className="flex items-center justify-between text-sm">
+                            <span className="capitalize truncate max-w-[140px]" title={s.source}>{s.source.replace(/_/g,' ')}</span>
+                            <span className="text-gray-600">{s.bytes} <span className="text-xs text-gray-400">({s.count})</span></span>
+                          </div>
+                        ))}
+                        {metrics.bytesEconomy.sources.length===0 && <p className="text-xs text-gray-500">No source data.</p>}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">Events</h4>
+                      <div className="space-y-2">
+                        {metrics.bytesEconomy.events.slice(0,8).map(e => (
+                          <div key={e.event} className="flex items-center justify-between text-sm">
+                            <span className="truncate max-w-[160px]" title={e.event}>{e.event.replace(/_/g,' ')}</span>
+                            <span className="text-gray-600">{e.bytes} <span className="text-xs text-gray-400">({e.count})</span></span>
+                          </div>
+                        ))}
+                        {metrics.bytesEconomy.events.length===0 && <p className="text-xs text-gray-500">No event data.</p>}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="mobile" className="space-y-4">

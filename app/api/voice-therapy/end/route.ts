@@ -3,7 +3,6 @@ import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db/drizzle';
 import { voiceTherapyCredits, voiceTherapySessions } from '@/lib/db/unified-schema';
 import { and, eq, gt } from 'drizzle-orm';
-import { randomUUID } from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,14 +59,12 @@ export async function POST(request: NextRequest) {
 
     // Record the session
     await db.insert(voiceTherapySessions).values({
-      id: randomUUID(),
       userId: user.id,
-      creditId: creditToUse.id,
       minutesUsed: minutesUsed,
-      sessionStart: new Date(Date.now() - duration * 1000), // Calculate start time
-      sessionEnd: new Date(),
-      persona: 'default', // Could be passed in request
-      summary: null // Could be generated from session
+      // Map to unified schema column names
+      startedAt: new Date(Date.now() - duration * 1000),
+      endedAt: new Date(),
+      transcript: null
     });
     
     return NextResponse.json({

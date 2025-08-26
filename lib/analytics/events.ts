@@ -60,6 +60,7 @@ export const AnalyticsEvents = {
   WALL_POST_VIEWED: 'wall_post_viewed',
   WALL_POST_LIKED: 'wall_post_liked',
   WALL_POST_COMMENTED: 'wall_post_commented',
+  WALL_CATEGORY_SELECTED: 'wall_category_selected',
   
   NO_CONTACT_SHIELD_ACTIVATED: 'no_contact_shield_activated',
   NO_CONTACT_CHECKIN_COMPLETED: 'no_contact_checkin_completed',
@@ -86,6 +87,10 @@ export const AnalyticsEvents = {
   ,BADGE_PROFILE_CHANGED: 'badge_profile_changed'
   ,NOTIFICATION_OPENED: 'notification_opened'
   ,CHECKIN_COMPLETED: 'checkin_completed'
+  // Check-in multi-step granular
+  ,CHECKIN_STEP_VIEWED: 'checkin_step_viewed'
+  ,CHECKIN_STEP_COMPLETED: 'checkin_step_completed'
+  ,CHECKIN_STARTED: 'checkin_started'
   // Daily action granular completions (dashboard checklist)
   ,DAILY_ACTION_CHECKIN_COMPLETED: 'daily_action_checkin_completed'
   ,DAILY_ACTION_NO_CONTACT_COMPLETED: 'daily_action_no_contact_completed'
@@ -93,6 +98,17 @@ export const AnalyticsEvents = {
   ,DAILY_ACTION_WALL_INTERACT_COMPLETED: 'daily_action_wall_interact_completed'
   ,DAILY_ACTION_AI_CHAT_COMPLETED: 'daily_action_ai_chat_completed'
   ,DAILY_ACTION_WALL_POST_COMPLETED: 'daily_action_wall_post_completed'
+  // Bytes economy specific (granular earning events)
+  ,BYTES_EARNED_RITUAL: 'bytes_earned_ritual'
+  ,BYTES_EARNED_RITUAL_GHOST: 'bytes_earned_ritual_ghost'
+  ,BYTES_EARNED_DAILY_ACTION: 'bytes_earned_daily_action'
+  ,BYTES_EARNED_AI_CHAT: 'bytes_earned_ai_chat'
+  ,BYTES_EARNED_WALL_POST: 'bytes_earned_wall_post'
+  ,BYTES_EARNED_WALL_INTERACT: 'bytes_earned_wall_interact'
+  ,BYTES_EARNED_CHECKIN: 'bytes_earned_checkin'
+  ,BYTES_EARNED_NO_CONTACT: 'bytes_earned_no_contact'
+  // Generic emitted change (avoid high volume aggregation on client; sampled if needed)
+  ,BYTES_BALANCE_UPDATED: 'bytes_balance_updated'
 } as const;
 
 // Feature usage tracking

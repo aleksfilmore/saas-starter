@@ -15,6 +15,10 @@ import { Clock, Zap, Star, X, Save, AlertTriangle } from 'lucide-react';
 import { type PaidRitual, PAID_RITUAL_CATEGORIES } from '@/lib/rituals/paid-rituals-database';
 import { toast } from 'sonner';
 import { validateJournalEntry, type JournalValidationResult } from '@/lib/validation/journal-validator';
+import { emitBytesUpdate } from '@/lib/bytes/emit';
+import { trackEvent } from '@/lib/analytics/client';
+import { BytesEventSource } from '@/lib/bytes/sources';
+import { AnalyticsEvents } from '@/lib/analytics/events';
 import { JournalDraftManager } from '@/lib/validation/journal-draft-manager';
 
 interface DailyRitualCompletionModalProps {
@@ -188,6 +192,12 @@ export function DailyRitualCompletionModal({
       }
 
       toast.success('Ritual completed successfully! 🎉');
+      // Emit bytes update if API returns bytesEarned
+      const earned = result?.data?.bytesEarned ?? 0;
+      if (earned > 0) {
+        emitBytesUpdate({ source: BytesEventSource.RITUAL_COMPLETE, delta: earned });
+  trackEvent(AnalyticsEvents.BYTES_EARNED_RITUAL, { delta: earned, source: BytesEventSource.RITUAL_COMPLETE, context:'modal_complete', ritualId: ritual.id });
+      }
       onComplete(result.data);
     } catch (error) {
       console.error('Error completing ritual:', error);

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -42,7 +43,7 @@ export default function ShopPage() {
     SHOP_PRODUCTS.WORKBOOK,
     SHOP_PRODUCTS.AUDIOBOOK, 
     SHOP_PRODUCTS.SIGNED_PAPERBACK,
-    SHOP_PRODUCTS.CANDLE,
+  SHOP_PRODUCTS.CHILL_WINE_TUMBLER,
     SHOP_PRODUCTS.PHONE_CASE,
     SHOP_PRODUCTS.HOODIE
   ]
@@ -248,8 +249,19 @@ export default function ShopPage() {
               </div>
               
               <div className="flex items-center justify-center">
-                <div className="w-full max-w-md aspect-square bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-lg flex items-center justify-center">
-                  <Heart className="w-32 h-32 text-white/50" />
+                <div className="w-full max-w-md aspect-square bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-lg flex items-center justify-center overflow-hidden relative">
+                  {heroProduct?.imageUrl ? (
+                    <Image
+                      src={heroProduct.imageUrl}
+                      alt={heroProduct.name}
+                      fill
+                      className="object-cover object-center"
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      priority
+                    />
+                  ) : (
+                    <Heart className="w-32 h-32 text-white/50" />
+                  )}
                 </div>
               </div>
             </div>
@@ -283,8 +295,18 @@ export default function ShopPage() {
                   </CardHeader>
                   
                   <CardContent className="space-y-4">
-                    <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-pink-600/10 rounded-lg flex items-center justify-center">
-                      <Icon className="w-16 h-16 text-white/30" />
+                    <div className="aspect-square bg-gradient-to-br from-purple-600/10 to-pink-600/10 rounded-lg flex items-center justify-center overflow-hidden relative">
+                      {product.imageUrl ? (
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.shortName}
+                          fill
+                          className="object-cover object-center"
+                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 300px"
+                        />
+                      ) : (
+                        <Icon className="w-16 h-16 text-white/30" />
+                      )}
                     </div>
                     
                     <p className="text-gray-300 text-sm leading-relaxed">

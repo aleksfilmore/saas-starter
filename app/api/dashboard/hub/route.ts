@@ -408,7 +408,7 @@ export async function GET(request: NextRequest) {
       totalCheckIns = parseInt(((r[0] as any)?.c ?? '0').toString(),10);
     } catch {}
     try {
-      const m = await db.execute(sql`SELECT mood, notes FROM daily_mood_logs WHERE user_id = ${user.id} AND log_date = CURRENT_DATE`);
+  const m = await db.execute(sql`SELECT mood, notes, mood_data FROM daily_mood_logs WHERE user_id = ${user.id} AND log_date = CURRENT_DATE`);
       moodToday = m[0] || null;
       // Build 30-day mood series (including days with no entry as null)
       const rows = await db.execute(sql`SELECT log_date, mood FROM daily_mood_logs WHERE user_id = ${user.id} AND log_date >= CURRENT_DATE - INTERVAL '30 days' ORDER BY log_date ASC`);
@@ -485,7 +485,7 @@ export async function GET(request: NextRequest) {
         balance: userData.bytes || 0,
         series30d: bytesSeries
       },
-      moodToday: moodToday ? { mood: moodToday.mood, notes: moodToday.notes } : null,
+  moodToday: moodToday ? { mood: moodToday.mood, notes: moodToday.notes, ...(moodToday.mood_data ? moodToday.mood_data : {}) } : null,
       moodTrends: {
         avg7: moodAvg7,
         avg30: moodAvg30,

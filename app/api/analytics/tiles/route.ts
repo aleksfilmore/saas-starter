@@ -22,10 +22,10 @@ export async function GET(request: NextRequest){
     const clicks: Record<string, number> = {};
     raw.forEach(r=>{
       if(r.event==='dashboard_tile_impression'){
-        let props: any = {}; try { props = JSON.parse(r.properties||'{}'); } catch {}
+        const props: any = r.properties || {};
         const id = props.id; if(id) impressions[id] = (impressions[id]||0)+1;
       } else if(r.event==='dashboard_tile_click'){
-        let props: any = {}; try { props = JSON.parse(r.properties||'{}'); } catch {}
+        const props: any = r.properties || {};
         const id = props.id; if(id) clicks[id] = (clicks[id]||0)+1;
       }
     });

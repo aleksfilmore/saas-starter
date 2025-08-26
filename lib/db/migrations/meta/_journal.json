@@ -1,1 +1,132 @@
-{"version":1,"dialect":"postgresql","entries":[]}
+{
+  "version": 1,
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_add_ai_therapy_message_purchases.sql",
+      "hash": null
+    },
+    {
+      "idx": 1,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_add_audit_logs.sql",
+      "hash": null
+    },
+    {
+      "idx": 2,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_add_ghost_daily_assignments.sql",
+      "hash": null
+    },
+    {
+      "idx": 3,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_add_read_at_to_notifications.sql",
+      "hash": null
+    },
+    {
+      "idx": 4,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_add_user_timezone.sql",
+      "hash": null
+    },
+    {
+      "idx": 5,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_down_drop_ai_therapy_message_purchases.sql",
+      "hash": null
+    },
+    {
+      "idx": 6,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_down_drop_audit_logs.sql",
+      "hash": null
+    },
+    {
+      "idx": 7,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_drop_remaining_xp_reward.sql",
+      "hash": null
+    },
+    {
+      "idx": 8,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_drop_xp_system.sql",
+      "hash": null
+    },
+    {
+      "idx": 9,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_inline_voice_therapy_and_notifications.sql",
+      "hash": null
+    },
+    {
+      "idx": 10,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_merge_user_columns_and_daily_ritual_tables.sql",
+      "hash": null
+    },
+    {
+      "idx": 11,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_reconcile_daily_ritual_assignments.sql",
+      "hash": null
+    },
+    {
+      "idx": 12,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_reconcile_voice_notifications.sql",
+      "hash": null
+    },
+    {
+      "idx": 13,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250825_relax_ritual_id.sql",
+      "hash": null
+    },
+    {
+      "idx": 14,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250826_add_analytics_event_source_and_indexes.sql",
+      "hash": null
+    },
+    {
+      "idx": 15,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250826_add_mood_data_to_daily_mood_logs.sql",
+      "hash": null
+    },
+    {
+      "idx": 16,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250826_add_voice_therapy_purchase_columns.sql",
+      "hash": null
+    },
+    {
+      "idx": 17,
+      "version": 1,
+      "when": "2025-08-26T07:56:51.112Z",
+      "tag": "20250826_inline_wall_tables.sql",
+      "hash": null
+    }
+  ]
+}

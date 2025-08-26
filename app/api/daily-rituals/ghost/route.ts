@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+// Opt out of static rendering; this route reads auth cookies.
+export const dynamic = 'force-dynamic';
 import { getTodayGhostRitual } from '@/lib/rituals/ghost-daily-ritual-service';
 import { validateRequest } from '@/lib/auth';
 

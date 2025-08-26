@@ -26,7 +26,7 @@ if (!process.env.POSTGRES_URL) {
   const client = new Client({ connectionString: process.env.POSTGRES_URL, ssl: { rejectUnauthorized: false } });
   try {
     await client.connect();
-    const expected = ['anonymous_posts','wall_post_comments','wall_post_reactions','ritual_entries'];
+  const expected = ['anonymous_posts','wall_post_reactions','ritual_entries']; // wall_post_comments intentionally removed
     const missing = [];
     for (const t of expected) {
       try { await client.query(`SELECT 1 FROM ${t} LIMIT 1`); } catch { missing.push(t); }

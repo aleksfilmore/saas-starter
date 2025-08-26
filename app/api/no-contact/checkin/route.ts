@@ -52,7 +52,7 @@ export async function PATCH(request: NextRequest) {
         noContactDays: sql`${users.noContactDays} + 1`,
         noContactStreakThreatened: false, // Reset threatened status
         bytes: sql`${users.bytes} + ${bytesEarned}`,
-        streakDays: sql`${users.streakDays} + 1`, // Also increment overall streak
+  // Removed streakDays increment – ritual streak handled in user_daily_state
       })
       .where(eq(users.id, user.id));
 

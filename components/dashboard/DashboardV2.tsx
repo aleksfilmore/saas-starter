@@ -8,10 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmailVerificationPrompt } from '@/components/dashboard/EmailVerificationPrompt';
 import { Flame, Heart, Shield, MessageCircle, Brain, Crown, Clock, Activity, Sparkles, Check as CheckIcon, MessageSquareHeart, Zap as ZapIcon } from 'lucide-react';
+import { CheckInModal } from '@/components/dashboard/modals/CheckInModal';
+import { getWallCategoryConfig } from '@/lib/wall/categories';
+import { useDailyActionsPersistence } from '@/lib/hooks/useDailyActionsPersistence';
+import { useWallReaction } from '@/lib/hooks/useWallReaction';
+import { AnalyticsEvents } from '@/lib/analytics/events';
+// Removed direct AnalyticsService (server) import to avoid bundling postgres in client
+import { trackEvent } from '@/lib/analytics/client';
+import { BytesEventSource } from '@/lib/bytes/sources';
 import dynamic from 'next/dynamic';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { BytesSparkline } from './BytesSparkline';
 import { BadgeToken } from '@/components/badges/BadgeToken';
+import { emitBytesUpdate } from '@/lib/bytes/emit';
 
 interface Props { user: User; }
 
@@ -107,12 +116,11 @@ export function DashboardV2({ user }: Props) {
   const badgesLoading = badgesData.isLoading && !badgesData.data;
   const badgesMeta = badgesData.data?.meta;
   const streakHistory = hub.data?.streakHistory || [];
-  const moodToday = hub.data?.moodToday;
+  const moodToday = hub.data?.moodToday as any;
   const moodTrends = (hub.data as any)?.moodTrends as HubAPI['moodTrends'];
   // ritualSwaps removed from UI (spec: remove Swaps box)
   const [checkInModal, setCheckInModal] = React.useState(false);
-  const [mood, setMood] = React.useState<number>(moodToday?.mood || 3);
-  const [notes, setNotes] = React.useState('');
+  // legacy local mood/notes removed; handled by shared modal
   const [bytesRange, setBytesRange] = React.useState<'today'|'7d'|'30d'>('today');
   const [noContactModal, setNoContactModal] = React.useState(false);
   const [ritualModalId, setRitualModalId] = React.useState<string|null>(null);
@@ -120,6 +128,17 @@ export function DashboardV2({ user }: Props) {
   const [ritualMood, setRitualMood] = React.useState(5);
   const [ritualSubmitting, setRitualSubmitting] = React.useState(false);
   const [ritualSeconds, setRitualSeconds] = React.useState(0); // dwell time while modal open
+  // Shared reaction hook handles in-flight throttle
+  const { toggleReaction } = useWallReaction();
+  // Daily actions local persistence (guards flicker)
+  const { persisted: persistedDaily, mark: markDaily } = useDailyActionsPersistence();
+  React.useEffect(()=>{
+    if(!hub.data) return; const merge: any = {}; ['checkIn','noContact','ritual','wallInteract','aiChat','wallPost'].forEach(k=>{ if((persistedDaily as any)[k]) merge[k]=true; });
+    if(Object.keys(merge).length){
+      let changed=false; for(const k in merge){ if(!hub.data.todayActions[k as keyof typeof hub.data.todayActions]) { changed=true; break; } }
+      if(changed){ hub.mutate({ ...hub.data, todayActions: { ...hub.data.todayActions, ...merge } }, false); }
+    }
+  },[persistedDaily, hub.data, hub.mutate]);
 
   // Track dwell time for ritual modal
   React.useEffect(()=>{
@@ -153,7 +172,19 @@ export function DashboardV2({ user }: Props) {
       const res = await fetch(endpoint, { method:'POST' });
       if(!res.ok){ const j = await res.json().catch(()=>({})); throw new Error(j.error || 'Failed'); }
       const prev = hub.data; if(prev && !prev.todayActions[key]) {
-        hub.mutate({ ...prev, todayActions: { ...prev.todayActions, [key]: true }, user: { ...prev.user, bytes: prev.user.bytes + bytesRewardMap[key] } }, false);
+  const newBytes = prev.user.bytes + bytesRewardMap[key];
+  hub.mutate({ ...prev, todayActions: { ...prev.todayActions, [key]: true }, user: { ...prev.user, bytes: newBytes } }, false);
+  emitBytesUpdate({ delta: bytesRewardMap[key], bytes: newBytes, source: key });
+  // Analytics per action (granular bytes earn)
+  switch(key){
+  case 'checkIn': trackEvent(AnalyticsEvents.BYTES_EARNED_CHECKIN, { delta: bytesRewardMap[key], source: BytesEventSource.CHECK_IN }); break;
+  case 'noContact': trackEvent(AnalyticsEvents.BYTES_EARNED_NO_CONTACT, { delta: bytesRewardMap[key], source: BytesEventSource.NO_CONTACT }); break;
+  case 'ritual': trackEvent(AnalyticsEvents.BYTES_EARNED_RITUAL, { delta: bytesRewardMap[key], source: BytesEventSource.RITUAL, variant: 'daily_action' }); break;
+  case 'wallInteract': trackEvent(AnalyticsEvents.BYTES_EARNED_WALL_INTERACT, { delta: bytesRewardMap[key], source: BytesEventSource.WALL_INTERACT }); break;
+  case 'aiChat': trackEvent(AnalyticsEvents.BYTES_EARNED_AI_CHAT, { delta: bytesRewardMap[key], source: BytesEventSource.AI_CHAT, variant: 'daily_action' }); break;
+  case 'wallPost': trackEvent(AnalyticsEvents.BYTES_EARNED_WALL_POST, { delta: bytesRewardMap[key], source: BytesEventSource.WALL_POST }); break;
+  }
+  markDaily({ [key]: true } as any);
       }
       hub.mutate();
     } catch (e:any) {
@@ -303,103 +334,154 @@ export function DashboardV2({ user }: Props) {
                 {isPremium ? 'Unlimited chat (Fair Use). Add optional voice sessions.' : 'Unlock regulated AI chat therapy access'}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-5">
-              {!isPremium ? (
-                    <div className="space-y-4">
-                    <div className="rounded-md border border-indigo-700/40 bg-indigo-900/20 p-4 space-y-3">
-                    <p className="text-xs text-slate-300 leading-relaxed">Chat with 3 trained AI personas for 30 days (300 total messages: inputs + replies). Choose bytes or card purchase.</p>
-                    {aiUsage.data && <p className="text-[10px] text-indigo-300">Remaining messages: {aiUsage.data.remaining}/{aiUsage.data.cap}{aiUsage.data.renewsAt && ` • renews ${aiUsage.data.renewsAt}`}</p>}
-                    {aiUsage.data && aiUsage.data.cap && aiUsage.data.cap>0 && (aiUsage.data.remaining/aiUsage.data.cap) < 0.1 && (
-                      <p className="text-[10px] text-amber-400">Low balance – consider redeeming or purchasing more.</p>
-                    )}
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      <Button onClick={()=>{window.location.href='/api/stripe/ai-therapy/purchase';}} className="bg-indigo-600 hover:bg-indigo-700 text-sm">Unlock $3.99</Button>
-                      <Button variant="outline" disabled={(hub.data?.user.bytes||0) < 600} onClick={()=>{window.location.href='/ai-therapy/redeem?bytes=600';}} className="border-indigo-500 text-indigo-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed">Redeem 600 Bytes</Button>
-                      <button onClick={()=> setManagePurchasesOpen(true)} className="text-[10px] text-indigo-400 hover:underline">Manage / Usage</button>
-                      <button onClick={()=> setManagePurchasesOpen(true)} className="text-[10px] text-indigo-400 hover:underline">View Usage</button>
-                    </div>
-                    {(hub.data?.user.bytes||0) < 600 && <p className="text-[10px] text-slate-500">Need {(600-(hub.data?.user.bytes||0))} more bytes for redemption.</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-[11px] uppercase tracking-wide text-slate-400">Personas Included</p>
-                    <ul className="text-[11px] text-slate-300 grid sm:grid-cols-3 gap-2">
-                      <li className="bg-slate-800/50 rounded px-2 py-1">⚕️ Grounded Therapist</li>
-                      <li className="bg-slate-800/50 rounded px-2 py-1">🔥 Tough-Love Coach</li>
-                      <li className="bg-slate-800/50 rounded px-2 py-1">🌿 Nervous System Guide</li>
-                    </ul>
-                  </div>
-                  <div className="rounded-md border border-purple-700/40 bg-purple-900/10 p-4 space-y-2">
-                    <p className="text-xs text-slate-300">Voice AI Therapy (15 min real-time) is Firewall only.</p>
-                    <Button onClick={()=>{window.location.href='/pricing#firewall';}} variant="outline" className="w-full border-purple-600 text-purple-300 text-sm">Upgrade for Voice & Unlimited Chat</Button>
-                  </div>
-                </div>
-              ) : (
-        <div className="space-y-5">
-                  <div className="rounded-md border border-indigo-700/40 bg-indigo-900/20 p-4 space-y-3">
-                    <p className="text-xs text-slate-300 leading-relaxed">Unlimited (fair use) chat with all therapy personas. Your streak & context persist across sessions.</p>
-          {aiUsage.data && <p className="text-[10px] text-indigo-300">Messages today: {aiUsage.data.used}{aiUsage.data.cap? ` (soft cap ${aiUsage.data.cap})`:''}</p>}
-          {aiUsage.data?.cap && aiUsage.data.used/Math.max(1,aiUsage.data.cap) >= 0.8 && (
-            <p className="text-[10px] text-amber-400">Approaching fair‑use limit – heavy usage may reduce model quality.</p>
-          )}
-                    <div className="grid grid-cols-3 gap-2 text-[11px]">
-                      <button onClick={()=>{ setAiPersona('supportive-guide'); setAiModalOpen(true); }} className="px-2 py-1 rounded bg-slate-800/60 text-indigo-300 hover:bg-slate-700/60 transition">⚕️ Supportive Guide</button>
-                      <button onClick={()=>{ setAiPersona('strategic-analyst'); setAiModalOpen(true); }} className="px-2 py-1 rounded bg-slate-800/60 text-indigo-300 hover:bg-slate-700/60 transition">🧠 Strategic Analyst</button>
-                      <button onClick={()=>{ setAiPersona('emotional-healer'); setAiModalOpen(true); }} className="px-2 py-1 rounded bg-slate-800/60 text-indigo-300 hover:bg-slate-700/60 transition">✨ Emotional Healer</button>
-                    </div>
-                  </div>
-                  <div className="rounded-md border border-fuchsia-700/40 bg-fuchsia-900/10 p-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-slate-300">Voice AI Therapy (15 min blocks)</p>
-                      <span className="text-[10px] text-fuchsia-300">Add-on</span>
-                    </div>
-          {voiceCredits.data && <p className="text-[10px] text-fuchsia-300">Minutes remaining: {voiceCredits.data.minutesRemaining ?? voiceCredits.data.remainingMinutes}{voiceCredits.data.expiresAt && ` • expires ${voiceCredits.data.expiresAt}`}</p>}
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      <Button onClick={()=>{window.location.href='/api/stripe/voice-therapy';}} className="bg-fuchsia-600 hover:bg-fuchsia-700 text-sm">Buy $9.99 / 15m</Button>
-                      <Button variant="outline" disabled={(hub.data?.user.bytes||0) < 2500} onClick={()=>{window.location.href='/voice-therapy/redeem?bytes=2500';}} className="border-fuchsia-500 text-fuchsia-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed">Redeem 2500 Bytes</Button>
-                    </div>
-                    {(hub.data?.user.bytes||0) < 2500 && <p className="text-[10px] text-slate-500">Need {(2500-(hub.data?.user.bytes||0))} more bytes.</p>}
-                    <p className="text-[10px] text-slate-500">Fair Usage: voice sessions expire 30 days after activation.</p>
-                  </div>
-                </div>
+            <CardContent>
+              {aiUsage.data?.cap && aiUsage.data.used/Math.max(1,aiUsage.data.cap) >= 0.8 && (
+                <p className="text-[10px] text-amber-400 mb-2">Approaching fair‑use limit – heavy usage may reduce model quality.</p>
               )}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[12px] mb-4">
+                {[
+                  {id:'supportive-guide', label:'Supportive Guide', icon:'⚕️', desc:'Grounding & validation'},
+                  {id:'strategic-analyst', label:'Strategic Analyst', icon:'🧠', desc:'Cognitive reframes'},
+                  {id:'emotional-healer', label:'Emotional Healer', icon:'✨', desc:'Somatic calming'}
+                ].map(p => (
+                  <button key={p.id}
+                    onClick={()=>{ setAiPersona(p.id); setAiModalOpen(true); }}
+                    className="group relative rounded-md border border-indigo-600/40 bg-gradient-to-br from-slate-900/60 to-slate-800/60 px-3 py-3 text-left shadow-sm hover:from-indigo-900/30 hover:to-slate-800/80 hover:border-indigo-400/60 focus:outline-none focus:ring-2 focus:ring-indigo-500/60 transition">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-base leading-none">{p.icon}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-800/40 border border-indigo-600/40 text-indigo-300 group-hover:bg-indigo-700/50">Chat</span>
+                    </div>
+                    <div className="mt-1 font-semibold text-indigo-200 tracking-tight">{p.label}</div>
+                    <div className="mt-0.5 text-[10px] text-slate-400 leading-snug">{p.desc}</div>
+                    <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-20 bg-indigo-400 transition pointer-events-none" />
+                  </button>
+                ))}
+              </div>
+              <div className="rounded-md border border-fuchsia-700/40 bg-fuchsia-900/10 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-slate-300">Voice AI Therapy (15 min blocks)</p>
+                  <span className="text-[10px] text-fuchsia-300">Add-on</span>
+                </div>
+                {voiceCredits.data && <p className="text-[10px] text-fuchsia-300">Minutes remaining: {voiceCredits.data.minutesRemaining ?? voiceCredits.data.remainingMinutes}{voiceCredits.data.expiresAt && ` • expires ${voiceCredits.data.expiresAt}`}</p>}
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Button onClick={()=>{window.location.href='/api/stripe/voice-therapy';}} className="bg-fuchsia-600 hover:bg-fuchsia-700 text-sm">Buy $9.99 / 15m</Button>
+                  <Button variant="outline" disabled={(hub.data?.user.bytes||0) < 2500} onClick={()=>{window.location.href='/voice-therapy/redeem?bytes=2500';}} className="border-fuchsia-500 text-fuchsia-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed">Redeem 2500 Bytes</Button>
+                </div>
+                {(hub.data?.user.bytes||0) < 2500 && <p className="text-[10px] text-slate-500">Need {(2500-(hub.data?.user.bytes||0))} more bytes.</p>}
+                <p className="text-[10px] text-slate-500">Fair Usage: voice sessions expire 30 days after activation.</p>
+              </div>
             </CardContent>
           </Card>
-          {/* Wall of Wounds (moved from sidebar, renamed) */}
-          <Card className="bg-slate-900/80 border-slate-700">
+          {/* Wall of Wounds (gradient full-card categories, auto-scrolling) */}
+          <Card className="bg-slate-900/80 border-slate-700 relative overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white text-lg"><MessageCircle className="w-5 h-5 text-pink-400" />The Wall of Wounds</CardTitle>
-              <CardDescription className="text-slate-400">Latest anonymous fragments</CardDescription>
+              <CardDescription className="text-slate-400">Anonymous emotional fragments • auto‑scrolling (hover to pause)</CardDescription>
             </CardHeader>
             <CardContent>
               {wallData.isLoading && !wallData.data && <div className="space-y-2">{Array.from({length:4}).map((_,i)=><div key={i} className="h-12 rounded bg-slate-800/40 animate-pulse" />)}</div>}
               {wallData.data && (
-                <div className="relative">
-                  <ul className="max-h-72 overflow-y-auto pr-1 space-y-3 auto-scroll-wall">
-                    {wallData.data.posts.slice(0,20).map(p => {
-                      const cat = ((p as any).glitchCategory || 'raw') as 'raw'|'vent'|'reframe'|'win'|'urge';
-                      const colorMap: Record<typeof cat,string> = {
-                        raw:'border-pink-500/40 bg-pink-900/10',
-                        vent:'border-red-500/40 bg-red-900/10',
-                        reframe:'border-emerald-500/40 bg-emerald-900/10',
-                        win:'border-amber-500/40 bg-amber-900/10',
-                        urge:'border-purple-500/40 bg-purple-900/10'
-                      };
-                      const color = colorMap[cat] || 'border-slate-600/50 bg-slate-800/30';
-                      return (
-                        <li key={p.id} className={`rounded-md p-3 text-sm leading-relaxed text-slate-200 border ${color}`}>
-                          <div className="flex items-start justify-between gap-3">
-                            <p className="flex-1 whitespace-pre-line break-words">{p.content}</p>
-                            <span className="text-[10px] text-slate-500 shrink-0">{timeAgo(p.createdAt)}</span>
-                          </div>
-                          <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-400">
-                            <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{p.reactions ?? 0}</span>
-                            <span className="uppercase tracking-wide text-[9px] px-1.5 py-0.5 rounded bg-slate-900/40 border border-slate-700/40">{cat}</span>
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  <Button size="sm" variant="outline" className="w-full mt-4 border-slate-600 text-slate-200" onClick={()=>{window.location.href='/wall';}}>Open Full Wall</Button>
+                <div className="relative group">
+                  <div className="h-80 overflow-hidden relative">
+                    <ul className="wall-feed space-y-3 pr-1" role="list" aria-label="Wall of Wounds posts auto scrolling">
+                      {wallData.data.posts.slice(0,30).map(p => {
+                        const catId = (p as any).glitchCategory as string | undefined;
+                        const cfg = getWallCategoryConfig(catId);
+                        const base = cfg?.fullGradientClass || 'bg-slate-800/40 border border-slate-700/50';
+                        const badgeCls = cfg ? cfg.badgeClass : 'bg-slate-700/40 border border-slate-600/40 text-slate-300';
+                        const userReacted = (p as any).userReaction === 'resonate';
+                        return (
+                          <li key={p.id} className={`rounded-md p-3 text-sm leading-relaxed text-slate-200 relative group/row transition will-change-transform ${base}`}>
+                            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover/row:opacity-30 transition bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.18),transparent_60%)]" />
+                            <div className="flex items-start gap-3">
+                              <p className="flex-1 whitespace-pre-line break-words pr-2 text-[13px] leading-snug tracking-tight">{p.content}</p>
+                              <div className="flex flex-col items-end gap-2 shrink-0">
+                                <span className="text-[10px] text-slate-300/70">{timeAgo(p.createdAt)}</span>
+                                <button
+                                  onClick={async ()=>{
+                                    try {
+                                      await toggleReaction(p as any, (updater, shouldRevalidate)=>{
+                                        if(typeof updater === 'function') {
+                                          wallData.mutate(updater(wallData.data), shouldRevalidate);
+                                        } else {
+                                          wallData.mutate(updater, shouldRevalidate);
+                                        }
+                                      });
+                                      trackEvent(AnalyticsEvents.WALL_POST_LIKED, { postId: p.id, category: (p as any).glitchCategory, toggledTo: !userReacted ? 'resonate':'none' });
+                                      const prevHub = hub.data; if(prevHub && !prevHub.todayActions.wallInteract){
+                                        hub.mutate({ ...prevHub, todayActions: { ...prevHub.todayActions, wallInteract:true } }, false);
+                                        markDaily({ wallInteract: true });
+                                        fetch('/api/dashboard/wallInteract',{method:'POST'}).catch(()=>{});
+                                      }
+                                    } catch { toast.error('Unable to react'); }
+                                  }}
+                                  className={`rounded-full px-2 py-1 flex items-center gap-1 text-[11px] border backdrop-blur-sm transition ${userReacted ? 'bg-pink-600/40 border-pink-400/60 text-pink-100':'bg-black/30 border-white/10 text-slate-200 hover:bg-pink-900/40 hover:border-pink-500/60 hover:text-pink-100'}`}
+                                  aria-pressed={userReacted}
+                                >
+                                  <Heart className={`w-3 h-3 ${userReacted?'fill-pink-400 text-pink-300':''}`} />
+                                  <span>{(p as any).hearts ?? 0}</span>
+                                </button>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between">
+                              <span className={`inline-flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border backdrop-blur-sm ${badgeCls}`} title={cfg?.description || ''}>{cfg? cfg.label : (catId||'misc')}</span>
+                              <span className="text-[10px] text-slate-300/70">{(p as any).reactions ?? 0} total</span>
+                            </div>
+                          </li>
+                        );
+                      })}
+                      {/* duplicate for seamless loop */}
+                      {wallData.data.posts.slice(0,30).map(p => {
+                        const catId = (p as any).glitchCategory as string | undefined;
+                        const cfg = getWallCategoryConfig(catId);
+                        const base = cfg?.fullGradientClass || 'bg-slate-800/40 border border-slate-700/50';
+                        const badgeCls = cfg ? cfg.badgeClass : 'bg-slate-700/40 border border-slate-600/40 text-slate-300';
+                        const userReacted = (p as any).userReaction === 'resonate';
+                        return (
+                          <li key={p.id+':dup'} className={`rounded-md p-3 text-sm leading-relaxed text-slate-200 relative group/row transition will-change-transform ${base}`}>
+                            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover/row:opacity-30 transition bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.18),transparent_60%)]" />
+                            <div className="flex items-start gap-3">
+                              <p className="flex-1 whitespace-pre-line break-words pr-2 text-[13px] leading-snug tracking-tight">{p.content}</p>
+                              <div className="flex flex-col items-end gap-2 shrink-0">
+                                <span className="text-[10px] text-slate-300/70">{timeAgo(p.createdAt)}</span>
+                                <button
+                                  onClick={async ()=>{
+                                    try {
+                                      await toggleReaction(p as any, (updater, shouldRevalidate)=>{
+                                        if(typeof updater === 'function') {
+                                          wallData.mutate(updater(wallData.data), shouldRevalidate);
+                                        } else {
+                                          wallData.mutate(updater, shouldRevalidate);
+                                        }
+                                      });
+                                      trackEvent(AnalyticsEvents.WALL_POST_LIKED, { postId: p.id, category: (p as any).glitchCategory, toggledTo: !userReacted ? 'resonate':'none' });
+                                      const prevHub = hub.data; if(prevHub && !prevHub.todayActions.wallInteract){
+                                        hub.mutate({ ...prevHub, todayActions: { ...prevHub.todayActions, wallInteract:true } }, false);
+                                        markDaily({ wallInteract: true });
+                                        fetch('/api/dashboard/wallInteract',{method:'POST'}).catch(()=>{});
+                                      }
+                                    } catch { toast.error('Unable to react'); }
+                                  }}
+                                  className={`rounded-full px-2 py-1 flex items-center gap-1 text-[11px] border backdrop-blur-sm transition ${userReacted ? 'bg-pink-600/40 border-pink-400/60 text-pink-100':'bg-black/30 border-white/10 text-slate-200 hover:bg-pink-900/40 hover:border-pink-500/60 hover:text-pink-100'}`}
+                                  aria-pressed={userReacted}
+                                >
+                                  <Heart className={`w-3 h-3 ${userReacted?'fill-pink-400 text-pink-300':''}`} />
+                                  <span>{(p as any).hearts ?? 0}</span>
+                                </button>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between">
+                              <span className={`inline-flex items-center gap-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full border backdrop-blur-sm ${badgeCls}`} title={cfg?.description || ''}>{cfg? cfg.label : (catId||'misc')}</span>
+                              <span className="text-[10px] text-slate-300/70">{(p as any).reactions ?? 0} total</span>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-slate-900 via-slate-900/70 to-transparent" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent" />
+                  </div>
+                  <Button size="sm" variant="outline" className="w-full mt-5 border-slate-600 text-slate-200" onClick={()=>{window.location.href='/wall';}}>Open Full Wall</Button>
                 </div>
               )}
             </CardContent>
@@ -557,6 +639,20 @@ export function DashboardV2({ user }: Props) {
             {metric('Rituals', hub.data?.user.totalRituals ?? 0, <Flame className="w-3 h-3 text-orange-400" />)}
             {/* Swaps metric removed */}
           </div>
+          {/* Structured mood details snippet (gratitude / challenge / intention) */}
+          {moodToday && (moodToday.gratitude || moodToday.challenge || moodToday.intention) && (
+            <Card className="mt-3 bg-slate-900/80 border-slate-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-white flex items-center gap-2"><Heart className="w-4 h-4 text-pink-400" />Today’s Emotional Snapshot</CardTitle>
+                <CardDescription className="text-slate-400 text-xs">Your logged reflections</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2 text-[11px] leading-relaxed">
+                {moodToday.gratitude && <p><span className="text-pink-300 uppercase tracking-wide mr-1">Gratitude:</span><span className="text-slate-300">{moodToday.gratitude.length > 120 ? moodToday.gratitude.slice(0,120)+'…' : moodToday.gratitude}</span></p>}
+                {moodToday.challenge && <p><span className="text-amber-300 uppercase tracking-wide mr-1">Challenge:</span><span className="text-slate-300">{moodToday.challenge.length > 120 ? moodToday.challenge.slice(0,120)+'…' : moodToday.challenge}</span></p>}
+                {moodToday.intention && <p><span className="text-emerald-300 uppercase tracking-wide mr-1">Intention:</span><span className="text-slate-300">{moodToday.intention.length > 120 ? moodToday.intention.slice(0,120)+'…' : moodToday.intention}</span></p>}
+              </CardContent>
+            </Card>
+          )}
           {streak?.noContactThreat && <p className="text-xs text-red-400">No‑Contact streak threatened – check in soon to protect it.</p>}
           {!streak?.noContactThreat && streak?.noContactShieldAvailable && <p className="text-xs text-emerald-400">Shield window active – a check‑in now secures streak.</p>}
           {/* Post Creation Box (for Firewall users only) */}
@@ -580,17 +676,23 @@ export function DashboardV2({ user }: Props) {
                     toast.success(j.moderated? 'Submitted for moderation' : 'Posted');
                     (e.currentTarget as HTMLFormElement).reset();
                     completeDailyAction('/api/dashboard/wallPost','wallPost' as any);
+                    emitBytesUpdate({ source: BytesEventSource.WALL_POST, delta: 7 });
+                    trackEvent(AnalyticsEvents.BYTES_EARNED_WALL_POST, { delta:7, source: BytesEventSource.WALL_POST, context:'post_create' });
                     wallData.mutate();
                   } catch { toast.error('Network issue'); }
                 }}>
                   <textarea name="content" maxLength={500} placeholder="Your glitch, grief, or spite..." className="w-full h-24 text-xs rounded border border-slate-700 bg-slate-800 p-2 text-slate-200 resize-none" />
                   <div className="flex items-center gap-2 text-[11px]">
-                    <select name="category" className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-300 focus:outline-none">
-                      <option value="raw">Raw</option>
-                      <option value="vent">Vent</option>
-                      <option value="reframe">Reframe</option>
-                      <option value="win">Micro‑Win</option>
-                      <option value="urge">Urge</option>
+                    <select name="category" className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-slate-300 focus:outline-none" title="Select the emotional glitch category that best matches your fragment">
+                      {/* New standardized 8 glitch categories */}
+                      <option value="system_error">Overwhelmed</option>
+                      <option value="loop_detected">Stuck Loop</option>
+                      <option value="memory_leak">Intrusions</option>
+                      <option value="buffer_overflow">Overload</option>
+                      <option value="syntax_error">Self-Blame</option>
+                      <option value="null_pointer">Numb</option>
+                      <option value="stack_overflow">Anxiety Spike</option>
+                      <option value="access_denied">Boundary</option>
                     </select>
                     <Button type="submit" size="sm" className="ml-auto bg-pink-600 hover:bg-pink-700">Publish</Button>
                   </div>
@@ -609,30 +711,20 @@ export function DashboardV2({ user }: Props) {
   {isLoading && <p className="text-xs text-slate-500">Loading dashboard data…</p>}
   {!isLoading && !hub.data && <p className="text-xs text-red-400">Failed to load hub data.</p>}
   {checkInModal && (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-sm rounded-lg border border-slate-700 bg-slate-900 p-5 space-y-4">
-        <h2 className="text-white font-semibold text-lg">Daily Check‑In</h2>
-        <p className="text-xs text-slate-400">How are you feeling today?</p>
-        <div className="flex justify-between gap-1">
-          {[1,2,3,4,5].map(m => <button key={m} onClick={()=>setMood(m)} className={`flex-1 py-2 rounded text-lg ${mood===m?'bg-emerald-600 text-white':'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>{['😞','😕','😐','🙂','😄'][m-1]}</button>)}
-        </div>
-        <textarea value={notes} onChange={e=>setNotes(e.target.value)} maxLength={500} placeholder="Optional notes (private)" className="w-full h-24 text-sm rounded border border-slate-700 bg-slate-800 p-2 text-slate-200 resize-none" />
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" className="border-slate-600" onClick={()=>{ setCheckInModal(false); }}>Cancel</Button>
-          <Button onClick={async ()=>{
-            try {
-              const res = await fetch('/api/dashboard/checkin', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mood, notes }) });
-              if (!res.ok) throw new Error();
-              toast.success('Check‑In saved');
-              const prev = hub.data;
-              hub.mutate(prev ? { ...prev, todayActions: { ...prev.todayActions, checkIn: true }, moodToday: { mood, notes } } : prev, false);
-              setCheckInModal(false);
-            } catch { toast.error('Failed to save'); } finally { hub.mutate(); }
-          }} className="bg-emerald-600 hover:bg-emerald-700">Save</Button>
-        </div>
-        {moodToday && <p className="text-[11px] text-slate-500">Already logged mood {moodToday.mood} today.</p>}
-      </div>
-    </div>
+    <CheckInModal
+      onClose={()=> setCheckInModal(false)}
+      onComplete={async ({ mood, gratitude, challenge, intention }) => {
+        try {
+          const res = await fetch('/api/dashboard/checkin', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ mood, gratitude, challenge, intention, notes:'' }) });
+          if(!res.ok) throw 0;
+          toast.success('Check‑In saved');
+          const prev = hub.data; if(prev){ hub.mutate({ ...prev, todayActions: { ...prev.todayActions, checkIn: true }, moodToday: { mood, notes: '', gratitude, challenge, intention } as any }, false); }
+          emitBytesUpdate({ source: BytesEventSource.CHECK_IN, delta: 10 });
+          trackEvent(AnalyticsEvents.BYTES_EARNED_CHECKIN, { delta:10, source: BytesEventSource.CHECK_IN, context:'modal' });
+          trackEvent(AnalyticsEvents.CHECKIN_COMPLETED, { mood });
+        } catch { toast.error('Failed to save'); } finally { setCheckInModal(false); hub.mutate(); }
+      }}
+    />
   )}
   {noContactModal && (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4">
@@ -691,20 +783,34 @@ export function DashboardV2({ user }: Props) {
           <Button disabled={disableSubmit} onClick={async ()=>{
             setRitualSubmitting(true);
             try {
+              let bytesEarned = 0;
               if (ghostMode) {
                 const res = await fetch('/api/daily-rituals/complete-ghost',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ritualId: r.id })});
-                if(!res.ok){ const j= await res.json().catch(()=>({})); throw new Error(j.error||'Complete failed'); }
+                const j = await res.json().catch(()=>({}));
+                if(!res.ok){ throw new Error(j.error||'Complete failed'); }
+                bytesEarned = j?.data?.bytesEarned || 0;
               } else {
                 const assignmentId = ritualMeta?.assignmentId; if(!assignmentId) throw new Error('Missing assignment');
                 const res = await fetch('/api/daily-rituals/complete',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ assignmentId, ritualId: r.id, journalText: ritualJournal, moodRating: ritualMood, dwellTimeSeconds: ritualSeconds })});
                 const j = await res.json(); if(!res.ok) throw new Error(j.error||'Complete failed');
+                bytesEarned = j?.data?.bytesEarned || 0;
               }
               toast.success('Ritual completed');
               try { localStorage.removeItem('ritual_draft_'+r.id); } catch {}
               const prev = hub.data; if(prev){
-                hub.mutate({ ...prev, todayActions: { ...prev.todayActions, ritual: true }, todaysRituals: prev.todaysRituals?.map(x=> x.id===r.id? { ...x, completed: true }: x) }, false);
+                const newBytes = prev.user.bytes + bytesEarned;
+                hub.mutate({
+                  ...prev,
+                  user: { ...prev.user, bytes: newBytes },
+                  todayActions: { ...prev.todayActions, ritual: true },
+                  todaysRituals: prev.todaysRituals?.map(x=> x.id===r.id? { ...x, completed: true }: x)
+                }, false);
+                if(bytesEarned>0){
+                  emitBytesUpdate({ source: BytesEventSource.RITUAL_COMPLETE, delta: bytesEarned, bytes: newBytes });
+                  trackEvent(ghostMode? AnalyticsEvents.BYTES_EARNED_RITUAL_GHOST : AnalyticsEvents.BYTES_EARNED_RITUAL, { delta: bytesEarned, source: ghostMode? BytesEventSource.RITUAL : BytesEventSource.RITUAL, mode: ghostMode? 'ghost':'firewall' });
+                }
               }
-              hub.mutate();
+              hub.mutate(); // revalidate server state
               setRitualModalId(null); setRitualJournal('');
             } catch(e:any){ toast.error(e.message||'Failed'); } finally { setRitualSubmitting(false); }
           }} className="bg-emerald-600 hover:bg-emerald-700">{ritualSubmitting? 'Saving...' : disableSubmit? 'Complete Ritual' : 'Complete Ritual'}</Button>
@@ -717,6 +823,7 @@ export function DashboardV2({ user }: Props) {
       selectedPersona={aiPersona}
       onClose={()=> setAiModalOpen(false)}
       onFirstUserMessage={()=>{ completeDailyAction('/api/dashboard/aiChat','aiChat' as any); aiUsage.mutate(); }}
+      disableInternalBytesAward={true}
     />
   )}
   {managePurchasesOpen && (
