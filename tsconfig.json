@@ -23,7 +23,7 @@
         "name": "next"
       }
     ],
-  "types": ["jest"],
+  "types": [],
   "paths": {
       "@/*": [
         "./*"
