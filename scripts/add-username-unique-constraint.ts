@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { db } from '@/lib/db/drizzle';
+import { sql } from 'drizzle-orm';
 
 async function addUsernameUniqueConstraint() {
   try {
@@ -22,7 +23,7 @@ async function addUsernameUniqueConstraint() {
       console.log(`📝 SQL: ${statement.substring(0, 100)}${statement.length > 100 ? '...' : ''}`);
       
       try {
-        await db.execute(statement);
+        await db.execute(sql.raw(statement));
         console.log('✅ Statement executed successfully');
       } catch (error) {
         console.error(`❌ Error executing statement ${i + 1}:`, error);
@@ -41,7 +42,7 @@ async function addUsernameUniqueConstraint() {
     
     // Test the constraint
     console.log('🧪 Testing constraint...');
-    const testResult = await db.execute(`
+    const testResult = await db.execute(sql`
       SELECT constraint_name, constraint_type 
       FROM information_schema.table_constraints 
       WHERE table_name = 'users' AND constraint_name = 'users_username_unique'

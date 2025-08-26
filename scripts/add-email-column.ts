@@ -1,9 +1,10 @@
 import { db } from '../lib/db';
+import { sql } from 'drizzle-orm';
 
 async function addEmailColumn() {
   try {
     console.log('Adding email_notifications column...');
-    await db.execute('ALTER TABLE users ADD COLUMN email_notifications BOOLEAN DEFAULT true');
+    await db.execute(sql`ALTER TABLE users ADD COLUMN email_notifications BOOLEAN DEFAULT true`);
     console.log('✅ Column added successfully!');
     process.exit(0);
   } catch (error) {
