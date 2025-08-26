@@ -12,8 +12,11 @@ const getEnvVar = (key: string, fallback: string = '') => {
   return (value && value !== 'undefined') ? value : fallback;
 };
 
-// Get the database URL from environment variables
-const postgresUrl = getEnvVar('POSTGRES_URL');
+// Get the database URL from environment variables (prefer POSTGRES_URL but fall back gracefully)
+const postgresUrl = getEnvVar('POSTGRES_URL') 
+  || getEnvVar('DATABASE_URL') 
+  || getEnvVar('NETLIFY_DATABASE_URL') 
+  || '';
 
 // Check if we're in a build context where database connection shouldn't be established
 const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
@@ -21,12 +24,13 @@ const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' ||
                    !postgresUrl;
 
 if (!postgresUrl && !isBuildTime) {
-  throw new Error('POSTGRES_URL environment variable is required');
+  throw new Error('POSTGRES_URL (or fallback DATABASE_URL / NETLIFY_DATABASE_URL) is required');
 }
 
 // Only log in development
 if (process.env.NODE_ENV === 'development' && postgresUrl) {
-  console.log('Connecting to database with URL starting with:', postgresUrl.substring(0, 20) + '...');
+  const source = getEnvVar('POSTGRES_URL') ? 'POSTGRES_URL' : (getEnvVar('DATABASE_URL') ? 'DATABASE_URL' : 'NETLIFY_DATABASE_URL');
+  console.log(`Connecting to database via ${source} starting with:`, postgresUrl.substring(0, 32) + '...');
 }
 
 // Create a mock client for build time to prevent connection attempts

@@ -42,7 +42,7 @@ async function run(){
     if(!f.endsWith('.sql')) return false;
     if(f.includes('_down_')) return false; // skip explicit down migrations
     if(f === '000000_baseline_snapshot.sql') return false; // skip large baseline dump
-    if(f.endsWith('.sql.sql')) return false; // skip shim duplicates
+  if(f.endsWith('.sql.sql')) return false; // skip shim duplicates (now archived under archive/migration-shims/)
     return true;
   });
   entries.sort();
