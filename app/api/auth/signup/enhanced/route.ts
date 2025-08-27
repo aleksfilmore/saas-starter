@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { lucia } from '@/lib/auth';
-import { generateId } from 'lucia';
+// No lucia usage — enhanced signup creates local user then redirects to Auth0 hosted signup for session
+import { generateId } from '@/lib/utils';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 12);
     
     // Create user (mock implementation)
-    const userId = generateId(15);
+  const userId = generateId();
     const newUser = {
       id: userId,
       email,
@@ -65,17 +65,9 @@ export async function POST(request: NextRequest) {
     // In real app: Save user to database
     console.log('Created enhanced user:', { ...newUser, hashedPassword: '[REDACTED]' });
 
-    // Create session
-    const session = await lucia.createSession(userId, {
-      userAgent: request.headers.get('user-agent') || 'Unknown',
-      ipAddress: request.headers.get('x-forwarded-for') || '127.0.0.1'
-    });
-
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    
-    // Set cookie
-    const cookieStore = await cookies();
-    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  // After creating the user, redirect clients to Auth0 hosted signup to complete session establishment.
+  const redirectUrl = new URL('/api/auth/signup', request.url);
+  return NextResponse.redirect(redirectUrl, 303);
 
     // Enhanced response with onboarding data
     return NextResponse.json({

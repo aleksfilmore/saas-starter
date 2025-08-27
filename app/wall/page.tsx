@@ -119,9 +119,14 @@ export default function OptimizedWallPage() {
         credentials: 'include'
       });
       
+      const body = await response.json().catch(() => ({}));
       if (response.ok) {
         localStorage.clear();
-        window.location.href = '/';
+        if (body.redirectUrl) {
+          window.location.href = body.redirectUrl;
+        } else {
+          window.location.href = '/';
+        }
       }
     } catch (error) {
       console.error('Sign out error:', error);

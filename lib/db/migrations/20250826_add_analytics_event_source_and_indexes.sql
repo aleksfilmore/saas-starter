@@ -78,3 +78,6 @@ COMMIT;
 -- ALTER TABLE analytics_events DROP COLUMN source;
 -- DROP TYPE analytics_event_source;
 -- COMMIT;
+- let props: any = {}; try { props = JSON.parse(r.properties||'{}'); } catch {}
++ const props: any = r.properties || {};- let props: any = {}; try { props = JSON.parse(r.properties||'{}'); } catch {}
++ const props: any = r.properties || {};

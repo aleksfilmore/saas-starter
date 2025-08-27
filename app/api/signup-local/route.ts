@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/actual-schema';
 import { eq } from 'drizzle-orm';
-import { lucia } from '@/lib/auth';
+// Signup-local now creates user then redirects to Auth0 hosted signup for session establishment
 import { cookies } from 'next/headers';
 import { generateId } from '@/lib/utils';
 
@@ -83,32 +83,9 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ User created successfully:', newUser);
 
-    console.log('🔐 Creating session for user:', userId);
-    // Create session using Lucia
-    const session = await lucia.createSession(userId, {
-      source: source || 'quiz-signup'
-    });
-    console.log('✅ Session created:', session.id);
-    
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    console.log('🍪 Session cookie created');
-
-    // Set session cookie
-    const cookieStore = await cookies();
-    cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-    console.log('🍪 Session cookie set successfully');
-
-    console.log('🔐 Session created for quiz user:', userId);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Account created successfully',
-      user: {
-        id: userId,
-        email: email.toLowerCase(),
-        username: username
-      }
-    });
+  console.log('User created; redirecting to Auth0 hosted signup for session establishment');
+  const redirectUrl = new URL('/api/auth/signup', request.url);
+  return NextResponse.redirect(redirectUrl, 303);
 
   } catch (error) {
     console.error('❌ Quiz signup error:', error);

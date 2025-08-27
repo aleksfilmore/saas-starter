@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { lucia } from '@/lib/auth';
+// Mobile sign-in no longer uses lucia; instructs clients to use Auth0 OAuth flows
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/actual-schema';
 import { eq } from 'drizzle-orm';
@@ -39,43 +39,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create session
-    const session = await lucia.createSession(user.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-
-    const response = NextResponse.json({
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        tier: user.tier,
-        archetype: user.emotional_archetype,
-        archetype_details: null, // Not stored in current schema
-        bytes: user.bytes,
-        ritual_streak: user.streak,
-        no_contact_streak: user.no_contact_days,
-        last_checkin: user.last_no_contact_checkin,
-        last_ritual: user.last_ritual_completed,
-        is_verified: !user.is_banned,
-        subscription_status: user.subscription_tier,
-        subscription_expires: null, // Not stored in current schema
-        created_at: user.created_at,
-        updated_at: user.updated_at,
-      },
-      session: {
-        id: session.id,
-        userId: session.userId,
-        expiresAt: session.expiresAt,
-        fresh: session.fresh,
-      },
-      sessionToken: session.id, // Use session ID as token for mobile
-    });
-
-    // Set session cookie for web compatibility
-    response.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-
-    return response;
+    // Mobile clients should use OAuth / Auth0 flows. For now, return an informational error indicating
+    // the API no longer issues local sessions and instruct the client to use Auth0 hosted flows.
+    return NextResponse.json({
+      success: false,
+      message: 'Mobile sign-in is handled by Auth0. Use the OAuth flow or exchange tokens via the /api/auth Pages API.',
+    }, { status: 400 });
 
   } catch (error: any) {
     console.error('Mobile sign-in error:', error);

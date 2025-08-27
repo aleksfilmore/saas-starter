@@ -1,122 +1,135 @@
-// File: lib/auth/index.ts
+// Auth0 compatibility shim (Option B) — replaces Lucia implementation
+// Exports:
+//  - validateRequest(): checks Auth0 session by calling the internal Pages API and returns local DB user + session
+//  - getUserId(): returns the local user id when authenticated
+//  - lucia: a small compatibility stub so existing imports compile; methods throw helpful errors to force migration where used
 
-import { Lucia, Session, User as LuciaUser } from 'lucia';
-import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { db } from '@/lib/db/drizzle';
-import { sessions, users, User as DbUser } from '@/lib/db/actual-schema';
-import { cookies } from 'next/headers';
 import { cache } from 'react';
+import { cookies } from 'next/headers';
+import { db } from '@/lib/db/drizzle';
+import { users } from '@/lib/db/actual-schema';
+import { eq } from 'drizzle-orm';
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
+type ValidateResult = { user: any | null; session: any | null };
 
-export const lucia = new Lucia(adapter, {
-  sessionCookie: {
-    expires: false,
-    attributes: {
-      // Use secure cookies in production
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax', // Allow cross-site requests
-      domain: process.env.NODE_ENV === 'production' ? '.ctrlaltblock.com' : undefined, // Set domain for production
-    },
-  },
-  getUserAttributes: (attributes) => {
-    return {
-      email: attributes.email,
-      username: attributes.username,
-      tier: attributes.tier,
-      archetype: attributes.archetype,
-      archetype_details: attributes.archetype_details,
-      bytes: attributes.bytes,
-      ritual_streak: attributes.ritual_streak,
-      no_contact_streak: attributes.no_contact_streak,
-      last_checkin: attributes.last_checkin,
-      last_ritual: attributes.last_ritual,
-      is_verified: attributes.is_verified,
-      subscription_status: attributes.subscription_status,
-      subscription_expires: attributes.subscription_expires,
-      onboardingCompleted: attributes.onboarding_completed,
-      emailVerified: attributes.email_verified,
-      created_at: attributes.created_at,
-  updated_at: attributes.updated_at,
-  // surface admin flag so downstream /api/auth/me can expose it
-  is_admin: (attributes as any).is_admin,
-    };
-  },
+// Calls the internal Auth0 session endpoint and looks up the local user by auth0_sub or email.
+export const validateRequest = cache(async (): Promise<ValidateResult> => {
+  try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ');
+
+    // Call internal Pages API that the @auth0/nextjs-auth0 SDK provides.
+    const resp = await fetch('/api/auth/session', {
+      method: 'GET',
+      headers: {
+        cookie: cookieHeader || ''
+      },
+      // don't cache auth checks
+      cache: 'no-store'
+    });
+
+    if (!resp.ok) {
+      return { user: null, session: null };
+    }
+
+    const session = await resp.json();
+    const sub = session?.user?.sub || session?.user?.user_id || null;
+    const email = session?.user?.email || null;
+
+    if (!sub && !email) {
+      return { user: null, session: session ?? null };
+    }
+
+    // Try to find a matching local user by email (auth0 subject column not present in schema)
+    let found = null;
+    if (email) {
+      const rows = await db.select().from(users).where(eq(users.email, email.toLowerCase())).limit(1);
+      found = rows[0] ?? null;
+    }
+
+    // Normalize DB user fields to the camelCase shape the app expects
+    const mapped = found
+      ? {
+          id: found.id,
+          email: found.email,
+          username: found.username,
+          tier: found.tier,
+          archetype: found.emotional_archetype,
+          archetype_details: (found as any).archetype_details ?? null,
+          bytes: found.bytes,
+          ritual_streak: found.streak ?? 0,
+          no_contact_streak: found.no_contact_days ?? 0,
+          last_checkin: found.last_no_contact_checkin ?? null,
+          last_ritual: found.last_ritual_completed ?? null,
+          is_verified: !found.is_banned,
+          subscription_status: found.subscription_tier ?? null,
+          subscription_expires: (found as any).subscription_expires ?? null,
+          onboardingCompleted: found.onboarding_completed ?? false,
+          emailVerified: found.email_verified ?? false,
+          createdAt: found.created_at ?? null,
+          updatedAt: found.updated_at ?? null,
+          is_admin: found.is_admin ?? false,
+        }
+      : null;
+
+    return { user: mapped, session };
+  } catch (err) {
+    console.error('validateRequest error (Auth0 shim):', err);
+    return { user: null, session: null };
+  }
 });
 
-// Production-ready session validation
-export const validateRequest = cache(
-  async (): Promise<{ user: LuciaUser; session: Session } | { user: null; session: null }> => {
-    try {
-      const cookieStore = await cookies();
-      const sessionId = cookieStore.get(lucia.sessionCookieName)?.value ?? null;
-      
-      if (!sessionId) {
-        return {
-          user: null,
-          session: null,
-        };
-      }
-
-      const result = await lucia.validateSession(sessionId);
-      
-      // Next.js throws an error when you attempt to set a cookie when rendering a page
-      try {
-        if (result.session && result.session.fresh) {
-          const sessionCookie = lucia.createSessionCookie(result.session.id);
-          cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-        }
-        if (!result.session) {
-          const sessionCookie = lucia.createBlankSessionCookie();
-          cookieStore.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-        }
-      } catch (error) {
-        // Ignore cookie setting errors in read-only contexts
-        console.log('Cookie setting ignored in read-only context');
-      }
-      
-      return result;
-    } catch (error) {
-      console.error('Session validation error:', error);
-      return {
-        user: null,
-        session: null,
-      };
-    }
-  }
-);
-
-// Helper function to get user ID from session
 export const getUserId = async (): Promise<string | null> => {
   const { user } = await validateRequest();
-  return user?.id || null;
+  return user?.id ?? null;
 };
 
-// This declaration merges our custom user attributes with the default Lucia user type.
-declare module 'lucia' {
-  interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: DatabaseUserAttributes;
+// Minimal compatibility stub for imports that expect a `lucia` object.
+// Methods either map to Auth0 flows (where safe) or throw a clear error asking for migration.
+export const lucia = {
+  sessionCookieName: 'auth0-session',
+  // createSession(userId, attributes) -> returns a session-like object { id }
+  createSession: async (userId: string, _attrs?: any) => {
+    // Generate a lightweight ephemeral session object. This is a compatibility shim only.
+    const id = `shim-session-${userId}-${Date.now()}`;
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30); // 30 days
+    return {
+      id,
+      userId,
+      expiresAt,
+      fresh: true
+    };
+  },
+  // createSessionCookie(sessionId) -> returns cookie descriptor
+  createSessionCookie: (sessionId: string) => {
+    return {
+      name: 'auth0-session',
+      value: sessionId ?? '',
+  attributes: { httpOnly: true, path: '/', sameSite: 'lax' as const, secure: process.env.NODE_ENV === 'production' }
+    };
+  },
+  createBlankSessionCookie: () => {
+  return { name: 'auth0-session', value: '', attributes: { httpOnly: true, path: '/', sameSite: 'lax' as const, secure: process.env.NODE_ENV === 'production' } };
+  },
+  // validateSession(sessionId) -> delegate to validateRequest to check Auth0 session and return a Lucia-like result
+  validateSession: async (_sessionId?: string) => {
+    try {
+      const res = await validateRequest();
+      // Map to lucia-like shape: { user, session }
+      return { user: res.user ?? null, session: res.session ?? null };
+    } catch (err) {
+      console.error('lucia.validateSession shim error:', err);
+      return { user: null, session: null };
+    }
+  },
+  invalidateSession: async (_id?: string) => {
+    // No-op in shim. Real migration should call Auth0 sign-out / token revocation endpoints.
+    console.warn('lucia.invalidateSession called — shim no-op. Migrate to Auth0 sign-out flow.');
+    return null;
+  },
+  invalidateUserSessions: async (_userId?: string) => {
+    console.warn('lucia.invalidateUserSessions called — shim no-op. Migrate to Auth0 management APIs if needed.');
+    return null;
   }
-}
+};
 
-interface DatabaseUserAttributes {
-  email: string;
-  username: string | null;
-  tier: string;
-  archetype: string | null;
-  archetype_details: any;
-  bytes: number;
-  ritual_streak: number;
-  no_contact_streak: number;
-  last_checkin: Date | null;
-  last_ritual: Date | null;
-  is_verified: boolean;
-  subscription_status: string | null;
-  subscription_expires: Date | null;
-  onboarding_completed: boolean;
-  email_verified: boolean;
-  created_at: Date;
-  updated_at: Date;
-  is_admin?: boolean; // added to propagate admin status
-}

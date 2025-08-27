@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { User } from "lucia"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,7 +17,7 @@ export function generateId(): string {
  * @param user - The user object from Lucia auth
  * @returns The user ID as a string
  */
-export function getUserId(user: User): string {
+export function getUserId(user: any): string {
   if (!user || !user.id) {
     throw new Error('User ID is required');
   }

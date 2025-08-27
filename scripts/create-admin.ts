@@ -5,7 +5,7 @@ import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/minimal-schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-import { generateId } from 'lucia';
+import { generateId } from '@/lib/utils';
 
 const ADMIN_EMAIL = 'system_admin@ctrlaltblock.com';
 const ADMIN_PASSWORD = 'SecureAdmin2024!';
@@ -30,7 +30,7 @@ async function createSystemAdmin() {
     const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
 
     // Create admin user
-    const adminId = generateId(15);
+  const adminId = generateId();
     await db.insert(users).values({
       id: adminId,
       email: ADMIN_EMAIL,

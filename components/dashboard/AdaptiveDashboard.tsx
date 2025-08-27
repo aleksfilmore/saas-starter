@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { User } from 'lucia';
+
 import { useDailyTasks } from '@/hooks/useDailyTasks';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHealingHub } from '@/contexts/HealingHubContext';
@@ -56,7 +56,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar';
 import { EmailVerificationPrompt } from '@/components/dashboard/EmailVerificationPrompt';
 
 interface Props {
-  user: User;
+  user: any;
 }
 
 // Updated Wall categories aligned with central categories.ts definitions
@@ -234,13 +234,19 @@ function AdaptiveDashboard({ user }: Props) {
         credentials: 'include'
       });
       
+      const body = await response.json().catch(() => ({}));
       if (response.ok) {
         // Clear any local storage
         localStorage.clear();
-        // Redirect to homepage
-        window.location.href = '/';
+        // If server returned an Auth0 logout redirect, navigate there so Auth0 clears its cookies
+        if (body.redirectUrl) {
+          window.location.href = body.redirectUrl;
+        } else {
+          // fallback to home
+          window.location.href = '/';
+        }
       } else {
-        console.error('Logout failed');
+        console.error('Logout failed', body);
         alert('Failed to sign out. Please try again.');
       }
     } catch (error) {

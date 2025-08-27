@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { User } from 'lucia';
+
+// Local User type used instead of importing from 'lucia'
+interface User {
+  id: string;
+  email: string;
+  tier?: string;
+  subscription_tier?: string;
+  ritual_tier?: string;
+}
 
 interface UserAvatarProps {
   user: User;

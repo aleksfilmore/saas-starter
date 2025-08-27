@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/minimal-schema';
 import { eq } from 'drizzle-orm';
-import { generateId } from 'lucia';
+import { generateId } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   try {

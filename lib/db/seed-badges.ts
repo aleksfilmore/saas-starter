@@ -1,7 +1,7 @@
 // Badge Seeding for Gamification System
 import { db } from './drizzle';
 import { badges } from './schema';
-import { generateId } from 'lucia';
+import { generateId } from '@/lib/utils';
 
 export async function seedBadges() {
   const badgeData = [

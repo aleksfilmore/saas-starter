@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
-import { lucia } from '@/lib/auth';
+import { validateRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,19 +13,11 @@ export async function GET(request: NextRequest) {
     }
 
     const sessionId = authHeader.substring(7);
-    const result = await lucia.validateSession(sessionId);
-
+    const result = await validateRequest();
     if (!result.session) {
-      return NextResponse.json(
-        { user: null, session: null },
-        { status: 401 }
-      );
+      return NextResponse.json({ user: null, session: null }, { status: 401 });
     }
-
-    return NextResponse.json({
-      user: result.user,
-      session: result.session,
-    });
+    return NextResponse.json({ user: result.user, session: result.session });
 
   } catch (error: any) {
     console.error('Session validation error:', error);

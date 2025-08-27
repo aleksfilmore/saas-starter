@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/auth';
 import { updateUser } from '@/lib/db/queries';
-import { generateId } from 'lucia';
+import { generateId } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
   try {

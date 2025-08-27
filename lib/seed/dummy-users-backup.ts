@@ -4,7 +4,7 @@
 
 import { db } from '@/lib/db';
 import { users, anonymousPosts, userBadges, badges } from '@/lib/db/unified-schema';
-import { generateId } from 'lucia';
+import { generateId } from '@/lib/utils';
 import bcrypt from 'bcryptjs';
 import { sql, eq, like } from 'drizzle-orm';
 

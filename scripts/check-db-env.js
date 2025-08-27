@@ -6,7 +6,8 @@ try { require('dotenv').config(); } catch {}
 
 const requiredVar = 'POSTGRES_URL';
 const url = process.env[requiredVar];
-if(!url || !/^postgres:\/\//i.test(url)){
+// Accept both postgres:// and postgresql:// schemes (Neon uses postgresql://)
+if(!url || !/^postgres(?:ql)?:\/\//i.test(url)){
   console.error(`[db:guard] Missing or invalid ${requiredVar}. Aborting migration.`);
   process.exit(1);
 }

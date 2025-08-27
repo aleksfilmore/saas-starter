@@ -211,6 +211,16 @@ export const ghostDailyAssignments = pgTable('ghost_daily_assignments', {
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 });
 
+// AI therapy message purchases (used for ghost-tier message bundles)
+export const aiTherapyMessagePurchases = pgTable('ai_therapy_message_purchases', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(()=> users.id),
+  messagesGranted: integer('messages_granted').notNull().default(0),
+  messagesUsed: integer('messages_used').notNull().default(0),
+  expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+});
+
 // === Inlined legacy tables (phase 1) ===
 // These replace temporary wrapper re-exports. Additional legacy tables will be
 // migrated in subsequent passes until schema.ts can be deleted entirely.
@@ -327,7 +337,7 @@ export const referrals = (()=>{ try { return (legacy as any).referrals; } catch 
 export const blogPosts = (()=>{ try { return (legacy as any).blogPosts; } catch { return undefined as any; }})();
 export const apiUsage = (()=>{ try { return (legacy as any).apiUsage; } catch { return undefined as any; }})();
 export const auditLogs = (()=>{ try { return (legacy as any).auditLogs; } catch { return undefined as any; }})();
-export const aiTherapyMessagePurchases = (()=>{ try { return (legacy as any).aiTherapyMessagePurchases; } catch { return undefined as any; }})();
+// aiTherapyMessagePurchases now defined above in this file (unified schema)
 export const shopProducts = (()=>{ try { return (legacy as any).shopProducts; } catch { return undefined as any; }})();
 export const shopOrders = (()=>{ try { return (legacy as any).shopOrders; } catch { return undefined as any; }})();
 export const shopOrderItems = (()=>{ try { return (legacy as any).shopOrderItems; } catch { return undefined as any; }})();

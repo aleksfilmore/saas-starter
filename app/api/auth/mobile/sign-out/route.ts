@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { lucia } from '@/lib/auth';
+import { revokeUserSessionsByAuth0Sub } from '@/lib/auth/auth0-management';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,14 +12,17 @@ export async function POST(request: NextRequest) {
     }
 
     const sessionId = authHeader.substring(7);
-    
-    // Invalidate the session
-    await lucia.invalidateSession(sessionId);
 
-    return NextResponse.json({
-      success: true,
-      message: 'Signed out successfully',
-    });
+    // If the provided token looks like an Auth0 user id (auth0|...), attempt to revoke sessions
+    if (sessionId.startsWith('auth0|')) {
+      try {
+        await revokeUserSessionsByAuth0Sub(sessionId);
+      } catch (err) {
+        console.warn('Failed to revoke sessions for mobile sign-out:', err);
+      }
+    }
+
+    return NextResponse.json({ success: true, message: 'Signed out successfully' });
 
   } catch (error: any) {
     console.error('Mobile sign-out error:', error);

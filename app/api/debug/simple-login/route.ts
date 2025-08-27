@@ -3,7 +3,7 @@ import { db } from '@/lib/db/drizzle'
 import { users } from '@/lib/db/actual-schema'
 import { eq } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
-import { lucia } from '@/lib/auth'
+// Debug login redirect now points to Auth0 hosted login; lucia shim not required here
 import { cookies } from 'next/headers'
 
 // TEMPORARY DEBUG ROUTE
@@ -42,22 +42,9 @@ export async function GET(req: NextRequest) {
     if (!match) {
       return NextResponse.json({ success: false, error: 'Invalid password' }, { status: 401 })
     }
-    const session = await lucia.createSession(user.id, {})
-    const sessionCookie = lucia.createSessionCookie(session.id)
-    const store = await cookies()
-    store.set(sessionCookie.name, sessionCookie.value, {
-      ...sessionCookie.attributes,
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-    })
-    return NextResponse.json({
-      success: true,
-      message: 'Login successful (debug route)',
-      user: { id: user.id, email: (user as any).email, tier: (user as any).tier },
-      note: 'Remove /api/debug/simple-login after confirming normal /api/login works.'
-    })
+  // Redirect debug login attempts to Auth0 hosted login so that cookie/session handling is consistent.
+  const redirectUrl = new URL('/api/auth/login', req.url);
+  return NextResponse.redirect(redirectUrl, 303);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     return NextResponse.json({ error: 'Internal error', detail: msg }, { status: 500 })

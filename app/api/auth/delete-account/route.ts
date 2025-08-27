@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateRequest, lucia } from '@/lib/auth';
+import { validateRequest } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/unified-schema';
 import { eq } from 'drizzle-orm';
+import { getAuth0SubForLocalUser, revokeUserSessionsByAuth0Sub } from '@/lib/auth/auth0-management';
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -19,8 +20,15 @@ export async function DELETE(request: NextRequest) {
       // Delete user data from database
       await db.delete(users).where(eq(users.id, user.id));
       
-      // Invalidate all sessions for this user
-      await lucia.invalidateUserSessions(user.id);
+      // Invalidate all sessions for this user via Auth0 Management API where possible
+      try {
+        const auth0Sub = await getAuth0SubForLocalUser(user.id);
+        if (auth0Sub) {
+          await revokeUserSessionsByAuth0Sub(auth0Sub);
+        }
+      } catch (err) {
+        console.warn('Failed to revoke Auth0 sessions for deleted account:', err);
+      }
       
       console.log(`Account deleted for user: ${user.id}`);
       
